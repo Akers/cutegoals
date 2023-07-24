@@ -4,7 +4,7 @@
   "avatar": "",
   "version": "4.6.0",
   "createdTime": "2023-7-7 15:06:31",
-  "updatedTime": "2023-7-10 16:17:13",
+  "updatedTime": "2023-7-10 16:16:07",
   "dbConns": [],
   "profile": {
     "default": {
@@ -1674,7 +1674,7 @@
       ],
       "fields": [
         {
-          "defKey": "user_score_id",
+          "defKey": "id",
           "defName": "租户号",
           "comment": "",
           "type": "",
@@ -1938,7 +1938,7 @@
       ],
       "fields": [
         {
-          "defKey": "score_detail_id",
+          "defKey": "id",
           "defName": "租户号",
           "comment": "",
           "type": "",
@@ -2304,7 +2304,7 @@
       ],
       "fields": [
         {
-          "defKey": "price_config_id",
+          "defKey": "id",
           "defName": "租户号",
           "comment": "",
           "type": "",
@@ -2755,7 +2755,7 @@
       ],
       "fields": [
         {
-          "defKey": "device_id",
+          "defKey": "id",
           "defName": "租户号",
           "comment": "",
           "type": "",
@@ -3019,7 +3019,7 @@
       ],
       "fields": [
         {
-          "defKey": "score_config_value_id",
+          "defKey": "id",
           "defName": "租户号",
           "comment": "",
           "type": "",
@@ -3283,7 +3283,7 @@
       ],
       "fields": [
         {
-          "defKey": "price_detail_id",
+          "defKey": "id",
           "defName": "租户号",
           "comment": "",
           "type": "",
@@ -3666,7 +3666,7 @@
       ],
       "fields": [
         {
-          "defKey": "price_his_id",
+          "defKey": "id",
           "defName": "租户号",
           "comment": "",
           "type": "",
