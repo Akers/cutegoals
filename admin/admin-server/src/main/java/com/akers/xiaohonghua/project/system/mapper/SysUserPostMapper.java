@@ -1,5 +1,7 @@
 package com.akers.xiaohonghua.project.system.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import java.util.List;
 import com.akers.xiaohonghua.project.system.domain.SysUserPost;
 
@@ -8,7 +10,7 @@ import com.akers.xiaohonghua.project.system.domain.SysUserPost;
  * 
  * @author ruoyi
  */
-public interface SysUserPostMapper
+public interface SysUserPostMapper extends BaseMapper<SysUserPost>
 {
     /**
      * 通过用户ID删除用户和岗位关联

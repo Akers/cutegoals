@@ -1,5 +1,6 @@
 package com.akers.xiaohonghua.project.system.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import java.util.List;
 import com.akers.xiaohonghua.project.system.domain.SysConfig;
 
@@ -40,6 +41,7 @@ public interface ISysConfigService
      * @return 参数配置集合
      */
     public List<SysConfig> selectConfigList(SysConfig config);
+    public IPage<SysConfig> selectConfigList(IPage<?> page, SysConfig config);
 
     /**
      * 新增参数配置

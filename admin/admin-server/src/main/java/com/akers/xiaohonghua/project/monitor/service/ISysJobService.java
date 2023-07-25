@@ -1,6 +1,9 @@
 package com.akers.xiaohonghua.project.monitor.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import java.util.List;
+
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.quartz.SchedulerException;
 import com.akers.xiaohonghua.common.exception.job.TaskException;
 import com.akers.xiaohonghua.project.monitor.domain.SysJob;
@@ -19,6 +22,7 @@ public interface ISysJobService
      * @return 调度任务集合
      */
     public List<SysJob> selectJobList(SysJob job);
+    public IPage<SysJob> selectJobList(IPage<?> page, SysJob job);
 
     /**
      * 通过调度任务ID查询调度信息

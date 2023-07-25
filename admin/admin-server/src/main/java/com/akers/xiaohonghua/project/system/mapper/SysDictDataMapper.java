@@ -1,5 +1,7 @@
 package com.akers.xiaohonghua.project.system.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
 import com.akers.xiaohonghua.project.system.domain.SysDictData;
@@ -9,7 +11,7 @@ import com.akers.xiaohonghua.project.system.domain.SysDictData;
  * 
  * @author ruoyi
  */
-public interface SysDictDataMapper
+public interface SysDictDataMapper extends BaseMapper<SysDictData>
 {
     /**
      * 根据条件分页查询字典数据
@@ -18,6 +20,7 @@ public interface SysDictDataMapper
      * @return 字典数据集合信息
      */
     public List<SysDictData> selectDictDataList(SysDictData dictData);
+    public IPage<SysDictData> selectDictDataList(IPage<?> page, SysDictData dictData);
 
     /**
      * 根据字典类型查询字典数据
@@ -26,6 +29,7 @@ public interface SysDictDataMapper
      * @return 字典数据集合信息
      */
     public List<SysDictData> selectDictDataByType(String dictType);
+    public IPage<SysDictData> selectDictDataByType(IPage<?> page, String dictType);
 
     /**
      * 根据字典类型和字典键值查询字典数据信息

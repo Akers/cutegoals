@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.akers.xiaohonghua.project.family.mapper.XhhFamilyMapper">
+    
+    <resultMap type="XhhFamily" id="XhhFamilyResult">
+        <result property="familyId"    column="family_id"    />
+        <result property="version"    column="version"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="familyName"    column="family_name"    />
+        <result property="familyAddress"    column="family_address"    />
+        <result property="usrId"    column="usr_id"    />
+    </resultMap>
+
+    <sql id="selectXhhFamilyVo">
+        select family_id, version, create_by, create_time, update_by, update_time, family_name, family_address, usr_id from xhh_family
+    </sql>
+
+    <select id="selectXhhFamilyList" parameterType="XhhFamily" resultMap="XhhFamilyResult">
+        <include refid="selectXhhFamilyVo"/>
+        <where>  
+            <if test="familyName != null  and familyName != ''"> and family_name like concat('%', #{familyName}, '%')</if>
+            <if test="familyAddress != null  and familyAddress != ''"> and family_address = #{familyAddress}</if>
+        </where>
+    </select>
+    
+    <select id="selectXhhFamilyByFamilyId" parameterType="Long" resultMap="XhhFamilyResult">
+        <include refid="selectXhhFamilyVo"/>
+        where family_id = #{familyId}
+    </select>
+        
+    <insert id="insertXhhFamily" parameterType="XhhFamily">
+        insert into xhh_family
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="familyId != null">family_id,</if>
+            <if test="version != null">version,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="familyName != null">family_name,</if>
+            <if test="familyAddress != null">family_address,</if>
+            <if test="usrId != null">usr_id,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="familyId != null">#{familyId},</if>
+            <if test="version != null">#{version},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="familyName != null">#{familyName},</if>
+            <if test="familyAddress != null">#{familyAddress},</if>
+            <if test="usrId != null">#{usrId},</if>
+         </trim>
+    </insert>
+
+    <update id="updateXhhFamily" parameterType="XhhFamily">
+        update xhh_family
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="version != null">version = #{version},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="familyName != null">family_name = #{familyName},</if>
+            <if test="familyAddress != null">family_address = #{familyAddress},</if>
+            <if test="usrId != null">usr_id = #{usrId},</if>
+        </trim>
+        where family_id = #{familyId}
+    </update>
+
+    <delete id="deleteXhhFamilyByFamilyId" parameterType="Long">
+        delete from xhh_family where family_id = #{familyId}
+    </delete>
+
+    <delete id="deleteXhhFamilyByFamilyIds" parameterType="String">
+        delete from xhh_family where family_id in 
+        <foreach item="familyId" collection="array" open="(" separator="," close=")">
+            #{familyId}
+        </foreach>
+    </delete>
+</mapper>

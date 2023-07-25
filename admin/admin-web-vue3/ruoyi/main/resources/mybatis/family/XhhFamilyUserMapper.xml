@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.akers.xiaohonghua.project.family.mapper.XhhFamilyUserMapper">
+    
+    <resultMap type="XhhFamilyUser" id="XhhFamilyUserResult">
+        <result property="familyUserId"    column="family_user_id"    />
+        <result property="version"    column="version"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="familyId"    column="family_id"    />
+        <result property="usrId"    column="usr_id"    />
+        <result property="roleCode"    column="role_code"    />
+        <result property="usrName"    column="usr_name"    />
+        <result property="roleName"    column="role_name"    />
+    </resultMap>
+
+    <sql id="selectXhhFamilyUserVo">
+        select family_user_id, version, create_by, create_time, update_by, update_time, family_id, usr_id, role_code, usr_name, role_name from xhh_family_user
+    </sql>
+
+    <select id="selectXhhFamilyUserList" parameterType="XhhFamilyUser" resultMap="XhhFamilyUserResult">
+        <include refid="selectXhhFamilyUserVo"/>
+        <where>  
+            <if test="familyId != null "> and family_id = #{familyId}</if>
+            <if test="usrId != null "> and usr_id = #{usrId}</if>
+            <if test="roleCode != null  and roleCode != ''"> and role_code = #{roleCode}</if>
+            <if test="usrName != null  and usrName != ''"> and usr_name like concat('%', #{usrName}, '%')</if>
+            <if test="roleName != null  and roleName != ''"> and role_name like concat('%', #{roleName}, '%')</if>
+        </where>
+    </select>
+    
+    <select id="selectXhhFamilyUserByFamilyUserId" parameterType="Long" resultMap="XhhFamilyUserResult">
+        <include refid="selectXhhFamilyUserVo"/>
+        where family_user_id = #{familyUserId}
+    </select>
+        
+    <insert id="insertXhhFamilyUser" parameterType="XhhFamilyUser">
+        insert into xhh_family_user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="familyUserId != null">family_user_id,</if>
+            <if test="version != null">version,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="familyId != null">family_id,</if>
+            <if test="usrId != null">usr_id,</if>
+            <if test="roleCode != null">role_code,</if>
+            <if test="usrName != null">usr_name,</if>
+            <if test="roleName != null">role_name,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="familyUserId != null">#{familyUserId},</if>
+            <if test="version != null">#{version},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="familyId != null">#{familyId},</if>
+            <if test="usrId != null">#{usrId},</if>
+            <if test="roleCode != null">#{roleCode},</if>
+            <if test="usrName != null">#{usrName},</if>
+            <if test="roleName != null">#{roleName},</if>
+         </trim>
+    </insert>
+
+    <update id="updateXhhFamilyUser" parameterType="XhhFamilyUser">
+        update xhh_family_user
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="version != null">version = #{version},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="familyId != null">family_id = #{familyId},</if>
+            <if test="usrId != null">usr_id = #{usrId},</if>
+            <if test="roleCode != null">role_code = #{roleCode},</if>
+            <if test="usrName != null">usr_name = #{usrName},</if>
+            <if test="roleName != null">role_name = #{roleName},</if>
+        </trim>
+        where family_user_id = #{familyUserId}
+    </update>
+
+    <delete id="deleteXhhFamilyUserByFamilyUserId" parameterType="Long">
+        delete from xhh_family_user where family_user_id = #{familyUserId}
+    </delete>
+
+    <delete id="deleteXhhFamilyUserByFamilyUserIds" parameterType="String">
+        delete from xhh_family_user where family_user_id in 
+        <foreach item="familyUserId" collection="array" open="(" separator="," close=")">
+            #{familyUserId}
+        </foreach>
+    </delete>
+
+
+</mapper>

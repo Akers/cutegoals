@@ -1,5 +1,8 @@
 package com.akers.xiaohonghua.project.system.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import java.util.List;
 import com.akers.xiaohonghua.project.system.domain.SysConfig;
 
@@ -8,7 +11,7 @@ import com.akers.xiaohonghua.project.system.domain.SysConfig;
  * 
  * @author ruoyi
  */
-public interface SysConfigMapper
+public interface SysConfigMapper extends BaseMapper<SysConfig>
 {
     /**
      * 查询参数配置信息
@@ -33,6 +36,7 @@ public interface SysConfigMapper
      * @return 参数配置集合
      */
     public List<SysConfig> selectConfigList(SysConfig config);
+    public IPage<SysConfig> selectConfigList(IPage<?> page, SysConfig config);
 
     /**
      * 根据键名查询参数配置信息

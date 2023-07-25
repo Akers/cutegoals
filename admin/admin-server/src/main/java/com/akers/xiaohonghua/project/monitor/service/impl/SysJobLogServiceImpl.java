@@ -1,11 +1,14 @@
 package com.akers.xiaohonghua.project.monitor.service.impl;
 
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.akers.xiaohonghua.project.monitor.domain.SysJobLog;
 import com.akers.xiaohonghua.project.monitor.mapper.SysJobLogMapper;
 import com.akers.xiaohonghua.project.monitor.service.ISysJobLogService;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 
 /**
  * 定时任务调度日志信息 服务层
@@ -13,7 +16,7 @@ import com.akers.xiaohonghua.project.monitor.service.ISysJobLogService;
  * @author ruoyi
  */
 @Service
-public class SysJobLogServiceImpl implements ISysJobLogService
+public class SysJobLogServiceImpl extends ServiceImpl<SysJobLogMapper, SysJobLog> implements ISysJobLogService
 {
     @Autowired
     private SysJobLogMapper jobLogMapper;
@@ -25,10 +28,14 @@ public class SysJobLogServiceImpl implements ISysJobLogService
      * @return 调度任务日志集合
      */
     @Override
-    public List<SysJobLog> selectJobLogList(SysJobLog jobLog)
-    {
-        return jobLogMapper.selectJobLogList(jobLog);
-    }
+	public List<SysJobLog> selectJobLogList(SysJobLog jobLog) {
+		return jobLogMapper.selectJobLogList(jobLog);
+	}
+
+	@Override
+	public IPage<SysJobLog> selectJobLogList(IPage<?> page, SysJobLog jobLog) {
+	    return jobLogMapper.selectJobLogList(page, jobLog);
+	}
 
     /**
      * 通过调度任务日志ID查询调度信息

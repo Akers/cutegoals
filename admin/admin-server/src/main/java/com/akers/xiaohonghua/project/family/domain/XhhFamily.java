@@ -1,6 +1,10 @@
 package com.akers.xiaohonghua.project.family.domain;
 
 import java.util.List;
+
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import com.akers.xiaohonghua.framework.aspectj.lang.annotation.Excel;
@@ -17,8 +21,9 @@ public class XhhFamily extends BaseEntity
     private static final long serialVersionUID = 1L;
 
     /** ID */
-    @Excel(name = "ID")
-    private Long id;
+    @TableId(value="family_id", type = IdType.ASSIGN_ID)
+    @Excel(name = "家庭ID")
+    private Long familyId;
 
     /** 乐观锁 */
     @Excel(name = "乐观锁")
@@ -39,16 +44,15 @@ public class XhhFamily extends BaseEntity
     /** 家庭用户关联表信息 */
     private List<XhhFamilyUser> xhhFamilyUserList;
 
-    public void setId(Long id) 
-    {
-        this.id = id;
+    public Long getFamilyId() {
+        return familyId;
     }
 
-    public Long getId() 
-    {
-        return id;
+    public void setFamilyId(Long familyId) {
+        this.familyId = familyId;
     }
-    public void setVersion(Long version) 
+
+    public void setVersion(Long version)
     {
         this.version = version;
     }
@@ -98,7 +102,7 @@ public class XhhFamily extends BaseEntity
     @Override
     public String toString() {
         return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
-            .append("id", getId())
+            .append("familyId", getFamilyId())
             .append("version", getVersion())
             .append("createBy", getCreateBy())
             .append("createTime", getCreateTime())

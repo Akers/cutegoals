@@ -1,5 +1,6 @@
 package com.akers.xiaohonghua.project.system.controller;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
@@ -44,8 +45,7 @@ public class SysDictDataController extends BaseController
     @GetMapping("/list")
     public TableDataInfo list(SysDictData dictData)
     {
-        startPage();
-        List<SysDictData> list = dictDataService.selectDictDataList(dictData);
+        IPage<SysDictData> list = dictDataService.selectDictDataList(getPage(), dictData);
         return getDataTable(list);
     }
 

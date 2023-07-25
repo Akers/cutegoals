@@ -1,7 +1,10 @@
 package com.akers.xiaohonghua.project.system.controller;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
+
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -41,9 +44,8 @@ public class SysConfigController extends BaseController
     @GetMapping("/list")
     public TableDataInfo list(SysConfig config)
     {
-        startPage();
-        List<SysConfig> list = configService.selectConfigList(config);
-        return getDataTable(list);
+        IPage<SysConfig> page = configService.selectConfigList(getPage(), config);
+        return getDataTable(page);
     }
 
     @Log(title = "参数管理", businessType = BusinessType.EXPORT)

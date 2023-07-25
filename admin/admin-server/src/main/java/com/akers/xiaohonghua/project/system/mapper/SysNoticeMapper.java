@@ -1,5 +1,7 @@
 package com.akers.xiaohonghua.project.system.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import java.util.List;
 import com.akers.xiaohonghua.project.system.domain.SysNotice;
 
@@ -8,7 +10,7 @@ import com.akers.xiaohonghua.project.system.domain.SysNotice;
  * 
  * @author ruoyi
  */
-public interface SysNoticeMapper
+public interface SysNoticeMapper extends BaseMapper<SysNotice>
 {
     /**
      * 查询公告信息
@@ -25,6 +27,7 @@ public interface SysNoticeMapper
      * @return 公告集合
      */
     public List<SysNotice> selectNoticeList(SysNotice notice);
+    public IPage<SysNotice> selectNoticeList(IPage<?> page, SysNotice notice);
 
     /**
      * 新增公告

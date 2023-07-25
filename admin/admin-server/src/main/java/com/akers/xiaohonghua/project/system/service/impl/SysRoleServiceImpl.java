@@ -1,5 +1,7 @@
 package com.akers.xiaohonghua.project.system.service.impl;
 
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -31,7 +33,7 @@ import com.akers.xiaohonghua.project.system.service.ISysRoleService;
  * @author ruoyi
  */
 @Service
-public class SysRoleServiceImpl implements ISysRoleService
+public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> implements ISysRoleService
 {
     @Autowired
     private SysRoleMapper roleMapper;
@@ -56,6 +58,12 @@ public class SysRoleServiceImpl implements ISysRoleService
     public List<SysRole> selectRoleList(SysRole role)
     {
         return roleMapper.selectRoleList(role);
+    }
+
+    @Override
+    @DataScope(deptAlias = "d")
+    public IPage<SysRole> selectRoleList(IPage<?> page, SysRole role) {
+        return roleMapper.selectRoleList(page, role);
     }
 
     /**
@@ -115,6 +123,11 @@ public class SysRoleServiceImpl implements ISysRoleService
         return SpringUtils.getAopProxy(this).selectRoleList(new SysRole());
     }
 
+    @Override
+    public IPage<SysRole> selectRoleAll(IPage<?> page) {
+        return null;
+    }
+
     /**
      * 根据用户ID获取角色选择框列表
      * 
@@ -122,10 +135,14 @@ public class SysRoleServiceImpl implements ISysRoleService
      * @return 选中角色ID列表
      */
     @Override
-    public List<Long> selectRoleListByUserId(Long userId)
-    {
-        return roleMapper.selectRoleListByUserId(userId);
-    }
+	public List<Long> selectRoleListByUserId(Long userId) {
+		return roleMapper.selectRoleListByUserId(userId);
+	}
+
+	@Override
+	public IPage<Long> selectRoleListByUserId(IPage<?> page, Long userId) {
+	    return roleMapper.selectRoleListByUserId(page, userId);
+	}
 
     /**
      * 通过角色ID查询角色

@@ -1,5 +1,6 @@
 package com.akers.xiaohonghua.project.family.controller;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -22,58 +23,57 @@ import com.akers.xiaohonghua.common.utils.poi.ExcelUtil;
 import com.akers.xiaohonghua.framework.web.page.TableDataInfo;
 
 /**
- * 家庭信息Controller
+ * 家庭信息管理Controller
  * 
  * @author akers
- * @date 2023-07-10
+ * @date 2023-07-24
  */
 @RestController
-@RequestMapping("/family/admin")
-public class XhhFamilyAdminController extends BaseController
+@RequestMapping("/family/familyadmin")
+public class XhhFamilyController extends BaseController
 {
     @Autowired
     private IXhhFamilyService xhhFamilyService;
 
     /**
-     * 查询家庭信息列表
+     * 查询家庭信息管理列表
      */
     @PreAuthorize("@ss.hasPermi('family:familyadmin:list')")
     @GetMapping("/list")
     public TableDataInfo list(XhhFamily xhhFamily)
     {
-        startPage();
-        List<XhhFamily> list = xhhFamilyService.selectXhhFamilyList(xhhFamily);
-        return getDataTable(list);
+        IPage<XhhFamily> page = xhhFamilyService.selectXhhFamilyList(getPage(), xhhFamily);
+        return getDataTable(page);
     }
 
     /**
-     * 导出家庭信息列表
+     * 导出家庭信息管理列表
      */
     @PreAuthorize("@ss.hasPermi('family:familyadmin:export')")
-    @Log(title = "家庭信息", businessType = BusinessType.EXPORT)
+    @Log(title = "家庭信息管理", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, XhhFamily xhhFamily)
     {
         List<XhhFamily> list = xhhFamilyService.selectXhhFamilyList(xhhFamily);
         ExcelUtil<XhhFamily> util = new ExcelUtil<XhhFamily>(XhhFamily.class);
-        util.exportExcel(response, list, "家庭信息数据");
+        util.exportExcel(response, list, "家庭信息管理数据");
     }
 
     /**
-     * 获取家庭信息详细信息
+     * 获取家庭信息管理详细信息
      */
     @PreAuthorize("@ss.hasPermi('family:familyadmin:query')")
-    @GetMapping(value = "/{id}")
-    public AjaxResult getInfo(@PathVariable("id") Long id)
+    @GetMapping(value = "/{familyId}")
+    public AjaxResult getInfo(@PathVariable("familyId") Long familyId)
     {
-        return success(xhhFamilyService.selectXhhFamilyById(id));
+        return success(xhhFamilyService.selectXhhFamilyByFamilyId(familyId));
     }
 
     /**
-     * 新增家庭信息
+     * 新增家庭信息管理
      */
     @PreAuthorize("@ss.hasPermi('family:familyadmin:add')")
-    @Log(title = "家庭信息", businessType = BusinessType.INSERT)
+    @Log(title = "家庭信息管理", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody XhhFamily xhhFamily)
     {
@@ -81,10 +81,10 @@ public class XhhFamilyAdminController extends BaseController
     }
 
     /**
-     * 修改家庭信息
+     * 修改家庭信息管理
      */
     @PreAuthorize("@ss.hasPermi('family:familyadmin:edit')")
-    @Log(title = "家庭信息", businessType = BusinessType.UPDATE)
+    @Log(title = "家庭信息管理", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody XhhFamily xhhFamily)
     {
@@ -92,13 +92,13 @@ public class XhhFamilyAdminController extends BaseController
     }
 
     /**
-     * 删除家庭信息
+     * 删除家庭信息管理
      */
     @PreAuthorize("@ss.hasPermi('family:familyadmin:remove')")
-    @Log(title = "家庭信息", businessType = BusinessType.DELETE)
-	@DeleteMapping("/{ids}")
-    public AjaxResult remove(@PathVariable Long[] ids)
+    @Log(title = "家庭信息管理", businessType = BusinessType.DELETE)
+	@DeleteMapping("/{familyIds}")
+    public AjaxResult remove(@PathVariable Long[] familyIds)
     {
-        return toAjax(xhhFamilyService.deleteXhhFamilyByIds(ids));
+        return toAjax(xhhFamilyService.deleteXhhFamilyByFamilyIds(familyIds));
     }
 }

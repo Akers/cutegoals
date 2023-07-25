@@ -1,5 +1,7 @@
 package com.akers.xiaohonghua.project.system.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import java.util.List;
 import com.akers.xiaohonghua.project.system.domain.SysRoleDept;
 
@@ -8,7 +10,7 @@ import com.akers.xiaohonghua.project.system.domain.SysRoleDept;
  * 
  * @author ruoyi
  */
-public interface SysRoleDeptMapper
+public interface SysRoleDeptMapper extends BaseMapper<SysRoleDept>
 {
     /**
      * 通过角色ID删除角色和部门关联

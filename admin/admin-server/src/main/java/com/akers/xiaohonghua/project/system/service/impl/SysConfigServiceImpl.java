@@ -1,5 +1,7 @@
 package com.akers.xiaohonghua.project.system.service.impl;
 
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import java.util.Collection;
 import java.util.List;
 import javax.annotation.PostConstruct;
@@ -21,7 +23,7 @@ import com.akers.xiaohonghua.project.system.service.ISysConfigService;
  * @author ruoyi
  */
 @Service
-public class SysConfigServiceImpl implements ISysConfigService
+public class SysConfigServiceImpl extends ServiceImpl<SysConfigMapper, SysConfig> implements ISysConfigService
 {
     @Autowired
     private SysConfigMapper configMapper;
@@ -100,10 +102,14 @@ public class SysConfigServiceImpl implements ISysConfigService
      * @return 参数配置集合
      */
     @Override
-    public List<SysConfig> selectConfigList(SysConfig config)
-    {
-        return configMapper.selectConfigList(config);
-    }
+	public List<SysConfig> selectConfigList(SysConfig config) {
+		return configMapper.selectConfigList(config);
+	}
+
+	@Override
+	public IPage<SysConfig> selectConfigList(IPage<?> page, SysConfig config) {
+	    return configMapper.selectConfigList(page, config);
+	}
 
     /**
      * 新增参数配置

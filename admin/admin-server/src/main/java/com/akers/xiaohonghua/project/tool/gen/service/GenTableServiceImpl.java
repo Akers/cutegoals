@@ -1,5 +1,6 @@
 package com.akers.xiaohonghua.project.tool.gen.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -11,6 +12,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.velocity.Template;
@@ -43,7 +46,7 @@ import com.akers.xiaohonghua.project.tool.gen.util.VelocityUtils;
  * @author ruoyi
  */
 @Service
-public class GenTableServiceImpl implements IGenTableService
+public class GenTableServiceImpl extends ServiceImpl<GenTableMapper, GenTable> implements IGenTableService
 {
     private static final Logger log = LoggerFactory.getLogger(GenTableServiceImpl.class);
 
@@ -74,10 +77,14 @@ public class GenTableServiceImpl implements IGenTableService
      * @return 业务集合
      */
     @Override
-    public List<GenTable> selectGenTableList(GenTable genTable)
-    {
-        return genTableMapper.selectGenTableList(genTable);
-    }
+	public List<GenTable> selectGenTableList(GenTable genTable) {
+		return genTableMapper.selectGenTableList(genTable);
+	}
+
+	@Override
+	public IPage<GenTable> selectGenTableList(IPage<?> page, GenTable genTable) {
+	    return genTableMapper.selectGenTableList(page, genTable);
+	}
 
     /**
      * 查询据库列表
@@ -86,10 +93,14 @@ public class GenTableServiceImpl implements IGenTableService
      * @return 数据库表集合
      */
     @Override
-    public List<GenTable> selectDbTableList(GenTable genTable)
-    {
-        return genTableMapper.selectDbTableList(genTable);
-    }
+	public List<GenTable> selectDbTableList(GenTable genTable) {
+		return genTableMapper.selectDbTableList(genTable);
+	}
+
+	@Override
+	public IPage<GenTable> selectDbTableList(IPage<?> page, GenTable genTable) {
+	    return genTableMapper.selectDbTableList(page, genTable);
+	}
 
     /**
      * 查询据库列表
@@ -98,10 +109,14 @@ public class GenTableServiceImpl implements IGenTableService
      * @return 数据库表集合
      */
     @Override
-    public List<GenTable> selectDbTableListByNames(String[] tableNames)
-    {
-        return genTableMapper.selectDbTableListByNames(tableNames);
-    }
+	public List<GenTable> selectDbTableListByNames(String[] tableNames) {
+		return genTableMapper.selectDbTableListByNames(tableNames);
+	}
+
+	@Override
+	public IPage<GenTable> selectDbTableListByNames(IPage<?> page, String[] tableNames) {
+	    return genTableMapper.selectDbTableListByNames(page, tableNames);
+	}
 
     /**
      * 查询所有表信息

@@ -1,5 +1,7 @@
 package com.akers.xiaohonghua.project.system.service.impl;
 
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,7 +16,7 @@ import com.akers.xiaohonghua.project.system.service.ISysDictDataService;
  * @author ruoyi
  */
 @Service
-public class SysDictDataServiceImpl implements ISysDictDataService
+public class SysDictDataServiceImpl extends ServiceImpl<SysDictDataMapper, SysDictData> implements ISysDictDataService
 {
     @Autowired
     private SysDictDataMapper dictDataMapper;
@@ -26,10 +28,14 @@ public class SysDictDataServiceImpl implements ISysDictDataService
      * @return 字典数据集合信息
      */
     @Override
-    public List<SysDictData> selectDictDataList(SysDictData dictData)
-    {
-        return dictDataMapper.selectDictDataList(dictData);
-    }
+	public List<SysDictData> selectDictDataList(SysDictData dictData) {
+		return dictDataMapper.selectDictDataList(dictData);
+	}
+
+	@Override
+	public IPage<SysDictData> selectDictDataList(IPage<?> page, SysDictData dictData) {
+	    return dictDataMapper.selectDictDataList(page, dictData);
+	}
 
     /**
      * 根据字典类型和字典键值查询字典数据信息

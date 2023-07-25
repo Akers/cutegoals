@@ -1,5 +1,6 @@
 package com.akers.xiaohonghua.project.monitor.controller;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,9 +40,8 @@ public class SysLogininforController extends BaseController
     @GetMapping("/list")
     public TableDataInfo list(SysLogininfor logininfor)
     {
-        startPage();
-        List<SysLogininfor> list = logininforService.selectLogininforList(logininfor);
-        return getDataTable(list);
+        IPage<SysLogininfor> page = logininforService.selectLogininforList(getPage(), logininfor);
+        return getDataTable(page);
     }
 
     @Log(title = "登录日志", businessType = BusinessType.EXPORT)

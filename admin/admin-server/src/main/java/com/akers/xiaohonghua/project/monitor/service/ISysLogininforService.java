@@ -1,7 +1,9 @@
 package com.akers.xiaohonghua.project.monitor.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import java.util.List;
 import com.akers.xiaohonghua.project.monitor.domain.SysLogininfor;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 
 /**
  * 系统访问日志情况信息 服务层
@@ -24,6 +26,7 @@ public interface ISysLogininforService
      * @return 登录记录集合
      */
     public List<SysLogininfor> selectLogininforList(SysLogininfor logininfor);
+    public IPage<SysLogininfor> selectLogininforList(IPage<?> page, SysLogininfor logininfor);
 
     /**
      * 批量删除系统登录日志

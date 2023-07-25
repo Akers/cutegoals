@@ -1,5 +1,7 @@
 package com.akers.xiaohonghua.project.tool.gen.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import java.util.List;
 import com.akers.xiaohonghua.project.tool.gen.domain.GenTableColumn;
 
@@ -8,7 +10,7 @@ import com.akers.xiaohonghua.project.tool.gen.domain.GenTableColumn;
  * 
  * @author ruoyi
  */
-public interface GenTableColumnMapper
+public interface GenTableColumnMapper extends BaseMapper<GenTableColumn>
 {
     /**
      * 根据表名称查询列信息
@@ -17,6 +19,7 @@ public interface GenTableColumnMapper
      * @return 列信息
      */
     public List<GenTableColumn> selectDbTableColumnsByName(String tableName);
+    public IPage<GenTableColumn> selectDbTableColumnsByName(IPage<?> page, String tableName);
 
     /**
      * 查询业务字段列表
@@ -25,6 +28,7 @@ public interface GenTableColumnMapper
      * @return 业务字段集合
      */
     public List<GenTableColumn> selectGenTableColumnListByTableId(Long tableId);
+    public IPage<GenTableColumn> selectGenTableColumnListByTableId(IPage<?> page, Long tableId);
 
     /**
      * 新增业务字段

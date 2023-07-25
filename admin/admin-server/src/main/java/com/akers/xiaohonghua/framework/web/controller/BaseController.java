@@ -3,15 +3,16 @@ package com.akers.xiaohonghua.framework.web.controller;
 import java.beans.PropertyEditorSupport;
 import java.util.Date;
 import java.util.List;
+
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.metadata.OrderItem;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
-import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
 import com.akers.xiaohonghua.common.constant.HttpStatus;
 import com.akers.xiaohonghua.common.utils.DateUtils;
-import com.akers.xiaohonghua.common.utils.PageUtils;
 import com.akers.xiaohonghua.common.utils.SecurityUtils;
 import com.akers.xiaohonghua.common.utils.StringUtils;
 import com.akers.xiaohonghua.common.utils.sql.SqlUtil;
@@ -47,12 +48,22 @@ public class BaseController
         });
     }
 
+    protected IPage getPage() {
+        PageDomain pageDomain = TableSupport.buildPageRequest();
+        Integer pageNum = pageDomain.getPageNum();
+        Integer pageSize = pageDomain.getPageSize();
+        String orderBy = SqlUtil.escapeOrderBySql(pageDomain.getOrderByColumn());
+        Page page = new Page(pageNum, pageSize);
+        page.addOrder(new OrderItem(orderBy, "asc".equals(pageDomain.getIsAsc())));
+        return page;
+    }
+
     /**
      * 设置请求分页数据
      */
     protected void startPage()
     {
-        PageUtils.startPage();
+//        PageUtils.startPage();
     }
 
     /**
@@ -64,7 +75,7 @@ public class BaseController
         if (StringUtils.isNotEmpty(pageDomain.getOrderBy()))
         {
             String orderBy = SqlUtil.escapeOrderBySql(pageDomain.getOrderBy());
-            PageHelper.orderBy(orderBy);
+//            PageHelper.orderBy(orderBy);
         }
     }
 
@@ -73,20 +84,29 @@ public class BaseController
      */
     protected void clearPage()
     {
-        PageUtils.clearPage();
+//        PageUtils.clearPage();
     }
 
     /**
      * 响应请求分页数据
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
+    protected TableDataInfo getDataTable(IPage<?> page)
+    {
+        TableDataInfo rspData = new TableDataInfo();
+        rspData.setCode(HttpStatus.SUCCESS);
+        rspData.setMsg("查询成功");
+        rspData.setRows(page.getRecords());
+        rspData.setTotal(page.getTotal());
+        return rspData;
+    }
     protected TableDataInfo getDataTable(List<?> list)
     {
         TableDataInfo rspData = new TableDataInfo();
         rspData.setCode(HttpStatus.SUCCESS);
         rspData.setMsg("查询成功");
         rspData.setRows(list);
-        rspData.setTotal(new PageInfo(list).getTotal());
+        rspData.setTotal(list.size());
         return rspData;
     }
 

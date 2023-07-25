@@ -1,5 +1,7 @@
 package com.akers.xiaohonghua.project.system.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
@@ -11,7 +13,7 @@ import com.akers.xiaohonghua.project.system.domain.SysUser;
  * 
  * @author ruoyi
  */
-public interface SysUserMapper
+public interface SysUserMapper extends BaseMapper<SysUser>
 {
     /**
      * 根据条件分页查询用户列表
@@ -20,6 +22,7 @@ public interface SysUserMapper
      * @return 用户信息集合信息
      */
     public List<SysUser> selectUserList(SysUser sysUser);
+    public IPage<SysUser> selectUserList(IPage<?> page, SysUser sysUser);
 
     /**
      * 根据条件分页查询已配用户角色列表
@@ -28,6 +31,7 @@ public interface SysUserMapper
      * @return 用户信息集合信息
      */
     public List<SysUser> selectAllocatedList(SysUser user);
+    public IPage<SysUser> selectAllocatedList(IPage<?> page, SysUser user);
 
     /**
      * 根据条件分页查询未分配用户角色列表
@@ -36,6 +40,7 @@ public interface SysUserMapper
      * @return 用户信息集合信息
      */
     public List<SysUser> selectUnallocatedList(SysUser user);
+    public IPage<SysUser> selectUnallocatedList(IPage<?> page, SysUser user);
 
     /**
      * 通过用户名查询用户

@@ -1,5 +1,7 @@
 package com.akers.xiaohonghua.project.system.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import java.util.List;
 import com.akers.xiaohonghua.project.system.domain.SysPost;
 
@@ -8,7 +10,7 @@ import com.akers.xiaohonghua.project.system.domain.SysPost;
  * 
  * @author ruoyi
  */
-public interface SysPostMapper
+public interface SysPostMapper extends BaseMapper<SysPost>
 {
     /**
      * 查询岗位数据集合
@@ -17,6 +19,7 @@ public interface SysPostMapper
      * @return 岗位数据集合
      */
     public List<SysPost> selectPostList(SysPost post);
+    public IPage<SysPost> selectPostList(IPage<?> page, SysPost post);
 
     /**
      * 查询所有岗位
@@ -24,6 +27,7 @@ public interface SysPostMapper
      * @return 岗位列表
      */
     public List<SysPost> selectPostAll();
+    public IPage<SysPost> selectPostAll(IPage<?> page);
 
     /**
      * 通过岗位ID查询岗位信息
@@ -40,6 +44,7 @@ public interface SysPostMapper
      * @return 选中岗位ID列表
      */
     public List<Long> selectPostListByUserId(Long userId);
+    public IPage<Long> selectPostListByUserId(IPage<?> page, Long userId);
 
     /**
      * 查询用户所属岗位组
@@ -48,6 +53,7 @@ public interface SysPostMapper
      * @return 结果
      */
     public List<SysPost> selectPostsByUserName(String userName);
+    public IPage<SysPost> selectPostsByUserName(IPage<?> page, String userName);
 
     /**
      * 删除岗位信息

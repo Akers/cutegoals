@@ -1,5 +1,7 @@
 package com.akers.xiaohonghua.project.monitor.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import java.util.List;
 import com.akers.xiaohonghua.project.monitor.domain.SysOperLog;
 
@@ -8,7 +10,7 @@ import com.akers.xiaohonghua.project.monitor.domain.SysOperLog;
  * 
  * @author ruoyi
  */
-public interface SysOperLogMapper
+public interface SysOperLogMapper extends BaseMapper<SysOperLog>
 {
     /**
      * 新增操作日志
@@ -24,6 +26,7 @@ public interface SysOperLogMapper
      * @return 操作日志集合
      */
     public List<SysOperLog> selectOperLogList(SysOperLog operLog);
+    public IPage<SysOperLog> selectOperLogList(IPage<?> page, SysOperLog operLog);
 
     /**
      * 批量删除系统操作日志

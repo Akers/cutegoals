@@ -1,5 +1,6 @@
 package com.akers.xiaohonghua.project.system.controller;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -39,9 +40,8 @@ public class SysNoticeController extends BaseController
     @GetMapping("/list")
     public TableDataInfo list(SysNotice notice)
     {
-        startPage();
-        List<SysNotice> list = noticeService.selectNoticeList(notice);
-        return getDataTable(list);
+        IPage<SysNotice> page = noticeService.selectNoticeList(getPage(), notice);
+        return getDataTable(page);
     }
 
     /**

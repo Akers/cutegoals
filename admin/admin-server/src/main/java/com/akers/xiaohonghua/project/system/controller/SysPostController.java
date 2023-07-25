@@ -1,5 +1,6 @@
 package com.akers.xiaohonghua.project.system.controller;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,9 +42,8 @@ public class SysPostController extends BaseController
     @GetMapping("/list")
     public TableDataInfo list(SysPost post)
     {
-        startPage();
-        List<SysPost> list = postService.selectPostList(post);
-        return getDataTable(list);
+        IPage<SysPost> page = postService.selectPostList(getPage(), post);
+        return getDataTable(page);
     }
     
     @Log(title = "岗位管理", businessType = BusinessType.EXPORT)

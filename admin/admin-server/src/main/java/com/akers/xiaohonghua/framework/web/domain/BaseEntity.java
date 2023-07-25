@@ -4,6 +4,9 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -15,6 +18,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  */
 public class BaseEntity implements Serializable
 {
+
+    @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 
     /** 搜索值 */
@@ -35,10 +40,15 @@ public class BaseEntity implements Serializable
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date updateTime;
 
-    /** 备注 */
+
     private String remark;
 
+    /** 删除标志 */
+    @TableLogic
+    private Integer deleted;
+
     /** 请求参数 */
+    @TableField(exist = false)
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private Map<String, Object> params;
 

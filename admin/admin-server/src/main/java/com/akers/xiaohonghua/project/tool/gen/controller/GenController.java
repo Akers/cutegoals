@@ -1,5 +1,6 @@
 package com.akers.xiaohonghua.project.tool.gen.controller;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -50,9 +51,8 @@ public class GenController extends BaseController
     @GetMapping("/list")
     public TableDataInfo genList(GenTable genTable)
     {
-        startPage();
-        List<GenTable> list = genTableService.selectGenTableList(genTable);
-        return getDataTable(list);
+        IPage<GenTable> page = genTableService.selectGenTableList(getPage(), genTable);
+        return getDataTable(page);
     }
 
     /**
@@ -79,9 +79,8 @@ public class GenController extends BaseController
     @GetMapping("/db/list")
     public TableDataInfo dataList(GenTable genTable)
     {
-        startPage();
-        List<GenTable> list = genTableService.selectDbTableList(genTable);
-        return getDataTable(list);
+        IPage<GenTable> page = genTableService.selectDbTableList(getPage(), genTable);
+        return getDataTable(page);
     }
 
     /**

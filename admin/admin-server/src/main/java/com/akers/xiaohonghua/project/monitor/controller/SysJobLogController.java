@@ -1,5 +1,6 @@
 package com.akers.xiaohonghua.project.monitor.controller;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,9 +39,8 @@ public class SysJobLogController extends BaseController
     @GetMapping("/list")
     public TableDataInfo list(SysJobLog sysJobLog)
     {
-        startPage();
-        List<SysJobLog> list = jobLogService.selectJobLogList(sysJobLog);
-        return getDataTable(list);
+        IPage<SysJobLog> page = jobLogService.selectJobLogList(getPage(), sysJobLog);
+        return getDataTable(page);
     }
 
     /**

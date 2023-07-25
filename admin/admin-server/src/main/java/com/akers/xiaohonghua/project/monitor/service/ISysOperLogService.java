@@ -1,7 +1,9 @@
 package com.akers.xiaohonghua.project.monitor.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import java.util.List;
 import com.akers.xiaohonghua.project.monitor.domain.SysOperLog;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 
 /**
  * 操作日志 服务层
@@ -24,6 +26,7 @@ public interface ISysOperLogService
      * @return 操作日志集合
      */
     public List<SysOperLog> selectOperLogList(SysOperLog operLog);
+    public IPage<SysOperLog> selectOperLogList(IPage<?> page, SysOperLog operLog);
 
     /**
      * 批量删除系统操作日志

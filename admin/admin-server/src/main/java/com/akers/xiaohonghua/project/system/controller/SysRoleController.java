@@ -1,5 +1,6 @@
 package com.akers.xiaohonghua.project.system.controller;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,9 +60,8 @@ public class SysRoleController extends BaseController
     @GetMapping("/list")
     public TableDataInfo list(SysRole role)
     {
-        startPage();
-        List<SysRole> list = roleService.selectRoleList(role);
-        return getDataTable(list);
+        IPage<SysRole> page = roleService.selectRoleList(getPage(), role);
+        return getDataTable(page);
     }
 
     @Log(title = "角色管理", businessType = BusinessType.EXPORT)
@@ -196,9 +196,8 @@ public class SysRoleController extends BaseController
     @GetMapping("/authUser/allocatedList")
     public TableDataInfo allocatedList(SysUser user)
     {
-        startPage();
-        List<SysUser> list = userService.selectAllocatedList(user);
-        return getDataTable(list);
+        List<SysUser> page = userService.selectAllocatedList(user);
+        return getDataTable(page);
     }
 
     /**
@@ -208,9 +207,8 @@ public class SysRoleController extends BaseController
     @GetMapping("/authUser/unallocatedList")
     public TableDataInfo unallocatedList(SysUser user)
     {
-        startPage();
-        List<SysUser> list = userService.selectUnallocatedList(user);
-        return getDataTable(list);
+        List<SysUser> page = userService.selectUnallocatedList(user);
+        return getDataTable(page);
     }
 
     /**

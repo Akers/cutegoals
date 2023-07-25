@@ -1,5 +1,6 @@
 package com.akers.xiaohonghua.project.system.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import java.util.List;
 import com.akers.xiaohonghua.project.system.domain.SysDictData;
 import com.akers.xiaohonghua.project.system.domain.SysDictType;
@@ -18,6 +19,7 @@ public interface ISysDictTypeService
      * @return 字典类型集合信息
      */
     public List<SysDictType> selectDictTypeList(SysDictType dictType);
+    public IPage<SysDictType> selectDictTypeList(IPage<?> page, SysDictType dictType);
 
     /**
      * 根据所有字典类型

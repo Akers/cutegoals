@@ -1,5 +1,6 @@
 package com.akers.xiaohonghua.project.monitor.controller;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 import org.quartz.SchedulerException;
@@ -46,9 +47,8 @@ public class SysJobController extends BaseController
     @GetMapping("/list")
     public TableDataInfo list(SysJob sysJob)
     {
-        startPage();
-        List<SysJob> list = jobService.selectJobList(sysJob);
-        return getDataTable(list);
+        IPage<SysJob> page = jobService.selectJobList(getPage(), sysJob);
+        return getDataTable(page);
     }
 
     /**

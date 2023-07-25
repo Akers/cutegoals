@@ -24,7 +24,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
         <maven-jar-plugin.version>3.1.1</maven-jar-plugin.version>
-        <pagehelper.spring.boot.starter.version>1.4.6</pagehelper.spring.boot.starter.version>
+        <pagehelper.spring.boot.starter.version>1.4.7</pagehelper.spring.boot.starter.version>
         <fastjson.version>2.0.34</fastjson.version>
         <druid.version>1.2.16</druid.version>
         <commons.io.version>2.11.0</commons.io.version>
@@ -36,6 +36,7 @@
         <poi.version>4.1.2</poi.version>
         <oshi.version>6.4.3</oshi.version>
         <velocity.version>2.3</velocity.version>
+        <mybatis-plus.version>3.5.3.1</mybatis-plus.version>
     </properties>
 
     <dependencies>
@@ -90,6 +91,13 @@
             <artifactId>commons-pool2</artifactId>
         </dependency>
 
+<!--        数据库框架-->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-boot-starter</artifactId>
+            <version>${mybatis-plus.version}</version>
+        </dependency>
+
         <!-- Mysql驱动包 -->
         <dependency>
             <groupId>mysql</groupId>
@@ -98,11 +106,11 @@
         </dependency>
 
         <!-- pagehelper 分页插件 -->
-        <dependency>
-            <groupId>com.github.pagehelper</groupId>
-            <artifactId>pagehelper-spring-boot-starter</artifactId>
-            <version>${pagehelper.spring.boot.starter.version}</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.github.pagehelper</groupId>-->
+<!--            <artifactId>pagehelper-spring-boot-starter</artifactId>-->
+<!--            <version>${pagehelper.spring.boot.starter.version}</version>-->
+<!--        </dependency>-->
 
         <!-- 阿里数据库连接池 -->
         <dependency>
@@ -236,6 +244,10 @@
             </exclusions>
         </dependency>
 
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
 	</dependencies>
 
 	<build>

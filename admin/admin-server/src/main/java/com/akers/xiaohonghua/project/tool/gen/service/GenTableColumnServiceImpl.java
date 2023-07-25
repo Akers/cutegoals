@@ -1,5 +1,6 @@
 package com.akers.xiaohonghua.project.tool.gen.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,9 +26,13 @@ public class GenTableColumnServiceImpl implements IGenTableColumnService
      * @return 业务字段集合
      */
 	@Override
-	public List<GenTableColumn> selectGenTableColumnListByTableId(Long tableId)
-	{
-	    return genTableColumnMapper.selectGenTableColumnListByTableId(tableId);
+	public List<GenTableColumn> selectGenTableColumnListByTableId(Long tableId) {
+		return genTableColumnMapper.selectGenTableColumnListByTableId(tableId);
+	}
+
+	@Override
+	public IPage<GenTableColumn> selectGenTableColumnListByTableId(IPage<?> page, Long tableId) {
+	    return genTableColumnMapper.selectGenTableColumnListByTableId(page, tableId);
 	}
 	
     /**

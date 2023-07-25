@@ -1,5 +1,7 @@
 package com.akers.xiaohonghua.project.monitor.service.impl;
 
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import org.quartz.JobDataMap;
@@ -16,6 +18,7 @@ import com.akers.xiaohonghua.common.utils.job.ScheduleUtils;
 import com.akers.xiaohonghua.project.monitor.domain.SysJob;
 import com.akers.xiaohonghua.project.monitor.mapper.SysJobMapper;
 import com.akers.xiaohonghua.project.monitor.service.ISysJobService;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 
 /**
  * 定时任务调度信息 服务层
@@ -23,7 +26,7 @@ import com.akers.xiaohonghua.project.monitor.service.ISysJobService;
  * @author ruoyi
  */
 @Service
-public class SysJobServiceImpl implements ISysJobService
+public class SysJobServiceImpl extends ServiceImpl<SysJobMapper, SysJob> implements ISysJobService
 {
     @Autowired
     private Scheduler scheduler;
@@ -52,10 +55,14 @@ public class SysJobServiceImpl implements ISysJobService
      * @return
      */
     @Override
-    public List<SysJob> selectJobList(SysJob job)
-    {
-        return jobMapper.selectJobList(job);
-    }
+	public List<SysJob> selectJobList(SysJob job) {
+		return jobMapper.selectJobList(job);
+	}
+
+	@Override
+	public IPage<SysJob> selectJobList(IPage<?> page, SysJob job) {
+	    return jobMapper.selectJobList(page, job);
+	}
 
     /**
      * 通过调度任务ID查询调度信息

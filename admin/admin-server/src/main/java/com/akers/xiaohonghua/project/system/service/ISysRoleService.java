@@ -1,5 +1,6 @@
 package com.akers.xiaohonghua.project.system.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import java.util.List;
 import java.util.Set;
 import com.akers.xiaohonghua.project.system.domain.SysRole;
@@ -19,6 +20,7 @@ public interface ISysRoleService
      * @return 角色数据集合信息
      */
     public List<SysRole> selectRoleList(SysRole role);
+    public IPage<SysRole> selectRoleList(IPage<?> page, SysRole role);
 
     /**
      * 根据用户ID查询角色列表
@@ -42,6 +44,7 @@ public interface ISysRoleService
      * @return 角色列表
      */
     public List<SysRole> selectRoleAll();
+    public IPage<SysRole> selectRoleAll(IPage<?> page);
 
     /**
      * 根据用户ID获取角色选择框列表
@@ -50,6 +53,7 @@ public interface ISysRoleService
      * @return 选中角色ID列表
      */
     public List<Long> selectRoleListByUserId(Long userId);
+    public IPage<Long> selectRoleListByUserId(IPage<?> page, Long userId);
 
     /**
      * 通过角色ID查询角色

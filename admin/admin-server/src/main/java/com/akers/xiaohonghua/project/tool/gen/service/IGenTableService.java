@@ -1,5 +1,6 @@
 package com.akers.xiaohonghua.project.tool.gen.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import java.util.List;
 import java.util.Map;
 import com.akers.xiaohonghua.project.tool.gen.domain.GenTable;
@@ -18,7 +19,7 @@ public interface IGenTableService
      * @return 业务集合
      */
     public List<GenTable> selectGenTableList(GenTable genTable);
-
+    public IPage<GenTable> selectGenTableList(IPage<?> page, GenTable genTable);
     /**
      * 查询据库列表
      * 
@@ -26,6 +27,7 @@ public interface IGenTableService
      * @return 数据库表集合
      */
     public List<GenTable> selectDbTableList(GenTable genTable);
+    public IPage<GenTable> selectDbTableList(IPage<?> page, GenTable genTable);
 
     /**
      * 查询据库列表
@@ -34,6 +36,7 @@ public interface IGenTableService
      * @return 数据库表集合
      */
     public List<GenTable> selectDbTableListByNames(String[] tableNames);
+    public IPage<GenTable> selectDbTableListByNames(IPage<?> page, String[] tableNames);
 
     /**
      * 查询所有表信息

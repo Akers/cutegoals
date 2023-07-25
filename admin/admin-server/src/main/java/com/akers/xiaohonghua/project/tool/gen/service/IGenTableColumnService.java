@@ -1,5 +1,6 @@
 package com.akers.xiaohonghua.project.tool.gen.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import java.util.List;
 import com.akers.xiaohonghua.project.tool.gen.domain.GenTableColumn;
 
@@ -17,6 +18,7 @@ public interface IGenTableColumnService
      * @return 业务字段集合
      */
     public List<GenTableColumn> selectGenTableColumnListByTableId(Long tableId);
+    public IPage<GenTableColumn> selectGenTableColumnListByTableId(IPage<?> page, Long tableId);
 
     /**
      * 新增业务字段

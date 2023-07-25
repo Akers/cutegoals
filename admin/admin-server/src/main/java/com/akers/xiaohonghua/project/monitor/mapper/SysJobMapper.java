@@ -1,5 +1,7 @@
 package com.akers.xiaohonghua.project.monitor.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import java.util.List;
 import com.akers.xiaohonghua.project.monitor.domain.SysJob;
 
@@ -8,7 +10,7 @@ import com.akers.xiaohonghua.project.monitor.domain.SysJob;
  * 
  * @author ruoyi
  */
-public interface SysJobMapper
+public interface SysJobMapper extends BaseMapper<SysJob>
 {
     /**
      * 查询调度任务日志集合
@@ -17,6 +19,7 @@ public interface SysJobMapper
      * @return 操作日志集合
      */
     public List<SysJob> selectJobList(SysJob job);
+    public IPage<SysJob> selectJobList(IPage<?> page, SysJob job);
 
     /**
      * 查询所有调度任务
@@ -24,6 +27,7 @@ public interface SysJobMapper
      * @return 调度任务列表
      */
     public List<SysJob> selectJobAll();
+    public IPage<SysJob> selectJobAll(IPage<?> page);
 
     /**
      * 通过调度ID查询调度任务信息

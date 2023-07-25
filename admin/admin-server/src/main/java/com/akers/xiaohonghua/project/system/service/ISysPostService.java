@@ -1,5 +1,6 @@
 package com.akers.xiaohonghua.project.system.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import java.util.List;
 import com.akers.xiaohonghua.project.system.domain.SysPost;
 
@@ -17,6 +18,7 @@ public interface ISysPostService
      * @return 岗位列表
      */
     public List<SysPost> selectPostList(SysPost post);
+    public IPage<SysPost> selectPostList(IPage<?> page, SysPost post);
 
     /**
      * 查询所有岗位
@@ -40,6 +42,7 @@ public interface ISysPostService
      * @return 选中岗位ID列表
      */
     public List<Long> selectPostListByUserId(Long userId);
+    public IPage<Long> selectPostListByUserId(IPage<?> page, Long userId);
 
     /**
      * 校验岗位名称

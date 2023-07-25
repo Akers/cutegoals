@@ -1,5 +1,7 @@
 package com.akers.xiaohonghua.project.monitor.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import java.util.List;
 import com.akers.xiaohonghua.project.monitor.domain.SysLogininfor;
 
@@ -8,7 +10,7 @@ import com.akers.xiaohonghua.project.monitor.domain.SysLogininfor;
  * 
  * @author ruoyi
  */
-public interface SysLogininforMapper
+public interface SysLogininforMapper extends BaseMapper<SysLogininfor>
 {
     /**
      * 新增系统登录日志
@@ -24,6 +26,7 @@ public interface SysLogininforMapper
      * @return 登录记录集合
      */
     public List<SysLogininfor> selectLogininforList(SysLogininfor logininfor);
+    public IPage<SysLogininfor> selectLogininforList(IPage<?> page, SysLogininfor logininfor);
 
     /**
      * 批量删除系统登录日志

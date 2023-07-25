@@ -1,5 +1,6 @@
 package com.akers.xiaohonghua.project.system.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import java.util.List;
 import com.akers.xiaohonghua.framework.web.domain.TreeSelect;
 import com.akers.xiaohonghua.project.system.domain.SysDept;
@@ -18,6 +19,7 @@ public interface ISysDeptService
      * @return 部门信息集合
      */
     public List<SysDept> selectDeptList(SysDept dept);
+    public IPage<SysDept> selectDeptList(IPage<?> page, SysDept dept);
 
     /**
      * 查询部门树结构信息

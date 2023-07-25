@@ -1,5 +1,7 @@
 package com.akers.xiaohonghua.project.system.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
 import com.akers.xiaohonghua.project.system.domain.SysMenu;
@@ -9,7 +11,7 @@ import com.akers.xiaohonghua.project.system.domain.SysMenu;
  * 
  * @author ruoyi
  */
-public interface SysMenuMapper
+public interface SysMenuMapper extends BaseMapper<SysMenu>
 {
     /**
      * 查询系统菜单列表
@@ -18,6 +20,7 @@ public interface SysMenuMapper
      * @return 菜单列表
      */
     public List<SysMenu> selectMenuList(SysMenu menu);
+    public IPage<SysMenu> selectMenuList(IPage<?> page, SysMenu menu);
 
     /**
      * 根据用户所有权限
@@ -25,6 +28,7 @@ public interface SysMenuMapper
      * @return 权限列表
      */
     public List<String> selectMenuPerms();
+    public IPage<String> selectMenuPerms(IPage<?> page);
 
     /**
      * 根据用户查询系统菜单列表
@@ -33,6 +37,7 @@ public interface SysMenuMapper
      * @return 菜单列表
      */
     public List<SysMenu> selectMenuListByUserId(SysMenu menu);
+    public IPage<SysMenu> selectMenuListByUserId(IPage<?> page, SysMenu menu);
 
     /**
      * 根据用户ID查询权限
@@ -41,6 +46,7 @@ public interface SysMenuMapper
      * @return 权限列表
      */
     public List<String> selectMenuPermsByUserId(Long userId);
+    public IPage<String> selectMenuPermsByUserId(IPage<?> page, Long userId);
 
     /**
      * 根据角色ID查询权限
@@ -49,6 +55,7 @@ public interface SysMenuMapper
      * @return 权限列表
      */
     public List<String> selectMenuPermsByRoleId(Long roleId);
+    public IPage<String> selectMenuPermsByRoleId(IPage<?> page, Long roleId);
 
     /**
      * 根据用户ID查询菜单
@@ -56,6 +63,7 @@ public interface SysMenuMapper
      * @return 菜单列表
      */
     public List<SysMenu> selectMenuTreeAll();
+    public IPage<SysMenu> selectMenuTreeAll(IPage<?> page);
 
     /**
      * 根据用户ID查询菜单
@@ -64,6 +72,7 @@ public interface SysMenuMapper
      * @return 菜单列表
      */
     public List<SysMenu> selectMenuTreeByUserId(Long userId);
+    public IPage<SysMenu> selectMenuTreeByUserId(IPage<?> page, Long userId);
 
     /**
      * 根据角色ID查询菜单树信息
@@ -73,6 +82,7 @@ public interface SysMenuMapper
      * @return 选中菜单列表
      */
     public List<Long> selectMenuListByRoleId(@Param("roleId") Long roleId, @Param("menuCheckStrictly") boolean menuCheckStrictly);
+    public IPage<Long> selectMenuListByRoleId(IPage<?> page, @Param("roleId") Long roleId, @Param("menuCheckStrictly") boolean menuCheckStrictly);
 
     /**
      * 根据菜单ID查询信息

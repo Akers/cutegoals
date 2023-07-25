@@ -1,5 +1,6 @@
 package com.akers.xiaohonghua.project.monitor.controller;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,9 +36,8 @@ public class SysOperlogController extends BaseController
     @GetMapping("/list")
     public TableDataInfo list(SysOperLog operLog)
     {
-        startPage();
-        List<SysOperLog> list = operLogService.selectOperLogList(operLog);
-        return getDataTable(list);
+        IPage<SysOperLog> page = operLogService.selectOperLogList(getPage(), operLog);
+        return getDataTable(page);
     }
 
     @Log(title = "操作日志", businessType = BusinessType.EXPORT)

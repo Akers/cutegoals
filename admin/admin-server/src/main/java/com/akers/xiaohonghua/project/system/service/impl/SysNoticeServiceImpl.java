@@ -1,5 +1,7 @@
 package com.akers.xiaohonghua.project.system.service.impl;
 
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,7 +15,7 @@ import com.akers.xiaohonghua.project.system.service.ISysNoticeService;
  * @author ruoyi
  */
 @Service
-public class SysNoticeServiceImpl implements ISysNoticeService
+public class SysNoticeServiceImpl extends ServiceImpl<SysNoticeMapper, SysNotice> implements ISysNoticeService
 {
     @Autowired
     private SysNoticeMapper noticeMapper;
@@ -37,10 +39,14 @@ public class SysNoticeServiceImpl implements ISysNoticeService
      * @return 公告集合
      */
     @Override
-    public List<SysNotice> selectNoticeList(SysNotice notice)
-    {
-        return noticeMapper.selectNoticeList(notice);
-    }
+	public List<SysNotice> selectNoticeList(SysNotice notice) {
+		return noticeMapper.selectNoticeList(notice);
+	}
+
+	@Override
+	public IPage<SysNotice> selectNoticeList(IPage<?> page, SysNotice notice) {
+	    return noticeMapper.selectNoticeList(page, notice);
+	}
 
     /**
      * 新增公告

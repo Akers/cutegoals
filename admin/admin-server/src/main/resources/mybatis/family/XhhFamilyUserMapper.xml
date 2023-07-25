@@ -5,7 +5,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 <mapper namespace="com.akers.xiaohonghua.project.family.mapper.XhhFamilyUserMapper">
     
     <resultMap type="XhhFamilyUser" id="XhhFamilyUserResult">
-        <result property="id"    column="id"    />
+        <result property="familyUserId"    column="family_user_id"    />
         <result property="version"    column="version"    />
         <result property="createBy"    column="create_by"    />
         <result property="createTime"    column="create_time"    />
@@ -38,7 +38,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <insert id="insertXhhFamilyUser" parameterType="XhhFamilyUser">
         insert into xhh_family_user
         <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="id != null">id,</if>
+            <if test="familyUserId != null">family_user_id,</if>
             <if test="version != null">version,</if>
             <if test="createBy != null">create_by,</if>
             <if test="createTime != null">create_time,</if>
@@ -51,7 +51,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="roleName != null">role_name,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
-            <if test="id != null">#{id},</if>
+            <if test="familyUserId != null">#{familyUserId},</if>
             <if test="version != null">#{version},</if>
             <if test="createBy != null">#{createBy},</if>
             <if test="createTime != null">#{createTime},</if>
@@ -79,17 +79,26 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="usrName != null">usr_name = #{usrName},</if>
             <if test="roleName != null">role_name = #{roleName},</if>
         </trim>
-        where id = #{id}
+        where family_user_id = #{familyUserId}
     </update>
 
     <delete id="deleteXhhFamilyUserById" parameterType="Long">
-        delete from xhh_family_user where id = #{id}
+        delete from xhh_family_user where family_user_id = #{familyUserId}
     </delete>
 
     <delete id="deleteXhhFamilyUserByIds" parameterType="String">
-        delete from xhh_family_user where id in 
+        delete from xhh_family_user where family_user_id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
+        </foreach>
+    </delete>
+    <delete id="deleteXhhFamilyUserByFamilyId">
+        delete from xhh_family_user where family_id = #{familyId}
+    </delete>
+    <delete id="deleteXhhFamilyUserByFamilyIds">
+        delete from xhh_family_user where family_id in
+        <foreach item="familyId" collection="array" open="(" separator="," close=")">
+            #{familyId}
         </foreach>
     </delete>
 </mapper>

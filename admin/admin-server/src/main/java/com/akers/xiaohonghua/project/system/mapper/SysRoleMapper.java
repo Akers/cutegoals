@@ -1,5 +1,7 @@
 package com.akers.xiaohonghua.project.system.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import java.util.List;
 import com.akers.xiaohonghua.project.system.domain.SysRole;
 
@@ -8,7 +10,7 @@ import com.akers.xiaohonghua.project.system.domain.SysRole;
  * 
  * @author ruoyi
  */
-public interface SysRoleMapper
+public interface SysRoleMapper extends BaseMapper<SysRole>
 {
     /**
      * 根据条件分页查询角色数据
@@ -17,6 +19,7 @@ public interface SysRoleMapper
      * @return 角色数据集合信息
      */
     public List<SysRole> selectRoleList(SysRole role);
+    public IPage<SysRole> selectRoleList(IPage<?> page, SysRole role);
 
     /**
      * 根据用户ID查询角色
@@ -25,6 +28,7 @@ public interface SysRoleMapper
      * @return 角色列表
      */
     public List<SysRole> selectRolePermissionByUserId(Long userId);
+    public IPage<SysRole> selectRolePermissionByUserId(IPage<?> page, Long userId);
 
     /**
      * 查询所有角色
@@ -32,6 +36,7 @@ public interface SysRoleMapper
      * @return 角色列表
      */
     public List<SysRole> selectRoleAll();
+    public IPage<SysRole> selectRoleAll(IPage<?> page);
 
     /**
      * 根据用户ID获取角色选择框列表
@@ -40,6 +45,7 @@ public interface SysRoleMapper
      * @return 选中角色ID列表
      */
     public List<Long> selectRoleListByUserId(Long userId);
+    public IPage<Long> selectRoleListByUserId(IPage<?> page, Long userId);
 
     /**
      * 通过角色ID查询角色
@@ -56,6 +62,7 @@ public interface SysRoleMapper
      * @return 角色列表
      */
     public List<SysRole> selectRolesByUserName(String userName);
+    public IPage<SysRole> selectRolesByUserName(IPage<?> page, String userName);
 
     /**
      * 校验角色名称是否唯一

@@ -1,5 +1,6 @@
 package com.akers.xiaohonghua.framework.security.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import java.util.concurrent.TimeUnit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

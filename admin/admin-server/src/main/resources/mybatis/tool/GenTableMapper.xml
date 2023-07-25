@@ -57,40 +57,40 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         select table_id, table_name, table_comment, sub_table_name, sub_table_fk_name, class_name, tpl_category, package_name, module_name, business_name, function_name, function_author, gen_type, gen_path, options, create_by, create_time, update_by, update_time, remark from gen_table
     </sql>
     
-    <select id="selectGenTableList" parameterType="GenTable" resultMap="GenTableResult">
+    <select id="selectGenTableList"   resultMap="GenTableResult">
 		<include refid="selectGenTableVo"/>
 		<where>
-			<if test="tableName != null and tableName != ''">
-				AND lower(table_name) like lower(concat('%', #{tableName}, '%'))
+			<if test="genTable.tableName != null and genTable.tableName != ''">
+				AND lower(table_name) like lower(concat('%', #{genTable.tableName}, '%'))
 			</if>
-			<if test="tableComment != null and tableComment != ''">
-				AND lower(table_comment) like lower(concat('%', #{tableComment}, '%'))
+			<if test="genTable.tableComment != null and genTable.tableComment != ''">
+				AND lower(table_comment) like lower(concat('%', #{genTable.tableComment}, '%'))
 			</if>
-			<if test="params.beginTime != null and params.beginTime != ''"><!-- 开始时间检索 -->
-				AND date_format(create_time,'%y%m%d') &gt;= date_format(#{params.beginTime},'%y%m%d')
+			<if test="genTable.params.beginTime != null and genTable.params.beginTime != ''"><!-- 开始时间检索 -->
+				AND date_format(create_time,'%y%m%d') &gt;= date_format(#{genTable.params.beginTime},'%y%m%d')
 			</if>
-			<if test="params.endTime != null and params.endTime != ''"><!-- 结束时间检索 -->
-				AND date_format(create_time,'%y%m%d') &lt;= date_format(#{params.endTime},'%y%m%d')
+			<if test="genTable.params.endTime != null and genTable.params.endTime != ''"><!-- 结束时间检索 -->
+				AND date_format(create_time,'%y%m%d') &lt;= date_format(#{genTable.params.endTime},'%y%m%d')
 			</if>
 		</where>
 	</select>
 
-	<select id="selectDbTableList" parameterType="GenTable" resultMap="GenTableResult">
+	<select id="selectDbTableList" resultMap="GenTableResult">
 		select table_name, table_comment, create_time, update_time from information_schema.tables
 		where table_schema = (select database())
 		AND table_name NOT LIKE 'qrtz_%' AND table_name NOT LIKE 'gen_%'
 		AND table_name NOT IN (select table_name from gen_table)
-		<if test="tableName != null and tableName != ''">
-			AND lower(table_name) like lower(concat('%', #{tableName}, '%'))
+		<if test="genTable.tableName != null and genTable.tableName != ''">
+			AND lower(table_name) like lower(concat('%', #{genTable.tableName}, '%'))
 		</if>
-		<if test="tableComment != null and tableComment != ''">
-			AND lower(table_comment) like lower(concat('%', #{tableComment}, '%'))
+		<if test="genTable.tableComment != null and genTable.tableComment != ''">
+			AND lower(table_comment) like lower(concat('%', #{genTable.tableComment}, '%'))
 		</if>
-		<if test="params.beginTime != null and params.beginTime != ''"><!-- 开始时间检索 -->
-			AND date_format(create_time,'%y%m%d') &gt;= date_format(#{params.beginTime},'%y%m%d')
+		<if test="genTable.params.beginTime != null and genTable.params.beginTime != ''"><!-- 开始时间检索 -->
+			AND date_format(create_time,'%y%m%d') &gt;= date_format(#{genTable.params.beginTime},'%y%m%d')
 		</if>
-		<if test="params.endTime != null and params.endTime != ''"><!-- 结束时间检索 -->
-			AND date_format(create_time,'%y%m%d') &lt;= date_format(#{params.endTime},'%y%m%d')
+		<if test="genTable.params.endTime != null and params.endTime != ''"><!-- 结束时间检索 -->
+			AND date_format(create_time,'%y%m%d') &lt;= date_format(#{genTable.params.endTime},'%y%m%d')
 		</if>
         order by create_time desc
 	</select>
@@ -134,65 +134,65 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		order by c.sort
 	</select>
 	
-	<insert id="insertGenTable" parameterType="GenTable" useGeneratedKeys="true" keyProperty="tableId">
+	<insert id="insertGenTable" useGeneratedKeys="true" keyProperty="tableId">
         insert into gen_table (
-			<if test="tableName != null">table_name,</if>
-			<if test="tableComment != null and tableComment != ''">table_comment,</if>
-			<if test="className != null and className != ''">class_name,</if>
-			<if test="tplCategory != null and tplCategory != ''">tpl_category,</if>
-			<if test="packageName != null and packageName != ''">package_name,</if>
-			<if test="moduleName != null and moduleName != ''">module_name,</if>
-			<if test="businessName != null and businessName != ''">business_name,</if>
-			<if test="functionName != null and functionName != ''">function_name,</if>
-			<if test="functionAuthor != null and functionAuthor != ''">function_author,</if>
-			<if test="genType != null and genType != ''">gen_type,</if>
-			<if test="genPath != null and genPath != ''">gen_path,</if>
-			<if test="remark != null and remark != ''">remark,</if>
- 			<if test="createBy != null and createBy != ''">create_by,</if>
+			<if test="genTable.tableName != null">table_name,</if>
+			<if test="genTable.tableComment != null and genTable.tableComment != ''">table_comment,</if>
+			<if test="genTable.className != null and genTable.className != ''">class_name,</if>
+			<if test="genTable.tplCategory != null and genTable.tplCategory != ''">tpl_category,</if>
+			<if test="genTable.packageName != null and genTable.packageName != ''">package_name,</if>
+			<if test="genTable.moduleName != null and genTable.moduleName != ''">module_name,</if>
+			<if test="genTable.businessName != null and genTable.businessName != ''">business_name,</if>
+			<if test="genTable.functionName != null and genTable.functionName != ''">function_name,</if>
+			<if test="genTable.functionAuthor != null and genTable.functionAuthor != ''">function_author,</if>
+			<if test="genTable.genType != null and genTable.genType != ''">gen_type,</if>
+			<if test="genTable.genPath != null and genTable.genPath != ''">gen_path,</if>
+			<if test="genTable.remark != null and genTable.remark != ''">remark,</if>
+ 			<if test="genTable.createBy != null and genTable.createBy != ''">create_by,</if>
 			create_time
          )values(
-			<if test="tableName != null">#{tableName},</if>
-			<if test="tableComment != null and tableComment != ''">#{tableComment},</if>
-			<if test="className != null and className != ''">#{className},</if>
-			<if test="tplCategory != null and tplCategory != ''">#{tplCategory},</if>
-			<if test="packageName != null and packageName != ''">#{packageName},</if>
-			<if test="moduleName != null and moduleName != ''">#{moduleName},</if>
-			<if test="businessName != null and businessName != ''">#{businessName},</if>
-			<if test="functionName != null and functionName != ''">#{functionName},</if>
-			<if test="functionAuthor != null and functionAuthor != ''">#{functionAuthor},</if>
-			<if test="genType != null and genType != ''">#{genType},</if>
-			<if test="genPath != null and genPath != ''">#{genPath},</if>
-			<if test="remark != null and remark != ''">#{remark},</if>
- 			<if test="createBy != null and createBy != ''">#{createBy},</if>
+			<if test="genTable.tableName != null">#{genTable.tableName},</if>
+			<if test="genTable.tableComment != null and genTable.tableComment != ''">#{genTable.tableComment},</if>
+			<if test="genTable.className != null and genTable.className != ''">#{genTable.className},</if>
+			<if test="genTable.tplCategory != null and genTable.tplCategory != ''">#{genTable.tplCategory},</if>
+			<if test="genTable.packageName != null and genTable.packageName != ''">#{genTable.packageName},</if>
+			<if test="genTable.moduleName != null and genTable.moduleName != ''">#{genTable.moduleName},</if>
+			<if test="genTable.businessName != null and genTable.businessName != ''">#{genTable.businessName},</if>
+			<if test="genTable.functionName != null and genTable.functionName != ''">#{genTable.functionName},</if>
+			<if test="genTable.functionAuthor != null and genTable.functionAuthor != ''">#{genTable.functionAuthor},</if>
+			<if test="genTable.genType != null and genTable.genType != ''">#{genTable.genType},</if>
+			<if test="genTable.genPath != null and genTable.genPath != ''">#{genTable.genPath},</if>
+			<if test="genTable.remark != null and genTable.remark != ''">#{genTable.remark},</if>
+ 			<if test="genTable.createBy != null and genTable.createBy != ''">#{genTable.createBy},</if>
 			sysdate()
          )
     </insert>
     
-    <update id="updateGenTable" parameterType="GenTable">
+    <update id="updateGenTable"  >
         update gen_table
         <set>
-            <if test="tableName != null">table_name = #{tableName},</if>
-            <if test="tableComment != null and tableComment != ''">table_comment = #{tableComment},</if>
-            <if test="subTableName != null">sub_table_name = #{subTableName},</if>
-            <if test="subTableFkName != null">sub_table_fk_name = #{subTableFkName},</if>
-            <if test="className != null and className != ''">class_name = #{className},</if>
-            <if test="functionAuthor != null and functionAuthor != ''">function_author = #{functionAuthor},</if>
-            <if test="genType != null and genType != ''">gen_type = #{genType},</if>
-            <if test="genPath != null and genPath != ''">gen_path = #{genPath},</if>
-            <if test="tplCategory != null and tplCategory != ''">tpl_category = #{tplCategory},</if>
-            <if test="packageName != null and packageName != ''">package_name = #{packageName},</if>
-            <if test="moduleName != null and moduleName != ''">module_name = #{moduleName},</if>
-            <if test="businessName != null and businessName != ''">business_name = #{businessName},</if>
-            <if test="functionName != null and functionName != ''">function_name = #{functionName},</if>
-            <if test="options != null and options != ''">options = #{options},</if>
-            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
-            <if test="remark != null">remark = #{remark},</if>
+            <if test="genTable.tableName != null">table_name = #{genTable.tableName},</if>
+            <if test="genTable.tableComment != null and genTable.tableComment != ''">table_comment = #{genTable.tableComment},</if>
+            <if test="genTable.subTableName != null">sub_table_name = #{genTable.subTableName},</if>
+            <if test="genTable.subTableFkName != null">sub_table_fk_name = #{genTable.subTableFkName},</if>
+            <if test="genTable.className != null and genTable.className != ''">class_name = #{genTable.className},</if>
+            <if test="genTable.functionAuthor != null and genTable.functionAuthor != ''">function_author = #{genTable.functionAuthor},</if>
+            <if test="genTable.genType != null and genTable.genType != ''">gen_type = #{genTable.genType},</if>
+            <if test="genTable.genPath != null and genTable.genPath != ''">gen_path = #{genTable.genPath},</if>
+            <if test="genTable.tplCategory != null and genTable.tplCategory != ''">tpl_category = #{genTable.tplCategory},</if>
+            <if test="genTable.packageName != null and genTable.packageName != ''">package_name = #{genTable.packageName},</if>
+            <if test="genTable.moduleName != null and genTable.moduleName != ''">module_name = #{genTable.moduleName},</if>
+            <if test="genTable.businessName != null and genTable.businessName != ''">business_name = #{genTable.businessName},</if>
+            <if test="genTable.functionName != null and genTable.functionName != ''">function_name = #{genTable.functionName},</if>
+            <if test="genTable.options != null and genTable.options != ''">options = #{genTable.options},</if>
+            <if test="genTable.updateBy != null and genTable.updateBy != ''">update_by = #{genTable.updateBy},</if>
+            <if test="genTable.remark != null">remark = #{genTable.remark},</if>
             update_time = sysdate()
         </set>
         where table_id = #{tableId}
     </update>
     
-    <delete id="deleteGenTableByIds" parameterType="Long">
+    <delete id="deleteGenTableByIds"  >
         delete from gen_table where table_id in 
         <foreach collection="array" item="tableId" open="(" separator="," close=")">
             #{tableId}

@@ -1,7 +1,9 @@
 package com.akers.xiaohonghua.project.monitor.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import java.util.List;
 import com.akers.xiaohonghua.project.monitor.domain.SysJobLog;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 
 /**
  * 定时任务调度日志信息信息 服务层
@@ -17,6 +19,7 @@ public interface ISysJobLogService
      * @return 调度任务日志集合
      */
     public List<SysJobLog> selectJobLogList(SysJobLog jobLog);
+    public IPage<SysJobLog> selectJobLogList(IPage<?> page, SysJobLog jobLog);
 
     /**
      * 通过调度任务日志ID查询调度信息

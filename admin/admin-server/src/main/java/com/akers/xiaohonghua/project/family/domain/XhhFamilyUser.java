@@ -16,7 +16,7 @@ public class XhhFamilyUser extends BaseEntity
     private static final long serialVersionUID = 1L;
 
     /** 租户号 */
-    private Long id;
+    private Long familyUserId;
 
     /** 乐观锁 */
     private Long version;
@@ -39,14 +39,14 @@ public class XhhFamilyUser extends BaseEntity
     @Excel(name = "成员名称")
     private String roleName;
 
-    public void setId(Long id) 
+    public void setFamilyUserId(Long familyUserId)
     {
-        this.id = id;
+        this.familyUserId = familyUserId;
     }
 
-    public Long getId() 
+    public Long getFamilyUserId()
     {
-        return id;
+        return familyUserId;
     }
     public void setVersion(Long version) 
     {
@@ -106,7 +106,7 @@ public class XhhFamilyUser extends BaseEntity
     @Override
     public String toString() {
         return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
-            .append("id", getId())
+            .append("familyUserId", getFamilyUserId())
             .append("version", getVersion())
             .append("createBy", getCreateBy())
             .append("createTime", getCreateTime())

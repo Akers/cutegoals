@@ -1,5 +1,6 @@
 package com.akers.xiaohonghua.project.system.controller;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
@@ -60,9 +61,8 @@ public class SysUserController extends BaseController
     @GetMapping("/list")
     public TableDataInfo list(SysUser user)
     {
-        startPage();
-        List<SysUser> list = userService.selectUserList(user);
-        return getDataTable(list);
+        List<SysUser> page = userService.selectUserList(user);
+        return getDataTable(page);
     }
 
     @Log(title = "用户管理", businessType = BusinessType.EXPORT)

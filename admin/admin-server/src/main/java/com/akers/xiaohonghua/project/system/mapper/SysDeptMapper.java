@@ -1,5 +1,7 @@
 package com.akers.xiaohonghua.project.system.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
 import com.akers.xiaohonghua.project.system.domain.SysDept;
@@ -9,7 +11,7 @@ import com.akers.xiaohonghua.project.system.domain.SysDept;
  * 
  * @author ruoyi
  */
-public interface SysDeptMapper
+public interface SysDeptMapper extends BaseMapper<SysDept>
 {
     /**
      * 查询部门管理数据
@@ -18,6 +20,7 @@ public interface SysDeptMapper
      * @return 部门信息集合
      */
     public List<SysDept> selectDeptList(SysDept dept);
+    public IPage<SysDept> selectDeptList(IPage<?> page, SysDept dept);
 
     /**
      * 根据角色ID查询部门树信息
@@ -27,6 +30,7 @@ public interface SysDeptMapper
      * @return 选中部门列表
      */
     public List<Long> selectDeptListByRoleId(@Param("roleId") Long roleId, @Param("deptCheckStrictly") boolean deptCheckStrictly);
+    public IPage<Long> selectDeptListByRoleId(IPage<?> page, @Param("roleId") Long roleId, @Param("deptCheckStrictly") boolean deptCheckStrictly);
 
     /**
      * 根据部门ID查询信息
@@ -43,6 +47,7 @@ public interface SysDeptMapper
      * @return 部门列表
      */
     public List<SysDept> selectChildrenDeptById(Long deptId);
+    public IPage<SysDept> selectChildrenDeptById(IPage<?> page, Long deptId);
 
     /**
      * 根据ID查询所有子部门（正常状态）

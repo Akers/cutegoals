@@ -1,5 +1,7 @@
 package com.akers.xiaohonghua.project.system.service.impl;
 
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,7 +19,7 @@ import com.akers.xiaohonghua.project.system.service.ISysPostService;
  * @author ruoyi
  */
 @Service
-public class SysPostServiceImpl implements ISysPostService
+public class SysPostServiceImpl extends ServiceImpl<SysPostMapper, SysPost> implements ISysPostService
 {
     @Autowired
     private SysPostMapper postMapper;
@@ -32,10 +34,14 @@ public class SysPostServiceImpl implements ISysPostService
      * @return 岗位信息集合
      */
     @Override
-    public List<SysPost> selectPostList(SysPost post)
-    {
-        return postMapper.selectPostList(post);
-    }
+	public List<SysPost> selectPostList(SysPost post) {
+		return postMapper.selectPostList(post);
+	}
+
+	@Override
+	public IPage<SysPost> selectPostList(IPage<?> page, SysPost post) {
+	    return postMapper.selectPostList(page, post);
+	}
 
     /**
      * 查询所有岗位
@@ -67,10 +73,14 @@ public class SysPostServiceImpl implements ISysPostService
      * @return 选中岗位ID列表
      */
     @Override
-    public List<Long> selectPostListByUserId(Long userId)
-    {
-        return postMapper.selectPostListByUserId(userId);
-    }
+	public List<Long> selectPostListByUserId(Long userId) {
+		return postMapper.selectPostListByUserId(userId);
+	}
+
+	@Override
+	public IPage<Long> selectPostListByUserId(IPage<?> page, Long userId) {
+	    return postMapper.selectPostListByUserId(page, userId);
+	}
 
     /**
      * 校验岗位名称是否唯一

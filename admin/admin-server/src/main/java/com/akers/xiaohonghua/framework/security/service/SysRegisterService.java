@@ -1,5 +1,6 @@
 package com.akers.xiaohonghua.framework.security.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import com.akers.xiaohonghua.common.constant.CacheConstants;

@@ -1,5 +1,7 @@
 package com.akers.xiaohonghua.project.system.service.impl;
 
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -27,7 +29,7 @@ import com.akers.xiaohonghua.project.system.service.ISysDeptService;
  * @author ruoyi
  */
 @Service
-public class SysDeptServiceImpl implements ISysDeptService
+public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> implements ISysDeptService
 {
     @Autowired
     private SysDeptMapper deptMapper;
@@ -47,7 +49,13 @@ public class SysDeptServiceImpl implements ISysDeptService
     {
         return deptMapper.selectDeptList(dept);
     }
-    
+
+    @Override
+    @DataScope(deptAlias = "d")
+    public IPage<SysDept> selectDeptList(IPage<?> page, SysDept dept) {
+        return deptMapper.selectDeptList(page, dept);
+    }
+
     /**
      * 查询部门树结构信息
      * 

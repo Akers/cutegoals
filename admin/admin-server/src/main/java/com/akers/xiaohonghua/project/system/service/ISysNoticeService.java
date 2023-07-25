@@ -1,5 +1,6 @@
 package com.akers.xiaohonghua.project.system.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import java.util.List;
 import com.akers.xiaohonghua.project.system.domain.SysNotice;
 
@@ -25,6 +26,7 @@ public interface ISysNoticeService
      * @return 公告集合
      */
     public List<SysNotice> selectNoticeList(SysNotice notice);
+    public IPage<SysNotice> selectNoticeList(IPage<?> page, SysNotice notice);
 
     /**
      * 新增公告

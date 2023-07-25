@@ -1,5 +1,7 @@
 package com.akers.xiaohonghua.project.system.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import java.util.List;
 import com.akers.xiaohonghua.project.system.domain.SysDictType;
 
@@ -8,7 +10,7 @@ import com.akers.xiaohonghua.project.system.domain.SysDictType;
  * 
  * @author ruoyi
  */
-public interface SysDictTypeMapper
+public interface SysDictTypeMapper extends BaseMapper<SysDictType>
 {
     /**
      * 根据条件分页查询字典类型
@@ -17,6 +19,7 @@ public interface SysDictTypeMapper
      * @return 字典类型集合信息
      */
     public List<SysDictType> selectDictTypeList(SysDictType dictType);
+    public IPage<SysDictType> selectDictTypeList(IPage<?> page, SysDictType dictType);
 
     /**
      * 根据所有字典类型
@@ -24,6 +27,7 @@ public interface SysDictTypeMapper
      * @return 字典类型集合信息
      */
     public List<SysDictType> selectDictTypeAll();
+    public IPage<SysDictType> selectDictTypeAll(IPage<?> page);
 
     /**
      * 根据字典类型ID查询信息

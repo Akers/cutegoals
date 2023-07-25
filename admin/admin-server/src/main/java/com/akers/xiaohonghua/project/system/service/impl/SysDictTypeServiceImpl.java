@@ -1,5 +1,7 @@
 package com.akers.xiaohonghua.project.system.service.impl;
 
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +26,7 @@ import com.akers.xiaohonghua.project.system.service.ISysDictTypeService;
  * @author ruoyi
  */
 @Service
-public class SysDictTypeServiceImpl implements ISysDictTypeService
+public class SysDictTypeServiceImpl extends ServiceImpl<SysDictTypeMapper, SysDictType> implements ISysDictTypeService
 {
     @Autowired
     private SysDictTypeMapper dictTypeMapper;
@@ -48,10 +50,14 @@ public class SysDictTypeServiceImpl implements ISysDictTypeService
      * @return 字典类型集合信息
      */
     @Override
-    public List<SysDictType> selectDictTypeList(SysDictType dictType)
-    {
-        return dictTypeMapper.selectDictTypeList(dictType);
-    }
+	public List<SysDictType> selectDictTypeList(SysDictType dictType) {
+		return dictTypeMapper.selectDictTypeList(dictType);
+	}
+
+	@Override
+	public IPage<SysDictType> selectDictTypeList(IPage<?> page, SysDictType dictType) {
+	    return dictTypeMapper.selectDictTypeList(page, dictType);
+	}
 
     /**
      * 根据所有字典类型

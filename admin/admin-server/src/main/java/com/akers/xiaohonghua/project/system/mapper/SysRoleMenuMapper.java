@@ -1,5 +1,7 @@
 package com.akers.xiaohonghua.project.system.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import java.util.List;
 import com.akers.xiaohonghua.project.system.domain.SysRoleMenu;
 
@@ -8,7 +10,7 @@ import com.akers.xiaohonghua.project.system.domain.SysRoleMenu;
  * 
  * @author ruoyi
  */
-public interface SysRoleMenuMapper
+public interface SysRoleMenuMapper extends BaseMapper<SysRoleMenu>
 {
     /**
      * 查询菜单使用数量

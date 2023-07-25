@@ -1,5 +1,7 @@
 package com.akers.xiaohonghua.project.monitor.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import java.util.List;
 import com.akers.xiaohonghua.project.monitor.domain.SysJobLog;
 
@@ -8,7 +10,7 @@ import com.akers.xiaohonghua.project.monitor.domain.SysJobLog;
  * 
  * @author ruoyi
  */
-public interface SysJobLogMapper
+public interface SysJobLogMapper extends BaseMapper<SysJobLog>
 {
     /**
      * 获取quartz调度器日志的计划任务
@@ -17,6 +19,7 @@ public interface SysJobLogMapper
      * @return 调度任务日志集合
      */
     public List<SysJobLog> selectJobLogList(SysJobLog jobLog);
+    public IPage<SysJobLog> selectJobLogList(IPage<?> page, SysJobLog jobLog);
 
     /**
      * 查询所有调度任务日志
@@ -24,6 +27,7 @@ public interface SysJobLogMapper
      * @return 调度任务日志列表
      */
     public List<SysJobLog> selectJobLogAll();
+    public IPage<SysJobLog> selectJobLogAll(IPage<?> page);
 
     /**
      * 通过调度任务日志ID查询调度信息
