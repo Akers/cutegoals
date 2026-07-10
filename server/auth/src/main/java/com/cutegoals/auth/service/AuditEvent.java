@@ -19,4 +19,24 @@ public final class AuditEvent {
     public static final String TOKEN_REFRESH = "TOKEN_REFRESH";
     public static final String TOKEN_REUSE_DETECTED = "TOKEN_REUSE_DETECTED";
     public static final String RATE_LIMITED = "RATE_LIMITED";
+
+    // === Family events ===
+    public static final String FAMILY_UPDATED = "FAMILY_UPDATED";
+    public static final String INVITATION_CREATED = "INVITATION_CREATED";
+    public static final String INVITATION_ACCEPTED = "INVITATION_ACCEPTED";
+    public static final String INVITATION_REJECTED = "INVITATION_REJECTED";
+    public static final String INVITATION_REVOKED = "INVITATION_REVOKED";
+    public static final String CHILD_CREATED = "CHILD_CREATED";
+    public static final String CHILD_UPDATED = "CHILD_UPDATED";
+    public static final String CHILD_DELETED = "CHILD_DELETED";
+    public static final String CHILD_DISABLED = "CHILD_DISABLED";
+    public static final String PIN_SET = "PIN_SET";
+    public static final String PIN_RESET = "PIN_RESET";
+    public static final String MEMBER_REMOVED = "MEMBER_REMOVED";
+    public static final String MEMBER_LEFT = "MEMBER_LEFT";
+    public static final String DEVICE_BOUND = "DEVICE_BOUND";
+    public static final String DEVICE_REVOKED = "DEVICE_REVOKED";
+    public static final String CHILD_LOGIN_SUCCESS = "CHILD_LOGIN_SUCCESS";
+    public static final String CHILD_LOGIN_FAILED = "CHILD_LOGIN_FAILED";
+    public static final String PIN_LOCKED_EVENT = "PIN_LOCKED";
 }

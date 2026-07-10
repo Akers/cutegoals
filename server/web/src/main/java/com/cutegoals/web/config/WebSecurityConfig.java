@@ -53,6 +53,8 @@ public class WebSecurityConfig {
             "/api/auth/login",
             "/api/auth/refresh",
             "/api/auth/recover",
+            "/api/auth/child/login",
+            "/api/family/devices/children",
             "/api/health",
             "/api/instance/status"
     );

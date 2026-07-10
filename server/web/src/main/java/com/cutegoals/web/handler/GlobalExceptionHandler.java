@@ -69,6 +69,13 @@ public class GlobalExceptionHandler {
             case RECOVERY_NOT_AVAILABLE -> HttpStatus.GONE;
             case PASSWORD_POLICY_VIOLATED -> HttpStatus.BAD_REQUEST;
             case PIN_LOCKED -> HttpStatus.LOCKED;
+            case SINGLE_FAMILY_ONLY -> HttpStatus.CONFLICT;
+            case INVITATION_NOT_AVAILABLE -> HttpStatus.GONE;
+            case PIN_CONFLICT -> HttpStatus.CONFLICT;
+            case DEVICE_BINDING_NOT_AVAILABLE -> HttpStatus.GONE;
+            case DEVICE_NOT_AUTHORIZED -> HttpStatus.UNAUTHORIZED;
+            case CHILD_AUTHENTICATION_FAILED -> HttpStatus.UNAUTHORIZED;
+            case AUDIT_UNAVAILABLE -> HttpStatus.INTERNAL_SERVER_ERROR;
             default -> HttpStatus.INTERNAL_SERVER_ERROR;
         };
     }
