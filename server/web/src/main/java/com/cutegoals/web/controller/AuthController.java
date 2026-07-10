@@ -108,6 +108,9 @@ public class AuthController {
         // Set new cookies (HttpOnly — JS cannot read them)
         setTokenCookies(response, newAccessToken, result.newRefreshToken());
 
+        // Renew CSRF cookie on refresh so write operations remain valid after access token rotation
+        setCsrfCookie(response, generateCsrfToken());
+
         Map<String, Object> data = new HashMap<>();
         // Per spec: browser-available scripts MUST NOT be able to read access or refresh tokens
         data.put("expiresIn", AuthConstants.JWT_ACCESS_EXPIRY_MINUTES * 60);
