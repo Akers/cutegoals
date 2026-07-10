@@ -1,0 +1,47 @@
+# Root .gitignore for CuteGoals 2.0
+
+# IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Node / Web
+node_modules/
+/web/dist/
+/web/coverage/
+/web/*.local
+
+# Maven / Java
+/server/**/target/
+/server/**/!.mvn/wrapper/maven-wrapper.jar
+/server/**/!**/src/main/**/target/
+/server/**/!**/src/test/**/target/
+
+# Logs
+*.log
+logs/
+
+# Environment / Secrets
+.env
+.env.local
+.env.*.local
+
+# SDD / Agent scratch
+.superpowers/
+.agent/
+.agents/
+.codex/
+.codegraph/
+
+# Misc
+*.drawio.bkp
+*.drawio.dtmp
