@@ -1,7 +1,7 @@
 import { lazy, Suspense } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import RoleGuard from '@shared/RoleGuard';
-import AccessDenied from '@shared/AccessDenied';
+import NotFound from '@shared/NotFound';
 
 const AdminApp = lazy(() => import('@admin/App'));
 const ParentApp = lazy(() => import('@parent/App'));
@@ -36,7 +36,7 @@ function App() {
             </RoleGuard>
           }
         />
-        <Route path="*" element={<AccessDenied />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </Suspense>
   );

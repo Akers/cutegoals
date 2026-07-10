@@ -69,10 +69,10 @@ describe('Role-based routing', () => {
     });
   });
 
-  it('shows 404-like view for unknown routes', async () => {
+  it('redirects unknown routes to the current role home', async () => {
     renderWithRouter(['/unknown'], 'child');
     await waitFor(() => {
-      expect(screen.getByText(/404|未找到|访问被拒绝/i)).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: /儿童端/ })).toBeInTheDocument();
     });
   });
 });
