@@ -1,0 +1,26 @@
+schema: spec-driven
+
+context: |
+  产物语言：zh-CN。
+  产品：CuteGoals 2.0，面向中国大陆家庭的私有化部署家庭激励管理系统。
+  MVP 边界：每个实例恰好一个家庭；未来学校、社区或机构多家庭模式必须通过后续 change 引入。
+  技术栈：Spring Boot 3、MyBatis-Plus、MySQL 8、Redis、React 18、TypeScript、Vite、Docker Compose。
+  部署：Windows/Linux 主机，本地联网构建，Linux amd64/arm64 容器。
+  核心不变量：积分余额和库存不得为负；积分流水、提交审核历史和兑换快照不可变；审核、兑换和退款必须幂等且具备事务原子性。
+  安全基线：不记录明文密码、PIN、令牌或完整手机号；生产环境使用 HTTPS；默认不启用外部遥测。
+
+rules:
+  proposal:
+    - 明确目标、范围、非目标和 breaking changes；不得把未来多家庭能力写入 MVP。
+    - Capabilities 列表必须与 change 下的 spec 目录一一对应。
+  design:
+    - 记录关键决策、备选方案、风险、迁移与回滚策略。
+    - 对认证、积分、任务审核、兑换和部署的信任边界与事务边界作出明确说明。
+  specs:
+    - 需求正文使用 SHALL 或 MUST；每条 Requirement 至少包含一个可测试 Scenario。
+    - 场景必须覆盖成功、权限、校验、幂等或并发以及失败回滚中的相关边界。
+    - 使用稳定业务语义和错误码，不把具体类名或内部实现当作需求。
+  tasks:
+    - 所有任务初始为未完成，并引用对应 capability。
+    - 每项任务写明可验证产物和测试或检查证据；不得在证据缺失时勾选。
+    - 任务按依赖顺序组织，单项应可在一个实施会话内完成。

@@ -1,0 +1,25 @@
+{
+  "change": "core-features",
+  "phase": "design",
+  "mode": "compact",
+  "canonical_spec": "openspec",
+  "generated_by": "comet-handoff.sh",
+  "context_hash": "11da1e8b63899f17037696329a5dda98a8aa9be40b70d3f93df8151e06993f63",
+  "files": [
+    { "path": "openspec/changes/core-features/proposal.md", "sha256": "b2e3a602bb012e0f708f8fd5aef732c796581dd8b29aeea60ad78ab451b5216f" },
+    { "path": "openspec/changes/core-features/design.md", "sha256": "5142cc834d6d1f896b042bb2cbca15a76591f9e7e7019c41f40050352c6d7e0b" },
+    { "path": "openspec/changes/core-features/tasks.md", "sha256": "de018642fdb9e0ca18fd231f42b0c5b3c58a95851cd24921dff8db213a950a07" },
+    { "path": "openspec/changes/core-features/specs/auth/spec.md", "sha256": "935bd841ad07f2c96f753a0a7c7273bdf4bfe288f451eeb505961ceb8eac8f4b" },
+    { "path": "openspec/changes/core-features/specs/blind-box/spec.md", "sha256": "741c06c4f6ee1ed29eddcde42916635594196368c119fdbe7afaaeb08f3d9095" },
+    { "path": "openspec/changes/core-features/specs/deployment-operations/spec.md", "sha256": "64ccdab532d0305851c9560bbc137a9f3e93a5e804ed87b190438ed2f2eb160b" },
+    { "path": "openspec/changes/core-features/specs/exchange/spec.md", "sha256": "fc441c7d07cb39166d10b3867dfc82ac595d61496046d5636c274b0d677521ae" },
+    { "path": "openspec/changes/core-features/specs/family/spec.md", "sha256": "66ac7ca5e6d8d4800e61550f485d43b1c0c5e9b3d411dca459a42a23eff2e674" },
+    { "path": "openspec/changes/core-features/specs/instance-management/spec.md", "sha256": "1e7f0520b47ff6dc5e312dd43c5c1eb1913d019b04983ce7abf4e89e5a3d2686" },
+    { "path": "openspec/changes/core-features/specs/points/spec.md", "sha256": "5b3215f6cb04036fe2cc60fd5776769d31cc76ed589977b0c13d0bb03b11baf2" },
+    { "path": "openspec/changes/core-features/specs/prize/spec.md", "sha256": "3a3d0c365c62d3e91f89de2b9666636c60bb733dd181dd4b83b3c95ac6f9a3e2" },
+    { "path": "openspec/changes/core-features/specs/task-assignment/spec.md", "sha256": "4c09515b41c276f909e8e97761c7daa349bfd1178cf3ba89bc5c19d30b46d210" },
+    { "path": "openspec/changes/core-features/specs/task-review/spec.md", "sha256": "314a9e91ba8f6606abed6f5e8b6e5cb13e6a66e1526d6349f5e5744fc91b7899" },
+    { "path": "openspec/changes/core-features/specs/task-template/spec.md", "sha256": "ed5f3e0cd0fe523c2ec32c9b4885f77922857ec09cfb3bc82726f998e5fce4ea" },
+    { "path": "openspec/changes/core-features/specs/web-app/spec.md", "sha256": "0a76ecddc115ff2609e0733b76abf5fbfaef6242bdf09b61075fca5a5918af66" }
+  ]
+}
