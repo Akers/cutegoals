@@ -5,18 +5,26 @@ import { ApiClient, configureClient, getClient, getErrorMessage } from '../../sh
 // Helpers – use `mockResolvedValueOnce` for sequential control
 // ---------------------------------------------------------------------------
 
+/**
+ * Helper to mock a server fetch response.
+ * Server format per design doc §5.1: { code, message, data, request_id }.
+ * The helper accepts `code` (mapped to server field) for readability.
+ * Consumer code reads `error.error_code` and `error.id` (internal mapping).
+ */
 function mockFetchOnce(response: {
   ok?: boolean;
   status?: number;
   body?: unknown;
-  error_code?: string;
+  code?: string;
   message?: string;
+  request_id?: string;
 }) {
-  const { ok = true, status = 200, body, error_code, message } = response;
+  const { ok = true, status = 200, body, code, message, request_id } = response;
   const jsonBody: Record<string, unknown> = {};
   if (body && typeof body === 'object') Object.assign(jsonBody, body as Record<string, unknown>);
-  if (error_code) jsonBody.error_code = error_code;
+  if (code) jsonBody.code = code;
   if (message) jsonBody.message = message;
+  if (request_id) jsonBody.request_id = request_id;
 
   return vi.mocked(fetch).mockResolvedValueOnce({
     ok,
@@ -97,7 +105,7 @@ describe('400 bad request', () => {
     mockFetchOnce({
       ok: false,
       status: 400,
-      error_code: 'POINTS_INSUFFICIENT_BALANCE',
+      code: 'POINTS_INSUFFICIENT_BALANCE',
     });
     const client = createTestClient();
     const res = await client.post('/exchanges', {});
@@ -110,7 +118,7 @@ describe('400 bad request', () => {
     mockFetchOnce({
       ok: false,
       status: 409,
-      error_code: 'PRIZE_OUT_OF_STOCK',
+      code: 'PRIZE_OUT_OF_STOCK',
     });
     const client = createTestClient();
     const res = await client.post('/exchanges', {});
@@ -122,8 +130,8 @@ describe('400 bad request', () => {
     mockFetchOnce({
       ok: false,
       status: 400,
-      error_code: 'POINTS_INVALID_TRANSACTION',
-      body: { id: 'req-abc-123' },
+      code: 'POINTS_INVALID_TRANSACTION',
+      request_id: 'req-abc-123',
     });
     const client = createTestClient();
     const res = await client.get('/points/1/transactions');
@@ -137,7 +145,7 @@ describe('400 bad request', () => {
 
 describe('401 unauthorized', () => {
   it('calls onUnauthorized callback', async () => {
-    mockFetchOnce({ ok: false, status: 401, error_code: 'AUTH_UNAUTHENTICATED' });
+    mockFetchOnce({ ok: false, status: 401, code: 'AUTH_UNAUTHENTICATED' });
     const onUnauthorized = vi.fn();
     const client = createTestClient({ onUnauthorized });
     await client.get('/tasks');
@@ -145,7 +153,7 @@ describe('401 unauthorized', () => {
   });
 
   it('does not throw when no callback is set', async () => {
-    mockFetchOnce({ ok: false, status: 401, error_code: 'AUTH_UNAUTHENTICATED' });
+    mockFetchOnce({ ok: false, status: 401, code: 'AUTH_UNAUTHENTICATED' });
     const client = createTestClient();
     await expect(client.get('/tasks')).resolves.not.toThrow();
   });
@@ -157,7 +165,7 @@ describe('401 unauthorized', () => {
 
 describe('403 forbidden', () => {
   it('returns FORBIDDEN error code', async () => {
-    mockFetchOnce({ ok: false, status: 403, error_code: 'FORBIDDEN' });
+    mockFetchOnce({ ok: false, status: 403, code: 'FORBIDDEN' });
     const client = createTestClient();
     const res = await client.get('/admin/config');
     expect(res.error!.error_code).toBe('FORBIDDEN');
@@ -168,7 +176,7 @@ describe('403 forbidden', () => {
     mockFetchOnce({
       ok: false,
       status: 403,
-      error_code: 'CAPABILITY_NOT_SUPPORTED',
+      code: 'CAPABILITY_NOT_SUPPORTED',
     });
     const client = createTestClient();
     const res = await client.get('/admin/multi-family');
@@ -193,7 +201,7 @@ describe('404 not found', () => {
     mockFetchOnce({
       ok: false,
       status: 404,
-      error_code: 'PRIZE_NOT_FOUND',
+      code: 'PRIZE_NOT_FOUND',
     });
     const client = createTestClient();
     const res = await client.get('/prizes/999');
@@ -211,7 +219,7 @@ describe('409 conflict', () => {
     mockFetchOnce({
       ok: false,
       status: 409,
-      error_code: 'EXCHANGE_IDEMPOTENCY_CONFLICT',
+      code: 'EXCHANGE_IDEMPOTENCY_CONFLICT',
     });
     const client = createTestClient();
     const res = await client.post('/exchanges', { idempotency_key: 'dup' });
@@ -226,7 +234,7 @@ describe('409 conflict', () => {
 
 describe('429 rate limit', () => {
   it('retries after 429 and succeeds', async () => {
-    mockFetchOnce({ ok: false, status: 429, error_code: 'RATE_LIMITED' });
+    mockFetchOnce({ ok: false, status: 429, code: 'RATE_LIMITED' });
     mockFetchOnce({ body: { data: { id: 1 } } });
     const client = createTestClient();
     const res = await client.get('/tasks', { maxRetries: 3 });
@@ -236,10 +244,10 @@ describe('429 rate limit', () => {
 
   it('returns RATE_LIMITED error after exhausting retries', async () => {
     // 4 responses: initial + 3 retries = all 429
-    mockFetchOnce({ ok: false, status: 429, error_code: 'RATE_LIMITED' });
-    mockFetchOnce({ ok: false, status: 429, error_code: 'RATE_LIMITED' });
-    mockFetchOnce({ ok: false, status: 429, error_code: 'RATE_LIMITED' });
-    mockFetchOnce({ ok: false, status: 429, error_code: 'RATE_LIMITED' });
+    mockFetchOnce({ ok: false, status: 429, code: 'RATE_LIMITED' });
+    mockFetchOnce({ ok: false, status: 429, code: 'RATE_LIMITED' });
+    mockFetchOnce({ ok: false, status: 429, code: 'RATE_LIMITED' });
+    mockFetchOnce({ ok: false, status: 429, code: 'RATE_LIMITED' });
     const client = createTestClient();
     const res = await client.get('/tasks', { maxRetries: 3 });
     expect(res.error).toBeDefined();
@@ -464,7 +472,7 @@ describe('credentials and base URL', () => {
 
 describe('onError callback', () => {
   it('is called for error responses', async () => {
-    mockFetchOnce({ ok: false, status: 403, error_code: 'FORBIDDEN' });
+    mockFetchOnce({ ok: false, status: 403, code: 'FORBIDDEN' });
     const onError = vi.fn();
     const client = createTestClient({ onError });
     await client.get('/admin');

@@ -47,14 +47,15 @@ async function parseResponse<T>(response: Response): Promise<ApiResponse<T>> {
     return { data: (body?.data ?? body) as T };
   }
 
-  // Build error from server response, mapping error_code to user-facing message
-  const errorCode = (body?.error_code as string) ?? null;
+  // Build error from server response, mapping server `code` to internal error_code
+  // Server format per design doc §5.1: { code, message, data, request_id }
+  const errorCode = (body?.code as string) ?? null;
   const error = {
     error_code: errorCode ?? `HTTP_${response.status}`,
     message:
       (body?.message as string) ??
       (errorCode ? getErrorMessage(errorCode) : getErrorMessageForStatus(response.status)),
-    id: body?.id as string | undefined,
+    id: body?.request_id as string | undefined,
     details: body?.details as Record<string, unknown> | undefined,
   };
 
