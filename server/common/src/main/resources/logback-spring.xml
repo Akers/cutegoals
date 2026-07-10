@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- Include Spring Boot defaults for common patterns -->
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+
+    <!-- Resolve app properties from Spring Environment -->
+    <springProperty name="APP_NAME" source="app.name" defaultValue="CuteGoals"/>
+    <springProperty name="APP_TIMEZONE" source="app.timezone" defaultValue="Asia/Shanghai"/>
+
+    <!-- JSON structured console appender -->
+    <appender name="JSON_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <includeCallerData>false</includeCallerData>
+            <fieldNames>
+                <timestamp>timestamp</timestamp>
+                <level>level</level>
+                <logger>logger_name</logger>
+                <thread>thread_name</thread>
+                <levelValue>[ignore]</levelValue>
+                <version>[ignore]</version>
+            </fieldNames>
+            <customFields>{"app":"${APP_NAME}","timezone":"${APP_TIMEZONE}"}</customFields>
+            <timeZone>${APP_TIMEZONE}</timeZone>
+        </encoder>
+    </appender>
+
+    <!-- Root logger: INFO and above to JSON console -->
+    <root level="INFO">
+        <appender-ref ref="JSON_CONSOLE"/>
+    </root>
+
+    <!-- Application packages at DEBUG level -->
+    <logger name="com.cutegoals" level="DEBUG" additivity="false">
+        <appender-ref ref="JSON_CONSOLE"/>
+    </logger>
+</configuration>

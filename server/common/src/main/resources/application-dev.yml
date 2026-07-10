@@ -1,0 +1,6 @@
+app:
+  env: dev
+
+logging:
+  level:
+    com.cutegoals: DEBUG
