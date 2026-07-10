@@ -33,6 +33,7 @@ public class RecoveryService {
     private final RoleBindingMapper roleBindingMapper;
     private final BCryptPasswordEncoder passwordEncoder;
     private final SessionService sessionService;
+    private final AuditService auditService;
 
     // In-memory store for recovery tokens: token_hash -> RecoveryContext
     // In production, this could be moved to Redis
@@ -57,6 +58,8 @@ public class RecoveryService {
         recoveryStore.put(tokenHash, ctx);
 
         log.info("Recovery flow initiated, token hash={}", tokenHash);
+        auditService.record(AuditEvent.RECOVERY_INITIATED, null, "SUCCESS",
+                "Recovery flow initiated");
         return plainToken;
     }
 
@@ -73,10 +76,14 @@ public class RecoveryService {
 
         RecoveryContext ctx = recoveryStore.remove(tokenHash);
         if (ctx == null) {
+            auditService.record(AuditEvent.RECOVERY_FAILED, null, "FAILED",
+                    "Invalid recovery token");
             throw new BusinessException(ErrorCode.RECOVERY_NOT_AVAILABLE);
         }
 
         if (ctx.expiresAt().isBefore(LocalDateTime.now())) {
+            auditService.record(AuditEvent.RECOVERY_FAILED, null, "FAILED",
+                    "Expired recovery token");
             throw new BusinessException(ErrorCode.RECOVERY_NOT_AVAILABLE);
         }
 
@@ -93,6 +100,8 @@ public class RecoveryService {
         }
 
         if (adminAccountId == null) {
+            auditService.record(AuditEvent.RECOVERY_FAILED, null, "FAILED",
+                    "No admin account found for recovery");
             throw new BusinessException(ErrorCode.RECOVERY_NOT_AVAILABLE);
         }
 
@@ -105,6 +114,8 @@ public class RecoveryService {
         // Revoke all sessions
         sessionService.revokeAllSessions(adminAccountId);
 
+        auditService.record(AuditEvent.RECOVERY_SUCCESS, adminAccountId, "SUCCESS",
+                "Recovery completed for accountId=" + adminAccountId);
         log.info("Recovery completed for accountId={}", adminAccountId);
     }
 

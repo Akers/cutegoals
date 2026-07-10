@@ -42,6 +42,9 @@ class AuthenticationServiceTest {
     @Mock
     private TokenService tokenService;
 
+    @Mock
+    private AuditService auditService;
+
     private BCryptPasswordEncoder passwordEncoder;
     private AuthenticationService authService;
 
@@ -50,7 +53,7 @@ class AuthenticationServiceTest {
         passwordEncoder = new BCryptPasswordEncoder(4); // Low cost for tests
         authService = new AuthenticationService(
                 accountMapper, roleBindingMapper, familyMemberMapper,
-                passwordEncoder, sessionService, tokenService);
+                passwordEncoder, sessionService, tokenService, auditService);
     }
 
     @Test
@@ -162,5 +165,94 @@ class AuthenticationServiceTest {
         String hash = passwordEncoder.encode(password);
         assertTrue(passwordEncoder.matches(password, hash));
         assertFalse(passwordEncoder.matches("wrongPassword", hash));
+    }
+
+    // === C1: Password Change Tests ===
+
+    @Test
+    void shouldChangePasswordSuccessfully() {
+        Long accountId = 1L;
+        String oldPassword = "oldPassword123";
+        String newPassword = "newPassword456";
+        String hashedOldPassword = passwordEncoder.encode(oldPassword);
+
+        Account account = new Account();
+        account.setId(accountId);
+        account.setPasswordHash(hashedOldPassword);
+        account.setStatus("ACTIVE");
+
+        when(accountMapper.findById(accountId)).thenReturn(Optional.of(account));
+
+        authService.changePassword(accountId, oldPassword, newPassword);
+
+        verify(accountMapper).updatePassword(eq(accountId), anyString());
+        verify(sessionService).revokeAllSessions(accountId);
+        verify(auditService).record(eq(AuditEvent.PASSWORD_CHANGE), eq(accountId), eq("SUCCESS"), anyString());
+    }
+
+    @Test
+    void shouldFailChangePasswordWithWrongOldPassword() {
+        Long accountId = 1L;
+        String hashedPassword = passwordEncoder.encode("correctPassword");
+
+        Account account = new Account();
+        account.setId(accountId);
+        account.setPasswordHash(hashedPassword);
+
+        when(accountMapper.findById(accountId)).thenReturn(Optional.of(account));
+
+        BusinessException e = assertThrows(BusinessException.class,
+                () -> authService.changePassword(accountId, "wrongPassword", "newPassword456"));
+        assertEquals(ErrorCode.AUTHENTICATION_FAILED, e.getErrorCode());
+        verify(auditService).record(eq(AuditEvent.PASSWORD_CHANGE_FAILED), eq(accountId), eq("FAILED"), anyString());
+    }
+
+    @Test
+    void shouldFailChangePasswordWithWeakNewPassword() {
+        Long accountId = 1L;
+        String oldPassword = "oldPassword123";
+        String hashedOldPassword = passwordEncoder.encode(oldPassword);
+
+        Account account = new Account();
+        account.setId(accountId);
+        account.setPasswordHash(hashedOldPassword);
+
+        when(accountMapper.findById(accountId)).thenReturn(Optional.of(account));
+
+        // Too short
+        BusinessException e1 = assertThrows(BusinessException.class,
+                () -> authService.changePassword(accountId, oldPassword, "Ab1"));
+        assertEquals(ErrorCode.PASSWORD_POLICY_VIOLATED, e1.getErrorCode());
+
+        // No digit
+        BusinessException e2 = assertThrows(BusinessException.class,
+                () -> authService.changePassword(accountId, oldPassword, "abcdefgh"));
+        assertEquals(ErrorCode.PASSWORD_POLICY_VIOLATED, e2.getErrorCode());
+
+        // No letter
+        BusinessException e3 = assertThrows(BusinessException.class,
+                () -> authService.changePassword(accountId, oldPassword, "12345678"));
+        assertEquals(ErrorCode.PASSWORD_POLICY_VIOLATED, e3.getErrorCode());
+    }
+
+    // === I3: Rate Limiting Tests ===
+
+    @Test
+    void shouldRateLimitAfterTooManyAttempts() {
+        String phone = "13800138000";
+        String password = "anyPassword";
+
+        // First 10 attempts should not be rate-limited (even if login fails for other reasons)
+        when(accountMapper.findByPhone(phone)).thenReturn(Optional.empty());
+
+        // 10 failed attempts
+        for (int i = 0; i < 10; i++) {
+            assertThrows(BusinessException.class, () -> authService.login(phone, password));
+        }
+
+        // 11th attempt should be rate limited
+        BusinessException e = assertThrows(BusinessException.class,
+                () -> authService.login(phone, "anything"));
+        assertEquals(ErrorCode.RATE_LIMITED, e.getErrorCode());
     }
 }

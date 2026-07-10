@@ -28,6 +28,10 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+import jakarta.servlet.ServletException;
 
 /**
  * Spring Security configuration.
@@ -63,9 +67,70 @@ public class WebSecurityConfig {
                 .requestMatchers(PUBLIC_PATHS.toArray(new String[0])).permitAll()
                 .anyRequest().authenticated()
             )
+            .addFilterBefore(csrfFilter(), OncePerRequestFilter.class)
             .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
+    }
+
+    /** HTTP methods that require CSRF validation */
+    private static final Set<String> CSRF_PROTECTED_METHODS = new HashSet<>(Arrays.asList(
+            "POST", "PUT", "DELETE", "PATCH"
+    ));
+
+    @Bean
+    public OncePerRequestFilter csrfFilter() {
+        return new OncePerRequestFilter() {
+            @Override
+            protected void doFilterInternal(HttpServletRequest request,
+                                            HttpServletResponse response,
+                                            FilterChain filterChain) throws ServletException, IOException {
+                String path = request.getRequestURI();
+                String method = request.getMethod();
+
+                // Skip CSRF for safe methods
+                if (!CSRF_PROTECTED_METHODS.contains(method)) {
+                    filterChain.doFilter(request, response);
+                    return;
+                }
+
+                // Skip CSRF for public paths
+                boolean isPublic = false;
+                for (String p : PUBLIC_PATHS) {
+                    if (path.equals(p) || path.startsWith(p + "/")) {
+                        isPublic = true;
+                        break;
+                    }
+                }
+                if (isPublic) {
+                    filterChain.doFilter(request, response);
+                    return;
+                }
+
+                // Double-submit cookie pattern: validate X-CSRF-Token header vs cookie
+                String csrfCookie = null;
+                Cookie[] cookies = request.getCookies();
+                if (cookies != null) {
+                    for (Cookie c : cookies) {
+                        if (AuthConstants.COOKIE_CSRF_TOKEN.equals(c.getName())) {
+                            csrfCookie = c.getValue();
+                            break;
+                        }
+                    }
+                }
+
+                String csrfHeader = request.getHeader(AuthConstants.HEADER_CSRF);
+
+                if (csrfCookie == null || csrfHeader == null || !csrfCookie.equals(csrfHeader)) {
+                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                    response.setContentType("application/json;charset=UTF-8");
+                    response.getWriter().write("{\"code\":\"FORBIDDEN\",\"message\":\"CSRF token validation failed\",\"data\":null}");
+                    return;
+                }
+
+                filterChain.doFilter(request, response);
+            }
+        };
     }
 
     @Bean
@@ -134,7 +199,8 @@ public class WebSecurityConfig {
                 // POST to /api/auth/initialize, /api/auth/login, /api/auth/refresh, /api/auth/recover
                 // GET to /api/health, /api/instance/status
                 for (String p : PUBLIC_PATHS) {
-                    if (path.equals(p) || path.startsWith(p)) {
+                    // Exact match or sub-path (e.g., /api/auth/recover/initiate matches /api/auth/recover)
+                    if (path.equals(p) || path.startsWith(p + "/")) {
                         return true;
                     }
                 }

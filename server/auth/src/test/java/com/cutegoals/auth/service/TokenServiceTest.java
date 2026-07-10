@@ -7,6 +7,7 @@ import com.cutegoals.common.exception.ErrorCode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -28,11 +29,14 @@ class TokenServiceTest {
     @Mock
     private RefreshTokenMapper refreshTokenMapper;
 
+    @Mock
+    private AuditService auditService;
+
     private TokenService tokenService;
 
     @BeforeEach
     void setUp() {
-        tokenService = new TokenService(refreshTokenMapper);
+        tokenService = new TokenService(refreshTokenMapper, auditService);
         ReflectionTestUtils.setField(tokenService, "jwtSecret", "test-secret-key-that-is-at-least-32-bytes-long!!");
         ReflectionTestUtils.setField(tokenService, "accessExpiryMinutes", 15);
         ReflectionTestUtils.setField(tokenService, "refreshExpiryDays", 7);
@@ -62,6 +66,28 @@ class TokenServiceTest {
     void shouldRejectInvalidToken() {
         assertThrows(BusinessException.class,
                 () -> tokenService.parseAccessToken("invalid.token.here"));
+    }
+
+    @Test
+    void shouldRejectNullAccessToken() {
+        // I5: parseAccessToken(null) should throw UNAUTHORIZED instead of NPE
+        BusinessException e = assertThrows(BusinessException.class,
+                () -> tokenService.parseAccessToken(null));
+        assertEquals(ErrorCode.UNAUTHORIZED, e.getErrorCode());
+    }
+
+    @Test
+    void shouldRejectBlankAccessToken() {
+        BusinessException e = assertThrows(BusinessException.class,
+                () -> tokenService.parseAccessToken(""));
+        assertEquals(ErrorCode.UNAUTHORIZED, e.getErrorCode());
+    }
+
+    @Test
+    void shouldRejectWhitespaceAccessToken() {
+        BusinessException e = assertThrows(BusinessException.class,
+                () -> tokenService.parseAccessToken("   "));
+        assertEquals(ErrorCode.UNAUTHORIZED, e.getErrorCode());
     }
 
     @Test
@@ -97,6 +123,12 @@ class TokenServiceTest {
         assertEquals("session-111", result.sessionId());
 
         verify(refreshTokenMapper).revokeById(1L);
+
+        // C2: Verify the new token inherits the same family ID
+        ArgumentCaptor<RefreshToken> captor = ArgumentCaptor.forClass(RefreshToken.class);
+        verify(refreshTokenMapper).insert(captor.capture());
+        RefreshToken inserted = captor.getValue();
+        assertEquals("family-111", inserted.getFamilyId(), "New token must inherit the same familyId");
     }
 
     @Test

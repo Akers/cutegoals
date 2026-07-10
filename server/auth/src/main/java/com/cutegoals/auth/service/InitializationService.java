@@ -34,6 +34,7 @@ public class InitializationService {
     private final FamilyMapper familyMapper;
     private final FamilyMemberMapper familyMemberMapper;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final AuditService auditService;
 
     /**
      * Perform full instance initialization in a single transaction.
@@ -87,6 +88,8 @@ public class InitializationService {
         member.setStatus(AuthConstants.MEMBER_ACTIVE);
         familyMemberMapper.insert(member);
 
+        auditService.record(AuditEvent.INITIALIZE, accountId, "SUCCESS",
+                "Instance initialized: accountId=" + accountId + ", familyId=" + familyId);
         log.info("Instance initialized: accountId={}, familyId={}", accountId, familyId);
         return accountId;
     }

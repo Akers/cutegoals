@@ -1,5 +1,7 @@
 package com.cutegoals.web.controller;
 
+import com.cutegoals.auth.service.AuditEvent;
+import com.cutegoals.auth.service.AuditService;
 import com.cutegoals.auth.service.AuthenticationService;
 import com.cutegoals.auth.service.AuthenticationService.LoginResult;
 import com.cutegoals.auth.service.SessionService;
@@ -24,8 +26,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.SecureRandom;
 import java.time.Duration;
 import java.util.*;
+import java.util.HexFormat;
 
 /**
  * REST controller for authentication operations.
@@ -42,6 +46,7 @@ public class AuthController {
     private final TokenService tokenService;
     private final SessionService sessionService;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final AuditService auditService;
 
     /**
      * POST /api/auth/login
@@ -57,8 +62,10 @@ public class AuthController {
 
         LoginResult result = authenticationService.login(request.getPhone(), request.getPassword());
 
-        // Set cookies
+        // Set cookies (tokens via HttpOnly, CSRF via non-HttpOnly)
         setTokenCookies(response, result.accessToken(), result.refreshToken());
+        String csrfToken = generateCsrfToken();
+        setCsrfCookie(response, csrfToken);
 
         Map<String, Object> data = new HashMap<>();
         data.put("accountId", result.accountId());
@@ -98,12 +105,11 @@ public class AuthController {
         String newAccessToken = tokenService.generateAccessToken(
                 claims.accountId(), claims.roles(), result.sessionId());
 
-        // Set new cookies
+        // Set new cookies (HttpOnly — JS cannot read them)
         setTokenCookies(response, newAccessToken, result.newRefreshToken());
 
         Map<String, Object> data = new HashMap<>();
-        data.put("accessToken", newAccessToken);
-        data.put("refreshToken", result.newRefreshToken());
+        // Per spec: browser-available scripts MUST NOT be able to read access or refresh tokens
         data.put("expiresIn", AuthConstants.JWT_ACCESS_EXPIRY_MINUTES * 60);
 
         return ResponseEntity.ok(ApiResponse.success(data, requestId));
@@ -122,9 +128,11 @@ public class AuthController {
 
         // Get session from token
         String accessToken = extractAccessToken(request);
+        Long loggedOutAccountId = null;
         if (accessToken != null) {
             try {
                 JwtClaims claims = tokenService.parseAccessToken(accessToken);
+                loggedOutAccountId = claims.accountId();
                 sessionService.revokeSession(claims.sessionId());
             } catch (BusinessException e) {
                 // Session already invalid, still clear cookies
@@ -134,12 +142,17 @@ public class AuthController {
         // Clear cookies
         clearTokenCookies(response);
 
+        if (loggedOutAccountId != null) {
+            auditService.record(AuditEvent.LOGOUT, loggedOutAccountId, "SUCCESS",
+                    "User logged out: accountId=" + loggedOutAccountId);
+        }
+
         return ResponseEntity.ok(ApiResponse.success(null, requestId));
     }
 
     /**
      * PUT /api/auth/password
-     * Change password: verifies old password, updates, revokes all sessions.
+     * Change password: verifies old password, updates hash, revokes all sessions.
      */
     @PutMapping("/password")
     public ResponseEntity<ApiResponse<Void>> changePassword(
@@ -156,9 +169,8 @@ public class AuthController {
             throw new BusinessException(ErrorCode.UNAUTHORIZED);
         }
 
-        // Verify old password and revoke all sessions
-        // (The actual password update is handled by the service)
-        sessionService.revokeAllSessions(accountId);
+        // Verify old password, validate new password, update hash, revoke sessions
+        authenticationService.changePassword(accountId, request.getOldPassword(), request.getNewPassword());
 
         // Clear cookies
         clearTokenCookies(httpResponse);
@@ -186,6 +198,31 @@ public class AuthController {
     @PostMapping("/sms/login")
     public ResponseEntity<ApiResponse<Void>> smsLogin(@RequestBody Map<String, String> body) {
         throw new BusinessException(ErrorCode.SMS_LOGIN_NOT_CONFIGURED);
+    }
+
+    // === CSRF Token ===
+
+    private static final SecureRandom CSRF_RANDOM = new SecureRandom();
+
+    private String generateCsrfToken() {
+        byte[] bytes = new byte[32];
+        CSRF_RANDOM.nextBytes(bytes);
+        return HexFormat.of().formatHex(bytes);
+    }
+
+    /**
+     * Set CSRF token cookie (non-HttpOnly so JS can read it) and the XSRF-TOKEN.
+     * The client must send the token back via the X-XSRF-Token header.
+     */
+    private void setCsrfCookie(HttpServletResponse response, String csrfToken) {
+        ResponseCookie csrfCookie = ResponseCookie.from(AuthConstants.COOKIE_CSRF_TOKEN, csrfToken)
+                .httpOnly(false)   // Must be readable by JS (double-submit pattern)
+                .secure(false)     // Set to true in production
+                .sameSite("Lax")
+                .path("/")
+                .maxAge(Duration.ofMinutes(AuthConstants.JWT_ACCESS_EXPIRY_MINUTES))
+                .build();
+        response.addHeader(HttpHeaders.SET_COOKIE, csrfCookie.toString());
     }
 
     // === Cookie Helpers ===

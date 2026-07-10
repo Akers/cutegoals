@@ -37,6 +37,7 @@ public class TokenService {
     private static final SecureRandom RANDOM = new SecureRandom();
 
     private final RefreshTokenMapper refreshTokenMapper;
+    private final AuditService auditService;
 
     @Value("${app.auth.jwt.secret:changeit-changeit-changeit-changeit-changeit}")
     private String jwtSecret;
@@ -85,17 +86,32 @@ public class TokenService {
 
     /**
      * Generate a refresh token (opaque, stored as hash in DB).
+     * Creates a new family chain.
      *
      * @param sessionId the session ID
      * @return the plaintext refresh token
      */
     @Transactional
     public String generateRefreshToken(String sessionId) {
+        return generateRefreshToken(sessionId, null);
+    }
+
+    /**
+     * Generate a refresh token with an optional existing family chain.
+     *
+     * @param sessionId the session ID
+     * @param familyId  existing family ID to inherit, or null for a new chain
+     * @return the plaintext refresh token
+     */
+    @Transactional
+    public String generateRefreshToken(String sessionId, String familyId) {
         byte[] bytes = new byte[32];
         RANDOM.nextBytes(bytes);
         String plainToken = HexFormat.of().formatHex(bytes);
 
-        String familyId = UUID.randomUUID().toString();
+        if (familyId == null) {
+            familyId = UUID.randomUUID().toString();
+        }
 
         RefreshToken entity = new RefreshToken();
         entity.setTokenHash(hashToken(plainToken));
@@ -127,6 +143,8 @@ public class TokenService {
             if (familyId != null) {
                 refreshTokenMapper.revokeFamily(familyId);
                 log.warn("Refresh token reuse detected! Revoked entire family chain: {}", familyId);
+                auditService.record(AuditEvent.TOKEN_REUSE_DETECTED, null, "FAILED",
+                        "Refresh token reuse detected, revoked family: " + familyId);
             }
             throw new BusinessException(ErrorCode.REFRESH_TOKEN_REUSED);
         }
@@ -140,8 +158,11 @@ public class TokenService {
 
         // Generate new access token (we need the session to get roles - caller handles this)
         String sessionId = token.getSessionId();
-        String newRefreshPlain = generateRefreshToken(sessionId);
+        // Inherit the same family ID so the entire chain is revocable on reuse
+        String newRefreshPlain = generateRefreshToken(sessionId, token.getFamilyId());
 
+        auditService.record(AuditEvent.TOKEN_REFRESH, null, "SUCCESS",
+                "Tokens refreshed for sessionId=" + sessionId);
         log.info("Refreshed tokens for sessionId={}", sessionId);
 
         return new TokenRefreshResult(sessionId, newRefreshPlain);
@@ -155,6 +176,9 @@ public class TokenService {
      * @throws BusinessException if token is invalid/expired
      */
     public JwtClaims parseAccessToken(String accessToken) {
+        if (accessToken == null || accessToken.isBlank()) {
+            throw new BusinessException(ErrorCode.UNAUTHORIZED);
+        }
         try {
             Claims claims = Jwts.parser()
                     .verifyWith(signingKey)

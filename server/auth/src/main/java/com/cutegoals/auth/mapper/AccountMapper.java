@@ -26,4 +26,7 @@ public interface AccountMapper extends BaseMapper<Account> {
 
     @Select("SELECT COUNT(*) FROM account")
     long countAccounts();
+
+    @Update("UPDATE account SET password_hash = #{passwordHash} WHERE id = #{id}")
+    int updatePassword(@Param("id") Long id, @Param("passwordHash") String passwordHash);
 }

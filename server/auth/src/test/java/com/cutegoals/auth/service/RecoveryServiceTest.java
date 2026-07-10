@@ -35,13 +35,16 @@ class RecoveryServiceTest {
     @Mock
     private SessionService sessionService;
 
+    @Mock
+    private AuditService auditService;
+
     private BCryptPasswordEncoder passwordEncoder;
     private RecoveryService recoveryService;
 
     @BeforeEach
     void setUp() {
         passwordEncoder = new BCryptPasswordEncoder(4);
-        recoveryService = new RecoveryService(accountMapper, roleBindingMapper, passwordEncoder, sessionService);
+        recoveryService = new RecoveryService(accountMapper, roleBindingMapper, passwordEncoder, sessionService, auditService);
     }
 
     @Test
