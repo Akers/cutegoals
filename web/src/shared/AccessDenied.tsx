@@ -1,0 +1,10 @@
+function AccessDenied() {
+  return (
+    <div>
+      <h1>403 - 访问被拒绝</h1>
+      <p>您没有权限访问此页面。</p>
+    </div>
+  );
+}
+
+export default AccessDenied;

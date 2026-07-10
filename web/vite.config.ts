@@ -15,11 +15,7 @@ export default defineConfig({
   },
   build: {
     rollupOptions: {
-      input: {
-        admin: resolve(__dirname, 'admin.html'),
-        parent: resolve(__dirname, 'parent.html'),
-        child: resolve(__dirname, 'index.html'),
-      },
+      input: resolve(__dirname, 'index.html'),
     },
     outDir: 'dist',
   },
