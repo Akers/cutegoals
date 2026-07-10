@@ -1,7 +1,10 @@
 # Root .gitignore for CuteGoals 2.0
 
-# IDE
-.idea/
+# IDE / build tooling
+.factorypath
+.classpath
+.project
+.settings/
 *.iml
 *.ipr
 *.iws

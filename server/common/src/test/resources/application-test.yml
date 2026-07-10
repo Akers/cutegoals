@@ -1,0 +1,11 @@
+# Test profile for server/common
+# Disables Flyway auto-migration so that Spring Boot tests that do not need
+# the database (config loading, logback, masking, etc.) do not fail on the
+# MySQL-flavoured Flyway scripts. FlywayMigrationTest uses programmatic Flyway
+# directly and is not affected by this setting.
+spring:
+  flyway:
+    enabled: false
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration
