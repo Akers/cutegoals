@@ -3,8 +3,14 @@ package com.cutegoals.common.util;
 /**
  * Utility for masking sensitive fields before logging or serialization.
  *
- * All mask methods return the constant {@code ***MASKED***} to prevent
- * accidental leakage of passwords, PINs, tokens, or phone numbers.
+ * <p>All type-specific mask methods ({@link #maskPassword}, {@link #maskPin},
+ * {@link #maskToken}, {@link #maskPhone}) delegate to {@link #mask} and
+ * therefore share its null/empty pass-through contract:
+ * <ul>
+ *   <li>{@code null} input returns {@code null}
+ *   <li>empty string input returns empty string
+ *   <li>non-empty input returns {@code ***MASKED***}
+ * </ul>
  */
 public final class MaskUtil {
 
@@ -18,41 +24,41 @@ public final class MaskUtil {
     /**
      * Masks a password value.
      *
-     * @param password the password to mask (value ignored)
-     * @return {@code ***MASKED***}
+     * @param password the password to mask; if null or empty, returned as-is
+     * @return {@code ***MASKED***} for non-empty input, or the input itself
      */
     public static String maskPassword(String password) {
-        return MASKED;
+        return mask(password);
     }
 
     /**
      * Masks a PIN value.
      *
-     * @param pin the PIN to mask (value ignored)
-     * @return {@code ***MASKED***}
+     * @param pin the PIN to mask; if null or empty, returned as-is
+     * @return {@code ***MASKED***} for non-empty input, or the input itself
      */
     public static String maskPin(String pin) {
-        return MASKED;
+        return mask(pin);
     }
 
     /**
      * Masks a token value.
      *
-     * @param token the token to mask (value ignored)
-     * @return {@code ***MASKED***}
+     * @param token the token to mask; if null or empty, returned as-is
+     * @return {@code ***MASKED***} for non-empty input, or the input itself
      */
     public static String maskToken(String token) {
-        return MASKED;
+        return mask(token);
     }
 
     /**
      * Masks a phone number.
      *
-     * @param phone the phone number to mask (value ignored)
-     * @return {@code ***MASKED***}
+     * @param phone the phone number to mask; if null or empty, returned as-is
+     * @return {@code ***MASKED***} for non-empty input, or the input itself
      */
     public static String maskPhone(String phone) {
-        return MASKED;
+        return mask(phone);
     }
 
     /**

@@ -10,12 +10,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for MaskUtil — sensitive field masking.
  *
  * Covers:
- * - maskPassword returns ***MASKED***
- * - maskPin returns ***MASKED***
- * - maskToken returns ***MASKED***
- * - maskPhone returns ***MASKED***
- * - mask (generic) returns ***MASKED***
- * - Null/empty inputs pass through for generic mask
+ * - maskPassword returns ***MASKED*** (null/empty pass-through)
+ * - maskPin returns ***MASKED*** (null/empty pass-through)
+ * - maskToken returns ***MASKED*** (null/empty pass-through)
+ * - maskPhone returns ***MASKED*** (null/empty pass-through)
+ * - mask (generic) returns ***MASKED*** (null/empty pass-through)
+ * - Null/empty inputs pass through for all methods
  * - Original values do not appear in masked output
  */
 class MaskUtilTest {
@@ -42,6 +42,32 @@ class MaskUtilTest {
     @Test
     void maskPhoneReturnsMasked() {
         assertThat(MaskUtil.maskPhone("13800138000")).isEqualTo(MASKED);
+    }
+
+    // --- Null/empty pass-through for type-specific methods ---
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    void maskPasswordReturnsInputForNullOrEmpty(String input) {
+        assertThat(MaskUtil.maskPassword(input)).isEqualTo(input);
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    void maskPinReturnsInputForNullOrEmpty(String input) {
+        assertThat(MaskUtil.maskPin(input)).isEqualTo(input);
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    void maskTokenReturnsInputForNullOrEmpty(String input) {
+        assertThat(MaskUtil.maskToken(input)).isEqualTo(input);
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    void maskPhoneReturnsInputForNullOrEmpty(String input) {
+        assertThat(MaskUtil.maskPhone(input)).isEqualTo(input);
     }
 
     // --- Generic mask ---

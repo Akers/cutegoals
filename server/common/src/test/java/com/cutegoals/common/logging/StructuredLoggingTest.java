@@ -5,6 +5,7 @@ import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.OutputStreamAppender;
+import com.cutegoals.common.util.MaskUtil;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.logstash.logback.encoder.LogstashEncoder;
@@ -42,7 +43,7 @@ class StructuredLoggingTest {
         LogstashEncoder encoder = new LogstashEncoder();
         encoder.setContext(context);
 
-        // Match field naming from logback-spring.xml
+        // Match field naming and custom fields from logback-spring.xml
         LogstashFieldNames fieldNames = new LogstashFieldNames();
         fieldNames.setTimestamp("timestamp");
         fieldNames.setLevel("level");
@@ -51,6 +52,9 @@ class StructuredLoggingTest {
         fieldNames.setLevelValue("[ignore]");
         fieldNames.setVersion("[ignore]");
         encoder.setFieldNames(fieldNames);
+
+        // Match custom fields from logback-spring.xml
+        encoder.setCustomFields("{\"app\":\"CuteGoals\",\"timezone\":\"Asia/Shanghai\"}");
 
         encoder.start();
 
@@ -90,6 +94,10 @@ class StructuredLoggingTest {
             assertThat(node.has("message")).as("Log line missing 'message'").isTrue();
             assertThat(node.has("logger_name")).as("Log line missing 'logger_name'").isTrue();
             assertThat(node.has("thread_name")).as("Log line missing 'thread_name'").isTrue();
+            assertThat(node.has("app")).as("Log line missing custom field 'app'").isTrue();
+            assertThat(node.get("app").asText()).as("custom field 'app' value mismatch").isEqualTo("CuteGoals");
+            assertThat(node.has("timezone")).as("Log line missing custom field 'timezone'").isTrue();
+            assertThat(node.get("timezone").asText()).as("custom field 'timezone' value mismatch").isEqualTo("Asia/Shanghai");
         }
     }
 
@@ -123,11 +131,13 @@ class StructuredLoggingTest {
         String token = "jwt.token.here";
         String phone = "13800138000";
 
-        // Log the masked versions (as the application should do via MaskUtil)
-        logger.info("Password: {}", "***MASKED***");
-        logger.info("PIN: {}", "***MASKED***");
-        logger.info("Token: {}", "***MASKED***");
-        logger.info("Phone: {}", "***MASKED***");
+        // Log the sensitive values THROUGH MaskUtil (as the application should do).
+        // If MaskUtil has a bug and returns the raw value, the doesNotContain
+        // assertions below will catch it.
+        logger.info("Password: {}", MaskUtil.maskPassword(password));
+        logger.info("PIN: {}", MaskUtil.maskPin(pin));
+        logger.info("Token: {}", MaskUtil.maskToken(token));
+        logger.info("Phone: {}", MaskUtil.maskPhone(phone));
 
         String output = outputStream.toString();
 
@@ -138,6 +148,6 @@ class StructuredLoggingTest {
         assertThat(output).as("Phone must not appear in logs").doesNotContain(phone);
 
         // Verify masked strings ARE in the output
-        assertThat(output).contains("***MASKED***");
+        assertThat(output).contains(MaskUtil.MASKED);
     }
 }

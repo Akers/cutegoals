@@ -25,12 +25,8 @@
     </appender>
 
     <!-- Root logger: INFO and above to JSON console -->
+    <!-- Application package levels are configured via application.yml / environment -->
     <root level="INFO">
         <appender-ref ref="JSON_CONSOLE"/>
     </root>
-
-    <!-- Application packages at DEBUG level -->
-    <logger name="com.cutegoals" level="DEBUG" additivity="false">
-        <appender-ref ref="JSON_CONSOLE"/>
-    </logger>
 </configuration>
