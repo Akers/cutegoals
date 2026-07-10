@@ -22,8 +22,8 @@
 
 ## 触发条件
 
-- **push** 到 main/master 分支 → 完整 5 阶段流水线
-- **pull_request** → 增量检查（lint + 测试 + OpenSpec 验证 + workflow 语法）
+- **push** 到 main/master 分支 → 完整 5 阶段流水线（含 `docker-build`）
+- **pull_request** → 增量检查（lint + 测试 + OpenSpec 验证 + workflow 语法），不执行 `docker-build`（该 job 通过 `if: github.event_name == 'push'` 限制）
 
 ## 验收标准验证
 
