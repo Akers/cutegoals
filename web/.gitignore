@@ -4,6 +4,12 @@ node_modules
 # Build output
 dist
 
+# TypeScript composite build info
+*.tsBuildInfo
+
+# Vite config type declaration emitted by tsc -b
+vite.config.d.ts
+
 # Editor
 .vscode
 .idea
