@@ -65,4 +65,13 @@ public class SessionService {
         sessionMapper.revokeAllByAccountId(accountId);
         log.info("Revoked all sessions for accountId={}", accountId);
     }
+
+    /**
+     * Revoke all active sessions associated with a device fingerprint.
+     */
+    @Transactional
+    public void revokeSessionsByDevice(String deviceFingerprint) {
+        sessionMapper.revokeByDeviceFingerprint(deviceFingerprint);
+        log.info("Revoked all sessions for deviceFingerprint={}", deviceFingerprint);
+    }
 }

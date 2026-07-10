@@ -105,8 +105,9 @@ public class InvitationController {
         MDC.put("requestId", requestId);
 
         Long accountId = getAccountId(request);
+        Long familyId = getFamilyId(request);
 
-        Map<String, Object> result = invitationService.revokeInvitation(id, accountId);
+        Map<String, Object> result = invitationService.revokeInvitation(id, familyId, accountId);
         return ResponseEntity.ok(ApiResponse.success(result, requestId));
     }
 

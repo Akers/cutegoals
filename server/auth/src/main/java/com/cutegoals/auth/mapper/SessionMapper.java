@@ -26,4 +26,7 @@ public interface SessionMapper extends BaseMapper<Session> {
 
     @Select("SELECT COUNT(*) FROM session WHERE account_id = #{accountId} AND revoked = FALSE")
     long countActiveSessions(@Param("accountId") Long accountId);
+
+    @Update("UPDATE session SET revoked = TRUE WHERE device_fingerprint = #{deviceFingerprint} AND revoked = FALSE")
+    int revokeByDeviceFingerprint(@Param("deviceFingerprint") String deviceFingerprint);
 }

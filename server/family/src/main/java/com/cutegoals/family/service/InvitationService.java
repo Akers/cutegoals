@@ -14,6 +14,7 @@ import com.cutegoals.family.mapper.ParentInvitationMapper;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -123,8 +124,8 @@ public class InvitationService {
             roleBinding.setAccountId(accountId);
             roleBinding.setRole(AuthConstants.ROLE_PARENT);
             roleBindingMapper.insert(roleBinding);
-        } catch (Exception e) {
-            log.warn("PARENT role may already exist for accountId={}: {}", accountId, e.getMessage());
+        } catch (DuplicateKeyException e) {
+            log.warn("PARENT role already exists for accountId={}: {}", accountId, e.getMessage());
         }
 
         // Create family member (idempotent via unique constraint)
@@ -135,8 +136,8 @@ public class InvitationService {
             member.setRole(AuthConstants.ROLE_PARENT);
             member.setStatus(AuthConstants.MEMBER_ACTIVE);
             familyMemberMapper.insert(member);
-        } catch (Exception e) {
-            log.warn("Family member may already exist for accountId={}: {}", accountId, e.getMessage());
+        } catch (DuplicateKeyException e) {
+            log.warn("Family member already exists for accountId={}: {}", accountId, e.getMessage());
         }
 
         auditService.record(AuditEvent.INVITATION_ACCEPTED, accountId, "SUCCESS",
@@ -177,12 +178,17 @@ public class InvitationService {
     }
 
     /**
-     * Revoke an invitation (by inviter or any valid parent).
+     * Revoke an invitation (by inviter or any valid parent in the same family).
      */
     @Transactional
-    public Map<String, Object> revokeInvitation(Long invitationId, Long accountId) {
+    public Map<String, Object> revokeInvitation(Long invitationId, Long callerFamilyId, Long accountId) {
         ParentInvitation invitation = parentInvitationMapper.findById(invitationId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.INVITATION_NOT_AVAILABLE));
+
+        // Verify the caller belongs to the invitation's family
+        if (!invitation.getFamilyId().equals(callerFamilyId)) {
+            throw new BusinessException(ErrorCode.INVITATION_NOT_AVAILABLE);
+        }
 
         if (!"PENDING".equals(invitation.getStatus()) || invitation.getExpiresAt().isBefore(LocalDateTime.now())) {
             throw new BusinessException(ErrorCode.INVITATION_NOT_AVAILABLE);

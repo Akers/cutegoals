@@ -13,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -37,7 +38,7 @@ class ChildProfileServiceTest {
 
     @Test
     void shouldCreateChildProfileWithPin() {
-        when(childProfileMapper.countByPinHash(anyLong(), anyString())).thenReturn(0L);
+        when(childProfileMapper.findActiveByFamilyId(anyLong())).thenReturn(List.of());
         doReturn(1).when(childProfileMapper).insert(any(ChildProfile.class));
 
         Map<String, Object> result = childProfileService.createChildProfile(
@@ -68,6 +69,26 @@ class ChildProfileServiceTest {
         BusinessException e = assertThrows(BusinessException.class,
                 () -> childProfileService.createChildProfile(1L, 100L, "", null, null));
         assertEquals(ErrorCode.VALIDATION_FAILED, e.getErrorCode());
+    }
+
+    @Test
+    void shouldRejectDuplicatePinInSameFamily() {
+        String pin = "1234";
+        String pinHash = passwordEncoder.encode(pin);
+
+        ChildProfile existingChild = new ChildProfile();
+        existingChild.setId(20L);
+        existingChild.setFamilyId(1L);
+        existingChild.setNickname("小红");
+        existingChild.setPinHash(pinHash);
+        existingChild.setStatus("ACTIVE");
+
+        when(childProfileMapper.findActiveByFamilyId(1L)).thenReturn(List.of(existingChild));
+
+        BusinessException e = assertThrows(BusinessException.class,
+                () -> childProfileService.createChildProfile(1L, 100L, "小明", "/avatar.png", pin));
+        assertEquals(ErrorCode.PIN_CONFLICT, e.getErrorCode());
+        verify(childProfileMapper, never()).insert(any(ChildProfile.class));
     }
 
     @Test

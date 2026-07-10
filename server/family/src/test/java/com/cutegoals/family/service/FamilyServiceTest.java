@@ -3,6 +3,7 @@ package com.cutegoals.family.service;
 import com.cutegoals.auth.mapper.FamilyMapper;
 import com.cutegoals.auth.mapper.FamilyMemberMapper;
 import com.cutegoals.auth.service.AuditService;
+import com.cutegoals.auth.service.SessionService;
 import com.cutegoals.common.entity.family.ChildProfile;
 import com.cutegoals.common.entity.family.Family;
 import com.cutegoals.common.entity.family.FamilyMember;
@@ -31,12 +32,13 @@ class FamilyServiceTest {
     @Mock private FamilyMemberMapper familyMemberMapper;
     @Mock private ChildProfileMapper childProfileMapper;
     @Mock private AuditService auditService;
+    @Mock private SessionService sessionService;
 
     private FamilyService familyService;
 
     @BeforeEach
     void setUp() {
-        familyService = new FamilyService(familyMapper, familyMemberMapper, childProfileMapper, auditService);
+        familyService = new FamilyService(familyMapper, familyMemberMapper, childProfileMapper, auditService, sessionService);
     }
 
     @Test

@@ -1,7 +1,5 @@
 package com.cutegoals.family.controller;
 
-import com.cutegoals.auth.mapper.FamilyMemberMapper;
-import com.cutegoals.auth.service.SessionService;
 import com.cutegoals.common.constant.AuthConstants;
 import com.cutegoals.common.dto.ApiResponse;
 import com.cutegoals.common.exception.BusinessException;
@@ -29,8 +27,6 @@ public class FamilyController {
     private static final Logger log = LoggerFactory.getLogger(FamilyController.class);
 
     private final FamilyService familyService;
-    private final FamilyMemberMapper familyMemberMapper;
-    private final SessionService sessionService;
 
     /**
      * GET /api/family - Get current family information.
@@ -77,31 +73,7 @@ public class FamilyController {
         Long accountId = getAccountId(request);
         Long familyId = getFamilyId(request);
 
-        var member = familyMemberMapper.findById(id)
-                .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND));
-
-        if (!member.getFamilyId().equals(familyId)) {
-            throw new BusinessException(ErrorCode.RESOURCE_NOT_FOUND);
-        }
-
-        if (!AuthConstants.ROLE_PARENT.equals(member.getRole())) {
-            throw new BusinessException(ErrorCode.VALIDATION_FAILED, "Can only remove PARENT members");
-        }
-
-        // Check last active parent protection
-        long activeParentCount = familyMemberMapper.countActiveByFamilyIdAndRole(
-                familyId, AuthConstants.ROLE_PARENT);
-        if (activeParentCount <= 1) {
-            throw new BusinessException(ErrorCode.LAST_ACTIVE_PARENT);
-        }
-
-        // Deactivate member
-        familyMemberMapper.updateStatus(id, AuthConstants.MEMBER_INACTIVE);
-
-        // Revoke all sessions of removed member
-        sessionService.revokeAllSessions(member.getAccountId());
-
-        log.info("Member removed: memberId={}, accountId={}, by accountId={}", id, member.getAccountId(), accountId);
+        familyService.removeMember(id, familyId, accountId);
         return ResponseEntity.ok(ApiResponse.success(null, requestId));
     }
 
@@ -116,27 +88,7 @@ public class FamilyController {
         Long accountId = getAccountId(request);
         Long familyId = getFamilyId(request);
 
-        var member = familyMemberMapper.findByAccountIdAndRole(accountId, AuthConstants.ROLE_PARENT)
-                .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND));
-
-        if (!member.getFamilyId().equals(familyId)) {
-            throw new BusinessException(ErrorCode.RESOURCE_NOT_FOUND);
-        }
-
-        // Check last active parent protection
-        long activeParentCount = familyMemberMapper.countActiveByFamilyIdAndRole(
-                familyId, AuthConstants.ROLE_PARENT);
-        if (activeParentCount <= 1) {
-            throw new BusinessException(ErrorCode.LAST_ACTIVE_PARENT);
-        }
-
-        // Deactivate member
-        familyMemberMapper.updateStatus(member.getId(), AuthConstants.MEMBER_INACTIVE);
-
-        // Revoke all sessions of leaving member
-        sessionService.revokeAllSessions(accountId);
-
-        log.info("Member left family: memberId={}, accountId={}", member.getId(), accountId);
+        familyService.leaveFamily(accountId, familyId);
         return ResponseEntity.ok(ApiResponse.success(null, requestId));
     }
 

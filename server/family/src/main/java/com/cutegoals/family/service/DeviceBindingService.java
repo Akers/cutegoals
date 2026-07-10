@@ -43,6 +43,7 @@ public class DeviceBindingService {
     private final FamilyMemberMapper familyMemberMapper;
     private final SessionService sessionService;
     private final AuditService auditService;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     // PIN failure tracking: key = "deviceId:childProfileId", value = [failureCount, lockedUntilEpoch]
     private final ConcurrentHashMap<String, long[]> pinFailureTracker = new ConcurrentHashMap<>();
@@ -83,7 +84,7 @@ public class DeviceBindingService {
     }
 
     /**
-     * Revoke a device binding.
+     * Revoke a device binding and all associated child sessions.
      */
     @Transactional
     public void revokeDeviceBinding(Long bindingId, Long familyId, Long accountId) {
@@ -98,6 +99,9 @@ public class DeviceBindingService {
         }
 
         deviceBindingMapper.revokeById(bindingId);
+
+        // Revoke all child sessions associated with this device
+        sessionService.revokeSessionsByDevice(binding.getDeviceId());
 
         auditService.record(AuditEvent.DEVICE_REVOKED, accountId, "SUCCESS",
                 "Device binding revoked: id=" + bindingId + ", deviceId=" + binding.getDeviceId());
@@ -169,10 +173,9 @@ public class DeviceBindingService {
         }
 
         // Verify PIN
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         boolean pinMatches;
         try {
-            pinMatches = encoder.matches(pin, profile.getPinHash());
+            pinMatches = passwordEncoder.matches(pin, profile.getPinHash());
         } catch (Exception e) {
             pinMatches = false;
         }

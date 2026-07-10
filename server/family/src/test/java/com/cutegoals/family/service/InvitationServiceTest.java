@@ -40,6 +40,22 @@ class InvitationServiceTest {
     }
 
     @Test
+    void shouldRejectRevokeFromWrongFamily() {
+        ParentInvitation invitation = new ParentInvitation();
+        invitation.setId(10L);
+        invitation.setFamilyId(1L);
+        invitation.setStatus("PENDING");
+        invitation.setExpiresAt(LocalDateTime.now().plusDays(1));
+
+        when(parentInvitationMapper.findById(10L)).thenReturn(Optional.of(invitation));
+
+        BusinessException e = assertThrows(BusinessException.class,
+                () -> invitationService.revokeInvitation(10L, 999L, 100L));
+        assertEquals(ErrorCode.INVITATION_NOT_AVAILABLE, e.getErrorCode());
+        verify(parentInvitationMapper, never()).updateStatusIfPending(anyLong(), anyString());
+    }
+
+    @Test
     void shouldCreateInvitationSuccessfully() {
         when(parentInvitationMapper.findByIdempotencyKey(any(), anyString()))
                 .thenReturn(Optional.empty());
@@ -147,13 +163,14 @@ class InvitationServiceTest {
     void shouldRevokeInvitationSuccessfully() {
         ParentInvitation invitation = new ParentInvitation();
         invitation.setId(10L);
+        invitation.setFamilyId(1L);
         invitation.setStatus("PENDING");
         invitation.setExpiresAt(LocalDateTime.now().plusDays(1));
 
         when(parentInvitationMapper.findById(10L)).thenReturn(Optional.of(invitation));
         when(parentInvitationMapper.updateStatusIfPending(10L, "REVOKED")).thenReturn(1);
 
-        Map<String, Object> result = invitationService.revokeInvitation(10L, 100L);
+        Map<String, Object> result = invitationService.revokeInvitation(10L, 1L, 100L);
         assertEquals("REVOKED", result.get("status"));
         verify(auditService).record(eq("INVITATION_REVOKED"), eq(100L), eq("SUCCESS"), anyString());
     }

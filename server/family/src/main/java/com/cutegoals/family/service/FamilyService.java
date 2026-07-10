@@ -4,6 +4,8 @@ import com.cutegoals.auth.mapper.FamilyMapper;
 import com.cutegoals.auth.mapper.FamilyMemberMapper;
 import com.cutegoals.auth.service.AuditEvent;
 import com.cutegoals.auth.service.AuditService;
+import com.cutegoals.auth.service.SessionService;
+import com.cutegoals.common.constant.AuthConstants;
 import com.cutegoals.common.entity.family.ChildProfile;
 import com.cutegoals.common.entity.family.Family;
 import com.cutegoals.common.entity.family.FamilyMember;
@@ -32,6 +34,7 @@ public class FamilyService {
     private final FamilyMemberMapper familyMemberMapper;
     private final ChildProfileMapper childProfileMapper;
     private final AuditService auditService;
+    private final SessionService sessionService;
 
     /** Allowed fields for family update (whitelist). */
     private static final Set<String> ALLOWED_UPDATE_FIELDS = Set.of("name", "avatar");
@@ -131,5 +134,58 @@ public class FamilyService {
         log.info("Family updated: id={}", familyId);
 
         return getFamily(familyId);
+    }
+
+    // ========== Task 2.11: Member Removal & Parent Protection ==========
+
+    /**
+     * Remove a parent member with atomic last-active-parent protection.
+     * Uses database-level conditional update to prevent TOCTOU race conditions.
+     */
+    @Transactional
+    public void removeMember(Long memberId, Long familyId, Long callerAccountId) {
+        var member = familyMemberMapper.findById(memberId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND));
+
+        if (!member.getFamilyId().equals(familyId)) {
+            throw new BusinessException(ErrorCode.RESOURCE_NOT_FOUND);
+        }
+
+        if (!AuthConstants.ROLE_PARENT.equals(member.getRole())) {
+            throw new BusinessException(ErrorCode.VALIDATION_FAILED, "Can only remove PARENT members");
+        }
+
+        // Atomic check-and-update at database level
+        int updated = familyMemberMapper.tryDeactivateMember(memberId, familyId, AuthConstants.MEMBER_INACTIVE);
+        if (updated == 0) {
+            throw new BusinessException(ErrorCode.LAST_ACTIVE_PARENT);
+        }
+
+        sessionService.revokeAllSessions(member.getAccountId());
+
+        log.info("Member removed: memberId={}, accountId={}, by accountId={}", memberId, member.getAccountId(), callerAccountId);
+    }
+
+    /**
+     * Current parent leaves the family with atomic last-active-parent protection.
+     */
+    @Transactional
+    public void leaveFamily(Long accountId, Long familyId) {
+        var member = familyMemberMapper.findByAccountIdAndRole(accountId, AuthConstants.ROLE_PARENT)
+                .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND));
+
+        if (!member.getFamilyId().equals(familyId)) {
+            throw new BusinessException(ErrorCode.RESOURCE_NOT_FOUND);
+        }
+
+        // Atomic check-and-update at database level
+        int updated = familyMemberMapper.tryDeactivateMember(member.getId(), familyId, AuthConstants.MEMBER_INACTIVE);
+        if (updated == 0) {
+            throw new BusinessException(ErrorCode.LAST_ACTIVE_PARENT);
+        }
+
+        sessionService.revokeAllSessions(accountId);
+
+        log.info("Member left family: memberId={}, accountId={}", member.getId(), accountId);
     }
 }

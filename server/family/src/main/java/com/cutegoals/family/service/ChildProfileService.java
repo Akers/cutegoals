@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -187,11 +188,11 @@ public class ChildProfileService {
     // === Helpers ===
 
     private void validatePinUniqueness(Long familyId, String pin) {
-        String pinHash = passwordEncoder.encode(pin);
-        long count = childProfileMapper.countByPinHash(familyId, pinHash);
-        if (count > 0) {
-            // Since we hash before comparing, we do a best-effort uniqueness check
-            // The hash comparison may have collisions; we accept that risk
+        List<ChildProfile> profiles = childProfileMapper.findActiveByFamilyId(familyId);
+        for (ChildProfile profile : profiles) {
+            if (profile.getPinHash() != null && passwordEncoder.matches(pin, profile.getPinHash())) {
+                throw new BusinessException(ErrorCode.PIN_CONFLICT, "PIN already used by another child in this family");
+            }
         }
     }
 

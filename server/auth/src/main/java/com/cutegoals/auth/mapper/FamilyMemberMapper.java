@@ -33,4 +33,17 @@ public interface FamilyMemberMapper extends BaseMapper<FamilyMember> {
 
     @Update("UPDATE family_member SET status = #{status} WHERE id = #{id}")
     int updateStatus(@Param("id") Long id, @Param("status") String status);
+
+    /**
+     * Atomically deactivate a parent member only if at least one other active parent remains.
+     * Uses MySQL-safe derived table to avoid "can't specify target table for update" error.
+     *
+     * @return 1 if deactivated, 0 if this would leave the last active parent
+     */
+    @Update({"UPDATE family_member SET status = #{status} WHERE id = #{id} AND status = 'ACTIVE'",
+             "AND (SELECT active_count FROM (",
+             "SELECT COUNT(*) AS active_count FROM family_member",
+             "WHERE family_id = #{familyId} AND role = 'PARENT' AND status = 'ACTIVE'",
+             ") AS counts) > 1"})
+    int tryDeactivateMember(@Param("id") Long id, @Param("familyId") Long familyId, @Param("status") String status);
 }
