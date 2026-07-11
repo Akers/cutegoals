@@ -1,0 +1,41 @@
+# Integration test profile (spring.profiles.active=test)
+# Uses H2 PostgreSQL compatibility mode for lightweight integration tests
+# Use Testcontainers for full PostgreSQL integration tests (profile: pg-test)
+
+spring:
+  # Disable Redis for tests (not needed for core business logic IT)
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.redis.RedisReactiveAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
+
+  datasource:
+    url: jdbc:h2:mem:cutegoals_test;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    # Skip transaction wrapping for H2 compatibility
+    baseline-on-migrate: true
+
+  sql:
+    init:
+      mode: never
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+
+  jackson:
+    time-zone: Asia/Shanghai
+    date-format: yyyy-MM-dd HH:mm:ss
+
+logging:
+  level:
+    com.cutegoals: DEBUG
+    org.springframework.security: DEBUG
+    org.flywaydb: INFO
