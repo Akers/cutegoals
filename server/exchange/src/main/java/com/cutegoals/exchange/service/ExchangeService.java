@@ -19,6 +19,8 @@ import com.cutegoals.prize.mapper.BlindBoxPoolMapper;
 import com.cutegoals.prize.mapper.PrizeMapper;
 import com.cutegoals.prize.service.BlindBoxService;
 import com.cutegoals.prize.service.PrizeService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +29,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -50,6 +55,7 @@ public class ExchangeService {
     private final PointsBalanceMapper pointsBalanceMapper;
     private final PointsLedgerMapper pointsLedgerMapper;
     private final AuditService auditService;
+    private final ObjectMapper objectMapper;
 
     private static final int DEFAULT_PAGE_SIZE = 20;
     private static final int MAX_PAGE_SIZE = 100;
@@ -90,9 +96,20 @@ public class ExchangeService {
                     "Prize out of stock: " + prizeId);
         }
 
-        // Deduct points using PointsService (which includes balance check + SPEND ledger)
+        // Create exchange record FIRST
         int costPoints = prize.getPointsCost();
-        String spendBusinessRef = "EXCHANGE_SPEND_" + UUID.randomUUID();
+        Exchange exchange = new Exchange();
+        exchange.setChildId(childId);
+        exchange.setFamilyId(familyId);
+        exchange.setType("DIRECT");
+        exchange.setStatus("PENDING_FULFILLMENT");
+        exchange.setCostPoints(costPoints);
+        exchange.setIdempotencyKey(idempotencyKey);
+        exchange.setPrizeId(prizeId);
+        exchangeMapper.insert(exchange);
+
+        // Deduct points using PointsService with exchange ID as businessRef
+        String spendBusinessRef = "EXCHANGE_SPEND_" + exchange.getId();
         pointsService.spendPoints(childId, familyId, costPoints, spendBusinessRef,
                 "Direct exchange: prize=" + prize.getName());
 
@@ -103,17 +120,6 @@ public class ExchangeService {
             throw new BusinessException(ErrorCode.PRIZE_OUT_OF_STOCK,
                     "Prize out of stock (concurrent): " + prizeId);
         }
-
-        // Create exchange record
-        Exchange exchange = new Exchange();
-        exchange.setChildId(childId);
-        exchange.setFamilyId(familyId);
-        exchange.setType("DIRECT");
-        exchange.setStatus("PENDING_FULFILLMENT");
-        exchange.setCostPoints(costPoints);
-        exchange.setIdempotencyKey(idempotencyKey);
-        exchange.setPrizeId(prizeId);
-        exchangeMapper.insert(exchange);
 
         // Create snapshot
         ExchangeSnapshot snapshot = new ExchangeSnapshot();
@@ -168,8 +174,10 @@ public class ExchangeService {
         if (clientVersion != null && !clientVersion.isEmpty()) {
             String serverVersion = blindBoxService.computeAvailabilityVersion(poolId, familyId);
             if (!clientVersion.equals(serverVersion)) {
+                // Include latest candidates and availability version in the response
+                Map<String, Object> candidatesData = blindBoxService.getCandidateProbabilities(poolId, familyId);
                 throw new BusinessException(ErrorCode.BLIND_BOX_POOL_CHANGED,
-                        "Pool availability has changed; please refresh candidates");
+                        "Pool availability has changed; please refresh candidates", candidatesData);
             }
         }
 
@@ -187,20 +195,8 @@ public class ExchangeService {
                     "Drawn prize out of stock, pool changed");
         }
 
-        // Deduct points
+        // Create exchange record FIRST
         int costPoints = pool.getCostPoints();
-        String spendBusinessRef = "EXCHANGE_SPEND_" + UUID.randomUUID();
-        pointsService.spendPoints(childId, familyId, costPoints, spendBusinessRef,
-                "Blind box exchange: pool=" + pool.getName());
-
-        // Deduct stock
-        int stockUpdated = prizeMapper.decrementStock(drawnPrizeId);
-        if (stockUpdated == 0) {
-            throw new BusinessException(ErrorCode.BLIND_BOX_POOL_CHANGED,
-                    "Drawn prize out of stock (concurrent): " + drawnPrizeId);
-        }
-
-        // Create exchange record
         Exchange exchange = new Exchange();
         exchange.setChildId(childId);
         exchange.setFamilyId(familyId);
@@ -212,12 +208,26 @@ public class ExchangeService {
         exchange.setResultPrizeId(drawnPrizeId);
         exchangeMapper.insert(exchange);
 
-        // Get all candidates with probabilities for snapshot
+        // Deduct points with exchange ID as businessRef
+        String spendBusinessRef = "EXCHANGE_SPEND_" + exchange.getId();
+        pointsService.spendPoints(childId, familyId, costPoints, spendBusinessRef,
+                "Blind box exchange: pool=" + pool.getName());
+
+        // Deduct stock
+        int stockUpdated = prizeMapper.decrementStock(drawnPrizeId);
+        if (stockUpdated == 0) {
+            throw new BusinessException(ErrorCode.BLIND_BOX_POOL_CHANGED,
+                    "Drawn prize out of stock (concurrent): " + drawnPrizeId);
+        }
+
+        // Get all candidates with probabilities for snapshot (ObjectMapper for safe JSON)
         List<Map<String, Object>> candidates = blindBoxService.getEffectiveCandidates(poolId, familyId);
-        String candidateProbJson = candidates.stream()
-                .map(c -> String.format("{\"prizeId\":%d,\"prizeName\":\"%s\",\"weight\":%d,\"probability\":%s}",
-                        c.get("prizeId"), c.get("prizeName"), c.get("weight"), c.get("probability")))
-                .collect(Collectors.joining(",", "[", "]"));
+        String candidateProbJson;
+        try {
+            candidateProbJson = objectMapper.writeValueAsString(candidates);
+        } catch (JsonProcessingException e) {
+            throw new BusinessException(ErrorCode.INTERNAL_ERROR, "Failed to serialize candidate probabilities");
+        }
 
         // Create snapshot
         ExchangeSnapshot snapshot = new ExchangeSnapshot();
@@ -263,6 +273,13 @@ public class ExchangeService {
         Optional<Exchange> existingOpt = exchangeMapper.findByChildIdAndKey(childId, idempotencyKey);
         if (existingOpt.isPresent()) {
             Exchange existing = existingOpt.get();
+
+            // Check 24-hour expiry: if created more than 24 hours ago, treat as a new request
+            if (existing.getCreatedAt() != null
+                    && existing.getCreatedAt().isBefore(LocalDateTime.now().minusHours(24))) {
+                return null; // Expired - treat as new request
+            }
+
             // Check if request matches the original request
             if (requestsMatch(request, existing)) {
                 return existing; // Same request - return existing result
@@ -354,10 +371,13 @@ public class ExchangeService {
             String refundBusinessRef = "EXCHANGE_REFUND_" + exchangeId;
             pointsService.refundPoints(exchange.getChildId(), familyId, exchange.getCostPoints(),
                     refundBusinessRef, "Exchange cancellation: id=" + exchangeId);
+        } catch (BusinessException e) {
+            // Let BusinessException (e.g. POINTS_REFERENCE_CONFLICT) propagate naturally
+            throw e;
         } catch (Exception e) {
             log.error("Failed to refund points for exchange cancellation: id={}", exchangeId, e);
             throw new BusinessException(ErrorCode.EXCHANGE_CANCELLATION_FAILED,
-                    "Failed to refund points: " + e.getMessage());
+                    "Failed to refund points: " + e.getMessage(), e);
         }
 
         // Restore stock - determine which prize stock to restore
@@ -368,7 +388,7 @@ public class ExchangeService {
             } catch (Exception e) {
                 log.error("Failed to restore stock for exchange cancellation: id={}", exchangeId, e);
                 throw new BusinessException(ErrorCode.EXCHANGE_CANCELLATION_FAILED,
-                        "Failed to restore stock: " + e.getMessage());
+                        "Failed to restore stock: " + e.getMessage(), e);
             }
         }
 
