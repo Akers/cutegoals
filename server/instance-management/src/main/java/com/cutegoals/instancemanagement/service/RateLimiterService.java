@@ -11,10 +11,31 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * In-memory rate limiter for authentication endpoints (Task 6.6).
  * Supports per-key rate limiting with configurable window and max attempts.
+ * <p>
+ * <strong>Limitation:</strong> Uses a process-local {@code ConcurrentHashMap}.
+ * In multi-instance deployments, the rate limit state is NOT shared across
+ * instances. After a restart, all rate limit counters are reset.
+ * <p>
+ * For production multi-instance deployments, replace this implementation with
+ * a Redis-based rate limiter (e.g., using Redis Lua scripts with {@code INCR}
+ * and {@code EXPIRE}) or a distributed token bucket. Configure the implementation
+ * via {@code rate-limit.type}:
+ * <pre>{@code
+ * rate-limit:
+ *   type: local     # in-memory (current, default)
+ *   # type: redis   # future: Redis-backed distributed rate limiter
+ * }</pre>
+ *
+ * @see <a href="https://redis.io/commands/INCR">Redis INCR with EXPIRE pattern</a>
  */
 @Service
 public class RateLimiterService {
 
+    /**
+     * In-memory attempt map. <strong>Not shared across instances.</strong>
+     * For distributed rate limiting, replace this with a Redis-backed store.
+     * Config key: {@code rate-limit.type} (values: {@code local}, {@code redis}).
+     */
     private final Map<String, List<Long>> attemptMap = new ConcurrentHashMap<>();
 
     /**
