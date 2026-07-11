@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -30,11 +31,14 @@ class InstanceHealthServiceTest {
     @Mock
     private RecoveryDrillMapper recoveryDrillMapper;
 
+    @Mock
+    private JdbcTemplate jdbcTemplate;
+
     private InstanceHealthService healthService;
 
     @BeforeEach
     void setUp() {
-        healthService = new InstanceHealthService(tokenService, backupRunMapper, recoveryDrillMapper);
+        healthService = new InstanceHealthService(tokenService, backupRunMapper, recoveryDrillMapper, jdbcTemplate);
         // Set @Value fields via reflection since Spring is not active in unit tests
         setField(healthService, "appVersion", "2.0.0-TEST");
         setField(healthService, "buildTime", "2026-07-11T00:00:00");
@@ -54,7 +58,7 @@ class InstanceHealthServiceTest {
     @Test
     void shouldReturnPublicHealth() {
         when(tokenService.isInitialized()).thenReturn(true);
-        when(backupRunMapper.findLatest()).thenReturn(Optional.empty());
+        when(jdbcTemplate.queryForObject("SELECT 1", Integer.class)).thenReturn(1);
 
         Map<String, Object> health = healthService.getPublicHealth();
 
@@ -65,6 +69,7 @@ class InstanceHealthServiceTest {
     @Test
     void shouldReturnAdminHealthWithBackupInfo() {
         when(tokenService.isInitialized()).thenReturn(true);
+        when(jdbcTemplate.queryForObject("SELECT 1", Integer.class)).thenReturn(1);
 
         BackupRun backupRun = new BackupRun();
         backupRun.setStatus("SUCCESS");
@@ -103,6 +108,7 @@ class InstanceHealthServiceTest {
     @Test
     void shouldWarnWhenRPOExceeds24Hours() {
         when(tokenService.isInitialized()).thenReturn(true);
+        when(jdbcTemplate.queryForObject("SELECT 1", Integer.class)).thenReturn(1);
 
         BackupRun backupRun = new BackupRun();
         backupRun.setStatus("SUCCESS");
@@ -119,6 +125,7 @@ class InstanceHealthServiceTest {
     @Test
     void shouldHandleNoBackupRun() {
         when(tokenService.isInitialized()).thenReturn(true);
+        when(jdbcTemplate.queryForObject("SELECT 1", Integer.class)).thenReturn(1);
         when(backupRunMapper.findLatest()).thenReturn(Optional.empty());
         when(recoveryDrillMapper.findLatest()).thenReturn(Optional.empty());
 
@@ -132,13 +139,16 @@ class InstanceHealthServiceTest {
     @Test
     void shouldHandleDatabaseError() {
         when(tokenService.isInitialized()).thenReturn(true);
-        when(backupRunMapper.findLatest()).thenThrow(new RuntimeException("DB connection failed"));
+        when(jdbcTemplate.queryForObject("SELECT 1", Integer.class))
+                .thenThrow(new RuntimeException("DB connection failed"));
+        when(backupRunMapper.findLatest()).thenReturn(Optional.empty());
+        when(recoveryDrillMapper.findLatest()).thenReturn(Optional.empty());
 
         Map<String, Object> health = healthService.getAdminHealth();
 
         assertEquals("DOWN", health.get("status"));
         @SuppressWarnings("unchecked")
         Map<String, Object> backup = (Map<String, Object>) health.get("backup");
-        assertEquals("ERROR", backup.get("lastBackupStatus"));
+        assertEquals("NEVER", backup.get("lastBackupStatus"));
     }
 }

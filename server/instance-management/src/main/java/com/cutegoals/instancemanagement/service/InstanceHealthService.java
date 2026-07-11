@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -29,6 +30,7 @@ public class InstanceHealthService {
     private final InitializationTokenService tokenService;
     private final BackupRunMapper backupRunMapper;
     private final RecoveryDrillMapper recoveryDrillMapper;
+    private final JdbcTemplate jdbcTemplate;
 
     @Value("${app.version:2.0.0-SNAPSHOT}")
     private String appVersion;
@@ -91,11 +93,13 @@ public class InstanceHealthService {
     }
 
     /**
-     * Check database health by attempting to read the latest backup run.
+     * Check database health by executing {@code SELECT 1}.
+     * Does NOT depend on any specific table (e.g. backup_run), so it works
+     * correctly on first deployment before any backup data exists.
      */
     private boolean checkDatabaseHealth() {
         try {
-            backupRunMapper.findLatest();
+            jdbcTemplate.queryForObject("SELECT 1", Integer.class);
             return true;
         } catch (Exception e) {
             log.warn("Database health check failed: {}", e.getMessage());
