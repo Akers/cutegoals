@@ -59,6 +59,8 @@ public class WebSecurityConfig {
             "/api/instance/status"
     );
 
+
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http

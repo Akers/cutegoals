@@ -100,6 +100,34 @@ public class GlobalExceptionHandler {
             case TASK_ASSIGNMENT_ALREADY_APPROVED -> HttpStatus.CONFLICT;
             case TASK_ASSIGNMENT_CANCELLED -> HttpStatus.CONFLICT;
             case TASK_ASSIGNMENT_INVALID_QUERY -> HttpStatus.BAD_REQUEST;
+            // Task Review errors
+            case TASK_REVIEW_FORBIDDEN -> HttpStatus.FORBIDDEN;
+            case TASK_REVIEW_NOT_FOUND -> HttpStatus.NOT_FOUND;
+            case TASK_REVIEW_INVALID_STATE -> HttpStatus.CONFLICT;
+            case TASK_REVIEW_REASON_REQUIRED -> HttpStatus.BAD_REQUEST;
+            case TASK_REVIEW_VALIDATION_FAILED -> HttpStatus.BAD_REQUEST;
+            case TASK_REVIEW_ALREADY_DECIDED -> HttpStatus.CONFLICT;
+            case TASK_REVIEW_STALE_ATTEMPT -> HttpStatus.CONFLICT;
+            case TASK_REVIEW_IDEMPOTENCY_CONFLICT -> HttpStatus.CONFLICT;
+            case TASK_REVIEW_INVALID_QUERY -> HttpStatus.BAD_REQUEST;
+            case TASK_REVIEW_HISTORY_IMMUTABLE -> HttpStatus.METHOD_NOT_ALLOWED;
+            // Task Submission errors
+            case TASK_SUBMISSION_VALIDATION_FAILED -> HttpStatus.BAD_REQUEST;
+            case TASK_SUBMISSION_LATE_NOT_ALLOWED -> HttpStatus.CONFLICT;
+            case TASK_SUBMISSION_IDEMPOTENCY_CONFLICT -> HttpStatus.CONFLICT;
+            // Points errors
+            case POINTS_FORBIDDEN -> HttpStatus.FORBIDDEN;
+            case POINTS_ACCOUNT_NOT_FOUND -> HttpStatus.NOT_FOUND;
+            case POINTS_INVALID_TRANSACTION -> HttpStatus.BAD_REQUEST;
+            case POINTS_INSUFFICIENT_BALANCE -> HttpStatus.CONFLICT;
+            case POINTS_ACCOUNT_CONFLICT -> HttpStatus.CONFLICT;
+            case POINTS_ADJUST_REASON_REQUIRED -> HttpStatus.BAD_REQUEST;
+            case POINTS_REFERENCE_CONFLICT -> HttpStatus.CONFLICT;
+            case POINTS_LEDGER_IMMUTABLE -> HttpStatus.METHOD_NOT_ALLOWED;
+            case POINTS_REFUND_SOURCE_INVALID -> HttpStatus.BAD_REQUEST;
+            case POINTS_ALREADY_REFUNDED -> HttpStatus.CONFLICT;
+            case POINTS_SPEND_SOURCE_INVALID -> HttpStatus.BAD_REQUEST;
+            case POINTS_INVALID_QUERY -> HttpStatus.BAD_REQUEST;
             default -> HttpStatus.INTERNAL_SERVER_ERROR;
         };
     }

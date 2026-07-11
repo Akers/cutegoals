@@ -54,4 +54,15 @@ public final class AuditEvent {
     public static final String ASSIGNMENT_UPDATED = "ASSIGNMENT_UPDATED";
     public static final String ASSIGNMENT_CANCELLED = "ASSIGNMENT_CANCELLED";
     public static final String ASSIGNMENT_LATE_POLICY_OVERRIDE = "ASSIGNMENT_LATE_POLICY_OVERRIDE";
+
+    // === Task Review events ===
+    public static final String TASK_SUBMITTED = "TASK_SUBMITTED";
+    public static final String TASK_REVIEW_APPROVED = "TASK_REVIEW_APPROVED";
+    public static final String TASK_REVIEW_REJECTED = "TASK_REVIEW_REJECTED";
+
+    // === Points events ===
+    public static final String POINTS_EARN = "POINTS_EARN";
+    public static final String POINTS_SPEND = "POINTS_SPEND";
+    public static final String POINTS_REFUND = "POINTS_REFUND";
+    public static final String POINTS_ADJUST = "POINTS_ADJUST";
 }

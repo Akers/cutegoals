@@ -17,6 +17,7 @@
         <module>auth</module>
         <module>family</module>
         <module>task</module>
+        <module>task-review</module>
         <module>points</module>
         <module>prize</module>
         <module>exchange</module>
@@ -92,6 +93,11 @@
             <dependency>
                 <groupId>com.cutegoals</groupId>
                 <artifactId>task</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.cutegoals</groupId>
+                <artifactId>task-review</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

@@ -33,6 +33,10 @@
         </dependency>
         <dependency>
             <groupId>com.cutegoals</groupId>
+            <artifactId>task-review</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.cutegoals</groupId>
             <artifactId>prize</artifactId>
         </dependency>
         <dependency>
