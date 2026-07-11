@@ -161,7 +161,17 @@ public class PointsService {
         ledger.setSourceSnapshot(String.format("{\"reason\":\"%s\"}", escapeJson(reason)));
         ledger.setOperatorId(accountId);
         ledger.setReason(reason);
-        pointsLedgerMapper.insert(ledger);
+        try {
+            pointsLedgerMapper.insert(ledger);
+        } catch (org.apache.ibatis.exceptions.PersistenceException ex) {
+            // Defensive: handle duplicate businessRef for concurrent ADJUST requests
+            if (ex.getCause() instanceof java.sql.SQLException sqlEx && sqlEx.getMessage() != null
+                    && sqlEx.getMessage().toLowerCase().contains("business_ref")) {
+                throw new BusinessException(ErrorCode.POINTS_REFERENCE_CONFLICT,
+                        "Duplicate business reference for adjustment: " + businessRef);
+            }
+            throw ex;
+        }
 
         // Update balance with optimistic lock (totalEarned stays unchanged for ADJUST)
         int updated;
