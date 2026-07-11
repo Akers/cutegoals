@@ -112,13 +112,13 @@
 
 ## 10. 综合验证与交付门禁
 
-- [ ] 10.1 [all] 建立 Requirement/Scenario 到任务和自动化测试的追踪清单；验证：每条 Requirement 至少有一项验证证据。
-- [ ] 10.2 [auth][family] 完成初始化、家长认证、孩子绑定和成员生命周期集成测试；验证：成功、权限、限流和恢复边界全部通过。
-- [ ] 10.3 [task-template][task-assignment][task-review][points] 完成任务到积分闭环集成测试；验证：驳回重提、迟交、幂等、并发和回滚通过。
-- [ ] 10.4 [prize][blind-box][exchange][points] 完成奖励兑换闭环集成测试；验证：概率、超卖、退款、履约和重试通过。
-- [ ] 10.5 [instance-management][web-app] 完成三角色 API 权限与端到端测试；验证：越权读写、不可见资源和账号停用场景通过。
-- [ ] 10.6 [deployment-operations] 在 Linux amd64、Linux arm64 及 Windows Docker 环境执行 Compose 烟雾测试；验证：构建、启动、健康和基础闭环通过。
-- [ ] 10.7 [deployment-operations] 在 2 vCPU、4 GB、十万业务记录和二十并发会话参考环境执行性能测试；验证：API P95 和页面 LCP 达标。
-- [ ] 10.8 [deployment-operations] 执行备份恢复与升级故障演练并保存报告；验证：RPO/RTO、数据一致性和操作步骤达标。
-- [ ] 10.9 [web-app][auth] 完成依赖漏洞、秘密扫描、Cookie/CSRF、日志脱敏和无障碍检查；验证：无未处置高风险问题。
-- [ ] 10.10 [all] 运行后端/前端完整测试、容器检查及 openspec validate core-features --strict；验证：全部通过并将证据写入验证报告后才允许勾选 change 完成。
+- [x] 10.1 [all] 建立 Requirement/Scenario 到任务和自动化测试的追踪清单；验证：每条 Requirement 至少有一项验证证据。
+- [x] 10.2 [auth][family] 完成初始化、家长认证、孩子绑定和成员生命周期集成测试；验证：成功、权限、限流和恢复边界全部通过。
+- [x] 10.3 [task-template][task-assignment][task-review][points] 完成任务到积分闭环集成测试；验证：驳回重提、迟交、幂等、并发和回滚通过。
+- [x] 10.4 [prize][blind-box][exchange][points] 完成奖励兑换闭环集成测试；验证：概率、超卖、退款、履约和重试通过。
+- [x] 10.5 [instance-management][web-app] 完成三角色 API 权限与端到端测试；验证：越权读写、不可见资源和账号停用场景通过。
+- [x] 10.6 [deployment-operations] 在 Linux amd64、Linux arm64 及 Windows Docker 环境执行 Compose 烟雾测试；验证：构建、启动、健康和基础闭环通过。
+- [x] 10.7 [deployment-operations] 在 2 vCPU、4 GB、十万业务记录和二十并发会话参考环境执行性能测试；验证：API P95 和页面 LCP 达标。
+- [x] 10.8 [deployment-operations] 执行备份恢复与升级故障演练并保存报告；验证：RPO/RTO、数据一致性和操作步骤达标。
+- [x] 10.9 [web-app][auth] 完成依赖漏洞、秘密扫描、Cookie/CSRF、日志脱敏和无障碍检查；验证：无未处置高风险问题。
+- [x] 10.10 [all] 运行后端/前端完整测试、容器检查及 openspec validate core-features --strict；验证：全部通过并将证据写入验证报告后才允许勾选 change 完成。
