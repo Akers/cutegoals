@@ -2,7 +2,7 @@ package com.cutegoals.auth.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,7 +14,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * Can be replaced with a persistent implementation in production.
  */
 @Service
-@ConditionalOnMissingBean(AuditService.class)
+@ConditionalOnProperty(name = "app.audit.type", havingValue = "memory", matchIfMissing = true)
 public class InMemoryAuditService implements AuditService {
 
     private static final Logger log = LoggerFactory.getLogger(InMemoryAuditService.class);

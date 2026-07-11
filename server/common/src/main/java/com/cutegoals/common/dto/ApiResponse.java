@@ -1,6 +1,7 @@
 package com.cutegoals.common.dto;
 
 import com.cutegoals.common.exception.ErrorCode;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,6 +17,7 @@ public class ApiResponse<T> {
     private String code;
     private String message;
     private T data;
+    @JsonProperty("request_id")
     private String requestId;
 
     public static <T> ApiResponse<T> success(T data) {

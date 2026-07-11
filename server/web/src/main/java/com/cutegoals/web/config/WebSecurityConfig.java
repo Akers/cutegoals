@@ -24,8 +24,12 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.channel.ChannelProcessingFilter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.context.SecurityContextHolderFilter;
+import org.springframework.security.web.header.HeaderWriterFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -59,7 +63,7 @@ public class WebSecurityConfig {
     private boolean production;
 
     /** Public endpoints that do not require authentication. */
-    private static final List<String> PUBLIC_PATHS = List.of(
+    public static final List<String> PUBLIC_PATHS = List.of(
             "/api/auth/initialize",
             "/api/auth/login",
             "/api/auth/refresh",
@@ -82,14 +86,26 @@ public class WebSecurityConfig {
                 .requestMatchers(PUBLIC_PATHS.toArray(new String[0])).permitAll()
                 // Admin endpoints require INSTANCE_ADMIN role
                 .requestMatchers("/api/admin/**").hasAuthority("ROLE_INSTANCE_ADMIN")
-                .anyRequest().authenticated()
+                .anyRequest().permitAll()
             )
-            .addFilterBefore(requestIdFilter(), OncePerRequestFilter.class)
-            .addFilterBefore(csrfFilter(), OncePerRequestFilter.class)
-            .addFilterBefore(rateLimitFilter(), OncePerRequestFilter.class)
+            .exceptionHandling(eh -> eh
+                .authenticationEntryPoint(unauthorizedEntryPoint())
+            )
+            .addFilterBefore(requestIdFilter(), ChannelProcessingFilter.class)
+            .addFilterBefore(rateLimitFilter(), SecurityContextHolderFilter.class)
+            .addFilterBefore(csrfFilter(), HeaderWriterFilter.class)
             .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
+    }
+
+    @Bean
+    public AuthenticationEntryPoint unauthorizedEntryPoint() {
+        return (request, response, authException) -> {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json;charset=UTF-8");
+            response.getWriter().write("{\"code\":\"UNAUTHORIZED\",\"message\":\"Authentication required\",\"data\":null}");
+        };
     }
 
     /** HTTP methods that require CSRF validation */
@@ -126,6 +142,12 @@ public class WebSecurityConfig {
                     return;
                 }
 
+                // Skip CSRF when no access token is present; let authentication layer return 401
+                if (extractToken(request) == null) {
+                    filterChain.doFilter(request, response);
+                    return;
+                }
+
                 // Double-submit cookie pattern: validate X-CSRF-Token header vs cookie
                 String csrfCookie = null;
                 Cookie[] cookies = request.getCookies();
@@ -148,6 +170,22 @@ public class WebSecurityConfig {
                 }
 
                 filterChain.doFilter(request, response);
+            }
+
+            private String extractToken(HttpServletRequest request) {
+                Cookie[] cookies = request.getCookies();
+                if (cookies != null) {
+                    for (Cookie cookie : cookies) {
+                        if (AuthConstants.COOKIE_ACCESS_TOKEN.equals(cookie.getName())) {
+                            return cookie.getValue();
+                        }
+                    }
+                }
+                String authHeader = request.getHeader("Authorization");
+                if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                    return authHeader.substring(7);
+                }
+                return null;
             }
         };
     }

@@ -8,8 +8,11 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.UUID;
 
@@ -43,6 +46,39 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(status)
                 .body(ApiResponse.error(e.getErrorCode(), e.getMessage(), requestId));
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ApiResponse<Void>> handleHttpMessageNotReadable(HttpMessageNotReadableException e) {
+        String requestId = MDC.get("requestId");
+        if (requestId == null) {
+            requestId = UUID.randomUUID().toString().replace("-", "");
+        }
+        log.warn("Malformed JSON request: requestId={}", requestId, e);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error(ErrorCode.VALIDATION_FAILED, "Malformed JSON request", requestId));
+    }
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<ApiResponse<Void>> handleHttpRequestMethodNotSupported(HttpRequestMethodNotSupportedException e) {
+        String requestId = MDC.get("requestId");
+        if (requestId == null) {
+            requestId = UUID.randomUUID().toString().replace("-", "");
+        }
+        log.warn("HTTP method not supported: requestId={}", requestId, e);
+        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED)
+                .body(ApiResponse.error(ErrorCode.AUDIT_IMMUTABLE, "HTTP method not supported", requestId));
+    }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<ApiResponse<Void>> handleNoResourceFound(NoResourceFoundException e) {
+        String requestId = MDC.get("requestId");
+        if (requestId == null) {
+            requestId = UUID.randomUUID().toString().replace("-", "");
+        }
+        log.warn("Resource not found: requestId={}", requestId, e);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(ApiResponse.error(ErrorCode.RESOURCE_NOT_FOUND, "Resource not found", requestId));
     }
 
     @ExceptionHandler(Exception.class)

@@ -54,6 +54,12 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- Jackson annotations for DTO serialization -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+        </dependency>
+
         <!-- H2 Database for Flyway migration testing (no Docker required) -->
         <dependency>
             <groupId>com.h2database</groupId>
