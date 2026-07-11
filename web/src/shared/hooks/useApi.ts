@@ -99,7 +99,8 @@ export function useFormField(initialValue = '') {
     setValue(initialValue);
     setTouched(false);
   }, [initialValue]);
-  return { value, setValue, touched, onChange, onBlur, reset };
+  const inputProps = { value, onChange, onBlur };
+  return { value, setValue, touched, onChange, onBlur, reset, inputProps };
 }
 
 export function useIdempotencyKey(): string {

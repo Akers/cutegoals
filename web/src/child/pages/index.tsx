@@ -302,7 +302,7 @@ export function ChildTasksPage() {
             <TextArea
               id="submit-notes"
               placeholder="说说你是怎么完成任务的"
-              {...notes}
+              {...notes.inputProps}
             />
           </FormField>
           <Button onClick={handleSubmit} isLoading={submitting} disabled={!notes.value.trim()}>

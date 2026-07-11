@@ -62,16 +62,16 @@ export function AdminInitPage() {
         )}
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <FormField label="初始化令牌" htmlFor="init-token">
-            <Input id="init-token" type="text" placeholder="从部署命令获取" {...token} />
+            <Input id="init-token" type="text" placeholder="从部署命令获取" {...token.inputProps} />
           </FormField>
           <FormField label="管理员手机号" htmlFor="init-phone">
-            <Input id="init-phone" type="tel" placeholder="11 位手机号" {...phone} />
+            <Input id="init-phone" type="tel" placeholder="11 位手机号" {...phone.inputProps} />
           </FormField>
           <FormField label="密码" htmlFor="init-password">
-            <Input id="init-password" type="password" placeholder="至少 8 位" {...password} />
+            <Input id="init-password" type="password" placeholder="至少 8 位" {...password.inputProps} />
           </FormField>
           <FormField label="确认密码" htmlFor="init-confirm">
-            <Input id="init-confirm" type="password" placeholder="再次输入密码" {...confirmPassword} />
+            <Input id="init-confirm" type="password" placeholder="再次输入密码" {...confirmPassword.inputProps} />
           </FormField>
           <Button type="submit" isLoading={loading} className="w-full">
             完成初始化

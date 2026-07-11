@@ -59,10 +59,10 @@ export function ParentLoginPage() {
         )}
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <FormField label="手机号" htmlFor="parent-phone">
-            <Input id="parent-phone" type="tel" autoComplete="username" placeholder="11 位手机号" {...phone} />
+            <Input id="parent-phone" type="tel" autoComplete="username" placeholder="11 位手机号" {...phone.inputProps} />
           </FormField>
           <FormField label="密码" htmlFor="parent-password">
-            <Input id="parent-password" type="password" autoComplete="current-password" placeholder="请输入密码" {...password} />
+            <Input id="parent-password" type="password" autoComplete="current-password" placeholder="请输入密码" {...password.inputProps} />
           </FormField>
           <Button type="submit" isLoading={loading} className="w-full">
             登录

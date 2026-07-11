@@ -157,6 +157,12 @@ function usePaginatedData<T>(path: string) {
   };
 }
 
+/** 手机号脱敏：138****1234 */
+function maskPhone(phone: string): string {
+  if (!phone || phone.length < 7) return phone ?? '';
+  return phone.slice(0, 3) + '****' + phone.slice(-4);
+}
+
 export function ParentHomePage() {
   const { data, loading, error, refetch } = useApi<Family>('/family');
   const online = useOnline();
@@ -227,7 +233,7 @@ export function ParentFamilyPage() {
             <div key={member.id} className="flex items-center justify-between rounded-cg-md bg-cg-surface-raised p-3">
               <div>
                 <div className="font-medium text-cg-text">{member.nickname}</div>
-                {member.phone && <div className="text-xs text-cg-text-muted">{member.phone}</div>}
+                {member.phone && <div className="text-xs text-cg-text-muted">{maskPhone(member.phone)}</div>}
               </div>
               <StatusBadge status={member.role === 'PARENT' ? 'approved' : 'pending'} />
             </div>
@@ -243,7 +249,7 @@ export function ParentFamilyPage() {
             {invitations.map((inv) => (
               <div key={inv.id} className="flex items-center justify-between rounded-cg-md bg-cg-surface-raised p-3">
                 <div>
-                  <div className="font-medium text-cg-text">{inv.inviteePhone}</div>
+                  <div className="font-medium text-cg-text">{maskPhone(inv.inviteePhone)}</div>
                   <div className="text-xs text-cg-text-muted">{inv.createdAt}</div>
                 </div>
                 <StatusBadge status={inv.status.toLowerCase()} />
@@ -256,7 +262,7 @@ export function ParentFamilyPage() {
       <Modal isOpen={showInvite} onClose={() => setShowInvite(false)} title="邀请家长">
         <form className="flex flex-col gap-4">
           <FormField label="被邀请人手机号" htmlFor="invite-phone">
-            <Input id="invite-phone" type="tel" placeholder="11 位手机号" {...phone} />
+            <Input id="invite-phone" type="tel" placeholder="11 位手机号" {...phone.inputProps} />
           </FormField>
           <Button onClick={handleInvite} isLoading={sending} type="button" className="w-full">
             发送邀请
@@ -350,13 +356,13 @@ export function ParentChildrenPage() {
       >
         <form className="flex flex-col gap-4">
           <FormField label="昵称" htmlFor="child-nickname">
-            <Input id="child-nickname" {...nickname} />
+            <Input id="child-nickname" {...nickname.inputProps} />
           </FormField>
           <FormField label={editing ? '新 PIN（留空不修改）' : 'PIN'} htmlFor="child-pin">
-            <Input id="child-pin" type="password" {...pin} />
+            <Input id="child-pin" type="password" {...pin.inputProps} />
           </FormField>
           <FormField label="生日" htmlFor="child-birthday">
-            <Input id="child-birthday" type="date" {...birthday} />
+            <Input id="child-birthday" type="date" {...birthday.inputProps} />
           </FormField>
           <Button onClick={handleSave} isLoading={saving} type="button" className="w-full">
             保存
@@ -462,16 +468,16 @@ export function ParentTemplatesPage() {
       >
         <form className="flex flex-col gap-4">
           <FormField label="标题" htmlFor="tpl-title">
-            <Input id="tpl-title" {...title} />
+            <Input id="tpl-title" {...title.inputProps} />
           </FormField>
           <FormField label="描述" htmlFor="tpl-desc">
-            <TextArea id="tpl-desc" {...description} />
+            <TextArea id="tpl-desc" {...description.inputProps} />
           </FormField>
           <FormField label="分类" htmlFor="tpl-category">
-            <Input id="tpl-category" {...category} />
+            <Input id="tpl-category" {...category.inputProps} />
           </FormField>
           <FormField label="基础积分" htmlFor="tpl-points">
-            <Input id="tpl-points" type="number" {...basePoints} />
+            <Input id="tpl-points" type="number" {...basePoints.inputProps} />
           </FormField>
           <Button onClick={handleSave} isLoading={saving} type="button" className="w-full">
             保存
@@ -554,7 +560,7 @@ export function ParentTasksPage() {
       <Modal isOpen={showAssign} onClose={() => setShowAssign(false)} title="批量分配任务">
         <form className="flex flex-col gap-4">
           <FormField label="模板" htmlFor="assign-template">
-            <Select id="assign-template" {...templateId}>
+            <Select id="assign-template" {...templateId.inputProps}>
               <option value="">请选择模板</option>
               {(templates ?? []).map((t) => (
                 <option key={t.id} value={t.id}>
@@ -564,7 +570,7 @@ export function ParentTasksPage() {
             </Select>
           </FormField>
           <FormField label="孩子" htmlFor="assign-child">
-            <Select id="assign-child" {...childId}>
+            <Select id="assign-child" {...childId.inputProps}>
               <option value="">请选择孩子</option>
               {(children ?? []).map((c) => (
                 <option key={c.id} value={c.id}>
@@ -574,7 +580,7 @@ export function ParentTasksPage() {
             </Select>
           </FormField>
           <FormField label="截止时间" htmlFor="assign-deadline">
-            <Input id="assign-deadline" type="datetime-local" {...deadline} />
+            <Input id="assign-deadline" type="datetime-local" {...deadline.inputProps} />
           </FormField>
           <Button onClick={handleAssign} isLoading={assigning} type="button" className="w-full">
             分配
@@ -742,10 +748,10 @@ export function ParentPointsPage() {
           <CardSection title="积分调整">
             <div className="flex flex-col gap-3">
               <FormField label="调整数量（正数奖励、负数扣除）" htmlFor="adjust-amount">
-                <Input id="adjust-amount" type="number" {...amount} />
+                <Input id="adjust-amount" type="number" {...amount.inputProps} />
               </FormField>
               <FormField label="原因" htmlFor="adjust-reason">
-                <Input id="adjust-reason" {...reason} />
+                <Input id="adjust-reason" {...reason.inputProps} />
               </FormField>
               <Button onClick={handleAdjust} isLoading={adjusting}>确认调整</Button>
             </div>
@@ -855,16 +861,16 @@ export function ParentPrizesPage() {
       <Modal isOpen={showModal} onClose={() => setShowModal(false)} title={editing ? '编辑奖品' : '新增奖品'}>
         <form className="flex flex-col gap-4">
           <FormField label="名称" htmlFor="prize-name">
-            <Input id="prize-name" {...name} />
+            <Input id="prize-name" {...name.inputProps} />
           </FormField>
           <FormField label="描述" htmlFor="prize-desc">
-            <TextArea id="prize-desc" {...description} />
+            <TextArea id="prize-desc" {...description.inputProps} />
           </FormField>
           <FormField label="积分价格" htmlFor="prize-cost">
-            <Input id="prize-cost" type="number" {...pointsCost} />
+            <Input id="prize-cost" type="number" {...pointsCost.inputProps} />
           </FormField>
           <FormField label="库存" htmlFor="prize-stock">
-            <Input id="prize-stock" type="number" {...availableStock} />
+            <Input id="prize-stock" type="number" {...availableStock.inputProps} />
           </FormField>
           <Button onClick={handleSave} isLoading={saving} type="button" className="w-full">
             保存
