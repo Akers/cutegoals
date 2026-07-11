@@ -85,4 +85,10 @@ public final class AuditEvent {
     public static final String EXCHANGE_BLIND_BOX = "EXCHANGE_BLIND_BOX";
     public static final String EXCHANGE_FULFILLED = "EXCHANGE_FULFILLED";
     public static final String EXCHANGE_CANCELLED = "EXCHANGE_CANCELLED";
+
+    // === Instance Management events ===
+    public static final String CONFIG_CHANGED = "CONFIG_CHANGED";
+    public static final String ACCOUNT_ENABLED = "ACCOUNT_ENABLED";
+    public static final String ACCOUNT_DISABLED = "ACCOUNT_DISABLED";
+    public static final String FAMILY_EXPORTED = "FAMILY_EXPORTED";
 }

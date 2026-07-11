@@ -82,6 +82,11 @@ public class GlobalExceptionHandler {
             case DEVICE_NOT_AUTHORIZED -> HttpStatus.UNAUTHORIZED;
             case CHILD_AUTHENTICATION_FAILED -> HttpStatus.UNAUTHORIZED;
             case AUDIT_UNAVAILABLE -> HttpStatus.INTERNAL_SERVER_ERROR;
+            case AUDIT_IMMUTABLE -> HttpStatus.METHOD_NOT_ALLOWED;
+            case AUDIT_QUERY_LIMIT_EXCEEDED -> HttpStatus.BAD_REQUEST;
+            case CAPABILITY_NOT_SUPPORTED -> HttpStatus.NOT_IMPLEMENTED;
+            case CONFIGURATION_INVALID, CONFIG_INVALID -> HttpStatus.BAD_REQUEST;
+            case LAST_INSTANCE_ADMIN, LAST_ACTIVE_PARENT -> HttpStatus.CONFLICT;
             // Task Template errors
             case TASK_TEMPLATE_FORBIDDEN -> HttpStatus.FORBIDDEN;
             case TASK_TEMPLATE_NOT_FOUND -> HttpStatus.NOT_FOUND;

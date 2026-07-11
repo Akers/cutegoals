@@ -4,6 +4,9 @@ import com.cutegoals.common.constant.AuthConstants;
 import com.cutegoals.common.exception.BusinessException;
 import com.cutegoals.common.exception.ErrorCode;
 import com.cutegoals.auth.service.TokenService;
+import com.cutegoals.auth.service.AuditEvent;
+import com.cutegoals.auth.service.AuditService;
+import com.cutegoals.instancemanagement.service.RateLimiterService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -11,14 +14,16 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
-import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -31,6 +36,7 @@ import java.util.List;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 import jakarta.servlet.ServletException;
 
 /**
@@ -46,6 +52,11 @@ public class WebSecurityConfig {
     private static final Logger log = LoggerFactory.getLogger(WebSecurityConfig.class);
 
     private final TokenService tokenService;
+    private final AuditService auditService;
+    private final RateLimiterService rateLimiterService;
+
+    @Value("${app.production:false}")
+    private boolean production;
 
     /** Public endpoints that do not require authentication. */
     private static final List<String> PUBLIC_PATHS = List.of(
@@ -69,9 +80,13 @@ public class WebSecurityConfig {
             .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(PUBLIC_PATHS.toArray(new String[0])).permitAll()
+                // Admin endpoints require INSTANCE_ADMIN role
+                .requestMatchers("/api/admin/**").hasAuthority("ROLE_INSTANCE_ADMIN")
                 .anyRequest().authenticated()
             )
+            .addFilterBefore(requestIdFilter(), OncePerRequestFilter.class)
             .addFilterBefore(csrfFilter(), OncePerRequestFilter.class)
+            .addFilterBefore(rateLimitFilter(), OncePerRequestFilter.class)
             .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
@@ -149,6 +164,78 @@ public class WebSecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;
+    }
+
+    /**
+     * Request ID filter - generates and sets request_id for every request.
+     */
+    @Bean
+    public OncePerRequestFilter requestIdFilter() {
+        return new OncePerRequestFilter() {
+            @Override
+            protected void doFilterInternal(HttpServletRequest request,
+                                            HttpServletResponse response,
+                                            FilterChain filterChain) throws ServletException, IOException {
+                String requestId = request.getHeader(AuthConstants.HEADER_REQUEST_ID);
+                if (requestId == null || requestId.isBlank()) {
+                    requestId = UUID.randomUUID().toString().replace("-", "").substring(0, 16);
+                }
+                MDC.put("requestId", requestId);
+                response.setHeader(AuthConstants.HEADER_REQUEST_ID, requestId);
+                try {
+                    filterChain.doFilter(request, response);
+                } finally {
+                    MDC.remove("requestId");
+                }
+            }
+        };
+    }
+
+    /**
+     * Rate limiting filter for authentication endpoints.
+     */
+    @Bean
+    public OncePerRequestFilter rateLimitFilter() {
+        return new OncePerRequestFilter() {
+            @Override
+            protected void doFilterInternal(HttpServletRequest request,
+                                            HttpServletResponse response,
+                                            FilterChain filterChain) throws ServletException, IOException {
+                String path = request.getRequestURI();
+                String method = request.getMethod();
+                String clientIp = request.getRemoteAddr();
+
+                try {
+                    if (method.equals("POST")) {
+                        if (path.equals("/api/auth/login")) {
+                            rateLimiterService.checkRateLimit("login:" + clientIp,
+                                    RateLimiterService.MAX_LOGIN_ATTEMPTS, RateLimiterService.WINDOW_MS);
+                        } else if (path.equals("/api/auth/refresh")) {
+                            rateLimiterService.checkRateLimit("refresh:" + clientIp,
+                                    RateLimiterService.MAX_REFRESH_ATTEMPTS, RateLimiterService.WINDOW_MS);
+                        } else if (path.equals("/api/auth/initialize")) {
+                            rateLimiterService.checkRateLimit("init:" + clientIp,
+                                    RateLimiterService.MAX_INIT_ATTEMPTS, RateLimiterService.WINDOW_MS);
+                        } else if (path.equals("/api/auth/child/login")) {
+                            rateLimiterService.checkRateLimit("pin:" + clientIp,
+                                    RateLimiterService.MAX_PIN_ATTEMPTS, RateLimiterService.WINDOW_MS);
+                        }
+                    }
+                } catch (BusinessException e) {
+                    auditService.record(AuditEvent.RATE_LIMITED, null, "FAILED",
+                            "Rate limited: path=" + path + ", clientIp=" + clientIp);
+                    response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
+                    response.setContentType("application/json;charset=UTF-8");
+                    String reqId = MDC.get("requestId");
+                    if (reqId == null) reqId = "";
+                    response.getWriter().write(
+                            "{\"code\":\"RATE_LIMITED\",\"message\":\"Too many requests\",\"data\":null,\"requestId\":\"" + reqId + "\"}");
+                    return;
+                }
+
+                filterChain.doFilter(request, response);
+            }
+        };
     }
 
     /**
