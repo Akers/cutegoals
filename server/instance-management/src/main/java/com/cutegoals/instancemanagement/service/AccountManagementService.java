@@ -6,6 +6,8 @@ import com.cutegoals.auth.service.AuditEvent;
 import com.cutegoals.auth.service.AuditService;
 import com.cutegoals.common.constant.AuthConstants;
 import com.cutegoals.common.entity.auth.Account;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.cutegoals.common.exception.BusinessException;
 import com.cutegoals.common.exception.ErrorCode;
 import com.cutegoals.common.util.MaskUtil;
@@ -37,25 +39,14 @@ public class AccountManagementService {
 
     /**
      * Get paginated account list with masked phone numbers.
+     * Uses database-level pagination via MyBatis-Plus Page.
      */
     public Map<String, Object> getAccounts(int pageNum, int pageSize) {
-        List<Account> allAccounts = accountManagementMapper.findAllAccounts();
-
-        // Simple in-memory pagination
-        int total = allAccounts.size();
-        int fromIndex = (pageNum - 1) * pageSize;
-        int toIndex = Math.min(fromIndex + pageSize, total);
-
-        if (fromIndex >= total) {
-            fromIndex = Math.max(0, total - pageSize);
-            toIndex = total;
-        }
-        if (fromIndex < 0) fromIndex = 0;
-
-        List<Account> pageAccounts = allAccounts.subList(fromIndex, toIndex);
+        IPage<Account> dbPage = accountManagementMapper.findAccountsWithPage(
+                new Page<>(pageNum, pageSize, true));
 
         List<Map<String, Object>> accountList = new ArrayList<>();
-        for (Account account : pageAccounts) {
+        for (Account account : dbPage.getRecords()) {
             List<String> roles = roleBindingMapper.findRolesByAccountId(account.getId());
             Map<String, Object> item = new LinkedHashMap<>();
             item.put("id", account.getId());
@@ -70,10 +61,10 @@ public class AccountManagementService {
 
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("content", accountList);
-        result.put("page", pageNum);
-        result.put("pageSize", pageSize);
-        result.put("totalElements", total);
-        result.put("totalPages", (int) Math.ceil((double) total / pageSize));
+        result.put("page", dbPage.getCurrent());
+        result.put("pageSize", dbPage.getSize());
+        result.put("totalElements", dbPage.getTotal());
+        result.put("totalPages", dbPage.getPages());
         return result;
     }
 
@@ -91,8 +82,14 @@ public class AccountManagementService {
 
         accountManagementMapper.updateStatus(accountId, AuthConstants.STATUS_ACTIVE);
 
-        auditService.record(AuditEvent.ACCOUNT_ENABLED, adminAccountId, "SUCCESS",
-                "Account enabled: accountId=" + accountId);
+        try {
+            auditService.record(AuditEvent.ACCOUNT_ENABLED, adminAccountId, "SUCCESS",
+                    "Account enabled: accountId=" + accountId);
+        } catch (Exception e) {
+            log.error("Audit recording failed for enableAccount, rolling back: accountId={}", accountId, e);
+            throw new BusinessException(ErrorCode.AUDIT_UNAVAILABLE,
+                    "Failed to record audit event for account enable", e);
+        }
         log.info("Account enabled: accountId={}, by adminAccountId={}", accountId, adminAccountId);
     }
 
@@ -102,7 +99,10 @@ public class AccountManagementService {
      */
     @Transactional
     public void disableAccount(Long accountId, Long adminAccountId) {
-        Account account = accountManagementMapper.findById(accountId)
+        // Use SELECT FOR UPDATE to lock the account row and prevent TOCTOU race conditions.
+        // This ensures concurrent disable calls on the same or different accounts
+        // are serialized for the counting queries below.
+        Account account = accountManagementMapper.findByIdWithLock(accountId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND));
 
         if (!AuthConstants.STATUS_ACTIVE.equals(account.getStatus())) {
@@ -111,9 +111,10 @@ public class AccountManagementService {
 
         List<String> roles = roleBindingMapper.findRolesByAccountId(accountId);
 
-        // Protect last INSTANCE_ADMIN
+        // Protect last INSTANCE_ADMIN — uses FOR UPDATE on role_binding to prevent
+        // concurrent disable operations from both passing the count check (TOCTOU).
         if (roles.contains(AuthConstants.ROLE_INSTANCE_ADMIN)) {
-            long activeAdminCount = accountManagementMapper.countActiveInstanceAdmins();
+            long activeAdminCount = accountManagementMapper.countActiveInstanceAdminsWithLock();
             if (activeAdminCount <= 1) {
                 throw new BusinessException(ErrorCode.LAST_INSTANCE_ADMIN,
                         "Cannot disable the last active INSTANCE_ADMIN");
@@ -122,7 +123,7 @@ public class AccountManagementService {
 
         // Protect last active PARENT
         if (roles.contains(AuthConstants.ROLE_PARENT)) {
-            long activeParentCount = accountManagementMapper.countActiveParents();
+            long activeParentCount = accountManagementMapper.countActiveParentsWithLock();
             if (activeParentCount <= 1) {
                 throw new BusinessException(ErrorCode.LAST_ACTIVE_PARENT,
                         "Cannot disable the last active PARENT");
@@ -135,8 +136,14 @@ public class AccountManagementService {
         // Revoke all sessions immediately
         sessionMapper.revokeAllByAccountId(accountId);
 
-        auditService.record(AuditEvent.ACCOUNT_DISABLED, adminAccountId, "SUCCESS",
-                "Account disabled: accountId=" + accountId);
+        try {
+            auditService.record(AuditEvent.ACCOUNT_DISABLED, adminAccountId, "SUCCESS",
+                    "Account disabled: accountId=" + accountId);
+        } catch (Exception e) {
+            log.error("Audit recording failed for disableAccount, rolling back: accountId={}", accountId, e);
+            throw new BusinessException(ErrorCode.AUDIT_UNAVAILABLE,
+                    "Failed to record audit event for account disable", e);
+        }
         log.info("Account disabled: accountId={}, by adminAccountId={}", accountId, adminAccountId);
     }
 }
