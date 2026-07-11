@@ -15,6 +15,7 @@ import java.time.LocalTime;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Service for audit log query and export (Task 6.4).
@@ -130,8 +131,15 @@ public class AuditLogService {
                 .toList();
     }
 
+    /** Exact field names that are considered sensitive and must not appear in metadata. */
+    private static final Set<String> SENSITIVE_METADATA_KEYS = Set.of(
+            "passwordHash", "password", "pinHash", "pin", "token", "secret",
+            "refreshToken", "accessToken", "jwtSecret", "plainToken", "phone");
+
     /**
      * Mask sensitive fields before returning audit log entries.
+     * Uses exact field name matching (not substring) to avoid false positives
+     * on innocuous keys like "description" or "passport".
      */
     private Map<String, Object> maskSensitiveFields(AuditLog log) {
         Map<String, Object> result = new LinkedHashMap<>();
@@ -145,14 +153,38 @@ public class AuditLogService {
         result.put("summary", log.getSummary());
         result.put("requestId", log.getRequestId());
         result.put("createdAt", log.getCreatedAt());
-        // Exclude raw metadata if it might contain secrets
-        // metadata field is included only if it's simple non-sensitive data
-        if (log.getMetadata() != null && !log.getMetadata().contains("password")
-                && !log.getMetadata().contains("pin")
-                && !log.getMetadata().contains("token")
-                && !log.getMetadata().contains("secret")) {
+        // Include metadata only if it does NOT contain exact sensitive field names.
+        // Parses JSON metadata to check keys against the SENSITIVE_METADATA_KEYS set.
+        if (log.getMetadata() != null && !containsSensitiveField(log.getMetadata())) {
             result.put("metadata", log.getMetadata());
         }
         return result;
+    }
+
+    /**
+     * Checks if the metadata string contains any sensitive field names using
+     * exact key matching. For JSON metadata ({@code {...}}), extracts keys and
+     * checks against {@link #SENSITIVE_METADATA_KEYS}. For plain text, uses
+     * word-boundary matching to avoid substring false positives.
+     */
+    private boolean containsSensitiveField(String metadata) {
+        String trimmed = metadata.trim();
+        if (trimmed.startsWith("{") || trimmed.startsWith("[")) {
+            // Probable JSON — extract keys and check against the exact set
+            for (String key : SENSITIVE_METADATA_KEYS) {
+                // Match JSON key patterns: "keyName":
+                if (trimmed.contains("\"" + key + "\":")) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        // Plain text — use word-boundary matching to avoid substring false positives
+        for (String key : SENSITIVE_METADATA_KEYS) {
+            if (trimmed.matches(".*\\b" + java.util.regex.Pattern.quote(key) + "\\b.*")) {
+                return true;
+            }
+        }
+        return false;
     }
 }
