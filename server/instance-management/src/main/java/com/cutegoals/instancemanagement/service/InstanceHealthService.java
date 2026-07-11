@@ -47,7 +47,12 @@ public class InstanceHealthService {
     public Map<String, Object> getPublicHealth() {
         boolean dbHealthy = checkDatabaseHealth();
         Map<String, Object> data = new LinkedHashMap<>();
-        data.put("status", dbHealthy ? "UP" : "DOWN");
+        if (dbHealthy) {
+            data.put("status", "UP");
+        } else {
+            data.put("status", "DOWN");
+            data.put("error", "DEPENDENCY_UNHEALTHY");
+        }
         data.put("initialized", tokenService.isInitialized());
         return data;
     }
@@ -68,7 +73,7 @@ public class InstanceHealthService {
         // Database migration status (simplified - check if we can read from DB)
         data.put("database", Map.of(
                 "status", dbHealthy ? "UP" : "DOWN",
-                "type", "mysql"
+                "type", "postgresql"
         ));
 
         // Backup status
