@@ -1,0 +1,51 @@
+# =============================================================================
+# CuteGoals 2.0 — Docker build context ignore file
+# =============================================================================
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+.factorypath
+
+# Node
+node_modules/
+web/node_modules/
+
+# Maven local repo
+.mvn/
+server/target/
+server/*/target/
+
+# Build outputs
+web/dist/
+*.log
+
+# Environment files (CONTAIN SECRETS)
+.env
+.env.local
+*.env
+
+# OS artifacts
+.DS_Store
+Thumbs.db
+
+# Docker
+docker-compose*.yml
+
+# Documentation (not needed in runtime image)
+docs/
+openspec/
+
+# Superpowers
+.superpowers/
