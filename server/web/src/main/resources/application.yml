@@ -1,6 +1,7 @@
 app:
   name: CuteGoals
   timezone: Asia/Shanghai
+  production: ${APP_PRODUCTION:false}
   audit:
     type: ${APP_AUDIT_TYPE:memory}   # "memory" for InMemoryAuditService, "db" for DatabaseAuditService
   auth:
