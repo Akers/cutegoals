@@ -1,6 +1,8 @@
 app:
   name: CuteGoals
   timezone: Asia/Shanghai
+  audit:
+    type: ${APP_AUDIT_TYPE:memory}   # "memory" for InMemoryAuditService, "db" for DatabaseAuditService
   auth:
     jwt:
       secret: ${CUTEGOALS_JWT_SECRET:changeit-changeit-changeit-changeit-changeit}
