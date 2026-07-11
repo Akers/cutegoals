@@ -12,6 +12,8 @@ import com.cutegoals.common.entity.task.TaskAttempt;
 import com.cutegoals.common.entity.task.TaskReview;
 import com.cutegoals.common.exception.BusinessException;
 import com.cutegoals.common.exception.ErrorCode;
+import com.cutegoals.common.entity.points.PointsBalance;
+import com.cutegoals.common.entity.points.PointsLedger;
 import com.cutegoals.points.mapper.PointsBalanceMapper;
 import com.cutegoals.points.mapper.PointsLedgerMapper;
 import com.cutegoals.task.mapper.TaskAssignmentMapper;
@@ -23,6 +25,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DuplicateKeyException;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -485,6 +488,99 @@ class TaskReviewServiceTest {
         BusinessException ex = assertThrows(BusinessException.class, () ->
                 taskReviewService.approveAttempt(attemptId, request, familyId, accountId));
         assertEquals(ErrorCode.TASK_REVIEW_STALE_ATTEMPT, ex.getErrorCode());
+    }
+
+    // ========== C2: Points Ledger Race Condition Tests ==========
+
+    @Test
+    void shouldHandleDuplicateKeyOnLedgerInsertDuringApprove() {
+        Map<String, Object> request = new LinkedHashMap<>();
+        request.put("reason", "Great job!");
+        request.put("idempotencyKey", "approve-ledger-dup");
+
+        TaskAttempt attempt = createSampleAttempt(1);
+        when(taskAttemptMapper.findByIdForUpdate(attemptId)).thenReturn(Optional.of(attempt));
+
+        TaskAssignment assignment = createSampleAssignment("SUBMITTED", false);
+        assignment.setSnapshotDifficultyReward(5);
+        when(taskAssignmentMapper.findById(assignmentId)).thenReturn(Optional.of(assignment));
+
+        when(taskAttemptMapper.getMaxAttemptNumber(assignmentId, childId)).thenReturn(1);
+        when(taskReviewMapper.findByAttemptIdForUpdate(attemptId)).thenReturn(Optional.empty());
+        when(taskReviewMapper.findByIdempotencyKey("approve-ledger-dup")).thenReturn(Optional.empty());
+        when(pointsLedgerMapper.findByBusinessRef(childId, "ATTEMPT_" + attemptId)).thenReturn(Optional.empty());
+
+        PointsBalance balance = new PointsBalance();
+        balance.setChildId(childId);
+        balance.setBalance(10);
+        balance.setTotalEarned(10);
+        balance.setVersion(1);
+        when(pointsBalanceMapper.findByChildIdForUpdate(childId)).thenReturn(Optional.of(balance));
+
+        doAnswer(invocation -> {
+            TaskReview r = invocation.getArgument(0);
+            r.setId(400L);
+            return 1;
+        }).when(taskReviewMapper).insert(any(TaskReview.class));
+
+        // Simulate DuplicateKeyException on ledger insert (C2 race condition)
+        doThrow(new DuplicateKeyException("Unique constraint violation"))
+                .when(pointsLedgerMapper).insert(any(PointsLedger.class));
+
+        BusinessException ex = assertThrows(BusinessException.class, () ->
+                taskReviewService.approveAttempt(attemptId, request, familyId, accountId));
+        assertEquals(ErrorCode.POINTS_REFERENCE_CONFLICT, ex.getErrorCode());
+    }
+
+    // ========== C3: Review Insert DuplicateKeyException Tests ==========
+
+    @Test
+    void shouldHandleDuplicateKeyOnReviewInsertDuringReject() {
+        Map<String, Object> request = new LinkedHashMap<>();
+        request.put("reason", "Need more details");
+
+        TaskAttempt attempt = createSampleAttempt(1);
+        when(taskAttemptMapper.findByIdForUpdate(attemptId)).thenReturn(Optional.of(attempt));
+
+        TaskAssignment assignment = createSampleAssignment("SUBMITTED", false);
+        when(taskAssignmentMapper.findById(assignmentId)).thenReturn(Optional.of(assignment));
+
+        when(taskAttemptMapper.getMaxAttemptNumber(assignmentId, childId)).thenReturn(1);
+        when(taskReviewMapper.findByAttemptIdForUpdate(attemptId)).thenReturn(Optional.empty());
+
+        // Simulate DuplicateKeyException on review insert (C3 concurrent approval)
+        doThrow(new DuplicateKeyException("Unique constraint violation"))
+                .when(taskReviewMapper).insert(any(TaskReview.class));
+
+        BusinessException ex = assertThrows(BusinessException.class, () ->
+                taskReviewService.rejectAttempt(attemptId, request, familyId, accountId));
+        assertEquals(ErrorCode.TASK_REVIEW_ALREADY_DECIDED, ex.getErrorCode());
+    }
+
+    @Test
+    void shouldHandleDuplicateKeyOnReviewInsertDuringApprove() {
+        Map<String, Object> request = new LinkedHashMap<>();
+        request.put("reason", "Great job!");
+        request.put("idempotencyKey", "approve-review-dup");
+
+        TaskAttempt attempt = createSampleAttempt(1);
+        when(taskAttemptMapper.findByIdForUpdate(attemptId)).thenReturn(Optional.of(attempt));
+
+        TaskAssignment assignment = createSampleAssignment("SUBMITTED", false);
+        assignment.setSnapshotDifficultyReward(0);
+        when(taskAssignmentMapper.findById(assignmentId)).thenReturn(Optional.of(assignment));
+
+        when(taskAttemptMapper.getMaxAttemptNumber(assignmentId, childId)).thenReturn(1);
+        when(taskReviewMapper.findByAttemptIdForUpdate(attemptId)).thenReturn(Optional.empty());
+        when(taskReviewMapper.findByIdempotencyKey("approve-review-dup")).thenReturn(Optional.empty());
+
+        // Simulate DuplicateKeyException on review insert (C3 concurrent rejection)
+        doThrow(new DuplicateKeyException("Unique constraint violation"))
+                .when(taskReviewMapper).insert(any(TaskReview.class));
+
+        BusinessException ex = assertThrows(BusinessException.class, () ->
+                taskReviewService.approveAttempt(attemptId, request, familyId, accountId));
+        assertEquals(ErrorCode.TASK_REVIEW_ALREADY_DECIDED, ex.getErrorCode());
     }
 
     // ========== Helpers ==========

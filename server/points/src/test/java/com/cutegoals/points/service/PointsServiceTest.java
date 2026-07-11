@@ -49,6 +49,8 @@ class PointsServiceTest {
 
     @Test
     void shouldGetBalance() {
+        mockChildInFamily(childId, familyId);
+
         PointsBalance balance = new PointsBalance();
         balance.setChildId(childId);
         balance.setBalance(100);
@@ -64,12 +66,14 @@ class PointsServiceTest {
     @Test
     void shouldThrowForbiddenWhenChildViewsOtherBalance() {
         Long otherChildId = 99L;
+        // viewerChildId check happens before validateChildInFamily, no mock needed
         assertThrows(BusinessException.class, () ->
                 pointsService.getBalance(otherChildId, familyId, childId));
     }
 
     @Test
     void shouldThrowNotFoundWhenBalanceMissing() {
+        mockChildInFamily(childId, familyId);
         when(pointsBalanceMapper.findByChildId(childId)).thenReturn(Optional.empty());
 
         assertThrows(BusinessException.class, () ->
@@ -240,6 +244,8 @@ class PointsServiceTest {
 
     @Test
     void shouldQueryLedger() {
+        mockChildInFamily(childId, familyId);
+
         Map<String, Object> params = new LinkedHashMap<>();
         params.put("page", 1);
         params.put("pageSize", 20);
@@ -261,6 +267,8 @@ class PointsServiceTest {
 
     @Test
     void shouldThrowInvalidQueryForBadPageSize() {
+        mockChildInFamily(childId, familyId);
+
         Map<String, Object> params = new LinkedHashMap<>();
         params.put("pageSize", 200);
 
@@ -269,6 +277,13 @@ class PointsServiceTest {
     }
 
     // ========== Helpers ==========
+
+    private void mockChildInFamily(Long cId, Long fId) {
+        ChildProfile childProfile = new ChildProfile();
+        childProfile.setId(cId);
+        childProfile.setFamilyId(fId);
+        when(taskChildMapper.findById(cId)).thenReturn(Optional.of(childProfile));
+    }
 
     private PointsBalance createBalance(int balance, int totalEarned) {
         PointsBalance pb = new PointsBalance();

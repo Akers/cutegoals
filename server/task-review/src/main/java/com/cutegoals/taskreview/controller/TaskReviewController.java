@@ -2,10 +2,12 @@ package com.cutegoals.taskreview.controller;
 
 import com.cutegoals.common.constant.AuthConstants;
 import com.cutegoals.common.dto.ApiResponse;
+import com.cutegoals.common.entity.family.ChildProfile;
 import com.cutegoals.common.entity.task.TaskAttempt;
 import com.cutegoals.common.entity.task.TaskReview;
 import com.cutegoals.common.exception.BusinessException;
 import com.cutegoals.common.exception.ErrorCode;
+import com.cutegoals.task.mapper.TaskChildMapper;
 import com.cutegoals.taskreview.service.TaskReviewService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -35,6 +38,7 @@ public class TaskReviewController {
     private static final Logger log = LoggerFactory.getLogger(TaskReviewController.class);
 
     private final TaskReviewService taskReviewService;
+    private final TaskChildMapper taskChildMapper;
 
     // ========== POST /api/task-review/submissions — Submit (Task 4.1-4.3) ==========
 
@@ -169,7 +173,15 @@ public class TaskReviewController {
             if (childId == null) {
                 throw new BusinessException(ErrorCode.TASK_REVIEW_FORBIDDEN);
             }
-            viewerChildId = childId;
+            // Child role: derive viewerChildId from session, not URL
+            Long accountId = getAccountId(httpRequest);
+            Long sessionChildId = taskChildMapper.findByAccountId(accountId)
+                    .map(ChildProfile::getId)
+                    .orElseThrow(() -> new BusinessException(ErrorCode.TASK_REVIEW_FORBIDDEN, "No child profile found for session"));
+            if (!sessionChildId.equals(childId)) {
+                throw new BusinessException(ErrorCode.TASK_REVIEW_FORBIDDEN, "Child identity mismatch");
+            }
+            viewerChildId = sessionChildId;
         } else {
             taskReviewService.verifyParentRole(roles);
         }
@@ -193,6 +205,15 @@ public class TaskReviewController {
         taskReviewService.verifyChildRole(roles);
 
         Long familyId = taskReviewService.getSingleFamilyId();
+
+        // Validate childId belongs to this family (child in a family can only see own family's data)
+        Long accountId = getAccountId(httpRequest);
+        Long sessionChildId = taskChildMapper.findByAccountId(accountId)
+                .map(ChildProfile::getId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.TASK_REVIEW_FORBIDDEN, "No child profile found for session"));
+        if (!sessionChildId.equals(childId)) {
+            throw new BusinessException(ErrorCode.TASK_REVIEW_FORBIDDEN, "Child identity mismatch");
+        }
 
         Map<String, Object> params = new java.util.LinkedHashMap<>();
         if (page != null) params.put("page", page);

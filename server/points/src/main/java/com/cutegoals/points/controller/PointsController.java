@@ -2,11 +2,13 @@ package com.cutegoals.points.controller;
 
 import com.cutegoals.common.constant.AuthConstants;
 import com.cutegoals.common.dto.ApiResponse;
+import com.cutegoals.common.entity.family.ChildProfile;
 import com.cutegoals.common.entity.points.PointsBalance;
 import com.cutegoals.common.entity.points.PointsLedger;
 import com.cutegoals.common.exception.BusinessException;
 import com.cutegoals.common.exception.ErrorCode;
 import com.cutegoals.points.service.PointsService;
+import com.cutegoals.task.mapper.TaskChildMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -30,6 +33,7 @@ public class PointsController {
     private static final Logger log = LoggerFactory.getLogger(PointsController.class);
 
     private final PointsService pointsService;
+    private final TaskChildMapper taskChildMapper;
 
     // ========== GET /api/points/balance/{childId} — Balance (Task 4.8) ==========
 
@@ -45,7 +49,12 @@ public class PointsController {
 
         Long viewerChildId = null;
         if (roles.contains(AuthConstants.ROLE_CHILD)) {
-            viewerChildId = childId; // child can only view own
+            // Child role: childId MUST come from session identity, not URL
+            Long sessionChildId = resolveChildIdFromSession(httpRequest);
+            if (!sessionChildId.equals(childId)) {
+                throw new BusinessException(ErrorCode.POINTS_FORBIDDEN, "Child identity mismatch");
+            }
+            viewerChildId = sessionChildId;
         } else {
             pointsService.verifyParentRole(roles);
         }
@@ -112,7 +121,12 @@ public class PointsController {
 
         Long viewerChildId = null;
         if (roles.contains(AuthConstants.ROLE_CHILD)) {
-            viewerChildId = childId;
+            // Child role: childId MUST come from session identity, not URL
+            Long sessionChildId = resolveChildIdFromSession(httpRequest);
+            if (!sessionChildId.equals(childId)) {
+                throw new BusinessException(ErrorCode.POINTS_FORBIDDEN, "Child identity mismatch");
+            }
+            viewerChildId = sessionChildId;
         } else {
             pointsService.verifyParentRole(roles);
         }
@@ -152,6 +166,13 @@ public class PointsController {
     }
 
     // ========== Helpers ==========
+
+    private Long resolveChildIdFromSession(HttpServletRequest httpRequest) {
+        Long accountId = getAccountId(httpRequest);
+        return taskChildMapper.findByAccountId(accountId)
+                .map(ChildProfile::getId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.POINTS_FORBIDDEN, "No child profile found for session"));
+    }
 
     private String generateRequestId() {
         return UUID.randomUUID().toString().replace("-", "").substring(0, 16);

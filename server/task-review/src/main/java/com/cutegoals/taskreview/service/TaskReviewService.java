@@ -281,7 +281,13 @@ public class TaskReviewService {
         review.setDecision("REJECTED");
         review.setReason(reason);
         review.setIdempotencyKey(idempotencyKey);
-        taskReviewMapper.insert(review);
+        try {
+            taskReviewMapper.insert(review);
+        } catch (DuplicateKeyException e) {
+            // Unique constraint on (attempt_id) ensures at most one review per attempt
+            throw new BusinessException(ErrorCode.TASK_REVIEW_ALREADY_DECIDED,
+                    "This attempt has already been reviewed");
+        }
 
         // Update assignment status to REJECTED
         assignment.setStatus("REJECTED");
@@ -375,7 +381,13 @@ public class TaskReviewService {
         review.setDecision("APPROVED");
         review.setReason(reason);
         review.setIdempotencyKey(idempotencyKey);
-        taskReviewMapper.insert(review);
+        try {
+            taskReviewMapper.insert(review);
+        } catch (DuplicateKeyException e) {
+            // Unique constraint on (attempt_id) ensures at most one review per attempt
+            throw new BusinessException(ErrorCode.TASK_REVIEW_ALREADY_DECIDED,
+                    "This attempt has already been reviewed");
+        }
 
         // Update assignment status to APPROVED
         assignment.setStatus("APPROVED");
@@ -413,7 +425,13 @@ public class TaskReviewService {
                 ledger.setBusinessRef(businessRef);
                 ledger.setSourceSnapshot(sourceSnapshot);
                 ledger.setOperatorId(accountId);
-                pointsLedgerMapper.insert(ledger);
+                try {
+                    pointsLedgerMapper.insert(ledger);
+                } catch (DuplicateKeyException e) {
+                    // Unique constraint on (child_id, business_ref) prevents duplicate EARN entries
+                    throw new BusinessException(ErrorCode.POINTS_REFERENCE_CONFLICT,
+                            "Points ledger entry already exists for this business reference");
+                }
 
                 // Update balance with optimistic lock
                 int updated = pointsBalanceMapper.updateBalanceWithVersion(

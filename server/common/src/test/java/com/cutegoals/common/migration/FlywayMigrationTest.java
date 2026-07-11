@@ -62,6 +62,7 @@ class FlywayMigrationTest {
         assertEquals(9, result.migrationsExecuted,
                 "Expected exactly 9 migrations (V1 through V9) to be executed");
 
+
         // Verify all migration versions
         MigrationInfo[] applied = flyway.info().applied();
         Set<String> versions = new HashSet<>();
@@ -198,6 +199,9 @@ class FlywayMigrationTest {
 
             assertUniqueConstraint(meta, "TASK_ASSIGNMENT", "UK_ASSIGNMENT_OCCURRENCE_KEY",
                     "task_assignment should have unique constraint on occurrence_key");
+
+            assertUniqueConstraint(meta, "TASK_REVIEW", "UK_REVIEW_ATTEMPT",
+                    "task_review should have unique constraint on attempt_id");
         }
     }
 

@@ -54,11 +54,12 @@ public class PointsService {
      * Get points balance for a child.
      */
     public PointsBalance getBalance(Long childId, Long familyId, Long viewerChildId) {
-        // Verify access
+        // Verify access: viewer check first (fast path), then family scope
         if (viewerChildId != null && !viewerChildId.equals(childId)) {
             throw new BusinessException(ErrorCode.POINTS_FORBIDDEN,
                     "You can only view your own balance");
         }
+        validateChildInFamily(childId, familyId);
 
         return pointsBalanceMapper.findByChildId(childId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.POINTS_ACCOUNT_NOT_FOUND,
@@ -195,11 +196,12 @@ public class PointsService {
      */
     public Map<String, Object> queryLedger(Long childId, Map<String, Object> params,
                                             Long familyId, Long viewerChildId) {
-        // Verify access
+        // Verify access: viewer check first (fast path), then family scope
         if (viewerChildId != null && !viewerChildId.equals(childId)) {
             throw new BusinessException(ErrorCode.POINTS_FORBIDDEN,
                     "You can only view your own ledger");
         }
+        validateChildInFamily(childId, familyId);
 
         int pageNum = params.containsKey("page") ? ((Number) params.get("page")).intValue() : 1;
         int pageSize = params.containsKey("pageSize") ? ((Number) params.get("pageSize")).intValue() : DEFAULT_PAGE_SIZE;
@@ -340,6 +342,16 @@ public class PointsService {
     }
 
     // ========== Helpers ==========
+
+    private void validateChildInFamily(Long childId, Long familyId) {
+        ChildProfile child = taskChildMapper.findById(childId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.POINTS_ACCOUNT_NOT_FOUND,
+                        "Child not found: " + childId));
+        if (!child.getFamilyId().equals(familyId)) {
+            throw new BusinessException(ErrorCode.POINTS_FORBIDDEN,
+                    "Child does not belong to your family");
+        }
+    }
 
     private String escapeJson(String value) {
         return value.replace("\\", "\\\\").replace("\"", "\\\"");
