@@ -193,6 +193,153 @@ class ExchangeServiceTest {
         assertEquals("new-version", ex.getData().get("availabilityVersion"));
     }
 
+    // ========== I-NEW-2: Concurrent stockout with candidate data ==========
+
+    @Test
+    void shouldThrowWithDataWhenBlindBoxDrawnPrizeOutOfStock() {
+        // Path: drawn prize stock is 0 before decrement
+        Map<String, Object> request = new LinkedHashMap<>();
+        request.put("poolId", 300L);
+        request.put("idempotencyKey", "blind-stock-key-1");
+        request.put("availabilityVersion", "abc123");
+
+        BlindBoxPool pool = createPool(300L, "Test Pool", 100);
+
+        when(exchangeMapper.findByChildIdAndKey(childId, "blind-stock-key-1")).thenReturn(Optional.empty());
+        when(blindBoxPoolMapper.findByIdAndFamilyForUpdate(300L, familyId)).thenReturn(Optional.of(pool));
+        when(blindBoxService.computeAvailabilityVersion(300L, familyId)).thenReturn("abc123");
+
+        Map<String, Object> drawnCandidate = new LinkedHashMap<>();
+        drawnCandidate.put("prizeId", 200L);
+        drawnCandidate.put("prizeName", "Drawn Prize");
+        drawnCandidate.put("prizeImage", "img.jpg");
+        drawnCandidate.put("weight", 5);
+        drawnCandidate.put("probability", 100.0);
+        when(blindBoxService.drawPrize(300L, familyId)).thenReturn(drawnCandidate);
+
+        // Drawn prize has 0 stock
+        Prize drawnPrize = createPrize(200L, "Drawn Prize", 100, 0);
+        when(prizeMapper.findByIdAndFamilyForUpdate(200L, familyId)).thenReturn(Optional.of(drawnPrize));
+
+        Map<String, Object> candidatesData = new LinkedHashMap<>();
+        candidatesData.put("poolId", 300L);
+        candidatesData.put("availabilityVersion", "def456");
+        when(blindBoxService.getCandidateProbabilities(300L, familyId)).thenReturn(candidatesData);
+
+        BusinessException ex = assertThrows(BusinessException.class,
+                () -> exchangeService.createBlindBoxExchange(request, childId, familyId));
+        assertEquals(ErrorCode.BLIND_BOX_POOL_CHANGED, ex.getErrorCode());
+        assertNotNull(ex.getData());
+        assertEquals("def456", ex.getData().get("availabilityVersion"));
+    }
+
+    @Test
+    void shouldThrowWithDataWhenBlindBoxConcurrentStockDecrementFails() {
+        // Path: stock > 0 but concurrent decrement fails
+        Map<String, Object> request = new LinkedHashMap<>();
+        request.put("poolId", 300L);
+        request.put("idempotencyKey", "blind-stock-key-2");
+        request.put("availabilityVersion", "abc123");
+
+        BlindBoxPool pool = createPool(300L, "Test Pool", 100);
+
+        when(exchangeMapper.findByChildIdAndKey(childId, "blind-stock-key-2")).thenReturn(Optional.empty());
+        when(blindBoxPoolMapper.findByIdAndFamilyForUpdate(300L, familyId)).thenReturn(Optional.of(pool));
+        when(blindBoxService.computeAvailabilityVersion(300L, familyId)).thenReturn("abc123");
+
+        Map<String, Object> drawnCandidate = new LinkedHashMap<>();
+        drawnCandidate.put("prizeId", 200L);
+        drawnCandidate.put("prizeName", "Drawn Prize");
+        drawnCandidate.put("prizeImage", "img.jpg");
+        drawnCandidate.put("weight", 5);
+        drawnCandidate.put("probability", 100.0);
+        when(blindBoxService.drawPrize(300L, familyId)).thenReturn(drawnCandidate);
+
+        // Drawn prize has stock but concurrent decrement fails (returns 0)
+        Prize drawnPrize = createPrize(200L, "Drawn Prize", 100, 10);
+        when(prizeMapper.findByIdAndFamilyForUpdate(200L, familyId)).thenReturn(Optional.of(drawnPrize));
+
+        when(exchangeMapper.insert(any(Exchange.class))).thenAnswer(invocation -> {
+            Exchange e = invocation.getArgument(0);
+            e.setId(4L);
+            return 1;
+        });
+
+        when(prizeMapper.decrementStock(200L)).thenReturn(0);
+
+        Map<String, Object> candidatesData = new LinkedHashMap<>();
+        candidatesData.put("poolId", 300L);
+        candidatesData.put("availabilityVersion", "def456");
+        when(blindBoxService.getCandidateProbabilities(300L, familyId)).thenReturn(candidatesData);
+
+        BusinessException ex = assertThrows(BusinessException.class,
+                () -> exchangeService.createBlindBoxExchange(request, childId, familyId));
+        assertEquals(ErrorCode.BLIND_BOX_POOL_CHANGED, ex.getErrorCode());
+        assertNotNull(ex.getData());
+        assertEquals("def456", ex.getData().get("availabilityVersion"));
+
+        // Points were deducted before stock failure (should not roll back in service layer)
+        verify(pointsService).spendPoints(any(), any(), anyInt(), anyString(), anyString());
+    }
+
+    // ========== I-NEW-1: Blind box idempotency with availabilityVersion mismatch ==========
+
+    @Test
+    void shouldThrowWhenBlindBoxIdempotencyVersionMismatch() {
+        // Same idempotency key, same poolId, but different availabilityVersion
+        Map<String, Object> request = new LinkedHashMap<>();
+        request.put("poolId", 300L);
+        request.put("idempotencyKey", "blind-idem-key");
+        request.put("availabilityVersion", "v2");
+
+        Exchange existing = new Exchange();
+        existing.setId(5L);
+        existing.setChildId(childId);
+        existing.setFamilyId(familyId);
+        existing.setType("BLIND_BOX");
+        existing.setPoolId(300L);
+        existing.setCreatedAt(LocalDateTime.now());
+
+        ExchangeSnapshot snapshot = new ExchangeSnapshot();
+        snapshot.setExchangeId(5L);
+        snapshot.setAvailabilityVersion("v1"); // Different from request's "v2"
+
+        when(exchangeMapper.findByChildIdAndKey(childId, "blind-idem-key")).thenReturn(Optional.of(existing));
+        when(exchangeSnapshotMapper.findByExchangeId(5L)).thenReturn(Optional.of(snapshot));
+
+        BusinessException ex = assertThrows(BusinessException.class,
+                () -> exchangeService.createBlindBoxExchange(request, childId, familyId));
+        assertEquals(ErrorCode.EXCHANGE_IDEMPOTENCY_CONFLICT, ex.getErrorCode());
+    }
+
+    @Test
+    void shouldReturnExistingOnBlindBoxIdempotencyVersionMatch() {
+        // Same idempotency key, same poolId, same availabilityVersion → idempotent return
+        Map<String, Object> request = new LinkedHashMap<>();
+        request.put("poolId", 300L);
+        request.put("idempotencyKey", "blind-idem-key-2");
+        request.put("availabilityVersion", "v1");
+
+        Exchange existing = new Exchange();
+        existing.setId(6L);
+        existing.setChildId(childId);
+        existing.setFamilyId(familyId);
+        existing.setType("BLIND_BOX");
+        existing.setPoolId(300L);
+        existing.setCreatedAt(LocalDateTime.now());
+
+        ExchangeSnapshot snapshot = new ExchangeSnapshot();
+        snapshot.setExchangeId(6L);
+        snapshot.setAvailabilityVersion("v1"); // Same as request
+
+        when(exchangeMapper.findByChildIdAndKey(childId, "blind-idem-key-2")).thenReturn(Optional.of(existing));
+        when(exchangeSnapshotMapper.findByExchangeId(6L)).thenReturn(Optional.of(snapshot));
+
+        Exchange result = exchangeService.createBlindBoxExchange(request, childId, familyId);
+        assertNotNull(result);
+        assertEquals(6L, result.getId());
+    }
+
     // ========== Task 5.9: Idempotency ==========
 
     @Test

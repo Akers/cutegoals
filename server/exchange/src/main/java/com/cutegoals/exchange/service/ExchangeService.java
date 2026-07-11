@@ -191,8 +191,9 @@ public class ExchangeService {
                         "Drawn prize no longer available: " + drawnPrizeId));
 
         if (prize.getStock() <= 0) {
+            Map<String, Object> candidatesData = blindBoxService.getCandidateProbabilities(poolId, familyId);
             throw new BusinessException(ErrorCode.BLIND_BOX_POOL_CHANGED,
-                    "Drawn prize out of stock, pool changed");
+                    "Drawn prize out of stock, pool changed", candidatesData);
         }
 
         // Create exchange record FIRST
@@ -216,8 +217,9 @@ public class ExchangeService {
         // Deduct stock
         int stockUpdated = prizeMapper.decrementStock(drawnPrizeId);
         if (stockUpdated == 0) {
+            Map<String, Object> candidatesData = blindBoxService.getCandidateProbabilities(poolId, familyId);
             throw new BusinessException(ErrorCode.BLIND_BOX_POOL_CHANGED,
-                    "Drawn prize out of stock (concurrent): " + drawnPrizeId);
+                    "Drawn prize out of stock (concurrent): " + drawnPrizeId, candidatesData);
         }
 
         // Get all candidates with probabilities for snapshot (ObjectMapper for safe JSON)
@@ -305,7 +307,18 @@ public class ExchangeService {
         } else if ("BLIND_BOX".equals(type)) {
             Long requestPoolId = request.get("poolId") != null ? ((Number) request.get("poolId")).longValue() : null;
             String requestVersion = extractString(request, "availabilityVersion");
-            return requestPoolId != null && requestPoolId.equals(existing.getPoolId());
+            if (requestPoolId != null && requestPoolId.equals(existing.getPoolId())) {
+                // Verify availabilityVersion matches for idempotency
+                if (requestVersion == null || requestVersion.isEmpty()) {
+                    return false;
+                }
+                ExchangeSnapshot snapshot = exchangeSnapshotMapper.findByExchangeId(existing.getId()).orElse(null);
+                if (snapshot == null || snapshot.getAvailabilityVersion() == null) {
+                    return false;
+                }
+                return requestVersion.equals(snapshot.getAvailabilityVersion());
+            }
+            return false;
         }
         return false;
     }
