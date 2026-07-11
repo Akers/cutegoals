@@ -269,6 +269,7 @@ public class BlindBoxService {
                     "Page size must be between 1 and " + MAX_PAGE_SIZE);
         }
 
+        // Query ALL enabled, non-deleted pools (no pagination at DB level)
         LambdaQueryWrapper<BlindBoxPool> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(BlindBoxPool::getFamilyId, familyId);
         wrapper.eq(BlindBoxPool::getEnabled, true);
@@ -277,23 +278,32 @@ public class BlindBoxService {
         wrapper.orderByDesc(BlindBoxPool::getCreatedAt);
         wrapper.orderByDesc(BlindBoxPool::getId);
 
-        Page<BlindBoxPool> page = blindBoxPoolMapper.selectPage(new Page<>(pageNum, pageSize), wrapper);
+        List<BlindBoxPool> allPools = blindBoxPoolMapper.selectList(wrapper);
 
-        // Filter out pools with no available items
+        // Filter out pools with no available items (in-app filtering)
         List<BlindBoxPool> poolsWithItems = new ArrayList<>();
-        for (BlindBoxPool pool : page.getRecords()) {
+        for (BlindBoxPool pool : allPools) {
             List<Map<String, Object>> candidates = getEffectiveCandidates(pool.getId(), familyId);
             if (!candidates.isEmpty()) {
                 poolsWithItems.add(pool);
             }
         }
 
+        // Apply pagination on the filtered results
+        int totalElements = poolsWithItems.size();
+        int totalPages = (int) Math.ceil((double) totalElements / pageSize);
+        int fromIndex = Math.min((pageNum - 1) * pageSize, totalElements);
+        int toIndex = Math.min(fromIndex + pageSize, totalElements);
+        List<BlindBoxPool> pageContent = fromIndex < totalElements
+                ? poolsWithItems.subList(fromIndex, toIndex)
+                : List.of();
+
         Map<String, Object> result = new LinkedHashMap<>();
-        result.put("content", poolsWithItems);
-        result.put("page", page.getCurrent());
-        result.put("pageSize", page.getSize());
-        result.put("totalElements", (long) poolsWithItems.size());
-        result.put("totalPages", 1L);
+        result.put("content", pageContent);
+        result.put("page", (long) pageNum);
+        result.put("pageSize", pageSize);
+        result.put("totalElements", (long) totalElements);
+        result.put("totalPages", (long) totalPages);
         return result;
     }
 

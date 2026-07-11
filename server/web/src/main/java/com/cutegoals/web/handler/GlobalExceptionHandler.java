@@ -23,7 +23,7 @@ public class GlobalExceptionHandler {
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(BusinessException.class)
-    public ResponseEntity<ApiResponse<Void>> handleBusinessException(BusinessException e) {
+    public ResponseEntity<?> handleBusinessException(BusinessException e) {
         String requestId = MDC.get("requestId");
         if (requestId == null) {
             requestId = UUID.randomUUID().toString().replace("-", "");
@@ -34,6 +34,12 @@ public class GlobalExceptionHandler {
         // Log without sensitive details
         log.warn("Business exception: code={}, message={}, requestId={}",
                 e.getErrorCode(), e.getMessage(), requestId);
+
+        // If exception carries data (e.g. BLIND_BOX_POOL_CHANGED with candidates), include it
+        if (e.getData() != null && !e.getData().isEmpty()) {
+            return ResponseEntity.status(status)
+                    .body(ApiResponse.error(e.getErrorCode(), e.getMessage(), e.getData(), requestId));
+        }
 
         return ResponseEntity.status(status)
                 .body(ApiResponse.error(e.getErrorCode(), e.getMessage(), requestId));
