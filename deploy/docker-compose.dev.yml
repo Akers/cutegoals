@@ -1,0 +1,59 @@
+# =============================================================================
+# CuteGoals 2.0 — Docker Compose 编排（开发环境）
+# 用于本地开发：挂载源码、热加载、启用调试端口
+# 使用方式：
+#   docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.dev.yml up -d
+# =============================================================================
+
+services:
+  # ── PostgreSQL（开发沿用生产配置，但使用本地目录挂载便于清理） ──
+  mit-modelide-core-postgres:
+    ports:
+      - "127.0.0.1:35432:5432"
+
+  # ── Redis（开发沿用生产配置） ──
+  mit-modelide-core-redis:
+    ports:
+      - "127.0.0.1:36379:6379"
+
+  # ── 后端服务：开发模式 ──────────────────────────────────────────────────
+  mit-modelide-core-server:
+    image: mit-modelide-core-server:dev
+    build:
+      context: ..
+      dockerfile: server/Dockerfile
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      APP_PRODUCTION: "false"
+      LOG_LEVEL: DEBUG
+    ports:
+      - "127.0.0.1:8080:8080"
+      - "127.0.0.1:5005:5005"  # JDWP 调试端口
+    volumes:
+      # 挂载 Maven 缓存加速构建
+      - m2_cache:/root/.m2
+    # 开发模式下允许单步调试
+    entrypoint: >
+      sh -c "
+        java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005 -jar app.jar
+      "
+
+  # ── Nginx（开发模式允许 HTTP） ──────────────────────────────────────────
+  mit-modelide-core-nginx:
+    image: mit-modelide-core-nginx:dev
+    build:
+      context: ..
+      dockerfile: deploy/nginx/Dockerfile
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      # 开发时使用本地构建产物（需要先运行 npm run build）
+      - ../web/dist:/usr/share/nginx/html:ro
+    # 仅暴露 HTTP 端口（开发模式不需要 HTTPS）
+    # 仅注释掉 443 端口的映射
+    # 配置文件中保留 HTTPS 但不可达
+
+volumes:
+  m2_cache:
+    name: mit-modelide-core-m2-cache

@@ -1,30 +1,27 @@
 # =============================================================================
-# CuteGoals 2.0 — Docker Compose 编排
+# CuteGoals 2.0 — Docker Compose 编排（生产环境）
 # 使用方式：
 #   cp deploy/.env.template .env   # 编辑 .env 填入实际值
 #   ./deploy/build.sh up            # 或
 #   docker compose --env-file .env -f deploy/docker-compose.yml up -d
 # =============================================================================
 
-version: "3.9"
-
 services:
-  # ── MySQL 8 ─────────────────────────────────────────────────────────────
-  mit-modelide-core-mysql:
-    image: mysql:8.0
-    container_name: mit-modelide-core-mysql
+  # ── PostgreSQL 16 ─────────────────────────────────────────────────────────
+  mit-modelide-core-postgres:
+    image: postgres:16-alpine
+    container_name: mit-modelide-core-postgres
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE:-cutegoals}
-      MYSQL_USER: ${MYSQL_USER:-cutegoals}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      POSTGRES_DB: ${PG_DATABASE:-cutegoals}
+      POSTGRES_USER: ${PG_USER:-cutegoals}
+      POSTGRES_PASSWORD: ${PG_PASSWORD}
+      PG_SCHEMA: ${PG_SCHEMA:-cutegoals}
     volumes:
-      - mysql_data:/var/lib/mysql
-    ports:
-      - "127.0.0.1:3306:3306"
+      - pg_data:/var/lib/postgresql/data
+      - ./docker/postgres-init.sh:/docker-entrypoint-initdb.d/init.sh:ro
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test: ["CMD-SHELL", "pg_isready -U ${PG_USER:-cutegoals} -d ${PG_DATABASE:-cutegoals}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -32,7 +29,7 @@ services:
     networks:
       - mit-modelide-core-network
 
-  # ── Redis 7 ─────────────────────────────────────────────────────────────
+  # ── Redis 7 ───────────────────────────────────────────────────────────────
   mit-modelide-core-redis:
     image: redis:7-alpine
     container_name: mit-modelide-core-redis
@@ -43,8 +40,6 @@ services:
       --appendonly yes
     volumes:
       - redis_data:/data
-    ports:
-      - "127.0.0.1:6379:6379"
     healthcheck:
       test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
       interval: 10s
@@ -60,32 +55,41 @@ services:
     container_name: mit-modelide-core-server
     build:
       context: ..
-      dockerfile: deploy/docker/Dockerfile.server
+      dockerfile: server/Dockerfile
     restart: unless-stopped
     environment:
       SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-prod}
-      SPRING_DATASOURCE_URL: jdbc:mysql://mit-modelide-core-mysql:3306/${MYSQL_DATABASE:-cutegoals}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
-      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER:-cutegoals}
-      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
+      # PostgreSQL 连接
+      PG_HOST: mit-modelide-core-postgres
+      PG_PORT: 5432
+      PG_DATABASE: ${PG_DATABASE:-cutegoals}
+      PG_USER: ${PG_USER:-cutegoals}
+      PG_PASSWORD: ${PG_PASSWORD}
+      PG_SCHEMA: ${PG_SCHEMA:-cutegoals}
+      # Redis 连接
       SPRING_DATA_REDIS_HOST: mit-modelide-core-redis
       SPRING_DATA_REDIS_PORT: 6379
       SPRING_DATA_REDIS_PASSWORD: ${REDIS_PASSWORD}
+      # 应用配置
       JWT_SECRET: ${JWT_SECRET}
+      CUTEGOALS_JWT_SECRET: ${JWT_SECRET}
       INIT_TOKEN: ${INIT_TOKEN}
+      APP_DOMAIN: ${APP_DOMAIN:-localhost}
+      APP_PRODUCTION: ${APP_PRODUCTION:-true}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      # 短信服务（可选）
       SMS_PROVIDER: ${SMS_PROVIDER:-}
       SMS_ACCESS_KEY: ${SMS_ACCESS_KEY:-}
       SMS_ACCESS_SECRET: ${SMS_ACCESS_SECRET:-}
-      LOG_LEVEL: ${LOG_LEVEL:-INFO}
-      APP_DOMAIN: ${APP_DOMAIN:-localhost}
-    ports:
-      - "127.0.0.1:8080:8080"
+    volumes:
+      - server_logs:/app/logs
     depends_on:
-      mit-modelide-core-mysql:
+      mit-modelide-core-postgres:
         condition: service_healthy
       mit-modelide-core-redis:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/api/health"]
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/api/health"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -93,13 +97,13 @@ services:
     networks:
       - mit-modelide-core-network
 
-  # ── 前端服务：Nginx + SPA ───────────────────────────────────────────────
+  # ── 前端 + Nginx 反向代理 ────────────────────────────────────────────────
   mit-modelide-core-nginx:
     image: mit-modelide-core-nginx:${APP_VERSION:-latest}
     container_name: mit-modelide-core-nginx
     build:
       context: ..
-      dockerfile: deploy/docker/Dockerfile.nginx
+      dockerfile: deploy/nginx/Dockerfile
     restart: unless-stopped
     ports:
       - "80:80"
@@ -107,7 +111,8 @@ services:
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
     depends_on:
-      - mit-modelide-core-server
+      mit-modelide-core-server:
+        condition: service_healthy
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:80/"]
       interval: 30s
@@ -117,11 +122,52 @@ services:
     networks:
       - mit-modelide-core-network
 
+  # ── 备份 Sidecar ──────────────────────────────────────────────────────────
+  mit-modelide-core-backup:
+    image: postgres:16-alpine
+    container_name: mit-modelide-core-backup
+    restart: unless-stopped
+    environment:
+      PG_HOST: mit-modelide-core-postgres
+      PG_PORT: 5432
+      PG_DATABASE: ${PG_DATABASE:-cutegoals}
+      PG_USER: ${PG_USER:-cutegoals}
+      PG_PASSWORD: ${PG_PASSWORD}
+      PG_SCHEMA: ${PG_SCHEMA:-cutegoals}
+      BACKUP_DIR: ${BACKUP_DIR:-/backup}
+      BACKUP_RETENTION_DAYS: ${BACKUP_RETENTION_DAYS:-7}
+      BACKUP_RETENTION_WEEKS: ${BACKUP_RETENTION_WEEKS:-4}
+      BACKUP_RETENTION_MONTHS: ${BACKUP_RETENTION_MONTHS:-3}
+      APP_VERSION: ${APP_VERSION:-latest}
+      APP_DOMAIN: ${APP_DOMAIN:-localhost}
+      SERVER_URL: http://mit-modelide-core-server:8080
+    volumes:
+      - backup_data:/backup
+      - ./backup/backup.sh:/usr/local/bin/backup.sh:ro
+      - ./backup/prune.sh:/usr/local/bin/prune.sh:ro
+    depends_on:
+      mit-modelide-core-postgres:
+        condition: service_healthy
+      mit-modelide-core-server:
+        condition: service_healthy
+    entrypoint: >
+      sh -c "
+        echo 'backup-sidecar ready' &&
+        echo '0 2 * * * /usr/local/bin/backup.sh >> /var/log/backup.log 2>&1' | crontab - &&
+        crond -f -l 2
+      "
+    networks:
+      - mit-modelide-core-network
+
 volumes:
-  mysql_data:
-    name: mit-modelide-core-mysql-data
+  pg_data:
+    name: mit-modelide-core-pg-data
   redis_data:
     name: mit-modelide-core-redis-data
+  backup_data:
+    name: mit-modelide-core-backup-data
+  server_logs:
+    name: mit-modelide-core-server-logs
 
 networks:
   mit-modelide-core-network:
