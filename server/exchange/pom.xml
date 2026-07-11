@@ -12,7 +12,7 @@
 
     <artifactId>exchange</artifactId>
     <name>CuteGoals :: Exchange</name>
-    <description>Points-to-prize exchange module</description>
+    <description>Points-to-prize exchange, blind-box draw, fulfillment and cancellation module</description>
 
     <dependencies>
         <dependency>
@@ -20,8 +20,28 @@
             <artifactId>common</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.cutegoals</groupId>
+            <artifactId>auth</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.cutegoals</groupId>
+            <artifactId>points</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.cutegoals</groupId>
+            <artifactId>prize</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.cutegoals</groupId>
+            <artifactId>family</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter</artifactId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
         </dependency>
     </dependencies>
 </project>

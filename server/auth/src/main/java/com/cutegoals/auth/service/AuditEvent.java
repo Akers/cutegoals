@@ -65,4 +65,24 @@ public final class AuditEvent {
     public static final String POINTS_SPEND = "POINTS_SPEND";
     public static final String POINTS_REFUND = "POINTS_REFUND";
     public static final String POINTS_ADJUST = "POINTS_ADJUST";
+
+    // === Prize events ===
+    public static final String PRIZE_CREATED = "PRIZE_CREATED";
+    public static final String PRIZE_UPDATED = "PRIZE_UPDATED";
+    public static final String PRIZE_DELETED = "PRIZE_DELETED";
+    public static final String PRIZE_STOCK_ADJUSTED = "PRIZE_STOCK_ADJUSTED";
+
+    // === Blind Box events ===
+    public static final String BLIND_BOX_POOL_CREATED = "BLIND_BOX_POOL_CREATED";
+    public static final String BLIND_BOX_POOL_UPDATED = "BLIND_BOX_POOL_UPDATED";
+    public static final String BLIND_BOX_POOL_DELETED = "BLIND_BOX_POOL_DELETED";
+    public static final String BLIND_BOX_ITEM_ADDED = "BLIND_BOX_ITEM_ADDED";
+    public static final String BLIND_BOX_ITEM_REMOVED = "BLIND_BOX_ITEM_REMOVED";
+
+    // === Exchange events ===
+    public static final String EXCHANGE_CREATED = "EXCHANGE_CREATED";
+    public static final String EXCHANGE_DIRECT = "EXCHANGE_DIRECT";
+    public static final String EXCHANGE_BLIND_BOX = "EXCHANGE_BLIND_BOX";
+    public static final String EXCHANGE_FULFILLED = "EXCHANGE_FULFILLED";
+    public static final String EXCHANGE_CANCELLED = "EXCHANGE_CANCELLED";
 }

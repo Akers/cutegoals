@@ -128,6 +128,28 @@ public class GlobalExceptionHandler {
             case POINTS_ALREADY_REFUNDED -> HttpStatus.CONFLICT;
             case POINTS_SPEND_SOURCE_INVALID -> HttpStatus.BAD_REQUEST;
             case POINTS_INVALID_QUERY -> HttpStatus.BAD_REQUEST;
+            // Prize errors
+            case PRIZE_INVALID_POINTS_COST -> HttpStatus.BAD_REQUEST;
+            case PRIZE_INVALID_STOCK -> HttpStatus.BAD_REQUEST;
+            case PRIZE_NOT_FOUND -> HttpStatus.NOT_FOUND;
+            case PRIZE_OUT_OF_STOCK -> HttpStatus.CONFLICT;
+            case PRIZE_DELETED -> HttpStatus.GONE;
+            // Blind Box errors
+            case BLIND_BOX_INVALID_COST -> HttpStatus.BAD_REQUEST;
+            case BLIND_BOX_EMPTY_POOL -> HttpStatus.BAD_REQUEST;
+            case BLIND_BOX_NOT_FOUND -> HttpStatus.NOT_FOUND;
+            case BLIND_BOX_INVALID_WEIGHT -> HttpStatus.BAD_REQUEST;
+            case BLIND_BOX_DUPLICATE_PRIZE -> HttpStatus.CONFLICT;
+            case BLIND_BOX_POOL_CHANGED -> HttpStatus.CONFLICT;
+            case BLIND_BOX_UNAVAILABLE -> HttpStatus.CONFLICT;
+            // Exchange errors
+            case EXCHANGE_IDEMPOTENCY_KEY_REQUIRED -> HttpStatus.BAD_REQUEST;
+            case EXCHANGE_IDEMPOTENCY_CONFLICT -> HttpStatus.CONFLICT;
+            case EXCHANGE_NOT_FOUND -> HttpStatus.NOT_FOUND;
+            case EXCHANGE_INVALID_STATE -> HttpStatus.CONFLICT;
+            case EXCHANGE_INVALID_QUERY -> HttpStatus.BAD_REQUEST;
+            case EXCHANGE_TRANSACTION_FAILED -> HttpStatus.INTERNAL_SERVER_ERROR;
+            case EXCHANGE_CANCELLATION_FAILED -> HttpStatus.INTERNAL_SERVER_ERROR;
             default -> HttpStatus.INTERNAL_SERVER_ERROR;
         };
     }

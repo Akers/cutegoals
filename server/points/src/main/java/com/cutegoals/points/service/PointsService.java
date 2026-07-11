@@ -199,6 +199,162 @@ public class PointsService {
         return ledger;
     }
 
+    // ========== Phase 5: Spend & Refund for Exchange ==========
+
+    /**
+     * Spend points for an exchange. Creates SPEND ledger entry and updates balance.
+     * Must be called within an existing transaction.
+     */
+    @Transactional
+    public PointsLedger spendPoints(Long childId, Long familyId, int amount,
+                                     String businessRef, String reason) {
+        if (amount < 1) {
+            throw new BusinessException(ErrorCode.POINTS_INVALID_TRANSACTION,
+                    "Spend amount must be positive, got: " + amount);
+        }
+
+        // Validate child belongs to family
+        ChildProfile child = taskChildMapper.findById(childId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.POINTS_ACCOUNT_NOT_FOUND,
+                        "Child not found: " + childId));
+        if (!child.getFamilyId().equals(familyId)) {
+            throw new BusinessException(ErrorCode.POINTS_FORBIDDEN,
+                    "Child does not belong to your family");
+        }
+
+        // Check business ref uniqueness
+        Optional<PointsLedger> existing = pointsLedgerMapper.findByBusinessRef(childId, businessRef);
+        if (existing.isPresent()) {
+            PointsLedger er = existing.get();
+            if (!"SPEND".equals(er.getType()) || er.getAmount() != amount) {
+                throw new BusinessException(ErrorCode.POINTS_REFERENCE_CONFLICT,
+                        "Business reference already used with different parameters");
+            }
+            return er;
+        }
+
+        // Fetch balance with lock
+        PointsBalance balance = pointsBalanceMapper.findByChildIdForUpdate(childId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.POINTS_ACCOUNT_NOT_FOUND,
+                        "Points account not found for child: " + childId));
+
+        int newBalance = balance.getBalance() - amount;
+        if (newBalance < 0) {
+            throw new BusinessException(ErrorCode.POINTS_INSUFFICIENT_BALANCE,
+                    "Insufficient balance. Current: " + balance.getBalance() + ", required: " + amount);
+        }
+
+        // Create SPEND ledger entry
+        PointsLedger ledger = new PointsLedger();
+        ledger.setChildId(childId);
+        ledger.setType("SPEND");
+        ledger.setAmount(amount);
+        ledger.setBalanceAfter(newBalance);
+        ledger.setBusinessRef(businessRef);
+        ledger.setSourceSnapshot(String.format("{\"reason\":\"%s\"}", escapeJson(reason != null ? reason : "")));
+        try {
+            pointsLedgerMapper.insert(ledger);
+        } catch (org.apache.ibatis.exceptions.PersistenceException ex) {
+            if (ex.getCause() instanceof java.sql.SQLException sqlEx && sqlEx.getMessage() != null
+                    && sqlEx.getMessage().toLowerCase().contains("business_ref")) {
+                throw new BusinessException(ErrorCode.POINTS_REFERENCE_CONFLICT,
+                        "Duplicate business reference: " + businessRef);
+            }
+            throw ex;
+        }
+
+        // Update balance (totalEarned stays unchanged for SPEND)
+        int updated = pointsBalanceMapper.updateBalanceWithVersion(
+                childId, newBalance, balance.getTotalEarned(), balance.getVersion());
+        if (updated == 0) {
+            throw new BusinessException(ErrorCode.POINTS_ACCOUNT_CONFLICT,
+                    "Points balance was modified concurrently");
+        }
+
+        auditService.record(AuditEvent.POINTS_SPEND, null, "SUCCESS",
+                "Points spent: childId=" + childId + ", amount=" + amount + ", ref=" + businessRef);
+
+        log.info("Points spent: childId={}, amount={}, ref={}, newBalance={}",
+                childId, amount, businessRef, newBalance);
+
+        return ledger;
+    }
+
+    /**
+     * Refund points for a cancelled exchange. Creates REFUND ledger entry and updates balance.
+     * Must be called within an existing transaction.
+     */
+    @Transactional
+    public PointsLedger refundPoints(Long childId, Long familyId, int amount,
+                                      String businessRef, String reason) {
+        if (amount < 1) {
+            throw new BusinessException(ErrorCode.POINTS_INVALID_TRANSACTION,
+                    "Refund amount must be positive, got: " + amount);
+        }
+
+        // Validate child belongs to family
+        ChildProfile child = taskChildMapper.findById(childId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.POINTS_ACCOUNT_NOT_FOUND,
+                        "Child not found: " + childId));
+        if (!child.getFamilyId().equals(familyId)) {
+            throw new BusinessException(ErrorCode.POINTS_FORBIDDEN,
+                    "Child does not belong to your family");
+        }
+
+        // Check business ref uniqueness
+        Optional<PointsLedger> existing = pointsLedgerMapper.findByBusinessRef(childId, businessRef);
+        if (existing.isPresent()) {
+            PointsLedger er = existing.get();
+            if (!"REFUND".equals(er.getType()) || er.getAmount() != amount) {
+                throw new BusinessException(ErrorCode.POINTS_REFERENCE_CONFLICT,
+                        "Business reference already used with different parameters");
+            }
+            return er;
+        }
+
+        // Fetch balance with lock
+        PointsBalance balance = pointsBalanceMapper.findByChildIdForUpdate(childId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.POINTS_ACCOUNT_NOT_FOUND,
+                        "Points account not found for child: " + childId));
+
+        int newBalance = balance.getBalance() + amount;
+
+        // Create REFUND ledger entry
+        PointsLedger ledger = new PointsLedger();
+        ledger.setChildId(childId);
+        ledger.setType("REFUND");
+        ledger.setAmount(amount);
+        ledger.setBalanceAfter(newBalance);
+        ledger.setBusinessRef(businessRef);
+        ledger.setSourceSnapshot(String.format("{\"reason\":\"%s\"}", escapeJson(reason != null ? reason : "")));
+        try {
+            pointsLedgerMapper.insert(ledger);
+        } catch (org.apache.ibatis.exceptions.PersistenceException ex) {
+            if (ex.getCause() instanceof java.sql.SQLException sqlEx && sqlEx.getMessage() != null
+                    && sqlEx.getMessage().toLowerCase().contains("business_ref")) {
+                throw new BusinessException(ErrorCode.POINTS_REFERENCE_CONFLICT,
+                        "Duplicate business reference: " + businessRef);
+            }
+            throw ex;
+        }
+
+        // Update balance (totalEarned stays unchanged for REFUND)
+        int updated = pointsBalanceMapper.updateBalanceWithVersion(
+                childId, newBalance, balance.getTotalEarned(), balance.getVersion());
+        if (updated == 0) {
+            throw new BusinessException(ErrorCode.POINTS_ACCOUNT_CONFLICT,
+                    "Points balance was modified concurrently");
+        }
+
+        auditService.record(AuditEvent.POINTS_REFUND, null, "SUCCESS",
+                "Points refunded: childId=" + childId + ", amount=" + amount + ", ref=" + businessRef);
+
+        log.info("Points refunded: childId={}, amount={}, ref={}, newBalance={}",
+                childId, amount, businessRef, newBalance);
+
+        return ledger;
+    }
+
     // ========== Task 4.10: Ledger Query ==========
 
     /**
