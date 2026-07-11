@@ -17,6 +17,11 @@ import java.util.*;
 /**
  * Service for family data export (Task 6.7).
  * Excludes secrets, anonymizes deleted children.
+ * <p>
+ * TODO (I2, phase6 review): Add task, points, reward, and exchange history data
+ * to the export. This requires injecting the corresponding module services/mappers
+ * (task, points, prize, exchange) and pulling data scoped by family/child IDs.
+ * Currently only exports family info, members, and child profiles.
  */
 @Service
 @RequiredArgsConstructor

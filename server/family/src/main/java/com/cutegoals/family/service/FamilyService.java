@@ -163,6 +163,8 @@ public class FamilyService {
 
         sessionService.revokeAllSessions(member.getAccountId());
 
+        auditService.record(AuditEvent.MEMBER_REMOVED, callerAccountId, "SUCCESS",
+                "Member removed: memberId=" + memberId + ", accountId=" + member.getAccountId());
         log.info("Member removed: memberId={}, accountId={}, by accountId={}", memberId, member.getAccountId(), callerAccountId);
     }
 
@@ -186,6 +188,8 @@ public class FamilyService {
 
         sessionService.revokeAllSessions(accountId);
 
+        auditService.record(AuditEvent.MEMBER_LEFT, accountId, "SUCCESS",
+                "Member left family: memberId=" + member.getId() + ", accountId=" + accountId);
         log.info("Member left family: memberId={}, accountId={}", member.getId(), accountId);
     }
 }
