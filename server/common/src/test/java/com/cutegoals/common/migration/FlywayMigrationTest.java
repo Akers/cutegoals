@@ -17,22 +17,44 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Flyway 迁移脚本集成测试。
  * <p>
- * 使用 H2 内存数据库（MySQL 兼容模式）执行所有迁移脚本，
+ * 默认使用 H2 内存数据库（PostgreSQL 兼容模式）执行所有迁移脚本，
  * 验证表结构、索引、唯一约束和外键正确创建。
  * 每个测试方法建立独立连接，H2 通过 DB_CLOSE_DELAY=-1 保持数据。
+ * <p>
+ * 可通过系统属性指定真实 PostgreSQL 连接：
+ * -Dflyway.test.url=jdbc:postgresql://localhost:35432/cutegoals
+ * -Dflyway.test.user=cutegoals
+ * -Dflyway.test.password=cutegoals
  * 无需 Docker。
  */
 class FlywayMigrationTest {
 
-    private static final String JDBC_URL =
-            "jdbc:h2:mem:cutegoals_test;MODE=MySQL;DB_CLOSE_DELAY=-1";
-    private static final String USER = "sa";
-    private static final String PASSWORD = "";
+    private static final String H2_JDBC_URL =
+            "jdbc:h2:mem:cutegoals_test;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;CASE_INSENSITIVE_IDENTIFIERS=TRUE;DB_CLOSE_DELAY=-1";
+    private static final String H2_USER = "sa";
+    private static final String H2_PASSWORD = "";
+
+    private static String jdbcUrl;
+    private static String dbUser;
+    private static String dbPassword;
+
+    /** Case-insensitive set for table/column lookups. */
+    private static final class CIMap {
+        final Map<String, String> lowerToOriginal = new HashMap<>();
+        void add(String name) { lowerToOriginal.put(toLower(name), name); }
+        boolean contains(String name) { return lowerToOriginal.containsKey(toLower(name)); }
+        private static String toLower(String s) { return s == null ? null : s.toLowerCase(Locale.ROOT); }
+    }
 
     @BeforeAll
     static void runMigrations() {
+        // Determine target database: use real PostgreSQL if system properties set, otherwise H2
+        jdbcUrl = System.getProperty("flyway.test.url", H2_JDBC_URL);
+        dbUser = System.getProperty("flyway.test.user", H2_USER);
+        dbPassword = System.getProperty("flyway.test.password", H2_PASSWORD);
+
         Flyway flyway = Flyway.configure()
-                .dataSource(JDBC_URL, USER, PASSWORD)
+                .dataSource(jdbcUrl, dbUser, dbPassword)
                 .locations("classpath:db/migration")
                 .load();
         MigrateResult result = flyway.migrate();
@@ -64,7 +86,18 @@ class FlywayMigrationTest {
     }
 
     private Connection newConnection() throws Exception {
-        return DriverManager.getConnection(JDBC_URL, USER, PASSWORD);
+        return DriverManager.getConnection(jdbcUrl, dbUser, dbPassword);
+    }
+
+    /** Collect all table names from the database into a case-insensitive set. */
+    private CIMap getExistingTables(Connection conn) throws Exception {
+        CIMap result = new CIMap();
+        try (ResultSet tables = conn.getMetaData().getTables(null, null, "%", new String[]{"TABLE"})) {
+            while (tables.next()) {
+                result.add(tables.getString("TABLE_NAME"));
+            }
+        }
+        return result;
     }
 
     @Test
@@ -80,14 +113,7 @@ class FlywayMigrationTest {
         };
 
         try (Connection conn = newConnection()) {
-            DatabaseMetaData meta = conn.getMetaData();
-            Set<String> existingTables = new HashSet<>();
-            try (ResultSet tables = meta.getTables(null, null, "%", new String[]{"TABLE"})) {
-                while (tables.next()) {
-                    existingTables.add(tables.getString("TABLE_NAME"));
-                }
-            }
-
+            CIMap existingTables = getExistingTables(conn);
             for (String table : expectedTables) {
                 assertTrue(existingTables.contains(table),
                         "Table '" + table + "' should exist after migration");
@@ -108,12 +134,14 @@ class FlywayMigrationTest {
         };
 
         try (Connection conn = newConnection()) {
+            CIMap existingTables = getExistingTables(conn);
             DatabaseMetaData meta = conn.getMetaData();
             for (String table : tables) {
                 try (ResultSet pk = meta.getPrimaryKeys(null, null, table)) {
                     boolean found = false;
                     while (pk.next()) {
-                        if ("ID".equalsIgnoreCase(pk.getString("COLUMN_NAME"))) {
+                        String colName = pk.getString("COLUMN_NAME");
+                        if (colName != null && colName.equalsIgnoreCase("id")) {
                             found = true;
                             break;
                         }
@@ -262,7 +290,7 @@ class FlywayMigrationTest {
             boolean found = false;
             while (rs.next()) {
                 String idxName = rs.getString("INDEX_NAME");
-                if (idxName != null && idxName.toUpperCase().contains(indexName.toUpperCase())) {
+                if (idxName != null && idxName.toUpperCase(Locale.ROOT).contains(indexName.toUpperCase(Locale.ROOT))) {
                     found = true;
                     break;
                 }
@@ -277,7 +305,7 @@ class FlywayMigrationTest {
             boolean found = false;
             while (rs.next()) {
                 String idxName = rs.getString("INDEX_NAME");
-                if (idxName != null && idxName.toUpperCase().contains(indexName.toUpperCase())) {
+                if (idxName != null && idxName.toUpperCase(Locale.ROOT).contains(indexName.toUpperCase(Locale.ROOT))) {
                     found = true;
                     break;
                 }
@@ -289,11 +317,12 @@ class FlywayMigrationTest {
     private void assertForeignKeyExists(DatabaseMetaData meta, String table, String fkName, String message)
             throws Exception {
         // H2 returns foreign keys via getImportedKeys (the table that has the FK references)
+        // PostgreSQL uses getExportedKeys when table is the parent
         try (ResultSet rs = meta.getImportedKeys(null, null, table)) {
             boolean found = false;
             while (rs.next()) {
                 String fk = rs.getString("FK_NAME");
-                if (fk != null && fk.toUpperCase().contains(fkName.toUpperCase())) {
+                if (fk != null && fk.toUpperCase(Locale.ROOT).contains(fkName.toUpperCase(Locale.ROOT))) {
                     found = true;
                     break;
                 }
@@ -303,14 +332,27 @@ class FlywayMigrationTest {
     }
 
     private void assertColumnExists(Connection conn, String table, String column, String message) throws Exception {
-        try (ResultSet rs = conn.getMetaData().getColumns(null, null, table, column)) {
-            assertTrue(rs.next(), message);
+        // Use information_schema which works reliably across H2 PostgreSQL mode and real PostgreSQL
+        String sql = "SELECT COUNT(*) FROM information_schema.columns "
+                + "WHERE LOWER(table_name) = LOWER(?) AND LOWER(column_name) = LOWER(?)";
+        try (var stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, table);
+            stmt.setString(2, column);
+            try (ResultSet rs = stmt.executeQuery()) {
+                assertTrue(rs.next() && rs.getInt(1) > 0, message);
+            }
         }
     }
 
     private void assertColumnAbsent(Connection conn, String table, String column, String message) throws Exception {
-        try (ResultSet rs = conn.getMetaData().getColumns(null, null, table, column)) {
-            assertFalse(rs.next(), message);
+        String sql = "SELECT COUNT(*) FROM information_schema.columns "
+                + "WHERE LOWER(table_name) = LOWER(?) AND LOWER(column_name) = LOWER(?)";
+        try (var stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, table);
+            stmt.setString(2, column);
+            try (ResultSet rs = stmt.executeQuery()) {
+                assertTrue(rs.next() && rs.getInt(1) == 0, message);
+            }
         }
     }
 }

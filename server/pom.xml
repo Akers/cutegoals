@@ -63,8 +63,14 @@
             </dependency>
             <dependency>
                 <groupId>org.flywaydb</groupId>
-                <artifactId>flyway-mysql</artifactId>
+                <artifactId>flyway-database-postgresql</artifactId>
                 <version>${flyway.version}</version>
+            </dependency>
+            <!-- PostgreSQL JDBC driver -->
+            <dependency>
+                <groupId>org.postgresql</groupId>
+                <artifactId>postgresql</artifactId>
+                <version>42.7.1</version>
             </dependency>
 
             <!-- Internal modules -->

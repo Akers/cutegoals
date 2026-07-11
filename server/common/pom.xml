@@ -40,10 +40,10 @@
             <artifactId>flyway-core</artifactId>
         </dependency>
 
-        <!-- Flyway MySQL dialect -->
+        <!-- Flyway PostgreSQL dialect -->
         <dependency>
             <groupId>org.flywaydb</groupId>
-            <artifactId>flyway-mysql</artifactId>
+            <artifactId>flyway-database-postgresql</artifactId>
             <scope>runtime</scope>
         </dependency>
 
