@@ -37,6 +37,7 @@ public class TaskTemplateService {
     private final TaskTemplateMapper taskTemplateMapper;
     private final TaskDifficultyMapper taskDifficultyMapper;
     private final TaskRecurrenceRuleMapper taskRecurrenceRuleMapper;
+    private final TaskAssignmentMapper taskAssignmentMapper;
     private final FamilyMapper familyMapper;
     private final TaskChildMapper taskChildMapper;
     private final AuditService auditService;
@@ -183,13 +184,15 @@ public class TaskTemplateService {
             throw new BusinessException(ErrorCode.TASK_TEMPLATE_NOT_FOUND);
         }
 
-        // Version check
-        if (request.containsKey("version")) {
-            Integer clientVersion = ((Number) request.get("version")).intValue();
-            if (!clientVersion.equals(template.getVersion())) {
-                throw new BusinessException(ErrorCode.TASK_TEMPLATE_VERSION_CONFLICT,
-                        "Template was modified by another user. Current version: " + template.getVersion());
-            }
+        // Version check — REQUIRED (spec: concurrent update version conflict)
+        if (!request.containsKey("version")) {
+            throw new BusinessException(ErrorCode.TASK_TEMPLATE_VERSION_CONFLICT,
+                    "Version is required for template update");
+        }
+        Integer clientVersion = ((Number) request.get("version")).intValue();
+        if (!clientVersion.equals(template.getVersion())) {
+            throw new BusinessException(ErrorCode.TASK_TEMPLATE_VERSION_CONFLICT,
+                    "Template was modified by another user. Current version: " + template.getVersion());
         }
 
         // Update fields
@@ -210,9 +213,13 @@ public class TaskTemplateService {
             template.setIcon(icon != null ? icon.trim() : null);
         }
 
-        // Increment version
-        template.setVersion(template.getVersion() + 1);
-        taskTemplateMapper.updateById(template);
+        // Optimistic lock via mapper (version-based)
+        int updated = taskTemplateMapper.optimisticUpdate(template.getId(), clientVersion);
+        if (updated == 0) {
+            throw new BusinessException(ErrorCode.TASK_TEMPLATE_VERSION_CONFLICT,
+                    "Template was modified by another user. Current version: " + template.getVersion());
+        }
+        template.setVersion(clientVersion + 1);
 
         // Update difficulties if provided
         if (request.containsKey("difficulties")) {
@@ -271,23 +278,54 @@ public class TaskTemplateService {
             throw new BusinessException(ErrorCode.TASK_TEMPLATE_REQUIRES_ACTIVE_DIFFICULTY);
         }
 
-        // Atomic replace: delete existing and insert new
-        taskDifficultyMapper.delete(new LambdaQueryWrapper<TaskDifficulty>()
-                .eq(TaskDifficulty::getTemplateId, templateId));
+        // Get existing difficulties, indexed by displayOrder
+        List<TaskDifficulty> existingDifficulties = taskDifficultyMapper.findByTemplateId(templateId);
+        Map<Integer, TaskDifficulty> existingByOrder = new HashMap<>();
+        for (TaskDifficulty ed : existingDifficulties) {
+            existingByOrder.put(ed.getDisplayOrder(), ed);
+        }
 
+        // Process each difficulty in the new request set
         for (Map<String, Object> diffReq : difficulties) {
             String diffName = (String) diffReq.get("name");
             Integer displayOrder = ((Number) diffReq.get("displayOrder")).intValue();
             Integer rewardPoints = ((Number) diffReq.get("rewardPoints")).intValue();
             Boolean enabled = diffReq.containsKey("enabled") ? (Boolean) diffReq.get("enabled") : true;
 
-            TaskDifficulty difficulty = new TaskDifficulty();
-            difficulty.setTemplateId(templateId);
-            difficulty.setName(diffName.trim());
-            difficulty.setDisplayOrder(displayOrder);
-            difficulty.setRewardPoints(rewardPoints);
-            difficulty.setEnabled(enabled);
-            taskDifficultyMapper.insert(difficulty);
+            TaskDifficulty existing = existingByOrder.get(displayOrder);
+            if (existing != null) {
+                // Update existing row (preserves ID for historical references)
+                existing.setName(diffName.trim());
+                existing.setDisplayOrder(displayOrder);
+                existing.setRewardPoints(rewardPoints);
+                existing.setEnabled(enabled);
+                taskDifficultyMapper.updateById(existing);
+                existingByOrder.remove(displayOrder);
+            } else {
+                // Insert new difficulty
+                TaskDifficulty difficulty = new TaskDifficulty();
+                difficulty.setTemplateId(templateId);
+                difficulty.setName(diffName.trim());
+                difficulty.setDisplayOrder(displayOrder);
+                difficulty.setRewardPoints(rewardPoints);
+                difficulty.setEnabled(enabled);
+                taskDifficultyMapper.insert(difficulty);
+            }
+        }
+
+        // Handle existing difficulties not in the new set (removed)
+        for (Map.Entry<Integer, TaskDifficulty> entry : existingByOrder.entrySet()) {
+            TaskDifficulty removed = entry.getValue();
+            // Check if referenced by any assignment
+            int refCount = taskAssignmentMapper.countByDifficultyId(removed.getId());
+            if (refCount > 0) {
+                // Referenced → soft-disable only, keep historical data intact
+                removed.setEnabled(false);
+                taskDifficultyMapper.updateById(removed);
+            } else {
+                // Not referenced → safe to physical delete
+                taskDifficultyMapper.deleteById(removed.getId());
+            }
         }
     }
 
@@ -330,8 +368,11 @@ public class TaskTemplateService {
         }
 
         template.setEnabled(enabled);
+        int updated = taskTemplateMapper.optimisticUpdate(template.getId(), template.getVersion());
+        if (updated == 0) {
+            throw new BusinessException(ErrorCode.TASK_TEMPLATE_VERSION_CONFLICT);
+        }
         template.setVersion(template.getVersion() + 1);
-        taskTemplateMapper.updateById(template);
 
         auditService.record(enabled ? AuditEvent.TEMPLATE_ENABLED : AuditEvent.TEMPLATE_DISABLED,
                 accountId, "SUCCESS", "Task template " + (enabled ? "enabled" : "disabled") + ": id=" + templateId);

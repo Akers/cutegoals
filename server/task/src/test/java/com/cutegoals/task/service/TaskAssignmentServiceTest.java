@@ -104,6 +104,27 @@ class TaskAssignmentServiceTest {
     }
 
     @Test
+    void shouldThrowIdempotencyConflictOnDifferentContent() {
+        Map<String, Object> request = new LinkedHashMap<>();
+        request.put("templateId", templateId);
+        request.put("difficultyId", difficultyId);
+        request.put("childId", childId);
+        request.put("deadline", LocalDateTime.now().plusDays(1).toString());
+        request.put("idempotencyKey", "key-001");
+
+        TaskAssignment existing = createSampleAssignment();
+        // Change key fields to differ from request
+        existing.setTemplateId(999L);
+        existing.setChildId(888L);
+        when(taskAssignmentMapper.findByIdempotencyKey("key-001", familyId)).thenReturn(Optional.of(existing));
+
+        BusinessException e = assertThrows(BusinessException.class,
+                () -> taskAssignmentService.createAssignment(request, familyId, accountId));
+        assertEquals(ErrorCode.TASK_ASSIGNMENT_IDEMPOTENCY_CONFLICT, e.getErrorCode());
+        verify(taskAssignmentMapper, never()).insert(any(TaskAssignment.class));
+    }
+
+    @Test
     void shouldFailCreateAssignmentWithPastDeadline() {
         Map<String, Object> request = new LinkedHashMap<>();
         request.put("templateId", templateId);
@@ -321,13 +342,18 @@ class TaskAssignmentServiceTest {
         assignment.setStatus("PENDING");
         assignment.setCancelled(false);
 
-        when(taskAssignmentMapper.findById(1L)).thenReturn(Optional.of(assignment));
-        when(taskAssignmentMapper.updateById(any(TaskAssignment.class))).thenReturn(1);
+        TaskAssignment cancelledAssignment = createSampleAssignment();
+        cancelledAssignment.setCancelled(true);
+        cancelledAssignment.setCancelledAt(LocalDateTime.now());
+        cancelledAssignment.setCancelledBy(accountId);
+        cancelledAssignment.setCancelledReason("No longer needed");
+
+        when(taskAssignmentMapper.findByIdForUpdate(1L)).thenReturn(Optional.of(assignment));
+        when(taskAssignmentMapper.cancelWithCondition(1L, accountId, "No longer needed")).thenReturn(1);
+        when(taskAssignmentMapper.findById(1L)).thenReturn(Optional.of(cancelledAssignment));
 
         TaskAssignment result = taskAssignmentService.cancelAssignment(1L, "No longer needed", familyId, accountId);
         assertTrue(result.getCancelled());
-        assertNotNull(result.getCancelledAt());
-        assertNotNull(result.getCancelledReason());
         verify(auditService).record(anyString(), eq(accountId), eq("SUCCESS"), anyString());
     }
 
@@ -337,7 +363,7 @@ class TaskAssignmentServiceTest {
         assignment.setStatus("APPROVED");
         assignment.setCancelled(false);
 
-        when(taskAssignmentMapper.findById(1L)).thenReturn(Optional.of(assignment));
+        when(taskAssignmentMapper.findByIdForUpdate(1L)).thenReturn(Optional.of(assignment));
 
         BusinessException e = assertThrows(BusinessException.class,
                 () -> taskAssignmentService.cancelAssignment(1L, "reason", familyId, accountId));
@@ -349,11 +375,11 @@ class TaskAssignmentServiceTest {
         TaskAssignment assignment = createSampleAssignment();
         assignment.setCancelled(true);
 
-        when(taskAssignmentMapper.findById(1L)).thenReturn(Optional.of(assignment));
+        when(taskAssignmentMapper.findByIdForUpdate(1L)).thenReturn(Optional.of(assignment));
 
         TaskAssignment result = taskAssignmentService.cancelAssignment(1L, "reason", familyId, accountId);
         assertTrue(result.getCancelled());
-        verify(taskAssignmentMapper, never()).updateById(any(TaskAssignment.class));
+        verify(taskAssignmentMapper, never()).cancelWithCondition(anyLong(), anyLong(), anyString());
     }
 
     // ========== Task 3.10: Update ==========

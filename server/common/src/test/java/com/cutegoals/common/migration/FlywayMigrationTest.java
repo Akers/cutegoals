@@ -59,8 +59,8 @@ class FlywayMigrationTest {
                 .load();
         MigrateResult result = flyway.migrate();
 
-        assertEquals(8, result.migrationsExecuted,
-                "Expected exactly 8 migrations (V1 through V8) to be executed");
+        assertEquals(9, result.migrationsExecuted,
+                "Expected exactly 9 migrations (V1 through V9) to be executed");
 
         // Verify all migration versions
         MigrationInfo[] applied = flyway.info().applied();
@@ -78,6 +78,7 @@ class FlywayMigrationTest {
         assertTrue(versions.contains("6"), "V6 points tables should be applied");
         assertTrue(versions.contains("7"), "V7 prize and exchange tables should be applied");
         assertTrue(versions.contains("8"), "V8 instance management tables should be applied");
+        assertTrue(versions.contains("9"), "V9 assignment occurrence_key unique constraint should be applied");
 
         // Verify reentrancy
         MigrateResult reentrantResult = flyway.migrate();
@@ -195,8 +196,8 @@ class FlywayMigrationTest {
             assertUniqueConstraint(meta, "TASK_RECURRENCE_RULE", "UK_RECURRENCE_TEMPLATE",
                     "task_recurrence_rule should have unique constraint on template_id");
 
-            assertUniqueConstraint(meta, "TASK_ASSIGNMENT", "UK_ASSIGNMENT_OCCURRENCE",
-                    "task_assignment should have unique constraint on occurrence key");
+            assertUniqueConstraint(meta, "TASK_ASSIGNMENT", "UK_ASSIGNMENT_OCCURRENCE_KEY",
+                    "task_assignment should have unique constraint on occurrence_key");
         }
     }
 

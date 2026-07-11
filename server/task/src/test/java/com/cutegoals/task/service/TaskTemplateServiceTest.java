@@ -28,6 +28,7 @@ class TaskTemplateServiceTest {
     @Mock private TaskTemplateMapper taskTemplateMapper;
     @Mock private TaskDifficultyMapper taskDifficultyMapper;
     @Mock private TaskRecurrenceRuleMapper taskRecurrenceRuleMapper;
+    @Mock private TaskAssignmentMapper taskAssignmentMapper;
     @Mock private FamilyMapper familyMapper;
     @Mock private TaskChildMapper taskChildMapper;
     @Mock private AuditService auditService;
@@ -41,7 +42,7 @@ class TaskTemplateServiceTest {
     void setUp() {
         taskTemplateService = new TaskTemplateService(
                 taskTemplateMapper, taskDifficultyMapper, taskRecurrenceRuleMapper,
-                familyMapper, taskChildMapper, auditService);
+                taskAssignmentMapper, familyMapper, taskChildMapper, auditService);
     }
 
     // ========== Task 3.1: Create template ==========
@@ -345,6 +346,88 @@ class TaskTemplateServiceTest {
         assertEquals(ErrorCode.TASK_TEMPLATE_NOT_FOUND, e.getErrorCode());
     }
 
+    // ========== C3: Difficulty update — soft-delete for referenced ==========
+    @Test
+    void shouldSoftDisableReferencedDifficultyNotDelete() {
+        Long templateId = 1L;
+
+        // Existing difficulties
+        TaskDifficulty diff1 = new TaskDifficulty();
+        diff1.setId(10L);
+        diff1.setTemplateId(templateId);
+        diff1.setName("Easy");
+        diff1.setDisplayOrder(1);
+        diff1.setRewardPoints(10);
+        diff1.setEnabled(true);
+
+        TaskDifficulty diff2 = new TaskDifficulty();
+        diff2.setId(20L);
+        diff2.setTemplateId(templateId);
+        diff2.setName("Hard");
+        diff2.setDisplayOrder(2);
+        diff2.setRewardPoints(30);
+        diff2.setEnabled(true);
+
+        when(taskDifficultyMapper.findByTemplateId(templateId)).thenReturn(List.of(diff1, diff2));
+        // diff1 (order 1) matches new request → updated in-place, no reference check needed
+        // diff2 (order 2) is removed → check reference
+        when(taskAssignmentMapper.countByDifficultyId(20L)).thenReturn(0);
+
+        // New request: only Easy, removing Hard
+        List<Map<String, Object>> difficulties = new ArrayList<>();
+        Map<String, Object> d1 = new LinkedHashMap<>();
+        d1.put("name", "Easy");
+        d1.put("displayOrder", 1);
+        d1.put("rewardPoints", 10);
+        d1.put("enabled", true);
+        difficulties.add(d1);
+
+        taskTemplateService.updateDifficulties(templateId, difficulties);
+
+        // diff1 (referenced) should be updated in place (not deleted)
+        verify(taskDifficultyMapper).updateById(diff1);
+        // diff2 (not referenced) should be deleted — at least one deleteById call
+        verify(taskDifficultyMapper, atLeastOnce()).deleteById(anyLong());
+        // No new inserts since existing order 1 matched
+        verify(taskDifficultyMapper, never()).insert(any(TaskDifficulty.class));
+    }
+
+    @Test
+    void shouldInsertNewDifficultyWhenNoExistingMatch() {
+        Long templateId = 1L;
+
+        TaskDifficulty existing = new TaskDifficulty();
+        existing.setId(10L);
+        existing.setTemplateId(templateId);
+        existing.setName("Old");
+        existing.setDisplayOrder(1);
+        existing.setRewardPoints(5);
+        existing.setEnabled(true);
+
+        when(taskDifficultyMapper.findByTemplateId(templateId)).thenReturn(List.of(existing));
+
+        // New request: keep old (order 1) + add new (order 2)
+        List<Map<String, Object>> difficulties = new ArrayList<>();
+        Map<String, Object> d1 = new LinkedHashMap<>();
+        d1.put("name", "Old");
+        d1.put("displayOrder", 1);
+        d1.put("rewardPoints", 5);
+        d1.put("enabled", true);
+        difficulties.add(d1);
+        Map<String, Object> d2 = new LinkedHashMap<>();
+        d2.put("name", "New");
+        d2.put("displayOrder", 2);
+        d2.put("rewardPoints", 20);
+        d2.put("enabled", true);
+        difficulties.add(d2);
+
+        taskTemplateService.updateDifficulties(templateId, difficulties);
+
+        verify(taskDifficultyMapper).updateById(existing);
+        verify(taskDifficultyMapper).insert(any(TaskDifficulty.class));
+        verify(taskDifficultyMapper, never()).deleteById(anyLong());
+    }
+
     // ========== Version Conflict (Task 3.4) ==========
 
     @Test
@@ -360,6 +443,38 @@ class TaskTemplateServiceTest {
         BusinessException e = assertThrows(BusinessException.class,
                 () -> taskTemplateService.updateTemplate(1L, request, familyId, accountId));
         assertEquals(ErrorCode.TASK_TEMPLATE_VERSION_CONFLICT, e.getErrorCode());
+    }
+
+    @Test
+    void shouldRejectUpdateWithoutVersion() {
+        TaskTemplate template = createSampleTemplate();
+        when(taskTemplateMapper.findById(1L)).thenReturn(Optional.of(template));
+
+        Map<String, Object> request = new LinkedHashMap<>();
+        request.put("name", "New Name");
+        // No version field
+
+        BusinessException e = assertThrows(BusinessException.class,
+                () -> taskTemplateService.updateTemplate(1L, request, familyId, accountId));
+        assertEquals(ErrorCode.TASK_TEMPLATE_VERSION_CONFLICT, e.getErrorCode());
+    }
+
+    @Test
+    void shouldSuccessfullyUpdateWithCorrectVersion() {
+        TaskTemplate template = createSampleTemplate();
+        template.setVersion(1);
+        when(taskTemplateMapper.findById(1L)).thenReturn(Optional.of(template));
+        when(taskTemplateMapper.optimisticUpdate(1L, 1)).thenReturn(1);
+        when(taskTemplateMapper.findById(1L)).thenReturn(Optional.of(template));
+
+        Map<String, Object> request = new LinkedHashMap<>();
+        request.put("name", "Updated Name");
+        request.put("version", 1);
+
+        TaskTemplate result = taskTemplateService.updateTemplate(1L, request, familyId, accountId);
+        assertNotNull(result);
+        verify(taskTemplateMapper).optimisticUpdate(1L, 1);
+        verify(auditService).record(anyString(), eq(accountId), eq("SUCCESS"), anyString());
     }
 
     // ========== Role check ==========

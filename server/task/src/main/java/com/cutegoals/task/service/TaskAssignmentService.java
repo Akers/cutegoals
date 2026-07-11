@@ -11,6 +11,7 @@ import com.cutegoals.common.entity.family.Family;
 import com.cutegoals.common.entity.task.*;
 import com.cutegoals.common.exception.BusinessException;
 import com.cutegoals.common.exception.ErrorCode;
+import org.springframework.dao.DuplicateKeyException;
 import com.cutegoals.task.mapper.*;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -55,8 +56,13 @@ public class TaskAssignmentService {
         if (idempotencyKey != null) {
             Optional<TaskAssignment> existing = taskAssignmentMapper.findByIdempotencyKey(idempotencyKey, familyId);
             if (existing.isPresent()) {
-                // Idempotency: return existing
-                return existing.get();
+                // Idempotency: same key → check content match
+                TaskAssignment ex = existing.get();
+                if (!isSameAssignmentRequest(request, ex)) {
+                    throw new BusinessException(ErrorCode.TASK_ASSIGNMENT_IDEMPOTENCY_CONFLICT,
+                            "Idempotency key used with different request content");
+                }
+                return ex;
             }
         }
 
@@ -110,9 +116,14 @@ public class TaskAssignmentService {
         if (idempotencyKey != null) {
             Optional<TaskAssignment> existing = taskAssignmentMapper.findByIdempotencyKey(idempotencyKey, familyId);
             if (existing.isPresent()) {
-                // If the same key was already used, check if it's a batch - we can't return all from a single lookup
-                // For simplicity, return the first one found and let client query
-                return List.of(existing.get());
+                // Idempotency: same key → check content match
+                TaskAssignment ex = existing.get();
+                if (!isSameBatchRequest(request, ex)) {
+                    throw new BusinessException(ErrorCode.TASK_ASSIGNMENT_IDEMPOTENCY_CONFLICT,
+                            "Idempotency key used with different batch request content");
+                }
+                // Return a single result; client can query all by idempotency key
+                return List.of(ex);
             }
         }
 
@@ -245,7 +256,7 @@ public class TaskAssignmentService {
             }
 
             String occurrenceKey = occurrenceKeyPrefix + date;
-            // Check if already exists
+            // Check if already exists (application-level check for common case)
             int existing = taskAssignmentMapper.countByOccurrenceKey(occurrenceKey);
             if (existing > 0) {
                 skipped++;
@@ -253,9 +264,15 @@ public class TaskAssignmentService {
             }
 
             LocalDateTime deadline = date.atTime(23, 59, 59);
-            TaskAssignment assignment = createAssignmentEntity(template, difficulty, childId, familyId,
-                    deadline, latePolicy, null, occurrenceKey);
-            created++;
+            try {
+                TaskAssignment assignment = createAssignmentEntity(template, difficulty, childId, familyId,
+                        deadline, latePolicy, null, occurrenceKey);
+                created++;
+            } catch (DuplicateKeyException e) {
+                // DB unique constraint safety net for concurrent generation
+                log.debug("Occurrence key {} already inserted by concurrent transaction", occurrenceKey);
+                skipped++;
+            }
         }
 
         auditService.record(AuditEvent.ASSIGNMENT_GENERATED, accountId, "SUCCESS",
@@ -493,7 +510,8 @@ public class TaskAssignmentService {
 
     @Transactional
     public TaskAssignment cancelAssignment(Long assignmentId, String reason, Long familyId, Long accountId) {
-        TaskAssignment assignment = taskAssignmentMapper.findById(assignmentId)
+        // SELECT ... FOR UPDATE to prevent concurrent approve/cancel race
+        TaskAssignment assignment = taskAssignmentMapper.findByIdForUpdate(assignmentId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.TASK_ASSIGNMENT_NOT_FOUND));
 
         if (!assignment.getFamilyId().equals(familyId)) {
@@ -515,17 +533,24 @@ public class TaskAssignmentService {
             throw new BusinessException(ErrorCode.VALIDATION_FAILED, "Cancellation reason is required");
         }
 
-        assignment.setCancelled(true);
-        assignment.setCancelledAt(LocalDateTime.now());
-        assignment.setCancelledBy(accountId);
-        assignment.setCancelledReason(reason.trim());
-        taskAssignmentMapper.updateById(assignment);
+        // Use status check in UPDATE to detect concurrent changes (second safety net)
+        int updated = taskAssignmentMapper.cancelWithCondition(assignmentId, accountId, reason.trim());
+        if (updated == 0) {
+            // Either already cancelled or was approved concurrently
+            TaskAssignment reloaded = taskAssignmentMapper.findByIdForUpdate(assignmentId)
+                    .orElseThrow(() -> new BusinessException(ErrorCode.TASK_ASSIGNMENT_NOT_FOUND));
+            if (Boolean.TRUE.equals(reloaded.getCancelled())) {
+                return reloaded;
+            }
+            throw new BusinessException(ErrorCode.TASK_ASSIGNMENT_ALREADY_APPROVED);
+        }
 
         auditService.record(AuditEvent.ASSIGNMENT_CANCELLED, accountId, "SUCCESS",
                 "Task assignment cancelled: id=" + assignmentId + ", reason=" + reason);
 
         log.info("Task assignment cancelled: id={}", assignmentId);
-        return assignment;
+        return taskAssignmentMapper.findById(assignmentId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.INTERNAL_ERROR));
     }
 
     // ========== Task 3.10: Update Assignment ==========
@@ -691,6 +716,44 @@ public class TaskAssignmentService {
         // Default late policy is ALLOW if not configured
         // In MVP, we use a simple default; could be extended to per-family setting
         return "ALLOW";
+    }
+
+    /**
+     * Compare request fields with existing assignment for idempotency.
+     * Returns true if the request is semantically identical (same template, difficulty, child, and deadline date).
+     */
+    private boolean isSameAssignmentRequest(Map<String, Object> request, TaskAssignment existing) {
+        Long templateId = extractLong(request, "templateId");
+        Long difficultyId = extractLong(request, "difficultyId");
+        Long childId = extractLong(request, "childId");
+        String deadlineStr = extractString(request, "deadline");
+        if (templateId == null || difficultyId == null || childId == null || deadlineStr == null) return false;
+        // Compare core fields
+        if (!templateId.equals(existing.getTemplateId())
+                || !difficultyId.equals(existing.getDifficultyId())
+                || !childId.equals(existing.getChildId())) {
+            return false;
+        }
+        // Compare deadline by date (day granularity to avoid millisecond precision issues)
+        try {
+            LocalDateTime deadline = parseDeadline(deadlineStr);
+            return deadline.toLocalDate().equals(existing.getDeadline().toLocalDate());
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    /**
+     * Compare request fields with existing assignment for batch idempotency.
+     */
+    private boolean isSameBatchRequest(Map<String, Object> request, TaskAssignment existing) {
+        Long templateId = extractLong(request, "templateId");
+        Long difficultyId = extractLong(request, "difficultyId");
+        String startDateStr = extractString(request, "startDate");
+        String endDateStr = extractString(request, "endDate");
+        if (templateId == null || difficultyId == null) return false;
+        return templateId.equals(existing.getTemplateId())
+                && difficultyId.equals(existing.getDifficultyId());
     }
 
     private String extractAndValidateIdempotencyKey(Map<String, Object> request) {
