@@ -97,15 +97,19 @@ main() {
     CURRENT_VERSION=$(get_current_version)
     log "INFO" "当前版本: ${CURRENT_VERSION}"
 
-    # 检查降级
-    if [[ "${CURRENT_VERSION}" != "unknown" ]] && [[ "${CURRENT_VERSION}" != "${TARGET_VERSION}" ]]; then
-        # 简单的版本比较（假设 semver）
-        if [[ "${CURRENT_VERSION}" > "${TARGET_VERSION}" ]] || [[ "${CURRENT_VERSION}" == "${TARGET_VERSION}" ]]; then
+    # 检查降级（使用 sort -V 进行语义化版本比较）
+    if [[ "${CURRENT_VERSION}" != "unknown" ]]; then
+        # 版本相同直接跳过
+        if [[ "${CURRENT_VERSION}" == "${TARGET_VERSION}" ]]; then
+            log "INFO" "目标版本与当前版本相同，跳过"
+            exit "${EC_SUCCESS}"
+        fi
+        # 使用 sort -V 比较版本（正确处理 10.0.0 > 9.0.0 等情况）
+        local lower_version
+        lower_version=$(printf '%s\n%s\n' "${CURRENT_VERSION}" "${TARGET_VERSION}" | sort -V | head -1)
+        if [[ "${lower_version}" == "${TARGET_VERSION}" ]]; then
+            # CURRENT > TARGET → 降级
             log "WARN" "检测到降级请求: ${CURRENT_VERSION} → ${TARGET_VERSION}"
-            if [[ "${CURRENT_VERSION}" == "${TARGET_VERSION}" ]]; then
-                log "INFO" "目标版本与当前版本相同，跳过"
-                exit "${EC_SUCCESS}"
-            fi
             echo "DOWNGRADE_NOT_SUPPORTED: 系统不支持原地降级。"
             echo "如需回退，请使用 deploy/restore.sh 从升级前备份恢复。"
             echo ""

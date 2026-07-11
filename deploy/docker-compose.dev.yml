@@ -47,7 +47,8 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      # 开发模式使用 dev 配置（HTTP 直接服务，无 HTTPS 跳转）
+      - ./nginx.dev.conf:/etc/nginx/conf.d/default.conf:ro
       # 开发时使用本地构建产物（需要先运行 npm run build）
       - ../web/dist:/usr/share/nginx/html:ro
     # 仅暴露 HTTP 端口（开发模式不需要 HTTPS）

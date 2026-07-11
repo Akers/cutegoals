@@ -31,6 +31,9 @@ COPY --from=builder /build/dist /usr/share/nginx/html
 RUN chown -R nginx:nginx /usr/share/nginx/html && \
     chmod -R 755 /usr/share/nginx/html
 
+# 切换到非 root 用户运行
+USER nginx
+
 EXPOSE 80 443
 
 CMD ["nginx", "-g", "daemon off;"]

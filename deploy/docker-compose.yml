@@ -34,6 +34,9 @@ services:
     image: redis:7-alpine
     container_name: mit-modelide-core-redis
     restart: unless-stopped
+    environment:
+      # redis-cli 自动从该环境变量读取密码，避免暴露在 docker inspect 的 CMD 中
+      REDISCLI_AUTH: ${REDIS_PASSWORD}
     command: >
       redis-server
       --requirepass ${REDIS_PASSWORD}
@@ -41,7 +44,7 @@ services:
     volumes:
       - redis_data:/data
     healthcheck:
-      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
+      test: ["CMD", "redis-cli", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
