@@ -1,0 +1,137 @@
+:root {
+  --role-admin: 'admin';
+  --role-parent: 'parent';
+  --role-child: 'child';
+}
+
+/* Admin: clear, restrained, professional */
+[data-role='admin'] {
+  --cg-bg: #f8fafc;
+  --cg-surface: #ffffff;
+  --cg-surface-raised: #f1f5f9;
+  --cg-primary: #334155;
+  --cg-primary-hover: #1e293b;
+  --cg-primary-active: #0f172a;
+  --cg-primary-text: #ffffff;
+  --cg-secondary: #64748b;
+  --cg-secondary-hover: #475569;
+  --cg-accent: #4f46e5;
+  --cg-accent-hover: #4338ca;
+  --cg-accent-text: #ffffff;
+  --cg-danger: #dc2626;
+  --cg-danger-hover: #b91c1c;
+  --cg-danger-text: #ffffff;
+  --cg-success: #15803d;
+  --cg-success-bg: #dcfce7;
+  --cg-warning: #b45309;
+  --cg-warning-bg: #fef3c7;
+  --cg-info: #0369a1;
+  --cg-info-bg: #e0f2fe;
+  --cg-text: #0f172a;
+  --cg-text-muted: #64748b;
+  --cg-border: #e2e8f0;
+  --cg-focus: #4f46e5;
+  --cg-shadow-sm: 0 1px 2px 0 rgb(15 23 42 / 0.06);
+  --cg-shadow-md: 0 4px 6px -1px rgb(15 23 42 / 0.08), 0 2px 4px -2px rgb(15 23 42 / 0.06);
+  --cg-shadow-lg: 0 10px 15px -3px rgb(15 23 42 / 0.08), 0 4px 6px -4px rgb(15 23 42 / 0.06);
+  --cg-radius-sm: 0.25rem;
+  --cg-radius-md: 0.375rem;
+  --cg-radius-lg: 0.5rem;
+  --cg-font-sans: 'PingFang SC', 'Microsoft YaHei', 'Hiragino Sans GB', system-ui, sans-serif;
+  --cg-font-display: 'PingFang SC', 'Microsoft YaHei', 'Hiragino Sans GB', system-ui, sans-serif;
+  --cg-icon: 'admin';
+}
+
+/* Parent: warm, stable, family-oriented */
+[data-role='parent'] {
+  --cg-bg: #faf7f2;
+  --cg-surface: #ffffff;
+  --cg-surface-raised: #f5f0e8;
+  --cg-primary: #92400e;
+  --cg-primary-hover: #78350f;
+  --cg-primary-active: #451a03;
+  --cg-primary-text: #ffffff;
+  --cg-secondary: #a8a29e;
+  --cg-secondary-hover: #78716c;
+  --cg-accent: #0d9488;
+  --cg-accent-hover: #0f766e;
+  --cg-accent-text: #ffffff;
+  --cg-danger: #c2410c;
+  --cg-danger-hover: #9a3412;
+  --cg-danger-text: #ffffff;
+  --cg-success: #15803d;
+  --cg-success-bg: #dcfce7;
+  --cg-warning: #b45309;
+  --cg-warning-bg: #fef3c7;
+  --cg-info: #0369a1;
+  --cg-info-bg: #e0f2fe;
+  --cg-text: #292524;
+  --cg-text-muted: #78716c;
+  --cg-border: #e7e5e4;
+  --cg-focus: #0d9488;
+  --cg-shadow-sm: 0 1px 2px 0 rgb(41 37 36 / 0.06);
+  --cg-shadow-md: 0 4px 6px -1px rgb(41 37 36 / 0.08), 0 2px 4px -2px rgb(41 37 36 / 0.06);
+  --cg-shadow-lg: 0 10px 15px -3px rgb(41 37 36 / 0.08), 0 4px 6px -4px rgb(41 37 36 / 0.06);
+  --cg-radius-sm: 0.375rem;
+  --cg-radius-md: 0.5rem;
+  --cg-radius-lg: 0.75rem;
+  --cg-font-sans: 'PingFang SC', 'Microsoft YaHei', 'Hiragino Sans GB', system-ui, sans-serif;
+  --cg-font-display: 'PingFang SC', 'Microsoft YaHei', 'Hiragino Sans GB', system-ui, sans-serif;
+  --cg-icon: 'parent';
+}
+
+/* Child: lively, friendly, playful */
+[data-role='child'] {
+  --cg-bg: #f0f9ff;
+  --cg-surface: #ffffff;
+  --cg-surface-raised: #e0f2fe;
+  --cg-primary: #0284c7;
+  --cg-primary-hover: #0369a1;
+  --cg-primary-active: #075985;
+  --cg-primary-text: #ffffff;
+  --cg-secondary: #38bdf8;
+  --cg-secondary-hover: #0ea5e9;
+  --cg-accent: #84cc16;
+  --cg-accent-hover: #65a30d;
+  --cg-accent-text: #0f172a;
+  --cg-danger: #f43f5e;
+  --cg-danger-hover: #e11d48;
+  --cg-danger-text: #ffffff;
+  --cg-success: #22c55e;
+  --cg-success-bg: #dcfce7;
+  --cg-warning: #f59e0b;
+  --cg-warning-bg: #fef3c7;
+  --cg-info: #3b82f6;
+  --cg-info-bg: #dbeafe;
+  --cg-text: #1e293b;
+  --cg-text-muted: #64748b;
+  --cg-border: #bae6fd;
+  --cg-focus: #0284c7;
+  --cg-shadow-sm: 0 1px 2px 0 rgb(2 132 199 / 0.08);
+  --cg-shadow-md: 0 4px 6px -1px rgb(2 132 199 / 0.12), 0 2px 4px -2px rgb(2 132 199 / 0.08);
+  --cg-shadow-lg: 0 10px 15px -3px rgb(2 132 199 / 0.12), 0 4px 6px -4px rgb(2 132 199 / 0.08);
+  --cg-radius-sm: 0.5rem;
+  --cg-radius-md: 0.75rem;
+  --cg-radius-lg: 1rem;
+  --cg-font-sans: 'PingFang SC', 'Microsoft YaHei', 'Hiragino Sans GB', system-ui, sans-serif;
+  --cg-font-display: 'PingFang SC', 'Microsoft YaHei', 'Hiragino Sans GB', system-ui, sans-serif;
+  --cg-icon: 'child';
+}
+
+/* Semantic state tokens that do not rely solely on color */
+[data-role] {
+  --cg-state-info-icon: 'ℹ';
+  --cg-state-success-icon: '✓';
+  --cg-state-warning-icon: '!';
+  --cg-state-error-icon: '✕';
+  --cg-touch-target: 2.75rem; /* 44px at 16px base */
+  --cg-transition-fast: 150ms ease;
+  --cg-transition-base: 250ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-role] {
+    --cg-transition-fast: 0.01ms ease;
+    --cg-transition-base: 0.01ms ease;
+  }
+}

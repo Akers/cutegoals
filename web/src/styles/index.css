@@ -1,0 +1,109 @@
+@import './themes.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: var(--cg-font-sans);
+    color: var(--cg-text);
+    background-color: var(--cg-bg);
+  }
+
+  body {
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Focus visible ring for all interactive elements */
+  :focus-visible {
+    outline: 0.125rem solid var(--cg-focus);
+    outline-offset: 0.125rem;
+  }
+
+  /* Disable outline for mouse users, keep for keyboard */
+  :focus:not(:focus-visible) {
+    outline: none;
+  }
+
+  /* Respect reduced motion at the browser level */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  /* Minimum touch target helper */
+  .cg-touch-target {
+    min-width: var(--cg-touch-target);
+    min-height: var(--cg-touch-target);
+  }
+
+  /* Page container: mobile-first, max readable width, safe padding */
+  .cg-page {
+    width: 100%;
+    min-width: 20rem; /* 320px */
+    max-width: 80rem;
+    margin: 0 auto;
+    padding: 1rem;
+  }
+
+  @media (min-width: 640px) {
+    .cg-page {
+      padding: 1.5rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .cg-page {
+      padding: 2rem;
+    }
+  }
+
+  /* Card surface using theme tokens */
+  .cg-card {
+    background-color: var(--cg-surface);
+    border: 1px solid var(--cg-border);
+    border-radius: var(--cg-radius-lg);
+    box-shadow: var(--cg-shadow-sm);
+  }
+
+  /* State badges with icons and high-contrast text */
+  .cg-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.125rem 0.5rem;
+    border-radius: var(--cg-radius-md);
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1.25;
+  }
+
+  .cg-visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}

@@ -46,7 +46,7 @@ class DatabaseAuditServiceTest {
     @Test
     void shouldThrowAuditUnavailableOnDbFailure() {
         doThrow(new RuntimeException("Connection refused"))
-                .when(auditLogMapper).insert(any());
+                .when(auditLogMapper).insert(any(AuditLog.class));
 
         BusinessException ex = assertThrows(BusinessException.class,
                 () -> databaseAuditService.record("TEST_EVENT", 1L, "SUCCESS", "Test"));

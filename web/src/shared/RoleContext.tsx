@@ -1,5 +1,6 @@
-import { RoleContext } from './role';
-import type { Role } from './role';
+import { useEffect } from 'react';
+import { RoleContext, type Role } from './role';
+import { setDocumentTheme } from './theme';
 
 export function RoleProvider({
   role,
@@ -8,9 +9,16 @@ export function RoleProvider({
   role: Role;
   children: React.ReactNode;
 }) {
+  useEffect(() => {
+    setDocumentTheme(role);
+  }, [role]);
+
   return (
     <RoleContext.Provider value={{ role }}>
       {children}
     </RoleContext.Provider>
   );
 }
+
+export { RoleContext };
+export type { Role } from './role';

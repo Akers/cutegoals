@@ -13,9 +13,22 @@ export default defineConfig({
       '@child': resolve(__dirname, 'src/child'),
     },
   },
+  css: {
+    postcss: resolve(__dirname, 'postcss.config.js'),
+  },
   build: {
     rollupOptions: {
-      input: resolve(__dirname, 'index.html'),
+      input: {
+        index: resolve(__dirname, 'index.html'),
+        admin: resolve(__dirname, 'admin.html'),
+        parent: resolve(__dirname, 'parent.html'),
+        child: resolve(__dirname, 'child.html'),
+      },
+      output: {
+        entryFileNames: 'assets/[name]-[hash].js',
+        chunkFileNames: 'assets/[name]-[hash].js',
+        assetFileNames: 'assets/[name]-[hash][extname]',
+      },
     },
     outDir: 'dist',
   },
