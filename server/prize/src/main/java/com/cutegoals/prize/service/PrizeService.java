@@ -42,7 +42,7 @@ public class PrizeService {
     public Prize createPrize(Map<String, Object> request, Long familyId, Long accountId) {
         String name = extractString(request, "name");
         if (name == null || name.trim().isEmpty()) {
-            throw new BusinessException(ErrorCode.PRIZE_INVALID_POINTS_COST, "Prize name is required");
+            throw new BusinessException(ErrorCode.VALIDATION_FAILED, "Prize name is required");
         }
         name = name.trim();
 
@@ -103,7 +103,7 @@ public class PrizeService {
         if (request.containsKey("name")) {
             String name = extractString(request, "name");
             if (name == null || name.trim().isEmpty()) {
-                throw new BusinessException(ErrorCode.PRIZE_INVALID_POINTS_COST, "Prize name is required");
+                throw new BusinessException(ErrorCode.VALIDATION_FAILED, "Prize name is required");
             }
             prize.setName(name.trim());
         }
