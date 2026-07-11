@@ -20,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -47,6 +48,9 @@ public class AuthController {
     private final SessionService sessionService;
     private final BCryptPasswordEncoder passwordEncoder;
     private final AuditService auditService;
+
+    @Value("${app.production:false}")
+    private boolean production;
 
     /**
      * POST /api/auth/login
@@ -220,7 +224,7 @@ public class AuthController {
     private void setCsrfCookie(HttpServletResponse response, String csrfToken) {
         ResponseCookie csrfCookie = ResponseCookie.from(AuthConstants.COOKIE_CSRF_TOKEN, csrfToken)
                 .httpOnly(false)   // Must be readable by JS (double-submit pattern)
-                .secure(false)     // Set to true in production
+                .secure(production) // Secure flag based on app.production config
                 .sameSite("Lax")
                 .path("/")
                 .maxAge(Duration.ofMinutes(AuthConstants.JWT_ACCESS_EXPIRY_MINUTES))
@@ -234,7 +238,7 @@ public class AuthController {
         // Access token cookie: HttpOnly, Secure in production, SameSite=Lax
         ResponseCookie accessCookie = ResponseCookie.from(AuthConstants.COOKIE_ACCESS_TOKEN, accessToken)
                 .httpOnly(true)
-                .secure(false) // Set to true in production when using HTTPS
+                .secure(production) // Secure flag based on app.production config
                 .sameSite("Lax")
                 .path("/")
                 .maxAge(Duration.ofMinutes(AuthConstants.JWT_ACCESS_EXPIRY_MINUTES))
@@ -244,7 +248,7 @@ public class AuthController {
         // Refresh token cookie
         ResponseCookie refreshCookie = ResponseCookie.from(AuthConstants.COOKIE_REFRESH_TOKEN, refreshToken)
                 .httpOnly(true)
-                .secure(false)
+                .secure(production) // Secure flag based on app.production config
                 .sameSite("Lax")
                 .path("/")
                 .maxAge(Duration.ofDays(AuthConstants.REFRESH_TOKEN_EXPIRY_DAYS))
@@ -255,7 +259,7 @@ public class AuthController {
     private void clearTokenCookies(HttpServletResponse response) {
         ResponseCookie accessCookie = ResponseCookie.from(AuthConstants.COOKIE_ACCESS_TOKEN, "")
                 .httpOnly(true)
-                .secure(false)
+                .secure(production)
                 .sameSite("Lax")
                 .path("/")
                 .maxAge(0)
@@ -264,7 +268,7 @@ public class AuthController {
 
         ResponseCookie refreshCookie = ResponseCookie.from(AuthConstants.COOKIE_REFRESH_TOKEN, "")
                 .httpOnly(true)
-                .secure(false)
+                .secure(production)
                 .sameSite("Lax")
                 .path("/")
                 .maxAge(0)
