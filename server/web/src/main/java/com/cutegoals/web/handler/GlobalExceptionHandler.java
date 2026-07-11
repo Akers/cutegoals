@@ -76,6 +76,30 @@ public class GlobalExceptionHandler {
             case DEVICE_NOT_AUTHORIZED -> HttpStatus.UNAUTHORIZED;
             case CHILD_AUTHENTICATION_FAILED -> HttpStatus.UNAUTHORIZED;
             case AUDIT_UNAVAILABLE -> HttpStatus.INTERNAL_SERVER_ERROR;
+            // Task Template errors
+            case TASK_TEMPLATE_FORBIDDEN -> HttpStatus.FORBIDDEN;
+            case TASK_TEMPLATE_NOT_FOUND -> HttpStatus.NOT_FOUND;
+            case TASK_TEMPLATE_VALIDATION_FAILED -> HttpStatus.BAD_REQUEST;
+            case TASK_TEMPLATE_INVALID_RECURRENCE -> HttpStatus.BAD_REQUEST;
+            case TASK_TEMPLATE_REQUIRES_ACTIVE_DIFFICULTY -> HttpStatus.CONFLICT;
+            case TASK_TEMPLATE_VERSION_CONFLICT -> HttpStatus.CONFLICT;
+            case TASK_TEMPLATE_INACTIVE -> HttpStatus.GONE;
+            case TASK_TEMPLATE_INVALID_QUERY -> HttpStatus.BAD_REQUEST;
+            // Task Assignment errors
+            case TASK_ASSIGNMENT_FORBIDDEN -> HttpStatus.FORBIDDEN;
+            case TASK_ASSIGNMENT_NOT_FOUND -> HttpStatus.NOT_FOUND;
+            case TASK_ASSIGNMENT_TEMPLATE_INACTIVE -> HttpStatus.GONE;
+            case TASK_ASSIGNMENT_DIFFICULTY_INACTIVE -> HttpStatus.GONE;
+            case TASK_ASSIGNMENT_CHILD_NOT_FOUND -> HttpStatus.NOT_FOUND;
+            case TASK_ASSIGNMENT_INVALID_DEADLINE -> HttpStatus.BAD_REQUEST;
+            case TASK_ASSIGNMENT_IDEMPOTENCY_CONFLICT -> HttpStatus.CONFLICT;
+            case TASK_ASSIGNMENT_INVALID_DATE_RANGE -> HttpStatus.BAD_REQUEST;
+            case TASK_ASSIGNMENT_RECURRENCE_NOT_CONFIGURED -> HttpStatus.BAD_REQUEST;
+            case TASK_ASSIGNMENT_NOT_EDITABLE -> HttpStatus.CONFLICT;
+            case TASK_ASSIGNMENT_VERSION_CONFLICT -> HttpStatus.CONFLICT;
+            case TASK_ASSIGNMENT_ALREADY_APPROVED -> HttpStatus.CONFLICT;
+            case TASK_ASSIGNMENT_CANCELLED -> HttpStatus.CONFLICT;
+            case TASK_ASSIGNMENT_INVALID_QUERY -> HttpStatus.BAD_REQUEST;
             default -> HttpStatus.INTERNAL_SERVER_ERROR;
         };
     }

@@ -39,4 +39,19 @@ public final class AuditEvent {
     public static final String CHILD_LOGIN_SUCCESS = "CHILD_LOGIN_SUCCESS";
     public static final String CHILD_LOGIN_FAILED = "CHILD_LOGIN_FAILED";
     public static final String PIN_LOCKED_EVENT = "PIN_LOCKED";
+
+    // === Task Template events ===
+    public static final String TEMPLATE_CREATED = "TEMPLATE_CREATED";
+    public static final String TEMPLATE_UPDATED = "TEMPLATE_UPDATED";
+    public static final String TEMPLATE_DELETED = "TEMPLATE_DELETED";
+    public static final String TEMPLATE_ENABLED = "TEMPLATE_ENABLED";
+    public static final String TEMPLATE_DISABLED = "TEMPLATE_DISABLED";
+
+    // === Task Assignment events ===
+    public static final String ASSIGNMENT_CREATED = "ASSIGNMENT_CREATED";
+    public static final String ASSIGNMENT_BATCH_CREATED = "ASSIGNMENT_BATCH_CREATED";
+    public static final String ASSIGNMENT_GENERATED = "ASSIGNMENT_GENERATED";
+    public static final String ASSIGNMENT_UPDATED = "ASSIGNMENT_UPDATED";
+    public static final String ASSIGNMENT_CANCELLED = "ASSIGNMENT_CANCELLED";
+    public static final String ASSIGNMENT_LATE_POLICY_OVERRIDE = "ASSIGNMENT_LATE_POLICY_OVERRIDE";
 }
