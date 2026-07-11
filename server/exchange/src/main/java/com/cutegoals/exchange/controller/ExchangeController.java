@@ -5,10 +5,12 @@ import com.cutegoals.common.constant.AuthConstants;
 import com.cutegoals.common.dto.ApiResponse;
 import com.cutegoals.common.entity.exchange.Exchange;
 import com.cutegoals.common.entity.exchange.ExchangeSnapshot;
+import com.cutegoals.common.entity.family.ChildProfile;
 import com.cutegoals.common.entity.family.Family;
 import com.cutegoals.common.exception.BusinessException;
 import com.cutegoals.common.exception.ErrorCode;
 import com.cutegoals.exchange.service.ExchangeService;
+import com.cutegoals.task.mapper.TaskChildMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -34,6 +36,7 @@ public class ExchangeController {
 
     private final ExchangeService exchangeService;
     private final FamilyMapper familyMapper;
+    private final TaskChildMapper taskChildMapper;
 
     // ========== POST /api/exchanges/direct — Direct Exchange (Child, Task 5.7) ==========
 
@@ -56,11 +59,8 @@ public class ExchangeController {
                     "idempotencyKey is required");
         }
 
-        // Child ID from request body (requires childId field)
-        Long childId = request.get("childId") != null ? ((Number) request.get("childId")).longValue() : null;
-        if (childId == null) {
-            throw new BusinessException(ErrorCode.VALIDATION_FAILED, "childId is required");
-        }
+        // Derive childId from authenticated session (prevents privilege escalation)
+        Long childId = resolveChildIdFromSession(httpRequest);
 
         Long familyId = getSingleFamilyId();
         Exchange exchange = exchangeService.createDirectExchange(request, childId, familyId);
@@ -90,11 +90,8 @@ public class ExchangeController {
                     "idempotencyKey is required");
         }
 
-        // Child ID from request body
-        Long childId = request.get("childId") != null ? ((Number) request.get("childId")).longValue() : null;
-        if (childId == null) {
-            throw new BusinessException(ErrorCode.VALIDATION_FAILED, "childId is required");
-        }
+        // Derive childId from authenticated session (prevents privilege escalation)
+        Long childId = resolveChildIdFromSession(httpRequest);
 
         Long familyId = getSingleFamilyId();
         Exchange exchange = exchangeService.createBlindBoxExchange(request, childId, familyId);
@@ -224,6 +221,17 @@ public class ExchangeController {
     }
 
     // ========== Helpers ==========
+
+    /**
+     * Derive child ID from the authenticated session (account → child_profile mapping).
+     * Prevents privilege escalation by ensuring child users cannot impersonate other children.
+     */
+    private Long resolveChildIdFromSession(HttpServletRequest httpRequest) {
+        Long accountId = getAccountId(httpRequest);
+        return taskChildMapper.findByAccountId(accountId)
+                .map(ChildProfile::getId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.FORBIDDEN, "No child profile found for session"));
+    }
 
     private String generateRequestId() {
         return UUID.randomUUID().toString().replace("-", "").substring(0, 16);
