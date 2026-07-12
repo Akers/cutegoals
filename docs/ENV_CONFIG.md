@@ -42,6 +42,11 @@ cp deploy/.env.template .env
 
 - `PG_PASSWORD` 必须设置为强密码。
 - 数据库首次启动时会自动创建用户、数据库和 schema，Flyway 负责表结构迁移。
+- 如果是手动安装的 PostgreSQL，可使用 `deploy/postgres-init.sql` 初始化数据库和权限：
+
+  ```bash
+  psql -U postgres -h localhost -p 35432 -f deploy/postgres-init.sql
+  ```
 
 ## Redis
 

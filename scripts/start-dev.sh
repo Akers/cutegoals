@@ -56,6 +56,20 @@ check_maven_version() {
     ok "Maven 版本：${version}"
 }
 
+check_postgres() {
+    local host="${1:-localhost}"
+    local port="${2:-35432}"
+    if command -v pg_isready > /dev/null 2>&1; then
+        if ! pg_isready -h "${host}" -p "${port}" > /dev/null 2>&1; then
+            warn "PostgreSQL ${host}:${port} 未响应，请先启动数据库"
+            info "手动初始化：psql -U postgres -h ${host} -p ${port} -f deploy/postgres-init.sql"
+            info "Docker 启动：docker compose -f deploy/docker-compose.yml up -d mit-modelide-core-postgres mit-modelide-core-redis"
+        else
+            ok "PostgreSQL ${host}:${port} 可连接"
+        fi
+    fi
+}
+
 # 加载已有配置
 load_existing_config() {
     if [ -f "${ENV_FILE}" ]; then
@@ -155,6 +169,7 @@ main() {
     prompt PG_USER "PostgreSQL 用户名" "${PG_USER:-cutegoals}"
     prompt_secret PG_PASSWORD "PostgreSQL 密码" "${PG_PASSWORD:-cutegoals}"
     prompt PG_SCHEMA "PostgreSQL Schema" "${PG_SCHEMA:-cutegoals}"
+    check_postgres "${PG_HOST:-localhost}" "${PG_PORT:-35432}"
 
     echo ""
     info "请输入 Redis 连接信息（回车使用默认值）"

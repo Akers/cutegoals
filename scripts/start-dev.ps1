@@ -57,6 +57,21 @@ function Test-MavenVersion {
     Write-Ok "Maven 版本：$version"
 }
 
+function Test-Postgres {
+    param([string]$Host = "localhost", [string]$Port = "35432")
+    $pgIsReady = Get-Command pg_isready -ErrorAction SilentlyContinue
+    if ($pgIsReady) {
+        $process = Start-Process -FilePath "pg_isready" -ArgumentList "-h", $Host, "-p", $Port -NoNewWindow -PassThru -Wait
+        if ($process.ExitCode -ne 0) {
+            Write-Warn "PostgreSQL ${Host}:${Port} 未响应，请先启动数据库"
+            Write-Info "手动初始化：psql -U postgres -h ${Host} -p ${Port} -f deploy/postgres-init.sql"
+            Write-Info "Docker 启动：docker compose -f deploy/docker-compose.yml up -d mit-modelide-core-postgres mit-modelide-core-redis"
+        } else {
+            Write-Ok "PostgreSQL ${Host}:${Port} 可连接"
+        }
+    }
+}
+
 function Load-ExistingConfig {
     if (Test-Path $ENV_FILE) {
         Write-Info "检测到历史开发配置 $ENV_FILE，将用作默认值"
@@ -145,6 +160,7 @@ function Start-Backend {
     $PG_USER = Prompt-Input -Message "PostgreSQL 用户名" -DefaultValue ([System.Environment]::GetEnvironmentVariable("PG_USER", "Process") -or "cutegoals")
     $PG_PASSWORD = Prompt-Input -Message "PostgreSQL 密码" -DefaultValue ([System.Environment]::GetEnvironmentVariable("PG_PASSWORD", "Process") -or "cutegoals")
     $PG_SCHEMA = Prompt-Input -Message "PostgreSQL Schema" -DefaultValue ([System.Environment]::GetEnvironmentVariable("PG_SCHEMA", "Process") -or "cutegoals")
+    Test-Postgres -Host $PG_HOST -Port $PG_PORT
 
     Write-Host ""
     Write-Info "请输入 Redis 连接信息（回车使用默认值）"

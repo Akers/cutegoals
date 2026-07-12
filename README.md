@@ -50,8 +50,16 @@ cd cutegoals
 
 2. 启动数据库依赖
 
+如果是手动安装的 PostgreSQL，请先使用 `deploy/postgres-init.sql` 初始化数据库和用户：
+
 ```bash
-docker compose -f deploy/docker-compose.yml up -d postgres redis
+psql -U postgres -h localhost -p 35432 -f deploy/postgres-init.sql
+```
+
+如果使用 Docker Compose，直接启动 PostgreSQL 和 Redis 容器：
+
+```bash
+docker compose -f deploy/docker-compose.yml up -d mit-modelide-core-postgres mit-modelide-core-redis
 ```
 
 3. 构建并运行后端
@@ -59,7 +67,7 @@ docker compose -f deploy/docker-compose.yml up -d postgres redis
 ```bash
 cd server
 mvn clean install
-mvn -pl web spring-boot:run
+mvn -pl web -am spring-boot:run -DskipTests
 ```
 
 4. 运行前端
@@ -103,6 +111,8 @@ cutegoals
 │   ├── build.sh
 │   ├── build.ps1
 │   ├── docker-compose.yml
+│   ├── docker-compose.dev.yml
+│   ├── postgres-init.sql      # PostgreSQL 开发环境初始化脚本
 │   └── .env.template
 ├── docs/                      # 项目文档与 OpenSpec
 │   ├── API.md                 # 后端 API 接口说明
