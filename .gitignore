@@ -37,6 +37,7 @@ logs/
 .env
 .env.local
 .env.*.local
+.env.dev
 
 # SDD / Agent scratch
 .superpowers/
