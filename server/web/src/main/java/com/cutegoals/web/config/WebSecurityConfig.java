@@ -22,8 +22,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.channel.ChannelProcessingFilter;
@@ -41,6 +43,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import jakarta.servlet.ServletException;
 
 /**
@@ -303,6 +306,14 @@ public class WebSecurityConfig {
                         request.setAttribute(AuthConstants.ATTR_ACCOUNT_ID, claims.accountId());
                         request.setAttribute(AuthConstants.ATTR_ROLES, claims.roles());
                         request.setAttribute(AuthConstants.ATTR_SESSION_ID, claims.sessionId());
+
+                        // Set Spring Security authentication so role-based access rules work
+                        var authorities = claims.roles().stream()
+                                .map(r -> new SimpleGrantedAuthority("ROLE_" + r))
+                                .collect(Collectors.toList());
+                        var authentication = new UsernamePasswordAuthenticationToken(
+                                claims.accountId(), null, authorities);
+                        SecurityContextHolder.getContext().setAuthentication(authentication);
                     }
 
                     filterChain.doFilter(request, response);

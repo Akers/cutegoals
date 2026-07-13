@@ -1,0 +1,9 @@
+{
+  "name": "cutegoals",
+  "version": "2.0.0-SNAPSHOT",
+  "description": "CuteGoals 2.0 - 家庭任务管理一体化平台",
+  "private": true,
+  "scripts": {
+    "build": "cd web && npm run build && cd ../server && mvn compile -q"
+  }
+}
