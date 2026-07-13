@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getClient } from '@shared/api';
 import { useAuth, maskPhone } from '@shared/auth';
@@ -14,6 +14,17 @@ export function AdminInitPage() {
   const confirmPassword = useFormField();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // If already initialized, redirect to login
+  useEffect(() => {
+    getClient()
+      .get<{ instanceStatus: string }>('/instance/status')
+      .then((response) => {
+        if (response.data?.instanceStatus === 'INITIALIZED') {
+          navigate('/admin/login', { replace: true });
+        }
+      });
+  }, [navigate]);
 
   const validate = (): string | null => {
     if (!token.value.trim()) return '请输入初始化令牌';
@@ -42,12 +53,19 @@ export function AdminInitPage() {
     if (response.error) {
       setError(response.error.message ?? '初始化失败');
     } else {
+      const data = response.data as {
+        accountId: number;
+        phone?: string;
+        roles: string[];
+        familyId?: number;
+      };
       login({
-        accountId: (response.data as { accountId?: number }).accountId ?? 0,
-        phone: maskPhone(phone.value),
-        roles: ['INSTANCE_ADMIN'],
+        accountId: data.accountId,
+        phone: maskPhone(data.phone ?? phone.value),
+        roles: data.roles,
+        familyId: data.familyId,
       });
-      navigate('/admin');
+      navigate('/admin', { replace: true });
     }
   };
 

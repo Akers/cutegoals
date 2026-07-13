@@ -13,6 +13,7 @@ import com.cutegoals.common.dto.ApiResponse;
 import com.cutegoals.common.dto.auth.*;
 import com.cutegoals.common.exception.BusinessException;
 import com.cutegoals.common.exception.ErrorCode;
+import com.cutegoals.web.config.TokenCookieWriter;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -20,17 +21,10 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.SecureRandom;
-import java.time.Duration;
 import java.util.*;
-import java.util.HexFormat;
 
 /**
  * REST controller for authentication operations.
@@ -46,11 +40,8 @@ public class AuthController {
     private final AuthenticationService authenticationService;
     private final TokenService tokenService;
     private final SessionService sessionService;
-    private final BCryptPasswordEncoder passwordEncoder;
     private final AuditService auditService;
-
-    @Value("${app.production:false}")
-    private boolean production;
+    private final TokenCookieWriter tokenCookieWriter;
 
     /**
      * POST /api/auth/login
@@ -67,9 +58,8 @@ public class AuthController {
         LoginResult result = authenticationService.login(request.getPhone(), request.getPassword());
 
         // Set cookies (tokens via HttpOnly, CSRF via non-HttpOnly)
-        setTokenCookies(response, result.accessToken(), result.refreshToken());
-        String csrfToken = generateCsrfToken();
-        setCsrfCookie(response, csrfToken);
+        tokenCookieWriter.setTokenCookies(response, result.accessToken(), result.refreshToken());
+        tokenCookieWriter.setCsrfCookie(response);
 
         Map<String, Object> data = new HashMap<>();
         data.put("accountId", result.accountId());
@@ -110,10 +100,10 @@ public class AuthController {
                 claims.accountId(), claims.roles(), result.sessionId());
 
         // Set new cookies (HttpOnly — JS cannot read them)
-        setTokenCookies(response, newAccessToken, result.newRefreshToken());
+        tokenCookieWriter.setTokenCookies(response, newAccessToken, result.newRefreshToken());
 
         // Renew CSRF cookie on refresh so write operations remain valid after access token rotation
-        setCsrfCookie(response, generateCsrfToken());
+        tokenCookieWriter.setCsrfCookie(response);
 
         Map<String, Object> data = new HashMap<>();
         // Per spec: browser-available scripts MUST NOT be able to read access or refresh tokens
@@ -147,7 +137,7 @@ public class AuthController {
         }
 
         // Clear cookies
-        clearTokenCookies(response);
+        tokenCookieWriter.clearTokenCookies(response);
 
         if (loggedOutAccountId != null) {
             auditService.record(AuditEvent.LOGOUT, loggedOutAccountId, "SUCCESS",
@@ -180,7 +170,7 @@ public class AuthController {
         authenticationService.changePassword(accountId, request.getOldPassword(), request.getNewPassword());
 
         // Clear cookies
-        clearTokenCookies(httpResponse);
+        tokenCookieWriter.clearTokenCookies(httpResponse);
 
         log.info("Password changed and sessions revoked: accountId={}", accountId);
 
@@ -207,74 +197,27 @@ public class AuthController {
         throw new BusinessException(ErrorCode.SMS_LOGIN_NOT_CONFIGURED);
     }
 
-    // === CSRF Token ===
-
-    private static final SecureRandom CSRF_RANDOM = new SecureRandom();
-
-    private String generateCsrfToken() {
-        byte[] bytes = new byte[32];
-        CSRF_RANDOM.nextBytes(bytes);
-        return HexFormat.of().formatHex(bytes);
-    }
-
     /**
-     * Set CSRF token cookie (non-HttpOnly so JS can read it) and the XSRF-TOKEN.
-     * The client must send the token back via the X-XSRF-Token header.
+     * GET /api/auth/me
+     * Returns the current authenticated account info.
      */
-    private void setCsrfCookie(HttpServletResponse response, String csrfToken) {
-        ResponseCookie csrfCookie = ResponseCookie.from(AuthConstants.COOKIE_CSRF_TOKEN, csrfToken)
-                .httpOnly(false)   // Must be readable by JS (double-submit pattern)
-                .secure(production) // Secure flag based on app.production config
-                .sameSite("Lax")
-                .path("/")
-                .maxAge(Duration.ofMinutes(AuthConstants.JWT_ACCESS_EXPIRY_MINUTES))
-                .build();
-        response.addHeader(HttpHeaders.SET_COOKIE, csrfCookie.toString());
+    @GetMapping("/me")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> me(HttpServletRequest request) {
+        String requestId = UUID.randomUUID().toString().replace("-", "").substring(0, 16);
+        MDC.put("requestId", requestId);
+
+        // Extract and parse access token from cookie
+        String accessToken = extractAccessToken(request);
+        JwtClaims claims = tokenService.parseAccessToken(accessToken);
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("accountId", claims.accountId());
+        data.put("roles", claims.roles());
+
+        return ResponseEntity.ok(ApiResponse.success(data, requestId));
     }
 
-    // === Cookie Helpers ===
-
-    private void setTokenCookies(HttpServletResponse response, String accessToken, String refreshToken) {
-        // Access token cookie: HttpOnly, Secure in production, SameSite=Lax
-        ResponseCookie accessCookie = ResponseCookie.from(AuthConstants.COOKIE_ACCESS_TOKEN, accessToken)
-                .httpOnly(true)
-                .secure(production) // Secure flag based on app.production config
-                .sameSite("Lax")
-                .path("/")
-                .maxAge(Duration.ofMinutes(AuthConstants.JWT_ACCESS_EXPIRY_MINUTES))
-                .build();
-        response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
-
-        // Refresh token cookie
-        ResponseCookie refreshCookie = ResponseCookie.from(AuthConstants.COOKIE_REFRESH_TOKEN, refreshToken)
-                .httpOnly(true)
-                .secure(production) // Secure flag based on app.production config
-                .sameSite("Lax")
-                .path("/")
-                .maxAge(Duration.ofDays(AuthConstants.REFRESH_TOKEN_EXPIRY_DAYS))
-                .build();
-        response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
-    }
-
-    private void clearTokenCookies(HttpServletResponse response) {
-        ResponseCookie accessCookie = ResponseCookie.from(AuthConstants.COOKIE_ACCESS_TOKEN, "")
-                .httpOnly(true)
-                .secure(production)
-                .sameSite("Lax")
-                .path("/")
-                .maxAge(0)
-                .build();
-        response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
-
-        ResponseCookie refreshCookie = ResponseCookie.from(AuthConstants.COOKIE_REFRESH_TOKEN, "")
-                .httpOnly(true)
-                .secure(production)
-                .sameSite("Lax")
-                .path("/")
-                .maxAge(0)
-                .build();
-        response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
-    }
+    // === Cookie Extractors ===
 
     private String extractRefreshToken(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();

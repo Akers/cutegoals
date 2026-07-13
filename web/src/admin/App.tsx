@@ -8,11 +8,13 @@ import {
   AdminOverviewPage,
 } from './pages';
 import { AdminInitPage } from './pages/AdminInitPage';
+import { AdminLoginPage } from './pages/AdminLoginPage';
 
 function AdminApp() {
   return (
     <Routes>
       <Route path="/admin/init" element={<AdminInitPage />} />
+      <Route path="/admin/login" element={<AdminLoginPage />} />
       <Route
         path="/admin"
         element={

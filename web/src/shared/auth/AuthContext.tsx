@@ -47,7 +47,7 @@ export function AuthProvider({
   initialAccount?: Account;
 }) {
   const [account, setAccount] = useState<Account | null>(initialAccount ?? null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
@@ -55,7 +55,7 @@ export function AuthProvider({
     setAccount(null);
     const path = window.location.pathname;
     if (path.startsWith('/admin')) {
-      navigate('/admin/init');
+      navigate('/admin/login');
     } else if (path.startsWith('/parent')) {
       navigate('/parent/login');
     } else {
@@ -69,6 +69,31 @@ export function AuthProvider({
       onUnauthorized: handleUnauthorized,
     });
   }, [handleUnauthorized]);
+
+  // Restore session from cookie on mount
+  useEffect(() => {
+    let cancelled = false;
+    getClient()
+      .get<{ accountId: number; phone: string; roles: string[]; familyId: number | null }>('/auth/me')
+      .then((response) => {
+        if (cancelled) return;
+        if (response.data) {
+          setAccount({
+            accountId: response.data.accountId,
+            phone: response.data.phone,
+            roles: response.data.roles,
+            familyId: response.data.familyId ?? undefined,
+          });
+        }
+        // 401 → do nothing, account stays null
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const login = useCallback((data: Account) => {
     setAccount(data);

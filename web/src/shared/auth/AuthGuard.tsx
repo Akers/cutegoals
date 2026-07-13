@@ -17,7 +17,7 @@ export function AuthGuard({ children, fallback }: AuthGuardProps) {
 
   if (!isAuthenticated) {
     const loginPath =
-      role === 'admin' ? '/admin/init' : role === 'parent' ? '/parent/login' : '/child/bind';
+      role === 'admin' ? '/admin/login' : role === 'parent' ? '/parent/login' : '/child/bind';
     return <Navigate to={loginPath} state={{ from: location }} replace />;
   }
 
