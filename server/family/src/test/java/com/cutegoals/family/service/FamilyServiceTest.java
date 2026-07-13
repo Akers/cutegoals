@@ -1,5 +1,6 @@
 package com.cutegoals.family.service;
 
+import com.cutegoals.auth.mapper.AccountMapper;
 import com.cutegoals.auth.mapper.FamilyMapper;
 import com.cutegoals.auth.mapper.FamilyMemberMapper;
 import com.cutegoals.auth.service.AuditService;
@@ -28,6 +29,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class FamilyServiceTest {
 
+    @Mock private AccountMapper accountMapper;
     @Mock private FamilyMapper familyMapper;
     @Mock private FamilyMemberMapper familyMemberMapper;
     @Mock private ChildProfileMapper childProfileMapper;
@@ -38,7 +40,7 @@ class FamilyServiceTest {
 
     @BeforeEach
     void setUp() {
-        familyService = new FamilyService(familyMapper, familyMemberMapper, childProfileMapper, auditService, sessionService);
+        familyService = new FamilyService(accountMapper, familyMapper, familyMemberMapper, childProfileMapper, auditService, sessionService);
     }
 
     @Test
