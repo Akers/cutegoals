@@ -2,6 +2,8 @@
 comet_change: fix-parent-pages-contract
 role: technical-design
 canonical_spec: openspec
+archived-with: 2026-07-13-fix-parent-pages-contract
+status: final
 ---
 
 # Design Doc: fix-parent-pages-contract
@@ -519,3 +521,4 @@ ParentReviewPage (L595-596 useApi<PageResult<ReviewItem>> ×2)
 - Brainstorm Summary: `openspec/changes/fix-parent-pages-contract/.comet/handoff/brainstorm-summary.md`
 - Admin 模式参考：`openspec/changes/archive/2026-07-13-fix-admin-pages-data-shape/`
 - Admin Layout fix 参考：`openspec/changes/archive/2026-07-13-fix-admin-pages-missing-layout/`
+

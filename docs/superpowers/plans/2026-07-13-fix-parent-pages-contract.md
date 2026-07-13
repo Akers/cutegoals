@@ -2,6 +2,7 @@
 change: fix-parent-pages-contract
 design-doc: docs/superpowers/specs/2026-07-13-fix-parent-pages-contract-design.md
 base-ref: 2bc0e5e9176cb2eb82db1d1c6d0f5588e5077f49
+archived-with: 2026-07-13-fix-parent-pages-contract
 ---
 
 # fix-parent-pages-contract 实施计划
@@ -16,6 +17,7 @@ base-ref: 2bc0e5e9176cb2eb82db1d1c6d0f5588e5077f49
 > **实施顺序**：13 步（Design Doc §7.1 定义），按后端 → 前端 → ErrorBoundary → 验证 → 端到端推进
 > **测试策略**：Design Doc §6（后端单元测试 → 前端类型检查 → 前端单元测试 → 端到端验证 → 根因消除 grep）
 
+archived-with: 2026-07-13-fix-parent-pages-contract
 ---
 
 ## 计划概览
@@ -32,6 +34,7 @@ base-ref: 2bc0e5e9176cb2eb82db1d1c6d0f5588e5077f49
 - 后端：`ChildProfileController.java`（+~30 行）+ `ChildProfileControllerTest.java`（+~80 行，新文件）
 - 前端：`web/src/parent/pages/index.tsx`（~1005 行，多处方修改）+ `ErrorBoundary.tsx`（+2 行）
 
+archived-with: 2026-07-13-fix-parent-pages-contract
 ---
 
 ## 阶段 1：后端补 ChildProfileController GET 端点（3 子任务）
@@ -83,6 +86,7 @@ base-ref: 2bc0e5e9176cb2eb82db1d1c6d0f5588e5077f49
 - **依赖任务**：1.1
 - **建议提交粒度**：与 1.1-1.2 合并为 1 个 commit
 
+archived-with: 2026-07-13-fix-parent-pages-contract
 ---
 
 ## 阶段 2：前端页面类型与参数对齐（5 子任务）
@@ -181,6 +185,7 @@ base-ref: 2bc0e5e9176cb2eb82db1d1c6d0f5588e5077f49
 - **根因消除**：修复缺陷 #3（`pending.map is not a function` → React 崩溃 → 白屏）
 - **依赖任务**：2.1
 
+archived-with: 2026-07-13-fix-parent-pages-contract
 ---
 
 ## 阶段 3：ErrorBoundary fallback 包 Layout（2 子任务）
@@ -218,6 +223,7 @@ base-ref: 2bc0e5e9176cb2eb82db1d1c6d0f5588e5077f49
 - **验证方法**：代码审查 ErrorBoundary 在组件树中的位置 + tsc 编译验证 + dev 浏览器手动验证
 - **依赖任务**：3.1
 
+archived-with: 2026-07-13-fix-parent-pages-contract
 ---
 
 ## 阶段 4：类型检查与单元测试门禁（2 子任务）
@@ -246,6 +252,7 @@ base-ref: 2bc0e5e9176cb2eb82db1d1c6d0f5588e5077f49
   - **0 新增失败**
 - **依赖任务**：4.1
 
+archived-with: 2026-07-13-fix-parent-pages-contract
 ---
 
 ## 阶段 5：端到端与回归验证（5 子任务）
@@ -302,6 +309,7 @@ base-ref: 2bc0e5e9176cb2eb82db1d1c6d0f5588e5077f49
     - 旧 `<ErrorState`（裸）→ 0 matches
 - **验收标准**：所有旧形状无残留，新形状全部就位
 
+archived-with: 2026-07-13-fix-parent-pages-contract
 ---
 
 ## 阶段 6：提交与推进（3 子任务）
@@ -336,6 +344,7 @@ base-ref: 2bc0e5e9176cb2eb82db1d1c6d0f5588e5077f49
 - **目标**：触发 comet build 流程推进到 verify 阶段
 - **前置条件**：阶段 1~5 全部通过
 
+archived-with: 2026-07-13-fix-parent-pages-contract
 ---
 
 ## 附加：Build 阶段 Verify Point 汇总
@@ -349,6 +358,7 @@ base-ref: 2bc0e5e9176cb2eb82db1d1c6d0f5588e5077f49
 | 3 | `ChildProfileMapper` 是否有 `findActiveByFamilyId(Page, Long)` 重载 | DD1 / §8.2 | 任务 1.1 实现方式 | 阶段 1 开始前 |
 | 4 | 所有 `useApi<...[]>` 是否全部改造完成（PageResult 一致性） | Risk 5.6 / §6.5 | 任务 5.5 grep 审计 | 阶段 5 |
 
+archived-with: 2026-07-13-fix-parent-pages-contract
 ---
 
 ## 附加：Risks & Mitigations 摘要（来自 Design Doc §5）
@@ -363,6 +373,7 @@ base-ref: 2bc0e5e9176cb2eb82db1d1c6d0f5588e5077f49
 | 5.6 | PageResult 一致性 | grep 审计所有 useApi<...[]> 调用 | 阶段 5 |
 | 5.7 | 改动面 verify_mode 评估 | < 8 文件 = light verify；超过则 scale 自动评估 | 全阶段 |
 
+archived-with: 2026-07-13-fix-parent-pages-contract
 ---
 
 ## 附加：Testing Strategy 汇总（来自 Design Doc §6）
@@ -377,6 +388,7 @@ base-ref: 2bc0e5e9176cb2eb82db1d1c6d0f5588e5077f49
 | React 崩溃验证 | 临时 mock 抛错 | ErrorBoundary 含 Layout | 阶段 5 |
 | 根因消除 grep | 多 grep 模式审计 | 旧形状 0 matches | 阶段 5 |
 
+archived-with: 2026-07-13-fix-parent-pages-contract
 ---
 
 ## 附录：文件改动清单
@@ -387,3 +399,4 @@ base-ref: 2bc0e5e9176cb2eb82db1d1c6d0f5588e5077f49
 | `server/family/src/test/java/.../ChildProfileControllerTest.java` | 新建 | +~80 行 | 最小化 401 + 200 形状测试 |
 | `web/src/parent/pages/index.tsx` | 修改 | +~20 行 | PageResult 类型 + usePaginatedData + 5 处 useApi 改造 + Calendar 替换 |
 | `web/src/shared/components/ErrorBoundary.tsx` | 修改 | +2 行 | fallback 用 `<Layout>` 包裹 |
+

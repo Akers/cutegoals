@@ -18,7 +18,7 @@ verification_report: docs/superpowers/reports/2026-07-13-fix-parent-pages-contra
 branch_status: handled
 created_at: 2026-07-13
 verified_at: 2026-07-13
-archived: false
+archived: true
 direct_override: null
 handoff_context: openspec/changes/fix-parent-pages-contract/.comet/handoff/design-context.json
 handoff_hash: 65547d5e17b4f4b256821142c24eb7c92c2a8727eae4ef493d848be435834f86
