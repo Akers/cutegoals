@@ -19,6 +19,9 @@ public interface FamilyMemberMapper extends BaseMapper<FamilyMember> {
     @Select("SELECT * FROM family_member WHERE id = #{id}")
     Optional<FamilyMember> findById(@Param("id") Long id);
 
+    @Select("SELECT * FROM family_member WHERE account_id = #{accountId} LIMIT 1")
+    Optional<FamilyMember> findByAccountId(@Param("accountId") Long accountId);
+
     @Select("SELECT * FROM family_member WHERE account_id = #{accountId} AND role = #{role}")
     Optional<FamilyMember> findByAccountIdAndRole(@Param("accountId") Long accountId, @Param("role") String role);
 

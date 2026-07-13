@@ -309,10 +309,8 @@ public class WebSecurityConfig {
                         request.setAttribute(AuthConstants.ATTR_ROLES, claims.roles());
                         request.setAttribute(AuthConstants.ATTR_SESSION_ID, claims.sessionId());
 
-                        if (!claims.roles().isEmpty()) {
-                            familyMemberMapper.findByAccountIdAndRole(claims.accountId(), claims.roles().get(0))
-                                    .ifPresent(member -> request.setAttribute(AuthConstants.ATTR_FAMILY_ID, member.getFamilyId()));
-                        }
+                        familyMemberMapper.findByAccountId(claims.accountId())
+                                .ifPresent(member -> request.setAttribute(AuthConstants.ATTR_FAMILY_ID, member.getFamilyId()));
 
                         // Set Spring Security authentication so role-based access rules work
                         var authorities = claims.roles().stream()
