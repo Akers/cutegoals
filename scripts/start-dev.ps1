@@ -203,7 +203,7 @@ function Start-Backend {
     [System.Environment]::SetEnvironmentVariable("PORT", $PORT, "Process")
 
     Set-Location $SERVER_DIR
-    & mvn -pl web -am spring-boot:run -DskipTests "-Dspring-boot.run.jvmArguments=-Dfile.encoding=UTF-8"
+    & mvn clean -pl web -am spring-boot:run -DskipTests "-Dspring-boot.run.jvmArguments=-Dfile.encoding=UTF-8"
 }
 
 # 支持 -Logs 参数查看日志

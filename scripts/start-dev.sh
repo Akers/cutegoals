@@ -202,7 +202,7 @@ main() {
     export CUTEGOALS_JWT_SECRET APP_PRODUCTION=false PORT
 
     cd "${SERVER_DIR}"
-    exec mvn -pl web -am spring-boot:run -DskipTests \
+    exec mvn clean -pl web -am spring-boot:run -DskipTests \
         -Dspring-boot.run.jvmArguments="-Dfile.encoding=UTF-8"
 }
 

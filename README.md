@@ -69,7 +69,7 @@ docker compose -f deploy/docker-compose.yml up -d mit-modelide-core-postgres mit
 ```bash
 cd server
 mvn clean install
-mvn -pl web -am spring-boot:run -DskipTests
+mvn clean -pl web -am spring-boot:run -DskipTests
 ```
 
 4. 运行前端
