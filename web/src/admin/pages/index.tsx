@@ -15,8 +15,9 @@ import { useOnline } from '@shared/theme';
 import { useApi } from '@shared/hooks/useApi';
 
 interface OverviewData {
-  initialized: boolean;
-  version: string;
+  instanceStatus?: string;
+  initialized?: boolean;
+  version?: string;
   lastBackupAt?: string;
   lastBackupStatus?: string;
   recoveryDrill?: {
@@ -42,8 +43,14 @@ export function AdminOverviewPage() {
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <CardSection title="初始化状态">
           <div className="flex items-center gap-2">
-            <StatusBadge status={data.initialized ? 'completed' : 'pending'} />
-            <span className="text-cg-text-muted">{data.version}</span>
+            <StatusBadge
+              status={
+                (data.initialized ?? data.instanceStatus === 'INITIALIZED')
+                  ? 'completed'
+                  : 'pending'
+              }
+            />
+            <span className="text-cg-text-muted">{data.version ?? '—'}</span>
           </div>
         </CardSection>
         <CardSection title="备份状态">
