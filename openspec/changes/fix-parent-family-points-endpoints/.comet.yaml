@@ -1,6 +1,6 @@
 workflow: hotfix
 language: zh-CN
-phase: verify
+phase: archive
 context_compression: off
 build_mode: direct
 build_pause: null
@@ -13,11 +13,11 @@ auto_transition: true
 base_ref: dd8360080ebfb10a7305261792e5ae793a847408
 design_doc: null
 plan: docs/superpowers/plans/2026-07-13-fix-parent-family-points-endpoints.md
-verify_result: pending
+verify_result: pass
 verification_report: docs/superpowers/reports/2026-07-13-fix-parent-family-points-endpoints-verify.md
 branch_status: handled
 created_at: 2026-07-13
-verified_at: null
+verified_at: 2026-07-13
 archived: false
 direct_override: false
 handoff_context: openspec/changes/fix-parent-family-points-endpoints/.comet/handoff/design-context.json
