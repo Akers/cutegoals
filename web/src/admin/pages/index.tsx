@@ -40,10 +40,10 @@ export function AdminOverviewPage() {
   const { data, loading, error, refetch } = useApi<OverviewData>('/instance/status');
   const online = useOnline();
 
-  if (!online) return <OfflineState onRetry={refetch} />;
-  if (loading) return <LoadingState />;
-  if (error) return <ErrorState title="加载失败" message={error.message ?? '未知错误'} onRetry={refetch} />;
-  if (!data) return <EmptyState title="暂无数据" />;
+  if (!online) return <Layout><OfflineState onRetry={refetch} /></Layout>;
+  if (loading) return <Layout><LoadingState /></Layout>;
+  if (error) return <Layout><ErrorState title="加载失败" message={error.message ?? '未知错误'} onRetry={refetch} /></Layout>;
+  if (!data) return <Layout><EmptyState title="暂无数据" /></Layout>;
 
   return (
     <Layout>
@@ -108,10 +108,10 @@ export function AdminConfigPage() {
     await refetch();
   };
 
-  if (!online) return <OfflineState onRetry={refetch} />;
-  if (loading) return <LoadingState />;
-  if (error) return <ErrorState title="加载失败" message={error.message ?? '未知错误'} onRetry={refetch} />;
-  if (!data) return <EmptyState title="暂无配置" />;
+  if (!online) return <Layout><OfflineState onRetry={refetch} /></Layout>;
+  if (loading) return <Layout><LoadingState /></Layout>;
+  if (error) return <Layout><ErrorState title="加载失败" message={error.message ?? '未知错误'} onRetry={refetch} /></Layout>;
+  if (!data) return <Layout><EmptyState title="暂无配置" /></Layout>;
 
   return (
     <Layout>
@@ -159,10 +159,10 @@ export function AdminAccountsPage() {
 
   const mask = (phone: string) => phone.slice(0, 3) + '****' + phone.slice(7);
 
-  if (!online) return <OfflineState onRetry={refetch} />;
-  if (loading) return <LoadingState />;
-  if (error) return <ErrorState title="加载失败" message={error.message ?? '未知错误'} onRetry={refetch} />;
-  if (!data || data.content.length === 0) return <EmptyState title="暂无账号" />;
+  if (!online) return <Layout><OfflineState onRetry={refetch} /></Layout>;
+  if (loading) return <Layout><LoadingState /></Layout>;
+  if (error) return <Layout><ErrorState title="加载失败" message={error.message ?? '未知错误'} onRetry={refetch} /></Layout>;
+  if (!data || data.content.length === 0) return <Layout><EmptyState title="暂无账号" /></Layout>;
 
   return (
     <Layout>
@@ -221,10 +221,10 @@ export function AdminAuditPage() {
   const { data, loading, error, refetch } = useApi<PageResult<AuditLog>>('/admin/audit-logs');
   const online = useOnline();
 
-  if (!online) return <OfflineState onRetry={refetch} />;
-  if (loading) return <LoadingState />;
-  if (error) return <ErrorState title="加载失败" message={error.message ?? '未知错误'} onRetry={refetch} />;
-  if (!data || data.content.length === 0) return <EmptyState title="暂无审计日志" />;
+  if (!online) return <Layout><OfflineState onRetry={refetch} /></Layout>;
+  if (loading) return <Layout><LoadingState /></Layout>;
+  if (error) return <Layout><ErrorState title="加载失败" message={error.message ?? '未知错误'} onRetry={refetch} /></Layout>;
+  if (!data || data.content.length === 0) return <Layout><EmptyState title="暂无审计日志" /></Layout>;
 
   return (
     <Layout>
@@ -289,10 +289,10 @@ export function AdminHealthPage() {
   const { data, loading, error, refetch } = useApi<HealthData>('/admin/health');
   const online = useOnline();
 
-  if (!online) return <OfflineState onRetry={refetch} />;
-  if (loading) return <LoadingState />;
-  if (error) return <ErrorState title="加载失败" message={error.message ?? '未知错误'} onRetry={refetch} />;
-  if (!data) return <EmptyState title="暂无健康数据" />;
+  if (!online) return <Layout><OfflineState onRetry={refetch} /></Layout>;
+  if (loading) return <Layout><LoadingState /></Layout>;
+  if (error) return <Layout><ErrorState title="加载失败" message={error.message ?? '未知错误'} onRetry={refetch} /></Layout>;
+  if (!data) return <Layout><EmptyState title="暂无健康数据" /></Layout>;
 
   const checks: HealthCheck[] = [
     {
