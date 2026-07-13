@@ -1,0 +1,9 @@
+- [x] 1.1 在 `WebSecurityConfig` 中注入 `FamilyMemberMapper`，导入 `com.cutegoals.auth.mapper.FamilyMemberMapper`。
+- [x] 1.2 在 `jwtAuthenticationFilter` 解析 token 后，使用 `claims.roles().get(0)` 获取角色，调用 `familyMemberMapper.findByAccountIdAndRole(accountId, role)` 查询 family member；若存在，设置 `request.setAttribute(AuthConstants.ATTR_FAMILY_ID, member.getFamilyId())`。
+- [x] 1.3 验证后端编译通过：`mvn -pl :web -am compile` exit 0。
+- [x] 2.1 在 `web/src/parent/pages/index.tsx` 的 `ParentPointsPage` 中，将 `useApi<...>(selectedChild ? ... : '')` 改为 `useApi<...>(selectedChild ? ... : '', { skip: !selectedChild })`。
+- [x] 2.2 验证前端类型检查：`cd web && npx tsc -b` 0 errors。
+- [x] 2.3 验证前端测试：`cd web && npm test` 与 baseline 一致（14 failed / 65 passed），0 新增失败。
+- [x] 3.1 后端测试：`mvn -pl :web -am test` 全绿（66 tests）。
+- [x] 3.2 git commit：`fix(parent): set familyId in JWT filter and skip empty points ledger request`。
+- [x] 3.3 运行 `node .opencode/skills/comet/scripts/comet-guard.mjs fix-parent-family-points-endpoints build --apply` 推进到 verify。

@@ -712,7 +712,7 @@ export function ParentPointsPage() {
   const { data, loading, error, refetch } = useApi<{
     balance: number;
     transactions: { id: number; amount: number; type: string; createdAt: string; reason?: string }[];
-  }>(selectedChild ? `/points/ledger/${selectedChild}` : '');
+  }>(selectedChild ? `/points/ledger/${selectedChild}` : '', { skip: !selectedChild });
   const online = useOnline();
   const amount = useFormField();
   const reason = useFormField();

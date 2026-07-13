@@ -1,0 +1,13 @@
+{
+  "change": "fix-parent-family-points-endpoints",
+  "phase": "design",
+  "mode": "compact",
+  "canonical_spec": "openspec",
+  "generated_by": "comet-handoff.sh",
+  "context_hash": "ee61c57fd75f43c1077e81b60d9e91d048d6aebb4c9d905b925a7bf73fac6337",
+  "files": [
+    { "path": "openspec/changes/fix-parent-family-points-endpoints/proposal.md", "sha256": "6fe7e718b4c86468e30dad00d16cda7f32f69e7b2a72f0f1ed0de2f38a77a93e" },
+    { "path": "openspec/changes/fix-parent-family-points-endpoints/design.md", "sha256": "f371ee52f30e455150a4e1e742f48d3f5c6edeeae2b425cb97ee5d690fd4f181" },
+    { "path": "openspec/changes/fix-parent-family-points-endpoints/tasks.md", "sha256": "d0e040631f99e0e92d03fd6f3d831e96137c1504e3da07d90cbb01359036c82f" }
+  ]
+}

@@ -6,6 +6,7 @@ import com.cutegoals.common.exception.ErrorCode;
 import com.cutegoals.auth.service.TokenService;
 import com.cutegoals.auth.service.AuditEvent;
 import com.cutegoals.auth.service.AuditService;
+import com.cutegoals.auth.mapper.FamilyMemberMapper;
 import com.cutegoals.instancemanagement.service.RateLimiterService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.Cookie;
@@ -61,6 +62,7 @@ public class WebSecurityConfig {
     private final TokenService tokenService;
     private final AuditService auditService;
     private final RateLimiterService rateLimiterService;
+    private final FamilyMemberMapper familyMemberMapper;
 
     @Value("${app.production:false}")
     private boolean production;
@@ -306,6 +308,11 @@ public class WebSecurityConfig {
                         request.setAttribute(AuthConstants.ATTR_ACCOUNT_ID, claims.accountId());
                         request.setAttribute(AuthConstants.ATTR_ROLES, claims.roles());
                         request.setAttribute(AuthConstants.ATTR_SESSION_ID, claims.sessionId());
+
+                        if (!claims.roles().isEmpty()) {
+                            familyMemberMapper.findByAccountIdAndRole(claims.accountId(), claims.roles().get(0))
+                                    .ifPresent(member -> request.setAttribute(AuthConstants.ATTR_FAMILY_ID, member.getFamilyId()));
+                        }
 
                         // Set Spring Security authentication so role-based access rules work
                         var authorities = claims.roles().stream()
