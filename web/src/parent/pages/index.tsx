@@ -929,7 +929,7 @@ export function ParentBlindBoxesPage() {
                 <span className="font-medium text-cg-text">{(c.probability * 100).toFixed(1)}%</span>
               </div>
             ))}
-            {(candidates ?? []).length === 0 && <p className="text-cg-text-muted">暂无候选</p>}
+            {(candidates?.candidates ?? []).length === 0 && <p className="text-cg-text-muted">暂无候选</p>}
           </div>
         </CardSection>
       )}
