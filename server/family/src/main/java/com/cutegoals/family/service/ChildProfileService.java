@@ -39,6 +39,8 @@ public class ChildProfileService {
      * Returns PageResult shape aligned with admin endpoints.
      */
     public Map<String, Object> listChildrenPage(int page, int pageSize, Long familyId) {
+        // 家庭孩子数量通常极少（1-3 个），findActiveByFamilyId 返回全部后内存分页即可；
+        // 与 MyBatis-Plus Page 等价，避免为 mapper 增加仅用于此处的方法签名。
         List<ChildProfile> all = childProfileMapper.findActiveByFamilyId(familyId);
         int total = all.size();
         int from = Math.max(0, (page - 1) * pageSize);

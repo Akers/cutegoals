@@ -893,7 +893,7 @@ export function ParentPrizesPage() {
 export function ParentBlindBoxesPage() {
   const { items, loading, error, refetch } = usePaginatedData<BlindBox>('/blind-boxes');
   const [selected, setSelected] = useState<BlindBox | null>(null);
-  const { data: candidates } = useApi<BlindBoxCandidate[]>(selected ? `/blind-boxes/${selected.id}/candidates` : '');
+  const { data: candidates } = useApi<{ candidates: BlindBoxCandidate[] }>(selected ? `/blind-boxes/${selected.id}/candidates` : '');
   const online = useOnline();
 
   if (!online) return <PageShell title="盲盒"><OfflineState onRetry={refetch} /></PageShell>;
@@ -923,7 +923,7 @@ export function ParentBlindBoxesPage() {
       {selected && (
         <CardSection title="概率预览">
           <div className="grid grid-cols-1 gap-2">
-            {(candidates ?? []).map((c) => (
+            {(candidates?.candidates ?? []).map((c) => (
               <div key={c.prizeId} className="flex items-center justify-between rounded-cg-md bg-cg-surface-raised p-3">
                 <span className="text-cg-text">{c.prizeName}</span>
                 <span className="font-medium text-cg-text">{(c.probability * 100).toFixed(1)}%</span>

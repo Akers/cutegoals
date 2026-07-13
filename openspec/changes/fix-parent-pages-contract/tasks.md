@@ -11,6 +11,7 @@
 - [x] 2.3 审核页 `useApi<ReviewItem[]>('/task-review/history')` → 同上类型与解包（capability: parent-pages-contract）
 - [x] 2.4 任务页 `useApi<TaskTemplate[]>('/task-templates')` → `useApi<PageResult<TaskTemplate>>('/task-templates')`，渲染处解包 `data.content.map(...)`（capability: parent-pages-contract）
 - [x] 2.5 任务页 calendar 参数从 `?date=${date}` 改为 `/task-assignments?page=1&pageSize=100&startDate=${date}&endDate=${date}`（按 Design Doc Decision 4，前端换用 task-assignments 分页查询替代 calendar 端点）（capability: parent-pages-contract）
+- [x] 2.6 盲盒页 `useApi<BlindBoxCandidate[]>(/blind-boxes/{id}/candidates)` 改为 `useApi<{candidates: BlindBoxCandidate[]}>`，渲染处解包 `candidates?.candidates ?? []`（code review 发现，与审核/任务同模式缺陷）（capability: parent-pages-contract）
 
 ## 3. 前端：ErrorBoundary fallback 包 Layout
 
@@ -28,7 +29,7 @@
 - [x] 5.2 curl 验证 `GET /api/family/children` 不带 token 返回 401（端点存在且受保护）；因 dev DB 凭据限制未执行带 token 200 验证，由 `ChildProfileControllerTest` 覆盖 200 + PageResult 形状（capability: parent-pages-contract）
 - [x] 5.3 dev server 在 8981 启动成功；curl 验证 `/api/family/children`、`/api/task-assignments?startDate=...`、`/api/task-review/pending` 均返回 401（端点存在且受保护），不再出现 405 或 400；因无父账号密码未执行登录后浏览器访问，前端类型正确性由 tsc 与单测覆盖（capability: parent-pages-contract）
 - [x] 5.4 验证 ErrorBoundary fallback 内联页面骨架包含返回首页链接与主导航占位，崩溃时仍保留全局布局结构；未在浏览器中手动注入崩溃，因代码结构已保证骨架独立渲染（capability: parent-pages-contract）
-- [x] 5.5 根因消除 grep：旧形状 `useApi<ReviewItem[]>` / `useApi<TaskTemplate[]>` / `useApi<ChildProfile[]>` / `calendar\?date` / ErrorBoundary 内裸露 `return <ErrorState` 均 0 matches；新形状 `useApi<PageResult<...>>` / `data.content.map` / `/task-assignments?...startDate` / 内联骨架包裹 ErrorState 全部就位（capability: parent-pages-contract）
+- [x] 5.5 根因消除 grep：旧形状 `useApi<ReviewItem[]>` / `useApi<TaskTemplate[]>` / `useApi<ChildProfile[]>` / `useApi<BlindBoxCandidate[]>` / `calendar\?date` / ErrorBoundary 内裸露 `return <ErrorState` 均 0 matches；新形状 `useApi<PageResult<...>>` / `useApi<{candidates: ...}[]>` / `data.content.map` / `/task-assignments?...startDate` / 内联骨架包裹 ErrorState 全部就位（capability: parent-pages-contract）
 
 ## 6. 提交与推进
 
