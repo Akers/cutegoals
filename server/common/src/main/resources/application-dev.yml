@@ -2,5 +2,7 @@ app:
   env: dev
 
 logging:
+  file:
+    name: ${LOG_FILE:}
   level:
     com.cutegoals: DEBUG

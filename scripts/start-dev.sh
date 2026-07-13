@@ -201,6 +201,11 @@ main() {
     export REDIS_HOST REDIS_PORT REDIS_PASSWORD
     export CUTEGOALS_JWT_SECRET APP_PRODUCTION=false PORT
 
+    mkdir -p "${REPO_ROOT}/logs"
+    export LOG_FILE="${REPO_ROOT}/logs/cutegoals-dev.log"
+    info "开发日志同时输出到：${LOG_FILE}"
+    info "用 ./scripts/start-dev.sh --logs 可在新终端实时查看日志"
+
     cd "${SERVER_DIR}"
     exec mvn clean -pl web -am spring-boot:run -DskipTests \
         -Dspring-boot.run.jvmArguments="-Dfile.encoding=UTF-8"
