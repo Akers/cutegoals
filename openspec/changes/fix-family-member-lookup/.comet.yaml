@@ -1,6 +1,6 @@
 workflow: hotfix
 language: zh-CN
-phase: build
+phase: verify
 context_compression: off
 build_mode: direct
 build_pause: null
@@ -14,8 +14,8 @@ base_ref: 4436e55c20cc8635642e8aa4a14a79f61dd0e344
 design_doc: null
 plan: null
 verify_result: pending
-verification_report: null
-branch_status: pending
+verification_report: docs/superpowers/reports/2026-07-14-fix-family-member-lookup-verify.md
+branch_status: handled
 created_at: 2026-07-13
 verified_at: null
 archived: false
