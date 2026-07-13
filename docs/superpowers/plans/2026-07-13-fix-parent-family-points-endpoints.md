@@ -6,7 +6,7 @@ base-ref: dd8360080ebfb10a7305261792e5ae793a847408
 
 # fix-parent-family-points-endpoints Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** 修复 parent 端「家庭」与「积分」菜单的资源未找到/404 报错：在 JWT filter 中注入 familyId，并避免积分页发起空路径请求。
 
@@ -37,7 +37,7 @@ base-ref: dd8360080ebfb10a7305261792e5ae793a847408
 - Consumes: `com.cutegoals.auth.mapper.FamilyMemberMapper` (from auth module, already on web classpath).
 - Produces: `private final FamilyMemberMapper familyMemberMapper;` added to constructor-injected fields.
 
-- [ ] **Step 1: Add import and field**
+- [x] **Step 1: Add import and field**
 
 Add import near existing auth imports:
 
@@ -51,12 +51,12 @@ Add field and constructor injection:
 private final FamilyMemberMapper familyMemberMapper;
 ```
 
-- [ ] **Step 2: Verify compile**
+- [x] **Step 2: Verify compile**
 
 Run: `mvn -pl :web -am compile -q`
 Expected: BUILD SUCCESS.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add server/web/src/main/java/com/cutegoals/web/config/WebSecurityConfig.java
@@ -74,7 +74,7 @@ git commit -m "chore: inject FamilyMemberMapper into WebSecurityConfig"
 - Consumes: `claims.accountId()`, `claims.roles()`, `AuthConstants.ATTR_FAMILY_ID`, `FamilyMemberMapper.findByAccountIdAndRole`.
 - Produces: `request.setAttribute(AuthConstants.ATTR_FAMILY_ID, familyMember.getFamilyId())` when a member exists.
 
-- [ ] **Step 1: Add familyId lookup after token parsing**
+- [x] **Step 1: Add familyId lookup after token parsing**
 
 In `jwtAuthenticationFilter()`, after the existing `request.setAttribute(...)` lines, add:
 
@@ -85,12 +85,12 @@ if (!claims.roles().isEmpty()) {
 }
 ```
 
-- [ ] **Step 2: Verify compile**
+- [x] **Step 2: Verify compile**
 
 Run: `mvn -pl :web -am compile -q`
 Expected: BUILD SUCCESS.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add server/web/src/main/java/com/cutegoals/web/config/WebSecurityConfig.java
@@ -108,7 +108,7 @@ git commit -m "fix(parent): set familyId in JWT filter for family-scoped endpoin
 - Consumes: `useApi` options `{ skip: boolean }`.
 - Produces: `useApi` call no longer fires when `selectedChild` is empty.
 
-- [ ] **Step 1: Add skip option**
+- [x] **Step 1: Add skip option**
 
 Locate `ParentPointsPage`:
 
@@ -128,12 +128,12 @@ const { data, loading, error, refetch } = useApi<{
 }>(selectedChild ? `/points/ledger/${selectedChild}` : '', { skip: !selectedChild });
 ```
 
-- [ ] **Step 2: Verify TypeScript**
+- [x] **Step 2: Verify TypeScript**
 
 Run: `cd web && npx tsc -b`
 Expected: 0 errors.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add web/src/parent/pages/index.tsx
@@ -146,12 +146,12 @@ git commit -m "fix(parent): skip empty points ledger request until child selecte
 
 **Files:** None.
 
-- [ ] **Step 1: Run backend tests**
+- [x] **Step 1: Run backend tests**
 
 Run: `mvn -pl :web -am test -q`
 Expected: BUILD SUCCESS, baseline tests pass.
 
-- [ ] **Step 2: Commit (if no changes, just note)**
+- [x] **Step 2: Commit (if no changes, just note)**
 
 No source changes to commit. Mark task complete.
 
@@ -161,12 +161,12 @@ No source changes to commit. Mark task complete.
 
 **Files:** None.
 
-- [ ] **Step 1: Run frontend tests**
+- [x] **Step 1: Run frontend tests**
 
 Run: `cd web && npm test -- --run`
 Expected: 14 failed / 65 passed (same as baseline), 0 new failures.
 
-- [ ] **Step 2: Commit (if no changes, just note)**
+- [x] **Step 2: Commit (if no changes, just note)**
 
 No source changes to commit. Mark task complete.
 
@@ -176,17 +176,17 @@ No source changes to commit. Mark task complete.
 
 **Files:** None.
 
-- [ ] **Step 1: Confirm no remaining empty-path useApi calls**
+- [x] **Step 1: Confirm no remaining empty-path useApi calls**
 
 Search: `grep -n "useApi<.*>\(''" web/src/parent/pages/index.tsx`
 Expected: 0 matches.
 
-- [ ] **Step 2: Confirm ATTR_FAMILY_ID is set in JWT filter**
+- [x] **Step 2: Confirm ATTR_FAMILY_ID is set in JWT filter**
 
 Search: `grep -n "ATTR_FAMILY_ID" server/web/src/main/java/com/cutegoals/web/config/WebSecurityConfig.java`
 Expected: at least 1 match (setAttribute).
 
-- [ ] **Step 3: Mark complete**
+- [x] **Step 3: Mark complete**
 
 No commit needed.
 
@@ -196,13 +196,13 @@ No commit needed.
 
 **Files:** None.
 
-- [ ] **Step 1: Ensure all tasks in tasks.md are checked**
+- [x] **Step 1: Ensure all tasks in tasks.md are checked**
 
-- [ ] **Step 2: Run build guard**
+- [x] **Step 2: Run build guard**
 
 Run: `node /home/akers/projects/cutegoals/.opencode/skills/comet/scripts/comet-guard.mjs fix-parent-family-points-endpoints build --apply`
 Expected: ALL CHECKS PASSED, phase=verify.
 
-- [ ] **Step 3: Commit any remaining state changes**
+- [x] **Step 3: Commit any remaining state changes**
 
 If `.comet.yaml` or `.comet/` files changed, commit them.
