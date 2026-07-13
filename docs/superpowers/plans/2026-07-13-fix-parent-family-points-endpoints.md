@@ -2,6 +2,7 @@
 change: fix-parent-family-points-endpoints
 design-doc: openspec/changes/fix-parent-family-points-endpoints/design.md
 base-ref: dd8360080ebfb10a7305261792e5ae793a847408
+archived-with: 2026-07-13-fix-parent-family-points-endpoints
 ---
 
 # fix-parent-family-points-endpoints Implementation Plan
@@ -26,6 +27,7 @@ base-ref: dd8360080ebfb10a7305261792e5ae793a847408
 - **Modify**: `server/web/src/main/java/com/cutegoals/web/config/WebSecurityConfig.java` — 注入 `FamilyMemberMapper`，在 JWT filter 中设置 `ATTR_FAMILY_ID`。
 - **Modify**: `web/src/parent/pages/index.tsx` — `ParentPointsPage` 的 `useApi` 增加 `skip` 选项。
 
+archived-with: 2026-07-13-fix-parent-family-points-endpoints
 ---
 
 ### Task 1: 在 WebSecurityConfig 中注入 FamilyMemberMapper
@@ -63,6 +65,7 @@ git add server/web/src/main/java/com/cutegoals/web/config/WebSecurityConfig.java
 git commit -m "chore: inject FamilyMemberMapper into WebSecurityConfig"
 ```
 
+archived-with: 2026-07-13-fix-parent-family-points-endpoints
 ---
 
 ### Task 2: 在 JWT filter 中设置 familyId
@@ -97,6 +100,7 @@ git add server/web/src/main/java/com/cutegoals/web/config/WebSecurityConfig.java
 git commit -m "fix(parent): set familyId in JWT filter for family-scoped endpoints"
 ```
 
+archived-with: 2026-07-13-fix-parent-family-points-endpoints
 ---
 
 ### Task 3: 积分页跳过空路径请求
@@ -140,6 +144,7 @@ git add web/src/parent/pages/index.tsx
 git commit -m "fix(parent): skip empty points ledger request until child selected"
 ```
 
+archived-with: 2026-07-13-fix-parent-family-points-endpoints
 ---
 
 ### Task 4: 验证后端测试基线
@@ -155,6 +160,7 @@ Expected: BUILD SUCCESS, baseline tests pass.
 
 No source changes to commit. Mark task complete.
 
+archived-with: 2026-07-13-fix-parent-family-points-endpoints
 ---
 
 ### Task 5: 验证前端测试基线
@@ -170,6 +176,7 @@ Expected: 14 failed / 65 passed (same as baseline), 0 new failures.
 
 No source changes to commit. Mark task complete.
 
+archived-with: 2026-07-13-fix-parent-family-points-endpoints
 ---
 
 ### Task 6: 根因消除检查
@@ -190,6 +197,7 @@ Expected: at least 1 match (setAttribute).
 
 No commit needed.
 
+archived-with: 2026-07-13-fix-parent-family-points-endpoints
 ---
 
 ### Task 7: 推进 build guard
@@ -206,3 +214,4 @@ Expected: ALL CHECKS PASSED, phase=verify.
 - [x] **Step 3: Commit any remaining state changes**
 
 If `.comet.yaml` or `.comet/` files changed, commit them.
+

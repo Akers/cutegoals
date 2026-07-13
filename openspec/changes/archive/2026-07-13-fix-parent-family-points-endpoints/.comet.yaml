@@ -18,7 +18,7 @@ verification_report: docs/superpowers/reports/2026-07-13-fix-parent-family-point
 branch_status: handled
 created_at: 2026-07-13
 verified_at: 2026-07-13
-archived: false
+archived: true
 direct_override: false
 handoff_context: openspec/changes/fix-parent-family-points-endpoints/.comet/handoff/design-context.json
 handoff_hash: ee61c57fd75f43c1077e81b60d9e91d048d6aebb4c9d905b925a7bf73fac6337
