@@ -188,9 +188,14 @@ export function ParentHomePage() {
     <PageShell
       title="家庭"
       actions={
-        <Button variant="secondary" onClick={() => navigate('/parent/templates')}>
-          任务模板
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="secondary" onClick={() => navigate('/parent/family')}>
+            管理家庭
+          </Button>
+          <Button variant="secondary" onClick={() => navigate('/parent/templates')}>
+            任务模板
+          </Button>
+        </div>
       }
     >
       <CardSection title="家庭成员">
