@@ -200,6 +200,7 @@ main() {
     export PG_HOST PG_PORT PG_DATABASE PG_USER PG_PASSWORD PG_SCHEMA
     export REDIS_HOST REDIS_PORT REDIS_PASSWORD
     export CUTEGOALS_JWT_SECRET APP_PRODUCTION=false PORT
+    export SPRING_PROFILES_ACTIVE=dev
 
     mkdir -p "${REPO_ROOT}/logs"
     export LOG_FILE="${REPO_ROOT}/logs/cutegoals-dev.log"
