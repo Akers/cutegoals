@@ -210,14 +210,31 @@ export function ParentHomePage() {
 export function ParentFamilyPage() {
   const { data, loading, error, refetch } = useApi<Family>('/family');
   const { items: invitations, refetch: refetchInvitations } = usePaginatedData<Invitation>('/family/invitations');
+  const { items: children, refetch: refetchChildren } = usePaginatedData<ChildProfile>('/family/children');
   const [showInvite, setShowInvite] = useState(false);
-  const [confirm, setConfirm] = useState<{ type: 'remove' | 'leave'; member?: FamilyMember } | null>(null);
+  const [showChildModal, setShowChildModal] = useState(false);
+  const [confirm, setConfirm] = useState<{ type: 'remove' | 'leave' | 'removeChild'; member?: FamilyMember; child?: ChildProfile } | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
   const phone = useFormField();
+  const childNickname = useFormField();
+  const childPin = useFormField();
+  const childBirthday = useFormField();
   const online = useOnline();
   const { account } = useAuth();
   const [sending, setSending] = useState(false);
+  const [childSaving, setChildSaving] = useState(false);
+
+  const resetChildForm = () => {
+    childNickname.reset();
+    childPin.reset();
+    childBirthday.reset();
+  };
+
+  const openNewChild = () => {
+    resetChildForm();
+    setShowChildModal(true);
+  };
 
   const handleInvite = async () => {
     setSending(true);
@@ -228,6 +245,26 @@ export function ParentFamilyPage() {
     await refetchInvitations();
   };
 
+  const handleSaveChild = async () => {
+    setChildSaving(true);
+    setActionError(null);
+    try {
+      await getClient().post('/family/children', {
+        nickname: childNickname.value,
+        pin: childPin.value || undefined,
+        birthday: childBirthday.value || undefined,
+      });
+      setShowChildModal(false);
+      resetChildForm();
+      await refetchChildren();
+      await refetch();
+    } catch (err: any) {
+      setActionError(err.message ?? '添加孩子失败');
+    } finally {
+      setChildSaving(false);
+    }
+  };
+
   const handleRemove = async (member: FamilyMember) => {
     setActionLoading(true);
     setActionError(null);
@@ -236,6 +273,21 @@ export function ParentFamilyPage() {
       await refetch();
     } catch (err: any) {
       setActionError(err.message ?? '移除失败');
+    } finally {
+      setActionLoading(false);
+      setConfirm(null);
+    }
+  };
+
+  const handleRemoveChild = async (child: ChildProfile) => {
+    setActionLoading(true);
+    setActionError(null);
+    try {
+      await getClient().delete(`/family/children/${child.id}`);
+      await refetchChildren();
+      await refetch();
+    } catch (err: any) {
+      setActionError(err.message ?? '移除孩子失败');
     } finally {
       setActionLoading(false);
       setConfirm(null);
@@ -261,13 +313,29 @@ export function ParentFamilyPage() {
   if (error) return <PageShell title="家庭"><ErrorState onRetry={refetch} message={error.message} /></PageShell>;
   if (!data) return <PageShell title="家庭"><EmptyState /></PageShell>;
 
+  const confirmTitle =
+    confirm?.type === 'leave' ? '退出家庭' :
+    confirm?.type === 'removeChild' ? '移除孩子' : '移除成员';
+  const confirmMessage =
+    confirm?.type === 'leave' ? '退出后你将无法管理该家庭，是否继续？' :
+    confirm?.type === 'removeChild' ? '移除后该孩子将无法继续使用家庭功能，是否继续？' :
+    '移除后该家长将无法管理此家庭，是否继续？';
+  const confirmButtonText =
+    confirm?.type === 'leave' ? '退出' :
+    confirm?.type === 'removeChild' ? '移除' : '移除';
+
   return (
     <PageShell
       title="家庭"
       actions={
-        <Button variant="secondary" onClick={() => setShowInvite(true)}>
-          邀请家长
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="secondary" onClick={() => setShowInvite(true)}>
+            邀请家长
+          </Button>
+          <Button variant="secondary" onClick={openNewChild}>
+            添加孩子
+          </Button>
+        </div>
       }
     >
       <CardSection title="家庭成员">
@@ -298,6 +366,31 @@ export function ParentFamilyPage() {
             );
           })}
         </div>
+      </CardSection>
+
+      <CardSection title="孩子">
+        {children.length === 0 ? (
+          <p className="text-cg-text-muted">暂无孩子，点击上方「添加孩子」创建档案。</p>
+        ) : (
+          <div className="grid grid-cols-1 gap-3">
+            {children.map((child) => (
+              <div key={child.id} className="flex items-center justify-between rounded-cg-md bg-cg-surface-raised p-3">
+                <div>
+                  <div className="font-medium text-cg-text">{child.nickname}</div>
+                  {child.birthday && <div className="text-xs text-cg-text-muted">生日 {child.birthday}</div>}
+                </div>
+                <Button
+                  variant="danger"
+                  size="sm"
+                  onClick={() => setConfirm({ type: 'removeChild', child })}
+                  isLoading={actionLoading}
+                >
+                  移除
+                </Button>
+              </div>
+            ))}
+          </div>
+        )}
       </CardSection>
 
       <CardSection title="待处理邀请">
@@ -333,22 +426,37 @@ export function ParentFamilyPage() {
         </form>
       </Modal>
 
+      <Modal isOpen={showChildModal} onClose={() => setShowChildModal(false)} title="添加孩子">
+        <form className="flex flex-col gap-4">
+          <FormField label="昵称" htmlFor="child-nickname">
+            <Input id="child-nickname" {...childNickname.inputProps} />
+          </FormField>
+          <FormField label="PIN" htmlFor="child-pin">
+            <Input id="child-pin" type="password" {...childPin.inputProps} />
+          </FormField>
+          <FormField label="生日" htmlFor="child-birthday">
+            <Input id="child-birthday" type="date" {...childBirthday.inputProps} />
+          </FormField>
+          <Button onClick={handleSaveChild} isLoading={childSaving} type="button" className="w-full">
+            保存
+          </Button>
+        </form>
+      </Modal>
+
       <ConfirmModal
         isOpen={confirm != null}
         onClose={() => setConfirm(null)}
-        title={confirm?.type === 'leave' ? '退出家庭' : '移除成员'}
-        message={
-          confirm?.type === 'leave'
-            ? '退出后你将无法管理该家庭，是否继续？'
-            : '移除后该家长将无法管理此家庭，是否继续？'
-        }
-        confirmText={confirm?.type === 'leave' ? '退出' : '移除'}
+        title={confirmTitle}
+        message={confirmMessage}
+        confirmText={confirmButtonText}
         confirmVariant="danger"
         onConfirm={() => {
           if (confirm?.type === 'leave') {
             handleLeave();
-          } else if (confirm?.member) {
+          } else if (confirm?.type === 'remove' && confirm.member) {
             handleRemove(confirm.member);
+          } else if (confirm?.type === 'removeChild' && confirm.child) {
+            handleRemoveChild(confirm.child);
           }
         }}
         isConfirming={actionLoading}
