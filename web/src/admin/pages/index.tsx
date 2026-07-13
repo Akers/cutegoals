@@ -14,6 +14,14 @@ import {
 import { useOnline } from '@shared/theme';
 import { useApi } from '@shared/hooks/useApi';
 
+interface PageResult<T> {
+  content: T[];
+  page: number;
+  pageSize: number;
+  totalElements: number;
+  totalPages: number;
+}
+
 interface OverviewData {
   instanceStatus?: string;
   initialized?: boolean;
@@ -131,12 +139,14 @@ export function AdminConfigPage() {
 interface Account {
   id: number;
   phone: string;
-  role: string;
-  enabled: boolean;
+  status: string;
+  roles: string[];
+  createdAt: string;
+  updatedAt: string;
 }
 
 export function AdminAccountsPage() {
-  const { data, loading, error, refetch } = useApi<Account[]>('/admin/accounts');
+  const { data, loading, error, refetch } = useApi<PageResult<Account>>('/admin/accounts');
   const online = useOnline();
   const [acting, setActing] = useState<number | null>(null);
 
@@ -152,7 +162,7 @@ export function AdminAccountsPage() {
   if (!online) return <OfflineState onRetry={refetch} />;
   if (loading) return <LoadingState />;
   if (error) return <ErrorState title="加载失败" message={error.message ?? '未知错误'} onRetry={refetch} />;
-  if (!data || data.length === 0) return <EmptyState title="暂无账号" />;
+  if (!data || data.content.length === 0) return <EmptyState title="暂无账号" />;
 
   return (
     <Layout>
@@ -168,21 +178,21 @@ export function AdminAccountsPage() {
             </tr>
           </thead>
           <tbody className="divide-y divide-cg-border">
-            {data.map((account) => (
+            {data.content.map((account) => (
               <tr key={account.id}>
                 <td className="px-4 py-3">{mask(account.phone)}</td>
-                <td className="px-4 py-3">{account.role}</td>
+                <td className="px-4 py-3">{account.roles.join(', ')}</td>
                 <td className="px-4 py-3">
-                  <StatusBadge status={account.enabled ? 'approved' : 'cancelled'} />
+                  <StatusBadge status={account.status === 'ACTIVE' ? 'approved' : 'cancelled'} />
                 </td>
                 <td className="px-4 py-3">
                   <Button
-                    variant={account.enabled ? 'secondary' : 'primary'}
+                    variant={account.status === 'ACTIVE' ? 'secondary' : 'primary'}
                     size="sm"
                     isLoading={acting === account.id}
-                    onClick={() => toggle(account.id, !account.enabled)}
+                    onClick={() => toggle(account.id, account.status !== 'ACTIVE')}
                   >
-                    {account.enabled ? '停用' : '启用'}
+                    {account.status === 'ACTIVE' ? '停用' : '启用'}
                   </Button>
                 </td>
               </tr>
@@ -196,21 +206,25 @@ export function AdminAccountsPage() {
 
 interface AuditLog {
   id: number;
-  operator: string;
-  action: string;
+  actorId: number;
+  actorType: string;
+  eventType: string;
+  result: string;
   objectType: string;
   objectId: string;
+  summary: string;
+  requestId: string;
   createdAt: string;
 }
 
 export function AdminAuditPage() {
-  const { data, loading, error, refetch } = useApi<AuditLog[]>('/admin/audit-logs');
+  const { data, loading, error, refetch } = useApi<PageResult<AuditLog>>('/admin/audit-logs');
   const online = useOnline();
 
   if (!online) return <OfflineState onRetry={refetch} />;
   if (loading) return <LoadingState />;
   if (error) return <ErrorState title="加载失败" message={error.message ?? '未知错误'} onRetry={refetch} />;
-  if (!data || data.length === 0) return <EmptyState title="暂无审计日志" />;
+  if (!data || data.content.length === 0) return <EmptyState title="暂无审计日志" />;
 
   return (
     <Layout>
@@ -222,15 +236,17 @@ export function AdminAuditPage() {
               <th className="px-4 py-3 font-medium">时间</th>
               <th className="px-4 py-3 font-medium">操作者</th>
               <th className="px-4 py-3 font-medium">动作</th>
+              <th className="px-4 py-3 font-medium">结果</th>
               <th className="px-4 py-3 font-medium">对象</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-cg-border">
-            {data.map((log) => (
+            {data.content.map((log) => (
               <tr key={log.id}>
                 <td className="px-4 py-3">{log.createdAt}</td>
-                <td className="px-4 py-3">{log.operator}</td>
-                <td className="px-4 py-3">{log.action}</td>
+                <td className="px-4 py-3">{log.actorType}#{log.actorId}</td>
+                <td className="px-4 py-3">{log.eventType}</td>
+                <td className="px-4 py-3">{log.result}</td>
                 <td className="px-4 py-3">{log.objectType}#{log.objectId}</td>
               </tr>
             ))}
@@ -241,9 +257,32 @@ export function AdminAuditPage() {
   );
 }
 
+interface HealthCheck {
+  name: string;
+  healthy: boolean;
+  message: string;
+}
+
 interface HealthData {
   status: string;
-  checks: { name: string; healthy: boolean; message: string }[];
+  initialized?: boolean;
+  version?: string;
+  buildTime?: string;
+  buildCommit?: string;
+  database?: { status: string; type: string };
+  backup?: {
+    lastBackupTime: string | null;
+    lastBackupStatus: string;
+    nextScheduledBackup: string | null;
+  };
+  recoveryDrill?: {
+    lastRecoveryDrillTime: string | null;
+    lastRecoveryDrillStatus: string;
+    rpoSeconds: number | null;
+    rtoSeconds: number | null;
+  };
+  rpoWarning?: string;
+  rpoWarningMessage?: string;
 }
 
 export function AdminHealthPage() {
@@ -255,6 +294,38 @@ export function AdminHealthPage() {
   if (error) return <ErrorState title="加载失败" message={error.message ?? '未知错误'} onRetry={refetch} />;
   if (!data) return <EmptyState title="暂无健康数据" />;
 
+  const checks: HealthCheck[] = [
+    {
+      name: '数据库',
+      healthy: data.database?.status === 'UP',
+      message: data.database ? `类型: ${data.database.type}` : '未连接',
+    },
+    {
+      name: '备份',
+      healthy: data.backup?.lastBackupStatus === 'SUCCESS',
+      message:
+        !data.backup?.lastBackupTime || data.backup.lastBackupStatus === 'NEVER'
+          ? '从未备份'
+          : `上次备份: ${data.backup.lastBackupTime} (${data.backup.lastBackupStatus})`,
+    },
+    {
+      name: '恢复演练',
+      healthy: data.recoveryDrill?.lastRecoveryDrillStatus === 'SUCCESS',
+      message:
+        !data.recoveryDrill?.lastRecoveryDrillTime ||
+        data.recoveryDrill.lastRecoveryDrillStatus === 'NEVER'
+          ? '从未演练'
+          : `上次演练: ${data.recoveryDrill.lastRecoveryDrillTime} (${data.recoveryDrill.lastRecoveryDrillStatus})`,
+    },
+  ];
+  if (data.rpoWarning) {
+    checks.push({
+      name: 'RPO 警告',
+      healthy: false,
+      message: data.rpoWarningMessage ?? 'RPO 超出阈值',
+    });
+  }
+
   return (
     <Layout>
       <PageHeader title="健康面板" />
@@ -263,7 +334,7 @@ export function AdminHealthPage() {
         <StatusBadge status={data.status === 'UP' ? 'approved' : 'rejected'} />
       </div>
       <div className="grid grid-cols-1 gap-3">
-        {data.checks.map((check) => (
+        {checks.map((check) => (
           <div key={check.name} className="cg-card p-4">
             <div className="flex items-center justify-between">
               <span className="font-medium text-cg-text">{check.name}</span>
