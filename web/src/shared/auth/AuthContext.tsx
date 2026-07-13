@@ -54,6 +54,19 @@ export function AuthProvider({
   const handleUnauthorized = useCallback(() => {
     setAccount(null);
     const path = window.location.pathname;
+    // Public auth pages must NOT be kicked away on 401 — otherwise visiting
+    // /admin/init with a stale cookie would redirect to /admin/login and
+    // block re-initialization.
+    const publicPaths = [
+      '/admin/init',
+      '/admin/login',
+      '/parent/login',
+      '/child/login',
+      '/child/bind',
+    ];
+    if (publicPaths.some((p) => path.startsWith(p))) {
+      return;
+    }
     if (path.startsWith('/admin')) {
       navigate('/admin/login');
     } else if (path.startsWith('/parent')) {
