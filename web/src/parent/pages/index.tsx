@@ -22,6 +22,15 @@ import {
 import { useApi, useFormField } from '@shared/hooks/useApi';
 import { useOnline } from '@shared/theme';
 
+// 后端分页响应统一契约：{content,page,pageSize,totalElements,totalPages}
+interface PageResult<T> {
+  content: T[];
+  page: number;
+  pageSize: number;
+  totalElements: number;
+  totalPages: number;
+}
+
 // Domain types
 interface Family {
   id: number;
@@ -143,10 +152,10 @@ function PageShell({
 function usePaginatedData<T>(path: string) {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
-  const { data, loading, error, refetch } = useApi<{ items: T[]; total: number }>(`${path}?page=${page}&pageSize=${pageSize}`);
+  const { data, loading, error, refetch } = useApi<PageResult<T>>(`${path}?page=${page}&pageSize=${pageSize}`);
   return {
-    items: data?.items ?? [],
-    total: data?.total ?? 0,
+    items: data?.content ?? [],
+    total: data?.totalElements ?? 0,
     page,
     pageSize,
     setPage,
@@ -490,9 +499,9 @@ export function ParentTemplatesPage() {
 
 export function ParentTasksPage() {
   const [date, setDate] = useState(() => new Date().toISOString().split('T')[0]);
-  const { data, loading, error, refetch } = useApi<{ assignments: TaskAssignment[]; dates: string[] }>(`/task-assignments/calendar?date=${date}`);
-  const { data: templates } = useApi<TaskTemplate[]>('/task-templates');
-  const { data: children } = useApi<ChildProfile[]>('/family/children');
+  const { data, loading, error, refetch } = useApi<PageResult<TaskAssignment>>(`/task-assignments?page=1&pageSize=100&startDate=${date}&endDate=${date}`);
+  const { data: templates } = useApi<PageResult<TaskTemplate>>('/task-templates');
+  const { data: children } = useApi<PageResult<ChildProfile>>('/family/children');
   const [showAssign, setShowAssign] = useState(false);
   const templateId = useFormField();
   const childId = useFormField();
@@ -520,7 +529,7 @@ export function ParentTasksPage() {
   if (loading) return <PageShell title="任务分配"><LoadingState /></PageShell>;
   if (error) return <PageShell title="任务分配"><ErrorState onRetry={refetch} message={error.message} /></PageShell>;
 
-  const assignments = data?.assignments ?? [];
+  const assignments = data?.content ?? [];
 
   return (
     <PageShell
@@ -562,7 +571,7 @@ export function ParentTasksPage() {
           <FormField label="模板" htmlFor="assign-template">
             <Select id="assign-template" {...templateId.inputProps}>
               <option value="">请选择模板</option>
-              {(templates ?? []).map((t) => (
+              {(templates?.content ?? []).map((t) => (
                 <option key={t.id} value={t.id}>
                   {t.title}
                 </option>
@@ -572,7 +581,7 @@ export function ParentTasksPage() {
           <FormField label="孩子" htmlFor="assign-child">
             <Select id="assign-child" {...childId.inputProps}>
               <option value="">请选择孩子</option>
-              {(children ?? []).map((c) => (
+              {(children?.content ?? []).map((c) => (
                 <option key={c.id} value={c.id}>
                   {c.nickname}
                 </option>
@@ -592,8 +601,8 @@ export function ParentTasksPage() {
 }
 
 export function ParentReviewsPage() {
-  const { data, loading, error, refetch } = useApi<ReviewItem[]>('/task-review/pending');
-  const { data: history } = useApi<ReviewItem[]>('/task-review/history');
+  const { data, loading, error, refetch } = useApi<PageResult<ReviewItem>>('/task-review/pending');
+  const { data: history } = useApi<PageResult<ReviewItem>>('/task-review/history');
   const [reason, setReason] = useState('');
   const [active, setActive] = useState<ReviewItem | null>(null);
   const online = useOnline();
@@ -614,7 +623,7 @@ export function ParentReviewsPage() {
   if (loading) return <PageShell title="任务审核"><LoadingState /></PageShell>;
   if (error) return <PageShell title="任务审核"><ErrorState onRetry={refetch} message={error.message} /></PageShell>;
 
-  const pending = data ?? [];
+  const pending = data?.content ?? [];
 
   return (
     <PageShell title="任务审核">
@@ -652,10 +661,10 @@ export function ParentReviewsPage() {
 
       <CardSection title="审核历史">
         <div className="grid grid-cols-1 gap-3">
-          {(history ?? []).length === 0 ? (
+          {(history?.content ?? []).length === 0 ? (
             <p className="text-cg-text-muted">暂无历史</p>
           ) : (
-            (history ?? []).map((item) => (
+            (history?.content ?? []).map((item) => (
               <div key={item.attemptId} className="cg-card p-4">
                 <div className="font-medium text-cg-text">{item.templateTitle}</div>
                 <div className="text-sm text-cg-text-muted">{item.childNickname} · {item.submittedAt}</div>
@@ -698,7 +707,7 @@ export function ParentReviewsPage() {
 }
 
 export function ParentPointsPage() {
-  const { data: children } = useApi<ChildProfile[]>('/family/children');
+  const { data: children } = useApi<PageResult<ChildProfile>>('/family/children');
   const [selectedChild, setSelectedChild] = useState('');
   const { data, loading, error, refetch } = useApi<{
     balance: number;
@@ -732,7 +741,7 @@ export function ParentPointsPage() {
       <CardSection title="选择孩子">
         <Select value={selectedChild} onChange={(e) => setSelectedChild(e.target.value)}>
           <option value="">请选择孩子</option>
-          {(children ?? []).map((c) => (
+          {(children?.content ?? []).map((c) => (
             <option key={c.id} value={c.id}>
               {c.nickname}
             </option>

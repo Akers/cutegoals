@@ -35,6 +35,30 @@ public class ChildProfileService {
     private static final int MAX_AVATAR_LENGTH = 500;
 
     /**
+     * List active child profiles for a family with pagination (Task 1.1, fix-parent-pages-contract).
+     * Returns PageResult shape aligned with admin endpoints.
+     */
+    public Map<String, Object> listChildrenPage(int page, int pageSize, Long familyId) {
+        List<ChildProfile> all = childProfileMapper.findActiveByFamilyId(familyId);
+        int total = all.size();
+        int from = Math.max(0, (page - 1) * pageSize);
+        int to = Math.min(from + pageSize, total);
+        List<ChildProfile> content = from < to ? all.subList(from, to) : List.of();
+
+        List<Map<String, Object>> contentMaps = content.stream()
+                .map(this::buildChildResponse)
+                .toList();
+
+        Map<String, Object> result = new LinkedHashMap<>();
+        result.put("content", contentMaps);
+        result.put("page", page);
+        result.put("pageSize", pageSize);
+        result.put("totalElements", total);
+        result.put("totalPages", pageSize > 0 ? (int) Math.ceil((double) total / pageSize) : 0);
+        return result;
+    }
+
+    /**
      * Create a child profile.
      */
     @Transactional

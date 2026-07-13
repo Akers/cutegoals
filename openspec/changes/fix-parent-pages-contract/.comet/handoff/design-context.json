@@ -1,0 +1,14 @@
+{
+  "change": "fix-parent-pages-contract",
+  "phase": "design",
+  "mode": "compact",
+  "canonical_spec": "openspec",
+  "generated_by": "comet-handoff.sh",
+  "context_hash": "65547d5e17b4f4b256821142c24eb7c92c2a8727eae4ef493d848be435834f86",
+  "files": [
+    { "path": "openspec/changes/fix-parent-pages-contract/proposal.md", "sha256": "6757dbd5e3b40fccd12472244b30115a3d601b97ab735cd5e3ece7ce477a8838" },
+    { "path": "openspec/changes/fix-parent-pages-contract/design.md", "sha256": "e47afc17fdee405e3ddd4ad69063ab46e197bc49e1803fb6061f43dd7001a349" },
+    { "path": "openspec/changes/fix-parent-pages-contract/tasks.md", "sha256": "e63aae7bef73147ecc4ab78ae99b79d604bde50d63226595d4a50b098166d5d8" },
+    { "path": "openspec/changes/fix-parent-pages-contract/specs/parent-pages-contract/spec.md", "sha256": "0165d0da45eea287fa40d20a12d1e9e6c3459aec967aa5e483720981db9df95b" }
+  ]
+}

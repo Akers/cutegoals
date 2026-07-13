@@ -29,6 +29,25 @@ public class ChildProfileController {
     private final ChildProfileService childProfileService;
 
     /**
+     * GET /api/family/children - List active children of current family with pagination.
+     * Returns PageResult shape aligned with other parent endpoints (fix-parent-pages-contract DD1).
+     */
+    @GetMapping
+    public ResponseEntity<ApiResponse<Map<String, Object>>> listChildren(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "20") int pageSize,
+            HttpServletRequest request) {
+        String requestId = generateRequestId();
+        MDC.put("requestId", requestId);
+
+        getAccountId(request);
+        Long familyId = getFamilyId(request);
+
+        Map<String, Object> result = childProfileService.listChildrenPage(page, pageSize, familyId);
+        return ResponseEntity.ok(ApiResponse.success(result, requestId));
+    }
+
+    /**
      * POST /api/family/children - Create a child profile.
      */
     @PostMapping
