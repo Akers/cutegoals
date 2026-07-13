@@ -19,6 +19,7 @@ import {
   StatusBadge,
   TextArea,
 } from '@shared/components';
+import { useAuth } from '@shared/auth';
 import { useApi, useFormField } from '@shared/hooks/useApi';
 import { useOnline } from '@shared/theme';
 
@@ -40,7 +41,8 @@ interface Family {
 
 interface FamilyMember {
   id: number;
-  nickname: string;
+  accountId: number;
+  nickname?: string;
   role: 'PARENT' | 'CHILD';
   phone?: string;
 }
@@ -195,7 +197,7 @@ export function ParentHomePage() {
         <div className="grid grid-cols-1 gap-3">
           {data.members.map((member) => (
             <div key={member.id} className="flex items-center justify-between rounded-cg-md bg-cg-surface-raised p-3">
-              <div className="font-medium text-cg-text">{member.nickname}</div>
+              <div className="font-medium text-cg-text">{member.nickname ?? maskPhone(member.phone ?? '')}</div>
               <StatusBadge status={member.role === 'PARENT' ? 'approved' : 'pending'} />
             </div>
           ))}
@@ -209,8 +211,12 @@ export function ParentFamilyPage() {
   const { data, loading, error, refetch } = useApi<Family>('/family');
   const { items: invitations, refetch: refetchInvitations } = usePaginatedData<Invitation>('/family/invitations');
   const [showInvite, setShowInvite] = useState(false);
+  const [confirm, setConfirm] = useState<{ type: 'remove' | 'leave'; member?: FamilyMember } | null>(null);
+  const [actionLoading, setActionLoading] = useState(false);
+  const [actionError, setActionError] = useState<string | null>(null);
   const phone = useFormField();
   const online = useOnline();
+  const { account } = useAuth();
   const [sending, setSending] = useState(false);
 
   const handleInvite = async () => {
@@ -220,6 +226,34 @@ export function ParentFamilyPage() {
     setShowInvite(false);
     phone.reset();
     await refetchInvitations();
+  };
+
+  const handleRemove = async (member: FamilyMember) => {
+    setActionLoading(true);
+    setActionError(null);
+    try {
+      await getClient().delete(`/family/members/${member.id}`);
+      await refetch();
+    } catch (err: any) {
+      setActionError(err.message ?? '移除失败');
+    } finally {
+      setActionLoading(false);
+      setConfirm(null);
+    }
+  };
+
+  const handleLeave = async () => {
+    setActionLoading(true);
+    setActionError(null);
+    try {
+      await getClient().post('/family/members/me/leave');
+      await refetch();
+    } catch (err: any) {
+      setActionError(err.message ?? '退出失败');
+    } finally {
+      setActionLoading(false);
+      setConfirm(null);
+    }
   };
 
   if (!online) return <PageShell title="家庭"><OfflineState onRetry={refetch} /></PageShell>;
@@ -238,15 +272,31 @@ export function ParentFamilyPage() {
     >
       <CardSection title="家庭成员">
         <div className="grid grid-cols-1 gap-3">
-          {data.members.map((member) => (
-            <div key={member.id} className="flex items-center justify-between rounded-cg-md bg-cg-surface-raised p-3">
-              <div>
-                <div className="font-medium text-cg-text">{member.nickname}</div>
-                {member.phone && <div className="text-xs text-cg-text-muted">{maskPhone(member.phone)}</div>}
+          {data.members.map((member) => {
+            const isSelf = account != null && member.accountId === Number(account.accountId);
+            const canRemove = member.role === 'PARENT' && !isSelf;
+            return (
+              <div key={member.id} className="flex items-center justify-between rounded-cg-md bg-cg-surface-raised p-3">
+                <div>
+                  <div className="font-medium text-cg-text">{member.nickname ?? maskPhone(member.phone ?? '')}</div>
+                  {member.phone && <div className="text-xs text-cg-text-muted">{maskPhone(member.phone)}</div>}
+                </div>
+                <div className="flex items-center gap-2">
+                  <StatusBadge status={member.role === 'PARENT' ? 'approved' : 'pending'} />
+                  {isSelf && (
+                    <Button variant="danger" size="sm" onClick={() => setConfirm({ type: 'leave' })} isLoading={actionLoading}>
+                      退出家庭
+                    </Button>
+                  )}
+                  {canRemove && (
+                    <Button variant="danger" size="sm" onClick={() => setConfirm({ type: 'remove', member })} isLoading={actionLoading}>
+                      移除
+                    </Button>
+                  )}
+                </div>
               </div>
-              <StatusBadge status={member.role === 'PARENT' ? 'approved' : 'pending'} />
-            </div>
-          ))}
+            );
+          })}
         </div>
       </CardSection>
 
@@ -268,6 +318,10 @@ export function ParentFamilyPage() {
         )}
       </CardSection>
 
+      {actionError && (
+        <div className="text-sm text-red-600">{actionError}</div>
+      )}
+
       <Modal isOpen={showInvite} onClose={() => setShowInvite(false)} title="邀请家长">
         <form className="flex flex-col gap-4">
           <FormField label="被邀请人手机号" htmlFor="invite-phone">
@@ -278,6 +332,27 @@ export function ParentFamilyPage() {
           </Button>
         </form>
       </Modal>
+
+      <ConfirmModal
+        isOpen={confirm != null}
+        onClose={() => setConfirm(null)}
+        title={confirm?.type === 'leave' ? '退出家庭' : '移除成员'}
+        message={
+          confirm?.type === 'leave'
+            ? '退出后你将无法管理该家庭，是否继续？'
+            : '移除后该家长将无法管理此家庭，是否继续？'
+        }
+        confirmText={confirm?.type === 'leave' ? '退出' : '移除'}
+        confirmVariant="danger"
+        onConfirm={() => {
+          if (confirm?.type === 'leave') {
+            handleLeave();
+          } else if (confirm?.member) {
+            handleRemove(confirm.member);
+          }
+        }}
+        isConfirming={actionLoading}
+      />
     </PageShell>
   );
 }

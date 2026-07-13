@@ -1,5 +1,6 @@
 package com.cutegoals.family.service;
 
+import com.cutegoals.auth.mapper.AccountMapper;
 import com.cutegoals.auth.mapper.FamilyMapper;
 import com.cutegoals.auth.mapper.FamilyMemberMapper;
 import com.cutegoals.auth.service.AuditEvent;
@@ -30,6 +31,7 @@ public class FamilyService {
 
     private static final Logger log = LoggerFactory.getLogger(FamilyService.class);
 
+    private final AccountMapper accountMapper;
     private final FamilyMapper familyMapper;
     private final FamilyMemberMapper familyMemberMapper;
     private final ChildProfileMapper childProfileMapper;
@@ -68,6 +70,7 @@ public class FamilyService {
             memberInfo.put("accountId", m.getAccountId());
             memberInfo.put("role", m.getRole());
             memberInfo.put("status", m.getStatus());
+            accountMapper.findById(m.getAccountId()).ifPresent(account -> memberInfo.put("phone", account.getPhone()));
             memberList.add(memberInfo);
         }
         result.put("members", memberList);
