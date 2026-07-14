@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getClient } from '@shared/api';
+import type { TaskTypeValue } from '@shared/api/types';
 import {
   Button,
   CardSection,
@@ -22,6 +23,8 @@ import {
 import { useAuth } from '@shared/auth';
 import { useApi, useFormField } from '@shared/hooks/useApi';
 import { useOnline } from '@shared/theme';
+import { TaskTypeConfigForms, type TypeConfigValue } from '@parent/components/TaskTypeConfigForms';
+import { TaskTypeFilter } from '@parent/components/TaskTypeFilter';
 
 // 后端分页响应统一契约：{content,page,pageSize,totalElements,totalPages}
 interface PageResult<T> {
@@ -82,6 +85,8 @@ interface TaskTemplate {
   enabled: boolean;
   version: number;
   recurrenceRule?: { ruleType: string };
+  taskType: TaskTypeValue;
+  typeConfig: string; // JSON string
 }
 
 interface TaskAssignment {
@@ -156,10 +161,17 @@ function PageShell({
   );
 }
 
-function usePaginatedData<T>(path: string) {
+function usePaginatedData<T>(path: string, filters?: Record<string, string>) {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
-  const { data, loading, error, refetch } = useApi<PageResult<T>>(`${path}?page=${page}&pageSize=${pageSize}`);
+  const filterString = filters
+    ? '&' + Object.entries(filters)
+        .map(([k, v]) => `${k}=${encodeURIComponent(v)}`)
+        .join('&')
+    : '';
+  const { data, loading, error, refetch } = useApi<PageResult<T>>(
+    `${path}?page=${page}&pageSize=${pageSize}${filterString}`,
+  );
   return {
     items: data?.content ?? [],
     total: data?.totalElements ?? 0,
@@ -582,15 +594,20 @@ export function ParentChildrenPage() {
 }
 
 export function ParentTemplatesPage() {
-  const { items, loading, error, refetch } = usePaginatedData<TaskTemplate>('/task-templates');
   const [showModal, setShowModal] = useState(false);
   const [editing, setEditing] = useState<TaskTemplate | null>(null);
   const title = useFormField();
   const description = useFormField();
   const category = useFormField();
   const basePoints = useFormField('10');
+  const [taskType, setTaskType] = useState<TaskTypeValue | ''>('');
+  const [typeConfig, setTypeConfig] = useState<TypeConfigValue>({});
+  const [selectedTypes, setSelectedTypes] = useState<TaskTypeValue[]>([]);
   const online = useOnline();
   const [saving, setSaving] = useState(false);
+
+  const filterParams = selectedTypes.length > 0 ? { taskType: selectedTypes.join(',') } : undefined;
+  const { items, loading, error, refetch } = usePaginatedData<TaskTemplate>('/task-templates', filterParams);
 
   const openNew = () => {
     setEditing(null);
@@ -598,6 +615,8 @@ export function ParentTemplatesPage() {
     description.reset();
     category.reset();
     basePoints.setValue('10');
+    setTaskType('');
+    setTypeConfig({});
     setShowModal(true);
   };
 
@@ -607,6 +626,13 @@ export function ParentTemplatesPage() {
     description.setValue(t.description ?? '');
     category.setValue(t.category ?? '');
     basePoints.setValue(String(t.difficulties?.[0]?.rewardPoints ?? 10));
+    setTaskType(t.taskType ?? '');
+    try {
+      const parsed = t.typeConfig ? JSON.parse(t.typeConfig) : {};
+      setTypeConfig(parsed);
+    } catch {
+      setTypeConfig({});
+    }
     setShowModal(true);
   };
 
@@ -620,6 +646,11 @@ export function ParentTemplatesPage() {
         { name: '标准', displayOrder: 1, rewardPoints: Number(basePoints.value) || 1, enabled: true },
       ],
     };
+    // 添加任务类型和配置
+    if (taskType) {
+      payload.taskType = taskType;
+      payload.typeConfig = JSON.stringify(typeConfig);
+    }
     if (editing) {
       payload.version = editing.version;
       const res = await getClient().put(`/task-templates/${editing.id}`, payload);
@@ -651,6 +682,9 @@ export function ParentTemplatesPage() {
         </Button>
       }
     >
+      {/* 任务类型筛选器 */}
+      <TaskTypeFilter selected={selectedTypes} onChange={setSelectedTypes} />
+
       <div className="grid grid-cols-1 gap-3">
         {items.map((t) => (
           <div key={t.id} className="cg-card p-4">
@@ -661,6 +695,11 @@ export function ParentTemplatesPage() {
                 <div className="mt-1 flex gap-2 text-sm">
                   <span className="rounded-cg-sm bg-cg-surface-raised px-2 py-0.5">{t.category}</span>
                   <span className="rounded-cg-sm bg-cg-surface-raised px-2 py-0.5">{t.difficulties?.[0]?.rewardPoints ?? '-'} 积分</span>
+                  {t.taskType && (
+                    <span className="rounded-cg-sm bg-cg-surface-raised px-2 py-0.5">
+                      {t.taskType === 'LIMITED' ? '限时' : t.taskType === 'REPEAT' ? '重复' : '常驻'}
+                    </span>
+                  )}
                 </div>
               </div>
               <div className="flex gap-2">
@@ -692,6 +731,15 @@ export function ParentTemplatesPage() {
           <FormField label="基础积分" htmlFor="tpl-points">
             <Input id="tpl-points" type="number" {...basePoints.inputProps} />
           </FormField>
+
+          {/* 任务类型选择器和配置表单 */}
+          <TaskTypeConfigForms
+            taskType={taskType}
+            onTaskTypeChange={setTaskType}
+            typeConfig={typeConfig}
+            onTypeConfigChange={setTypeConfig}
+          />
+
           <Button onClick={handleSave} isLoading={saving} type="button" className="w-full">
             保存
           </Button>

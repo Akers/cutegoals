@@ -46,8 +46,9 @@ export function useApi<T>(path: string, options: UseApiOptions = {}): UseApiResu
 
   useEffect(() => {
     if (skip) return;
+    pathRef.current = path;
     fetchData();
-  }, [skip, fetchData]);
+  }, [skip, fetchData, path]);
 
   return { data, loading, error, refetch: fetchData };
 }

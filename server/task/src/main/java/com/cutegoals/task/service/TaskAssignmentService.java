@@ -335,6 +335,8 @@ public class TaskAssignmentService {
         assignment.setSnapshotTemplateDescription(template.getDescription());
         assignment.setSnapshotTemplateCategory(template.getCategory());
         assignment.setSnapshotTemplateIcon(template.getIcon());
+        assignment.setSnapshotTemplateTaskType(template.getTaskType());
+        assignment.setSnapshotTemplateTypeConfig(template.getTypeConfig());
         assignment.setSnapshotDifficultyName(difficulty.getName());
         assignment.setSnapshotDifficultyReward(difficulty.getRewardPoints());
 
@@ -702,6 +704,8 @@ public class TaskAssignmentService {
         item.put("snapshotTemplateDescription", assignment.getSnapshotTemplateDescription());
         item.put("snapshotTemplateCategory", assignment.getSnapshotTemplateCategory());
         item.put("snapshotTemplateIcon", assignment.getSnapshotTemplateIcon());
+        item.put("snapshotTemplateTaskType", assignment.getSnapshotTemplateTaskType());
+        item.put("snapshotTemplateTypeConfig", assignment.getSnapshotTemplateTypeConfig());
         item.put("snapshotDifficultyName", assignment.getSnapshotDifficultyName());
         item.put("snapshotDifficultyReward", assignment.getSnapshotDifficultyReward());
 

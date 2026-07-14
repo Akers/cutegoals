@@ -131,7 +131,13 @@ public class GlobalExceptionHandler {
             case TASK_TEMPLATE_REQUIRES_ACTIVE_DIFFICULTY -> HttpStatus.CONFLICT;
             case TASK_TEMPLATE_VERSION_CONFLICT -> HttpStatus.CONFLICT;
             case TASK_TEMPLATE_INACTIVE -> HttpStatus.GONE;
+            case TASK_TEMPLATE_TYPE_IMMUTABLE -> HttpStatus.CONFLICT;
             case TASK_TEMPLATE_INVALID_QUERY -> HttpStatus.BAD_REQUEST;
+            // Task Type errors
+            case TASK_LIMITED_NOT_STARTED -> HttpStatus.CONFLICT;
+            case TASK_LIMITED_EXPIRED -> HttpStatus.GONE;
+            case TASK_STANDING_LIMIT_REACHED -> HttpStatus.CONFLICT;
+            case TASK_REPEAT_NOT_TRIGGER_DAY -> HttpStatus.CONFLICT;
             // Task Assignment errors
             case TASK_ASSIGNMENT_FORBIDDEN -> HttpStatus.FORBIDDEN;
             case TASK_ASSIGNMENT_NOT_FOUND -> HttpStatus.NOT_FOUND;

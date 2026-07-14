@@ -663,7 +663,7 @@ class TaskReviewServiceTest {
 
         BusinessException ex = assertThrows(BusinessException.class,
                 () -> taskReviewService.submitTask(request, childId, familyId, accountId));
-        assertEquals(ErrorCode.TASK_ASSIGNMENT_STANDING_LIMIT_REACHED, ex.getErrorCode());
+        assertEquals(ErrorCode.TASK_STANDING_LIMIT_REACHED, ex.getErrorCode());
     }
 
     // ========== Task 11.3: LIMITED ==========
@@ -684,7 +684,7 @@ class TaskReviewServiceTest {
 
         BusinessException ex = assertThrows(BusinessException.class,
                 () -> taskReviewService.submitTask(request, childId, familyId, accountId));
-        assertEquals(ErrorCode.TASK_TEMPLATE_LIMITED_NOT_STARTED, ex.getErrorCode());
+        assertEquals(ErrorCode.TASK_LIMITED_NOT_STARTED, ex.getErrorCode());
     }
 
     @Test
@@ -703,7 +703,7 @@ class TaskReviewServiceTest {
 
         BusinessException ex = assertThrows(BusinessException.class,
                 () -> taskReviewService.submitTask(request, childId, familyId, accountId));
-        assertEquals(ErrorCode.TASK_TEMPLATE_LIMITED_EXPIRED, ex.getErrorCode());
+        assertEquals(ErrorCode.TASK_LIMITED_EXPIRED, ex.getErrorCode());
     }
 
     @Test

@@ -59,8 +59,8 @@ class FlywayMigrationTest {
                 .load();
         MigrateResult result = flyway.migrate();
 
-        assertEquals(11, result.migrationsExecuted,
-                "Expected exactly 11 migrations (V1 through V11) to be executed");
+        assertEquals(12, result.migrationsExecuted,
+                "Expected exactly 12 migrations (V1 through V12) to be executed");
 
 
         // Verify all migration versions
@@ -82,6 +82,7 @@ class FlywayMigrationTest {
         assertTrue(versions.contains("9"), "V9 assignment occurrence_key unique constraint should be applied");
         assertTrue(versions.contains("10"), "V10 task type and type config should be applied");
         assertTrue(versions.contains("11"), "V11 frequency data migration should be applied");
+        assertTrue(versions.contains("12"), "V12 task type snapshot columns should be applied");
 
         // Verify reentrancy
         MigrateResult reentrantResult = flyway.migrate();
@@ -273,6 +274,16 @@ class FlywayMigrationTest {
 
             assertColumnExists(conn, "BLIND_BOX_ITEM", "WEIGHT",
                     "blind_box_item should have weight column");
+        }
+    }
+
+    @Test
+    void taskAssignmentShouldHaveV12SnapshotColumns() throws Exception {
+        try (Connection conn = newConnection()) {
+            assertColumnExists(conn, "TASK_ASSIGNMENT", "SNAPSHOT_TEMPLATE_TASK_TYPE",
+                    "task_assignment should have snapshot_template_task_type column (V12)");
+            assertColumnExists(conn, "TASK_ASSIGNMENT", "SNAPSHOT_TEMPLATE_TYPE_CONFIG",
+                    "task_assignment should have snapshot_template_type_config column (V12)");
         }
     }
 

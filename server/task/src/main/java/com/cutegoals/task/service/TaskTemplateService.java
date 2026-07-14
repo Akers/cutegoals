@@ -12,6 +12,8 @@ import com.cutegoals.common.entity.task.*;
 import com.cutegoals.common.exception.BusinessException;
 import com.cutegoals.common.exception.ErrorCode;
 import com.cutegoals.task.mapper.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,6 +43,7 @@ public class TaskTemplateService {
     private final FamilyMapper familyMapper;
     private final TaskChildMapper taskChildMapper;
     private final AuditService auditService;
+    private final ObjectMapper objectMapper;
 
     // Validation constants
     private static final int NAME_MAX_LENGTH = 100;
@@ -89,10 +92,14 @@ public class TaskTemplateService {
 
         // Task 11.6: Extract taskType and typeConfig
         String taskType = (String) request.get("taskType");
+        String typeConfig = (String) request.get("typeConfig");
+
+        // Task 2.1/2.2: Validate taskType and typeConfig
+        validateTypeConfig(taskType, typeConfig);
+
         if (taskType != null) {
             template.setTaskType(taskType);
         }
-        String typeConfig = (String) request.get("typeConfig");
         if (typeConfig != null) {
             template.setTypeConfig(typeConfig);
         }
@@ -236,6 +243,8 @@ public class TaskTemplateService {
         // Task 11.6: Update typeConfig if provided (taskType is immutable, but config can change)
         if (request.containsKey("typeConfig")) {
             String typeConfig = (String) request.get("typeConfig");
+            // Task 2.1/2.2: Validate new typeConfig against existing taskType
+            validateTypeConfig(template.getTaskType(), typeConfig);
             template.setTypeConfig(typeConfig);
         }
 
@@ -455,6 +464,27 @@ public class TaskTemplateService {
             }
         }
 
+        // Filter by taskType (comma-separated list)
+        if (params.containsKey("taskType")) {
+            String taskTypeStr = (String) params.get("taskType");
+            if (taskTypeStr != null && !taskTypeStr.isBlank()) {
+                List<String> taskTypes = Arrays.stream(taskTypeStr.split(","))
+                        .map(String::trim)
+                        .filter(s -> !s.isEmpty())
+                        .toList();
+                Set<String> validTypes = Set.of("LIMITED", "REPEAT", "STANDING");
+                for (String type : taskTypes) {
+                    if (!validTypes.contains(type)) {
+                        throw new BusinessException(ErrorCode.TASK_TEMPLATE_INVALID_QUERY,
+                                "Invalid taskType: " + type + ". Must be one of: LIMITED, REPEAT, STANDING");
+                    }
+                }
+                if (!taskTypes.isEmpty()) {
+                    wrapper.in(TaskTemplate::getTaskType, taskTypes);
+                }
+            }
+        }
+
         // Order by updated_at desc, id asc
         wrapper.orderByDesc(TaskTemplate::getUpdatedAt);
         wrapper.orderByAsc(TaskTemplate::getId);
@@ -532,6 +562,196 @@ public class TaskTemplateService {
     public void verifyParentRole(List<String> roles) {
         if (!roles.contains(AuthConstants.ROLE_PARENT) && !roles.contains(AuthConstants.ROLE_INSTANCE_ADMIN)) {
             throw new BusinessException(ErrorCode.TASK_TEMPLATE_FORBIDDEN);
+        }
+    }
+
+    // ========== Task 2.1/2.2: validateTypeConfig ==========
+
+    /**
+     * Validate taskType and typeConfig fields according to the business rules.
+     *
+     * @param taskType   the task type string (LIMITED, REPEAT, STANDING)
+     * @param typeConfig the type config JSON string
+     * @throws BusinessException with TASK_TEMPLATE_VALIDATION_FAILED on any validation failure
+     */
+    private void validateTypeConfig(String taskType, String typeConfig) {
+        // a. taskType is required
+        if (taskType == null || taskType.isBlank()) {
+            throw new BusinessException(ErrorCode.TASK_TEMPLATE_VALIDATION_FAILED, "taskType is required");
+        }
+
+        // b. taskType must be one of: LIMITED, REPEAT, STANDING
+        if (!Set.of("LIMITED", "REPEAT", "STANDING").contains(taskType)) {
+            throw new BusinessException(ErrorCode.TASK_TEMPLATE_VALIDATION_FAILED,
+                    "taskType must be one of: LIMITED, REPEAT, STANDING");
+        }
+
+        // c. typeConfig is required
+        if (typeConfig == null || typeConfig.isBlank()) {
+            throw new BusinessException(ErrorCode.TASK_TEMPLATE_VALIDATION_FAILED,
+                    "typeConfig is required for taskType: " + taskType);
+        }
+
+        // d. Parse JSON and validate sub-fields
+        Map<String, Object> config;
+        try {
+            @SuppressWarnings("unchecked")
+            Map<String, Object> parsed = objectMapper.readValue(typeConfig, Map.class);
+            config = parsed;
+        } catch (JsonProcessingException e) {
+            throw new BusinessException(ErrorCode.TASK_TEMPLATE_VALIDATION_FAILED,
+                    "typeConfig must be a valid JSON object", e);
+        }
+
+        switch (taskType) {
+            case "LIMITED" -> validateLimitedConfig(config);
+            case "REPEAT" -> validateRepeatConfig(config);
+            case "STANDING" -> validateStandingConfig(config);
+            default -> throw new BusinessException(ErrorCode.TASK_TEMPLATE_VALIDATION_FAILED,
+                    "Unsupported taskType: " + taskType);
+        }
+    }
+
+    /**
+     * Validate LIMITED typeConfig: must contain end_date; optional start_date; end_date >= start_date when both present.
+     */
+    private void validateLimitedConfig(Map<String, Object> config) {
+        // end_date is required
+        Object endDateObj = config.get("end_date");
+        if (endDateObj == null || String.valueOf(endDateObj).isBlank()) {
+            throw new BusinessException(ErrorCode.TASK_TEMPLATE_VALIDATION_FAILED,
+                    "LIMITED typeConfig requires end_date");
+        }
+
+        // start_date is optional
+        Object startDateObj = config.get("start_date");
+        if (startDateObj != null && !String.valueOf(startDateObj).isBlank()
+                && endDateObj != null && !String.valueOf(endDateObj).isBlank()) {
+            String startDate = String.valueOf(startDateObj);
+            String endDate = String.valueOf(endDateObj);
+            if (endDate.compareTo(startDate) < 0) {
+                throw new BusinessException(ErrorCode.TASK_TEMPLATE_VALIDATION_FAILED,
+                        "LIMITED typeConfig end_date must be >= start_date");
+            }
+        }
+    }
+
+    /**
+     * Validate REPEAT typeConfig: must contain frequency (DAILY/WEEKLY/MONTHLY/YEARLY);
+     * WEEKLY requires trigger_day.weekday (1-7); MONTHLY requires trigger_day.mode
+     * (FIRST_DAY/LAST_DAY/MID_MONTH); YEARLY requires trigger_day.month (1-12) and trigger_day.day (1-31).
+     */
+    private void validateRepeatConfig(Map<String, Object> config) {
+        // frequency is required
+        Object freqObj = config.get("frequency");
+        if (freqObj == null || String.valueOf(freqObj).isBlank()) {
+            throw new BusinessException(ErrorCode.TASK_TEMPLATE_VALIDATION_FAILED,
+                    "REPEAT typeConfig requires frequency");
+        }
+        String frequency = String.valueOf(freqObj);
+        if (!Set.of("DAILY", "WEEKLY", "MONTHLY", "YEARLY").contains(frequency)) {
+            throw new BusinessException(ErrorCode.TASK_TEMPLATE_VALIDATION_FAILED,
+                    "REPEAT typeConfig frequency must be one of: DAILY, WEEKLY, MONTHLY, YEARLY");
+        }
+
+        @SuppressWarnings("unchecked")
+        Map<String, Object> triggerDay = (Map<String, Object>) config.get("trigger_day");
+
+        switch (frequency) {
+            case "WEEKLY" -> validateWeeklyTriggerDay(triggerDay);
+            case "MONTHLY" -> validateMonthlyTriggerDay(triggerDay);
+            case "YEARLY" -> validateYearlyTriggerDay(triggerDay);
+            // DAILY: no additional sub-fields required
+            default -> { }
+        }
+    }
+
+    private void validateWeeklyTriggerDay(Map<String, Object> triggerDay) {
+        if (triggerDay == null || !triggerDay.containsKey("weekday") || triggerDay.get("weekday") == null) {
+            throw new BusinessException(ErrorCode.TASK_TEMPLATE_VALIDATION_FAILED,
+                    "WEEKLY frequency requires trigger_day.weekday");
+        }
+        int weekday;
+        try {
+            weekday = ((Number) triggerDay.get("weekday")).intValue();
+        } catch (ClassCastException e) {
+            throw new BusinessException(ErrorCode.TASK_TEMPLATE_VALIDATION_FAILED,
+                    "trigger_day.weekday must be a number between 1 and 7");
+        }
+        if (weekday < 1 || weekday > 7) {
+            throw new BusinessException(ErrorCode.TASK_TEMPLATE_VALIDATION_FAILED,
+                    "trigger_day.weekday must be between 1 (Monday) and 7 (Sunday)");
+        }
+    }
+
+    private void validateMonthlyTriggerDay(Map<String, Object> triggerDay) {
+        if (triggerDay == null || !triggerDay.containsKey("mode") || triggerDay.get("mode") == null) {
+            throw new BusinessException(ErrorCode.TASK_TEMPLATE_VALIDATION_FAILED,
+                    "MONTHLY frequency requires trigger_day.mode");
+        }
+        String mode = String.valueOf(triggerDay.get("mode"));
+        if (!Set.of("FIRST_DAY", "LAST_DAY", "MID_MONTH").contains(mode)) {
+            throw new BusinessException(ErrorCode.TASK_TEMPLATE_VALIDATION_FAILED,
+                    "trigger_day.mode must be one of: FIRST_DAY, LAST_DAY, MID_MONTH");
+        }
+    }
+
+    private void validateYearlyTriggerDay(Map<String, Object> triggerDay) {
+        if (triggerDay == null || !triggerDay.containsKey("month") || triggerDay.get("month") == null) {
+            throw new BusinessException(ErrorCode.TASK_TEMPLATE_VALIDATION_FAILED,
+                    "YEARLY frequency requires trigger_day.month");
+        }
+        if (!triggerDay.containsKey("day") || triggerDay.get("day") == null) {
+            throw new BusinessException(ErrorCode.TASK_TEMPLATE_VALIDATION_FAILED,
+                    "YEARLY frequency requires trigger_day.day");
+        }
+        int month;
+        int day;
+        try {
+            month = ((Number) triggerDay.get("month")).intValue();
+            day = ((Number) triggerDay.get("day")).intValue();
+        } catch (ClassCastException e) {
+            throw new BusinessException(ErrorCode.TASK_TEMPLATE_VALIDATION_FAILED,
+                    "trigger_day.month and trigger_day.day must be numbers");
+        }
+        if (month < 1 || month > 12) {
+            throw new BusinessException(ErrorCode.TASK_TEMPLATE_VALIDATION_FAILED,
+                    "trigger_day.month must be between 1 and 12");
+        }
+        if (day < 1 || day > 31) {
+            throw new BusinessException(ErrorCode.TASK_TEMPLATE_VALIDATION_FAILED,
+                    "trigger_day.day must be between 1 and 31");
+        }
+    }
+
+    /**
+     * Validate STANDING typeConfig: must contain max_submissions (null or 1-10000 positive integer).
+     */
+    private void validateStandingConfig(Map<String, Object> config) {
+        if (!config.containsKey("max_submissions")) {
+            throw new BusinessException(ErrorCode.TASK_TEMPLATE_VALIDATION_FAILED,
+                    "STANDING typeConfig requires max_submissions");
+        }
+        Object maxSubObj = config.get("max_submissions");
+        if (maxSubObj != null) {
+            int maxSubmissions;
+            try {
+                maxSubmissions = ((Number) maxSubObj).intValue();
+            } catch (ClassCastException e) {
+                throw new BusinessException(ErrorCode.TASK_TEMPLATE_VALIDATION_FAILED,
+                        "max_submissions must be a number or null");
+            }
+            if (maxSubmissions < 1 || maxSubmissions > 10000) {
+                throw new BusinessException(ErrorCode.TASK_TEMPLATE_VALIDATION_FAILED,
+                        "max_submissions must be between 1 and 10000, or null");
+            }
+            if (maxSubObj instanceof Double || maxSubObj instanceof Float) {
+                double doubleVal = ((Number) maxSubObj).doubleValue();
+                if (doubleVal != Math.floor(doubleVal)) {
+                    throw new BusinessException(ErrorCode.TASK_TEMPLATE_VALIDATION_FAILED,
+                            "max_submissions must be an integer");
+                }
+            }
         }
     }
 

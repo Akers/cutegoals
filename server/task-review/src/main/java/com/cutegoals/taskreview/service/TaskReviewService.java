@@ -175,11 +175,11 @@ public class TaskReviewService {
             LocalDateTime limitedStart = parseLimitedDate(template.getTypeConfig(), "start_date");
             LocalDateTime limitedEnd = parseLimitedDate(template.getTypeConfig(), "end_date");
             if (limitedStart != null && now.isBefore(limitedStart)) {
-                throw new BusinessException(ErrorCode.TASK_TEMPLATE_LIMITED_NOT_STARTED,
+                throw new BusinessException(ErrorCode.TASK_LIMITED_NOT_STARTED,
                         "This LIMITED task has not started yet (starts at: " + limitedStart + ")");
             }
             if (limitedEnd != null && now.isAfter(limitedEnd)) {
-                throw new BusinessException(ErrorCode.TASK_TEMPLATE_LIMITED_EXPIRED,
+                throw new BusinessException(ErrorCode.TASK_LIMITED_EXPIRED,
                         "This LIMITED task has expired (ended at: " + limitedEnd + ")");
             }
         }
@@ -188,7 +188,7 @@ public class TaskReviewService {
             Integer currentCount = assignment.getSubmissionCount();
             Integer maxSubmissions = parseMaxSubmissions(template.getTypeConfig());
             if (maxSubmissions != null && currentCount != null && currentCount >= maxSubmissions) {
-                throw new BusinessException(ErrorCode.TASK_ASSIGNMENT_STANDING_LIMIT_REACHED,
+                throw new BusinessException(ErrorCode.TASK_STANDING_LIMIT_REACHED,
                         "Maximum submissions reached for this STANDING task");
             }
         }

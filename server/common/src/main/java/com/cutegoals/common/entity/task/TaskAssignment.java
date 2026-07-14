@@ -75,6 +75,12 @@ public class TaskAssignment {
     @TableField("snapshot_difficulty_reward")
     private Integer snapshotDifficultyReward;
 
+    @TableField("snapshot_template_task_type")
+    private String snapshotTemplateTaskType;
+
+    @TableField("snapshot_template_type_config")
+    private String snapshotTemplateTypeConfig;
+
     @TableField("submission_count")
     private Integer submissionCount;
 
