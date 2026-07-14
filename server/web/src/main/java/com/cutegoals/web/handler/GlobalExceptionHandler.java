@@ -131,6 +131,7 @@ public class GlobalExceptionHandler {
             case TASK_TEMPLATE_REQUIRES_ACTIVE_DIFFICULTY -> HttpStatus.CONFLICT;
             case TASK_TEMPLATE_VERSION_CONFLICT -> HttpStatus.CONFLICT;
             case TASK_TEMPLATE_INACTIVE -> HttpStatus.GONE;
+            case TASK_TEMPLATE_TYPE_IMMUTABLE -> HttpStatus.CONFLICT;
             case TASK_TEMPLATE_INVALID_QUERY -> HttpStatus.BAD_REQUEST;
             // Task Assignment errors
             case TASK_ASSIGNMENT_FORBIDDEN -> HttpStatus.FORBIDDEN;
