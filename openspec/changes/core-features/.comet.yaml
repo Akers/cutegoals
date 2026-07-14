@@ -1,6 +1,6 @@
 workflow: full
 language: zh-CN
-phase: build
+phase: verify
 context_compression: off
 build_mode: subagent-driven-development
 build_pause: null
@@ -8,7 +8,7 @@ subagent_dispatch: confirmed
 tdd_mode: tdd
 review_mode: standard
 isolation: branch
-verify_mode: null
+verify_mode: full
 auto_transition: true
 base_ref: 1ee61b63fa21919e0a5c4255ab694d90e5f55c2c
 design_doc: docs/superpowers/specs/2026-07-10-core-features-design.md
