@@ -464,6 +464,27 @@ public class TaskTemplateService {
             }
         }
 
+        // Filter by taskType (comma-separated list)
+        if (params.containsKey("taskType")) {
+            String taskTypeStr = (String) params.get("taskType");
+            if (taskTypeStr != null && !taskTypeStr.isBlank()) {
+                List<String> taskTypes = Arrays.stream(taskTypeStr.split(","))
+                        .map(String::trim)
+                        .filter(s -> !s.isEmpty())
+                        .toList();
+                Set<String> validTypes = Set.of("LIMITED", "REPEAT", "STANDING");
+                for (String type : taskTypes) {
+                    if (!validTypes.contains(type)) {
+                        throw new BusinessException(ErrorCode.TASK_TEMPLATE_INVALID_QUERY,
+                                "Invalid taskType: " + type + ". Must be one of: LIMITED, REPEAT, STANDING");
+                    }
+                }
+                if (!taskTypes.isEmpty()) {
+                    wrapper.in(TaskTemplate::getTaskType, taskTypes);
+                }
+            }
+        }
+
         // Order by updated_at desc, id asc
         wrapper.orderByDesc(TaskTemplate::getUpdatedAt);
         wrapper.orderByAsc(TaskTemplate::getId);

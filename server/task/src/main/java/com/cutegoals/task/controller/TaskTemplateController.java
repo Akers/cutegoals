@@ -80,6 +80,7 @@ public class TaskTemplateController {
             @RequestParam(required = false) Boolean enabled,
             @RequestParam(required = false) Boolean includeDeleted,
             @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String taskType,
             HttpServletRequest httpRequest) {
         String requestId = generateRequestId();
         MDC.put("requestId", requestId);
@@ -96,6 +97,7 @@ public class TaskTemplateController {
         if (enabled != null) params.put("enabled", enabled);
         if (includeDeleted != null) params.put("includeDeleted", includeDeleted);
         if (keyword != null) params.put("keyword", keyword);
+        if (taskType != null) params.put("taskType", taskType);
 
         Map<String, Object> data = taskTemplateService.queryTemplates(params, familyId);
         return ResponseEntity.ok(ApiResponse.success(data, requestId));

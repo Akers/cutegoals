@@ -16,6 +16,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -554,6 +557,69 @@ class TaskTemplateServiceTest {
     void shouldRejectInvalidPageSize() {
         Map<String, Object> params = new LinkedHashMap<>();
         params.put("pageSize", 101);
+
+        BusinessException e = assertThrows(BusinessException.class,
+                () -> taskTemplateService.queryTemplates(params, familyId));
+        assertEquals(ErrorCode.TASK_TEMPLATE_INVALID_QUERY, e.getErrorCode());
+    }
+
+    // ========== Task 2.3: taskType filter ==========
+
+    @Test
+    void shouldReturnAllTemplatesWhenNoTaskTypeFilter() {
+        Page<TaskTemplate> page = createSamplePage(createTemplatesOfAllTypes());
+        when(taskTemplateMapper.selectPage(any(Page.class), any(LambdaQueryWrapper.class))).thenReturn(page);
+
+        Map<String, Object> params = new LinkedHashMap<>();
+        Map<String, Object> result = taskTemplateService.queryTemplates(params, familyId);
+
+        assertNotNull(result);
+        assertNotNull(result.get("content"));
+        verify(taskTemplateMapper).selectPage(any(Page.class), any(LambdaQueryWrapper.class));
+    }
+
+    @Test
+    void shouldFilterBySingleTaskType() {
+        Page<TaskTemplate> page = createSamplePage(List.of(createTemplate("REPEAT")));
+        when(taskTemplateMapper.selectPage(any(Page.class), any(LambdaQueryWrapper.class))).thenReturn(page);
+
+        Map<String, Object> params = new LinkedHashMap<>();
+        params.put("taskType", "REPEAT");
+        Map<String, Object> result = taskTemplateService.queryTemplates(params, familyId);
+
+        assertNotNull(result);
+        assertNotNull(result.get("content"));
+        verify(taskTemplateMapper).selectPage(any(Page.class), any(LambdaQueryWrapper.class));
+    }
+
+    @Test
+    void shouldFilterByMultipleTaskTypes() {
+        Page<TaskTemplate> page = createSamplePage(createTemplatesOfAllTypes());
+        when(taskTemplateMapper.selectPage(any(Page.class), any(LambdaQueryWrapper.class))).thenReturn(page);
+
+        Map<String, Object> params = new LinkedHashMap<>();
+        params.put("taskType", "LIMITED,STANDING");
+        Map<String, Object> result = taskTemplateService.queryTemplates(params, familyId);
+
+        assertNotNull(result);
+        assertNotNull(result.get("content"));
+        verify(taskTemplateMapper).selectPage(any(Page.class), any(LambdaQueryWrapper.class));
+    }
+
+    @Test
+    void shouldRejectUnknownTaskType() {
+        Map<String, Object> params = new LinkedHashMap<>();
+        params.put("taskType", "UNKNOWN");
+
+        BusinessException e = assertThrows(BusinessException.class,
+                () -> taskTemplateService.queryTemplates(params, familyId));
+        assertEquals(ErrorCode.TASK_TEMPLATE_INVALID_QUERY, e.getErrorCode());
+    }
+
+    @Test
+    void shouldRejectWhenAnyTaskTypeIsUnknown() {
+        Map<String, Object> params = new LinkedHashMap<>();
+        params.put("taskType", "LIMITED,UNKNOWN,STANDING");
 
         BusinessException e = assertThrows(BusinessException.class,
                 () -> taskTemplateService.queryTemplates(params, familyId));
@@ -1109,5 +1175,36 @@ class TaskTemplateServiceTest {
         diff.put("rewardPoints", 10);
         list.add(diff);
         return list;
+    }
+
+    // ========== Task 2.3: Helper methods ==========
+
+    private TaskTemplate createTemplate(String taskType) {
+        TaskTemplate t = new TaskTemplate();
+        t.setId(new Random().nextLong(1000) + 10);
+        t.setFamilyId(familyId);
+        t.setName("Template " + taskType);
+        t.setCategory("Test");
+        t.setDescription("Description for " + taskType);
+        t.setIcon("/icon.png");
+        t.setEnabled(true);
+        t.setDeleted(false);
+        t.setVersion(1);
+        t.setTaskType(taskType);
+        t.setTypeConfig(null);
+        t.setCreatedAt(LocalDateTime.now());
+        t.setUpdatedAt(LocalDateTime.now());
+        return t;
+    }
+
+    private List<TaskTemplate> createTemplatesOfAllTypes() {
+        return List.of(createTemplate("LIMITED"), createTemplate("REPEAT"), createTemplate("STANDING"));
+    }
+
+    private Page<TaskTemplate> createSamplePage(List<TaskTemplate> records) {
+        Page<TaskTemplate> page = new Page<>(1, records.size(), records.size());
+        // Use commons-lang3 or just add via records field
+        page.setRecords(records);
+        return page;
     }
 }
