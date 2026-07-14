@@ -68,19 +68,20 @@ interface ChildProfile {
 interface Difficulty {
   id: number;
   name: string;
-  points: number;
+  rewardPoints: number;
+  displayOrder: number;
   enabled: boolean;
 }
 
 interface TaskTemplate {
   id: number;
-  title: string;
+  name: string;
   description: string;
   category: string;
-  basePoints: number;
   difficulties: Difficulty[];
   enabled: boolean;
-  recurrence: string;
+  version: number;
+  recurrenceRule?: { ruleType: string };
 }
 
 interface TaskAssignment {
@@ -602,25 +603,30 @@ export function ParentTemplatesPage() {
 
   const openEdit = (t: TaskTemplate) => {
     setEditing(t);
-    title.setValue(t.title);
-    description.setValue(t.description);
-    category.setValue(t.category);
-    basePoints.setValue(String(t.basePoints));
+    title.setValue(t.name);
+    description.setValue(t.description ?? '');
+    category.setValue(t.category ?? '');
+    basePoints.setValue(String(t.difficulties?.[0]?.rewardPoints ?? 10));
     setShowModal(true);
   };
 
   const handleSave = async () => {
     setSaving(true);
-    const payload = {
-      title: title.value,
+    const payload: Record<string, unknown> = {
+      name: title.value,
       description: description.value,
       category: category.value,
-      basePoints: Number(basePoints.value),
+      difficulties: [
+        { name: '标准', displayOrder: 1, rewardPoints: Number(basePoints.value) || 1, enabled: true },
+      ],
     };
     if (editing) {
-      await getClient().put(`/task-templates/${editing.id}`, payload);
+      payload.version = editing.version;
+      const res = await getClient().put(`/task-templates/${editing.id}`, payload);
+      if (res.error) { setSaving(false); alert(res.error.message ?? '保存失败'); return; }
     } else {
-      await getClient().post('/task-templates', payload);
+      const res = await getClient().post('/task-templates', payload);
+      if (res.error) { setSaving(false); alert(res.error.message ?? '保存失败'); return; }
     }
     setSaving(false);
     setShowModal(false);
@@ -650,11 +656,11 @@ export function ParentTemplatesPage() {
           <div key={t.id} className="cg-card p-4">
             <div className="flex items-start justify-between">
               <div>
-                <div className="font-medium text-cg-text">{t.title}</div>
+                <div className="font-medium text-cg-text">{t.name}</div>
                 <p className="text-sm text-cg-text-muted">{t.description}</p>
                 <div className="mt-1 flex gap-2 text-sm">
                   <span className="rounded-cg-sm bg-cg-surface-raised px-2 py-0.5">{t.category}</span>
-                  <span className="rounded-cg-sm bg-cg-surface-raised px-2 py-0.5">{t.basePoints} 积分</span>
+                  <span className="rounded-cg-sm bg-cg-surface-raised px-2 py-0.5">{t.difficulties?.[0]?.rewardPoints ?? '-'} 积分</span>
                 </div>
               </div>
               <div className="flex gap-2">
@@ -771,7 +777,7 @@ export function ParentTasksPage() {
               <option value="">请选择模板</option>
               {(templates?.content ?? []).map((t) => (
                 <option key={t.id} value={t.id}>
-                  {t.title}
+                  {t.name}
                 </option>
               ))}
             </Select>
