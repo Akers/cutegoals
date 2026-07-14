@@ -15,7 +15,7 @@
 
 ### Modified Capabilities
 
-无需求变更，仅 SQL 语法兼容性修复。本 hotfix 不创建 delta spec。
+- `task-template`: 添加对 Flyway 迁移脚本 PostgreSQL/H2 双兼容的验收要求。本 hotfix 不修改任务模板业务行为，仅修复 V11 迁移脚本的数据库兼容性。需创建 delta spec。
 
 ## Impact
 
