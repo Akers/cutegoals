@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
+import java.util.List;
 import java.util.Optional;
 
 @Mapper
@@ -23,4 +24,7 @@ public interface TaskTemplateMapper extends BaseMapper<TaskTemplate> {
 
     @Update("UPDATE task_template SET version = version + 1, updated_at = NOW() WHERE id = #{id} AND version = #{version}")
     int optimisticUpdate(@Param("id") Long id, @Param("version") Integer version);
+
+    @Select("SELECT * FROM task_template WHERE task_type = 'REPEAT' AND enabled = true AND deleted = false")
+    List<TaskTemplate> findEnabledRepeatTemplates();
 }

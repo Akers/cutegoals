@@ -3,11 +3,13 @@ package com.cutegoals.web;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
  * CuteGoals 2.0 Server main application entry point.
  */
 @SpringBootApplication(scanBasePackages = "com.cutegoals")
+@EnableScheduling
 @MapperScan({
         "com.cutegoals.auth.mapper",
         "com.cutegoals.family.mapper",

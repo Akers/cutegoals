@@ -10,6 +10,7 @@ import com.cutegoals.common.entity.family.ChildProfile;
 import com.cutegoals.common.entity.points.PointsBalance;
 import com.cutegoals.common.entity.points.PointsLedger;
 import com.cutegoals.common.entity.task.TaskAssignment;
+import com.cutegoals.common.entity.task.TaskAssignmentSnapshot;
 import com.cutegoals.common.entity.task.TaskAttempt;
 import com.cutegoals.common.entity.task.TaskReview;
 import com.cutegoals.common.entity.task.TaskTemplate;
@@ -18,8 +19,10 @@ import com.cutegoals.common.exception.ErrorCode;
 import com.cutegoals.points.mapper.PointsBalanceMapper;
 import com.cutegoals.points.mapper.PointsLedgerMapper;
 import com.cutegoals.task.mapper.TaskAssignmentMapper;
+import com.cutegoals.task.mapper.TaskAssignmentSnapshotMapper;
 import com.cutegoals.task.mapper.TaskChildMapper;
 import com.cutegoals.task.mapper.TaskTemplateMapper;
+import com.cutegoals.task.service.TaskTemplateFrequencyService;
 import com.cutegoals.taskreview.mapper.TaskAttemptMapper;
 import com.cutegoals.taskreview.mapper.TaskReviewMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -56,6 +59,8 @@ public class TaskReviewService {
     private final PointsBalanceMapper pointsBalanceMapper;
     private final AuditService auditService;
     private final TaskTemplateMapper taskTemplateMapper;
+    private final TaskAssignmentSnapshotMapper taskAssignmentSnapshotMapper;
+    private final TaskTemplateFrequencyService taskTemplateFrequencyService;
     private final ObjectMapper objectMapper;
 
     private static final int DEFAULT_PAGE_SIZE = 20;
@@ -420,29 +425,56 @@ public class TaskReviewService {
                     "This attempt has already been reviewed");
         }
 
-        // Update assignment status to APPROVED
-        assignment.setStatus("APPROVED");
-
-        // Task 11.3: STANDING type — increment submission_count
+        // Fetch template for task-type-specific logic
         TaskTemplate template = taskTemplateMapper.findById(assignment.getTemplateId())
                 .orElse(null);
-        boolean standingCompleted = false;
-        if (template != null && "STANDING".equals(template.getTaskType())) {
-            int currentCount = assignment.getSubmissionCount() != null ? assignment.getSubmissionCount() : 0;
-            int newCount = currentCount + 1;
-            assignment.setSubmissionCount(newCount);
-            Integer maxSubmissions = parseMaxSubmissions(template.getTypeConfig());
-            if (maxSubmissions != null && newCount >= maxSubmissions) {
-                assignment.setStatus("COMPLETED");
-                standingCompleted = true;
+
+        // Task 11.4: REPEAT type — complete current assignment, create next period
+        boolean repeatHandled = false;
+        if (template != null && "REPEAT".equals(template.getTaskType())) {
+            assignment.setStatus("COMPLETED");
+            taskAssignmentMapper.updateById(assignment);
+
+            LocalDate fromDate = assignment.getDeadline() != null
+                    ? assignment.getDeadline().toLocalDate()
+                    : LocalDate.now();
+            Optional<LocalDate> nextDate = taskTemplateFrequencyService.nextTriggerDate(
+                    template.getTypeConfig(), fromDate);
+
+            if (nextDate.isPresent()) {
+                createRepeatAssignment(template, assignment, nextDate.get(), familyId);
+                auditService.record(AuditEvent.REPEAT_ASSIGNMENT_CREATED, accountId, "SUCCESS",
+                        "REPEAT next period created: templateId=" + template.getId()
+                                + ", childId=" + assignment.getChildId()
+                                + ", nextDate=" + nextDate.get());
             }
+            repeatHandled = true;
+            log.info("REPEAT task completed: assignmentId={}, nextTrigger={}",
+                    assignment.getId(), nextDate.orElse(null));
         }
 
-        taskAssignmentMapper.updateById(assignment);
+        // Task 11.3: STANDING type — increment submission_count
+        if (!repeatHandled) {
+            assignment.setStatus("APPROVED");
 
-        if (standingCompleted) {
-            log.info("STANDING task completed: assignmentId={}, submissions={}",
-                    assignment.getId(), assignment.getSubmissionCount());
+            boolean standingCompleted = false;
+            if (template != null && "STANDING".equals(template.getTaskType())) {
+                int currentCount = assignment.getSubmissionCount() != null ? assignment.getSubmissionCount() : 0;
+                int newCount = currentCount + 1;
+                assignment.setSubmissionCount(newCount);
+                Integer maxSubmissions = parseMaxSubmissions(template.getTypeConfig());
+                if (maxSubmissions != null && newCount >= maxSubmissions) {
+                    assignment.setStatus("COMPLETED");
+                    standingCompleted = true;
+                }
+            }
+
+            taskAssignmentMapper.updateById(assignment);
+
+            if (standingCompleted) {
+                log.info("STANDING task completed: assignmentId={}, submissions={}",
+                        assignment.getId(), assignment.getSubmissionCount());
+            }
         }
 
         // Create EARN points ledger entry if reward > 0
@@ -717,6 +749,57 @@ public class TaskReviewService {
         result.put("totalElements", page.getTotal());
         result.put("totalPages", page.getPages());
         return result;
+    }
+
+    // ========== Task 11.4: REPEAT assignment creation ==========
+
+    private void createRepeatAssignment(TaskTemplate template, TaskAssignment completed,
+                                         LocalDate nextDate, Long familyId) {
+        String occurrenceKey = familyId + "_" + completed.getChildId() + "_"
+                + template.getId() + "_" + nextDate;
+
+        // Check if already exists
+        if (taskAssignmentMapper.countByOccurrenceKey(occurrenceKey) > 0) {
+            log.debug("REPEAT assignment already exists for occurrenceKey={}", occurrenceKey);
+            return;
+        }
+
+        TaskAssignment next = new TaskAssignment();
+        next.setFamilyId(familyId);
+        next.setTemplateId(template.getId());
+        next.setChildId(completed.getChildId());
+        next.setDifficultyId(completed.getDifficultyId());
+        next.setDeadline(nextDate.atTime(23, 59, 59));
+        next.setStatus("PENDING_OPEN");
+        next.setLatePolicy(completed.getLatePolicy());
+        next.setCancelled(false);
+        next.setVersion(1);
+        next.setOccurrenceKey(occurrenceKey);
+        next.setSubmissionCount(0);
+
+        // Snapshot fields from completed assignment
+        next.setSnapshotTemplateName(completed.getSnapshotTemplateName());
+        next.setSnapshotTemplateDescription(completed.getSnapshotTemplateDescription());
+        next.setSnapshotTemplateCategory(completed.getSnapshotTemplateCategory());
+        next.setSnapshotTemplateIcon(completed.getSnapshotTemplateIcon());
+        next.setSnapshotDifficultyName(completed.getSnapshotDifficultyName());
+        next.setSnapshotDifficultyReward(completed.getSnapshotDifficultyReward());
+
+        taskAssignmentMapper.insert(next);
+
+        // Snapshot table for history
+        TaskAssignmentSnapshot snapshot = new TaskAssignmentSnapshot();
+        snapshot.setAssignmentId(next.getId());
+        snapshot.setTemplateName(next.getSnapshotTemplateName());
+        snapshot.setTemplateDescription(next.getSnapshotTemplateDescription());
+        snapshot.setTemplateCategory(next.getSnapshotTemplateCategory());
+        snapshot.setTemplateIcon(next.getSnapshotTemplateIcon());
+        snapshot.setDifficultyName(next.getSnapshotDifficultyName());
+        snapshot.setDifficultyRewardPoints(next.getSnapshotDifficultyReward());
+        taskAssignmentSnapshotMapper.insert(snapshot);
+
+        log.info("REPEAT next period created: assignmentId={}, nextDate={}, occurrenceKey={}",
+                next.getId(), nextDate, occurrenceKey);
     }
 
     // ========== Helpers ==========

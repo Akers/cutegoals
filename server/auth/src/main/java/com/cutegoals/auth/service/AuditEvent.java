@@ -54,6 +54,8 @@ public final class AuditEvent {
     public static final String ASSIGNMENT_UPDATED = "ASSIGNMENT_UPDATED";
     public static final String ASSIGNMENT_CANCELLED = "ASSIGNMENT_CANCELLED";
     public static final String ASSIGNMENT_LATE_POLICY_OVERRIDE = "ASSIGNMENT_LATE_POLICY_OVERRIDE";
+    public static final String REPEAT_ASSIGNMENT_CREATED = "REPEAT_ASSIGNMENT_CREATED";
+    public static final String REPEAT_SCHEDULER_RUN = "REPEAT_SCHEDULER_RUN";
 
     // === Task Review events ===
     public static final String TASK_SUBMITTED = "TASK_SUBMITTED";

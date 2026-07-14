@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
+import java.util.List;
 import java.util.Optional;
 
 @Mapper
@@ -35,4 +36,18 @@ public interface TaskAssignmentMapper extends BaseMapper<TaskAssignment> {
             + "WHERE id = #{id} AND cancelled = false AND status != 'APPROVED'")
     int cancelWithCondition(@Param("id") Long id, @Param("cancelledBy") Long cancelledBy,
                             @Param("reason") String reason);
+
+    // === REPEAT scheduler queries ===
+
+    @Select("SELECT * FROM task_assignment WHERE template_id = #{templateId} AND status = 'OPEN' AND deadline < NOW()")
+    List<TaskAssignment> findExpiredOpenByTemplate(@Param("templateId") Long templateId);
+
+    @Select("SELECT * FROM task_assignment WHERE template_id = #{templateId} AND status = 'PENDING_OPEN'")
+    List<TaskAssignment> findPendingOpenByTemplate(@Param("templateId") Long templateId);
+
+    @Update("UPDATE task_assignment SET status = 'EXPIRED' WHERE id = #{id} AND status = 'OPEN'")
+    int expireAssignment(@Param("id") Long id);
+
+    @Update("UPDATE task_assignment SET status = 'OPEN' WHERE id = #{id} AND status = 'PENDING_OPEN'")
+    int openAssignment(@Param("id") Long id);
 }

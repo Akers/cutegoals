@@ -8,6 +8,7 @@ import com.cutegoals.common.entity.family.Family;
 import com.cutegoals.common.entity.points.PointsBalance;
 import com.cutegoals.common.entity.points.PointsLedger;
 import com.cutegoals.common.entity.task.TaskAssignment;
+import com.cutegoals.common.entity.task.TaskAssignmentSnapshot;
 import com.cutegoals.common.entity.task.TaskAttempt;
 import com.cutegoals.common.entity.task.TaskReview;
 import com.cutegoals.common.entity.task.TaskTemplate;
@@ -18,8 +19,10 @@ import com.cutegoals.common.entity.points.PointsLedger;
 import com.cutegoals.points.mapper.PointsBalanceMapper;
 import com.cutegoals.points.mapper.PointsLedgerMapper;
 import com.cutegoals.task.mapper.TaskAssignmentMapper;
+import com.cutegoals.task.mapper.TaskAssignmentSnapshotMapper;
 import com.cutegoals.task.mapper.TaskChildMapper;
 import com.cutegoals.task.mapper.TaskTemplateMapper;
+import com.cutegoals.task.service.TaskTemplateFrequencyService;
 import com.cutegoals.taskreview.mapper.TaskAttemptMapper;
 import com.cutegoals.taskreview.mapper.TaskReviewMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -30,6 +33,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DuplicateKeyException;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -49,6 +53,8 @@ class TaskReviewServiceTest {
     @Mock private PointsBalanceMapper pointsBalanceMapper;
     @Mock private AuditService auditService;
     @Mock private TaskTemplateMapper taskTemplateMapper;
+    @Mock private TaskAssignmentSnapshotMapper taskAssignmentSnapshotMapper;
+    @Mock private TaskTemplateFrequencyService taskTemplateFrequencyService;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     private TaskReviewService taskReviewService;
@@ -64,7 +70,8 @@ class TaskReviewServiceTest {
         taskReviewService = new TaskReviewService(
                 taskAttemptMapper, taskReviewMapper, taskAssignmentMapper,
                 taskChildMapper, familyMapper, pointsLedgerMapper,
-                pointsBalanceMapper, auditService, taskTemplateMapper, objectMapper);
+                pointsBalanceMapper, auditService, taskTemplateMapper,
+                taskAssignmentSnapshotMapper, taskTemplateFrequencyService, objectMapper);
     }
 
     // ========== Task 4.1: Submission ==========
@@ -727,6 +734,68 @@ class TaskReviewServiceTest {
         assertNotNull(result);
         assertEquals(attemptId, result.getId());
         verify(taskAttemptMapper).insert(any(TaskAttempt.class));
+    }
+
+    // ========== Task 11.4: REPEAT approval hook ==========
+
+    @Test
+    void shouldCompleteAndCreateNextPeriodOnRepeatApproval() throws Exception {
+        TaskAssignment assignment = createSampleAssignment("SUBMITTED", false);
+        assignment.setSubmissionCount(1);
+        assignment.setDeadline(LocalDateTime.of(2026, 7, 14, 23, 59, 59));
+        assignment.setSnapshotDifficultyReward(0); // No points to avoid ledger mock
+        TaskAttempt attempt = createSampleAttempt(1);
+        TaskTemplate template = createSampleTemplate("REPEAT",
+                "{\"frequency\":\"DAILY\"}");
+        LocalDate nextDate = LocalDate.of(2026, 7, 15);
+
+        when(taskAttemptMapper.findByIdForUpdate(attemptId)).thenReturn(Optional.of(attempt));
+        when(taskAssignmentMapper.findById(attempt.getAssignmentId())).thenReturn(Optional.of(assignment));
+        when(taskAttemptMapper.getMaxAttemptNumber(assignmentId, childId)).thenReturn(1);
+        when(taskReviewMapper.findByAttemptIdForUpdate(attemptId)).thenReturn(Optional.empty());
+        when(taskTemplateMapper.findById(assignment.getTemplateId())).thenReturn(Optional.of(template));
+        when(taskTemplateFrequencyService.nextTriggerDate(template.getTypeConfig(),
+                assignment.getDeadline().toLocalDate())).thenReturn(Optional.of(nextDate));
+        when(taskAssignmentMapper.countByOccurrenceKey(anyString())).thenReturn(0);
+
+        Map<String, Object> request = new LinkedHashMap<>();
+        request.put("reason", "Good job!");
+        taskReviewService.approveAttempt(attemptId, request, familyId, accountId);
+
+        // Original assignment should be COMPLETED
+        assertEquals("COMPLETED", assignment.getStatus());
+        verify(taskAssignmentMapper, atLeastOnce()).updateById(assignment);
+
+        // New assignment should be created
+        verify(taskAssignmentMapper).insert(any(TaskAssignment.class));
+        verify(taskAssignmentSnapshotMapper).insert(any(TaskAssignmentSnapshot.class));
+        verify(auditService).record(eq(AuditEvent.REPEAT_ASSIGNMENT_CREATED), eq(accountId),
+                eq("SUCCESS"), anyString());
+    }
+
+    @Test
+    void shouldCompleteRepeatWithoutNextWhenNoTrigger() throws Exception {
+        TaskAssignment assignment = createSampleAssignment("SUBMITTED", false);
+        assignment.setSnapshotDifficultyReward(0);
+        TaskAttempt attempt = createSampleAttempt(1);
+        TaskTemplate template = createSampleTemplate("REPEAT",
+                "{\"frequency\":\"NONE\"}");
+
+        when(taskAttemptMapper.findByIdForUpdate(attemptId)).thenReturn(Optional.of(attempt));
+        when(taskAssignmentMapper.findById(attempt.getAssignmentId())).thenReturn(Optional.of(assignment));
+        when(taskAttemptMapper.getMaxAttemptNumber(assignmentId, childId)).thenReturn(1);
+        when(taskReviewMapper.findByAttemptIdForUpdate(attemptId)).thenReturn(Optional.empty());
+        when(taskTemplateMapper.findById(assignment.getTemplateId())).thenReturn(Optional.of(template));
+        when(taskTemplateFrequencyService.nextTriggerDate(template.getTypeConfig(),
+                assignment.getDeadline().toLocalDate())).thenReturn(Optional.empty());
+
+        Map<String, Object> request = new LinkedHashMap<>();
+        request.put("reason", "Done");
+        taskReviewService.approveAttempt(attemptId, request, familyId, accountId);
+
+        assertEquals("COMPLETED", assignment.getStatus());
+        // Should NOT create next assignment
+        verify(taskAssignmentMapper, never()).insert(any(TaskAssignment.class));
     }
 
     // ========== Helpers ==========
