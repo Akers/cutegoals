@@ -1,5 +1,6 @@
 {
   "openspec_proposal": "openspec/changes/fix-template-save-field-mismatch/proposal.md",
   "openspec_design": "openspec/changes/fix-template-save-field-mismatch/design.md",
-  "openspec_tasks": "openspec/changes/fix-template-save-field-mismatch/tasks.md"
+  "openspec_tasks": "openspec/changes/fix-template-save-field-mismatch/tasks.md",
+  "archive_directory": "openspec/changes/archive/2026-07-14-fix-template-save-field-mismatch"
 }
