@@ -11,7 +11,7 @@
 
 -- Migrate DAILY recurrence rules
 UPDATE task_template t
-SET type_config = '{"frequency":"DAILY"}'
+SET type_config = CAST('{"frequency":"DAILY"}' AS JSON)
 WHERE t.type_config IS NULL
   AND EXISTS (
     SELECT 1 FROM task_recurrence_rule r
@@ -20,7 +20,7 @@ WHERE t.type_config IS NULL
 
 -- Migrate WEEKDAYS/WEEKENDS → WEEKLY with Monday as default weekday
 UPDATE task_template t
-SET type_config = '{"frequency":"WEEKLY","trigger_day":{"weekday":1}}'
+SET type_config = CAST('{"frequency":"WEEKLY","trigger_day":{"weekday":1}}' AS JSON)
 WHERE t.type_config IS NULL
   AND EXISTS (
     SELECT 1 FROM task_recurrence_rule r
@@ -30,12 +30,12 @@ WHERE t.type_config IS NULL
 -- Migrate CUSTOM_WEEKDAYS → WEEKLY with first custom weekday.
 -- Uses POSITION(...) instead of INSTR for PostgreSQL/H2 compatibility.
 UPDATE task_template t
-SET type_config = '{"frequency":"WEEKLY","trigger_day":{"weekday":' ||
+SET type_config = CAST('{"frequency":"WEEKLY","trigger_day":{"weekday":' ||
     TRIM(SUBSTR(r.custom_weekdays, 1, CASE
         WHEN POSITION(',' IN r.custom_weekdays) > 0
         THEN POSITION(',' IN r.custom_weekdays) - 1
         ELSE LENGTH(r.custom_weekdays)
-    END)) || '}}'
+    END)) || '}}' AS JSON)
 FROM task_recurrence_rule r
 WHERE r.template_id = t.id
   AND r.rule_type = 'CUSTOM_WEEKDAYS'
@@ -44,7 +44,7 @@ WHERE r.template_id = t.id
 -- For any remaining templates with recurrence rules but no type_config,
 -- set a default WEEKLY config so the template isn't broken
 UPDATE task_template t
-SET type_config = '{"frequency":"WEEKLY","trigger_day":{"weekday":1}}'
+SET type_config = CAST('{"frequency":"WEEKLY","trigger_day":{"weekday":1}}' AS JSON)
 WHERE t.type_config IS NULL
   AND EXISTS (
     SELECT 1 FROM task_recurrence_rule r
