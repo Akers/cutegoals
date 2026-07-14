@@ -86,6 +86,17 @@ public class TaskTemplateService {
         template.setVersion(1);
         template.setEnabled(true);
         template.setDeleted(false);
+
+        // Task 11.6: Extract taskType and typeConfig
+        String taskType = (String) request.get("taskType");
+        if (taskType != null) {
+            template.setTaskType(taskType);
+        }
+        String typeConfig = (String) request.get("typeConfig");
+        if (typeConfig != null) {
+            template.setTypeConfig(typeConfig);
+        }
+
         taskTemplateMapper.insert(template);
 
         // Create difficulties
@@ -220,6 +231,12 @@ public class TaskTemplateService {
         if (request.containsKey("icon")) {
             String icon = extractAndValidateString(request, "icon", false, 0, ICON_MAX_LENGTH, "icon");
             template.setIcon(icon != null ? icon.trim() : null);
+        }
+
+        // Task 11.6: Update typeConfig if provided (taskType is immutable, but config can change)
+        if (request.containsKey("typeConfig")) {
+            String typeConfig = (String) request.get("typeConfig");
+            template.setTypeConfig(typeConfig);
         }
 
         // Optimistic lock via mapper (version-based)
@@ -463,6 +480,8 @@ public class TaskTemplateService {
             item.put("enabled", t.getEnabled());
             item.put("deleted", t.getDeleted());
             item.put("version", t.getVersion());
+            item.put("taskType", t.getTaskType());
+            item.put("typeConfig", t.getTypeConfig());
             item.put("createdAt", t.getCreatedAt());
             item.put("updatedAt", t.getUpdatedAt());
             item.put("difficulties", taskDifficultyMapper.findByTemplateId(t.getId()));
@@ -491,6 +510,8 @@ public class TaskTemplateService {
         result.put("enabled", template.getEnabled());
         result.put("deleted", template.getDeleted());
         result.put("version", template.getVersion());
+        result.put("taskType", template.getTaskType());
+        result.put("typeConfig", template.getTypeConfig());
         result.put("createdAt", template.getCreatedAt());
         result.put("updatedAt", template.getUpdatedAt());
         result.put("difficulties", taskDifficultyMapper.findByTemplateId(template.getId()));

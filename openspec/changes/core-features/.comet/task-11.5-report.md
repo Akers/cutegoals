@@ -69,3 +69,32 @@ The service layer does not currently propagate `taskType` and `typeConfig` from 
 
 These are pre-existing gaps from tasks 11.1-11.4 that would be addressed in a post-11.x task.
 The integration tests validate the existing API contract without requiring these gaps to be filled.
+
+---
+
+## Appendix: Task 11.6 Fix — Wire taskType/typeConfig through Service Layer
+
+Applied changes to `TaskTemplateService.java` to close all three gaps:
+
+### Changes Made
+
+1. **`createTemplate()`**: After `template.setIcon(...)`, added extraction of `taskType` (optional, defaults to DB default "LIMITED") and `typeConfig` (optional JSON string) from the request Map. Both are set on the template entity before `taskTemplateMapper.insert()`.
+
+2. **`getTemplateDetail()`**: Added `taskType` and `typeConfig` to the response Map after `version`.
+
+3. **`queryTemplates()`**: Added `taskType` and `typeConfig` to each enriched content item after `version`.
+
+4. **`updateTemplate()`**: Added `typeConfig` handling after the `icon` field update. If the request contains `typeConfig`, it's set on the template entity. The existing `taskType` immutability check remains unchanged.
+
+### Verification
+
+```
+mvn clean test
+Tests run: 92 (web module), Failures: 0, Errors: 0
+BUILD SUCCESS
+```
+
+All 87 task module tests, 26 integration tests, and full project suite pass.
+
+### Commit
+`d73ce1e feat(task): wire taskType/typeConfig through service layer create/update/response (task 11.6)`
