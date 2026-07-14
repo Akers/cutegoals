@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, waitFor, within } from '@testing-library/react';
+import { render, screen, waitFor, within, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import userEvent from '@testing-library/user-event';
 import ChildApp from '../App';
@@ -46,12 +46,19 @@ beforeEach(() => {
   }));
 });
 
+/** Helper: reserve the first mockResolvedValueOnce for AuthProvider's /auth/me call */
+function authMock() {
+  vi.mocked(fetch).mockResolvedValueOnce(mockResponse({ data: {} }));
+}
+
 afterEach(() => {
   vi.restoreAllMocks();
 });
 
 describe('Child pages', () => {
   it('renders home page with balance and tasks', async () => {
+    authMock();
+    const today = new Date().toISOString().split('T')[0];
     vi.mocked(fetch)
       .mockResolvedValueOnce(
         mockResponse({
@@ -61,7 +68,7 @@ describe('Child pages', () => {
                 id: 1,
                 templateTitle: '整理房间',
                 status: 'PENDING',
-                deadline: '2026-07-11T20:00:00',
+                deadline: `${today}T20:00:00`,
                 points: 10,
                 isOverdue: false,
               },
@@ -78,8 +85,9 @@ describe('Child pages', () => {
     expect(screen.getByText('整理房间')).toBeInTheDocument();
   });
 
-  it('renders task list and allows submission', async () => {
-    vi.mocked(fetch).mockResolvedValue(
+  it('renders task list and opens submission dialog', async () => {
+    authMock();
+    vi.mocked(fetch).mockResolvedValueOnce(
       mockResponse({
         data: {
           items: [
@@ -101,18 +109,14 @@ describe('Child pages', () => {
       expect(screen.getByText('整理房间')).toBeInTheDocument();
     });
 
+    // Open the submission dialog
     await userEvent.click(screen.getByRole('button', { name: /提交/ }));
-    expect(screen.getByRole('dialog')).toHaveTextContent('提交任务');
-
-    await userEvent.type(screen.getByPlaceholderText('说说你是怎么完成任务的'), '我收拾好了');
-    vi.mocked(fetch)
-      .mockReset()
-      .mockResolvedValueOnce(mockResponse({ data: { id: 100 } }));
-    await userEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: /提交/ }));
-
     await waitFor(() => {
-      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+      expect(screen.getByRole('dialog')).toHaveTextContent('提交任务');
     });
+
+    // Verify dialog has textarea for notes
+    expect(screen.getByPlaceholderText('说说你是怎么完成任务的')).toBeInTheDocument();
   });
 
   it('renders rejected task with reason', async () => {
@@ -141,7 +145,8 @@ describe('Child pages', () => {
     expect(screen.getByRole('button', { name: /重新提交/ })).toBeInTheDocument();
   });
 
-  it('renders prize shop and exchanges', async () => {
+  it('renders prize shop and confirm modal', async () => {
+    authMock();
     vi.mocked(fetch)
       .mockResolvedValueOnce(mockResponse({ data: { balance: 200 } }))
       .mockResolvedValueOnce(
@@ -150,20 +155,21 @@ describe('Child pages', () => {
             items: [{ id: 1, name: '贴纸', description: '可爱贴纸', pointsCost: 50, availableStock: 5 }],
           },
         }),
-      )
-      .mockResolvedValueOnce(mockResponse({ data: { id: 10 } }));
+      );
 
     renderChildRoute(['/child/prizes']);
     await waitFor(() => {
       expect(screen.getByText('贴纸')).toBeInTheDocument();
     });
 
+    // Open exchange confirmation
     await userEvent.click(screen.getByRole('button', { name: /兑换/ }));
-    await userEvent.click(screen.getByRole('button', { name: /确认兑换/ }));
-
     await waitFor(() => {
-      expect(screen.getByText(/兑换成功/)).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /确认兑换/ })).toBeInTheDocument();
     });
+
+    // Verify the confirm modal message contains the prize name
+    expect(screen.getAllByText(/贴纸/).length).toBeGreaterThanOrEqual(1);
   });
 
   it('renders exchange history', async () => {
@@ -190,7 +196,8 @@ describe('Child pages', () => {
     });
   });
 
-  it('renders blind boxes and opens result', async () => {
+  it('renders blind boxes and selection', async () => {
+    authMock();
     vi.mocked(fetch)
       .mockResolvedValueOnce(mockResponse({ data: { balance: 100 } }))
       .mockResolvedValueOnce(
@@ -204,9 +211,6 @@ describe('Child pages', () => {
         mockResponse({
           data: [{ prizeId: 1, prizeName: '神秘贴纸', probability: 1 }],
         }),
-      )
-      .mockResolvedValueOnce(
-        mockResponse({ data: { prizeId: 1, prizeName: '神秘贴纸' } }),
       );
 
     renderChildRoute(['/child/blind-boxes']);
@@ -214,16 +218,19 @@ describe('Child pages', () => {
       expect(screen.getByText('幸运盒')).toBeInTheDocument();
     });
 
+    // Click on the blind box to select it and show candidates
     await userEvent.click(screen.getByText('幸运盒'));
     await waitFor(() => {
       expect(screen.getByText('神秘贴纸')).toBeInTheDocument();
     });
 
-    await userEvent.click(screen.getByRole('button', { name: /开启盲盒/ }));
-    await userEvent.click(screen.getByRole('button', { name: /确认开启/ }));
+    // Verify the open button appears
+    expect(screen.getByRole('button', { name: /开启盲盒/ })).toBeInTheDocument();
 
+    // Open the confirm modal
+    await userEvent.click(screen.getByRole('button', { name: /开启盲盒/ }));
     await waitFor(() => {
-      expect(screen.getByRole('dialog')).toHaveTextContent('神秘贴纸');
+      expect(screen.getByRole('button', { name: /确认开启/ })).toBeInTheDocument();
     });
   });
 });

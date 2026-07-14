@@ -1,9 +1,37 @@
-import { describe, it, expect } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import ParentApp from '../App';
 import { RoleProvider } from '@shared/RoleContext';
 import { AuthProvider } from '@shared/auth';
+
+function mockResponse(data: unknown, ok = true, status = 200) {
+  return {
+    ok,
+    status,
+    headers: new Headers({ 'content-type': 'application/json' }),
+    json: () => Promise.resolve(data),
+  } as unknown as Response;
+}
+
+beforeEach(() => {
+  vi.spyOn(globalThis, 'fetch').mockReset();
+  vi.mocked(fetch).mockResolvedValue(mockResponse({ data: {} }));
+  vi.spyOn(window, 'matchMedia').mockImplementation((query: string) => ({
+    matches: query === '(prefers-reduced-motion: reduce)',
+    media: query,
+    onchange: null,
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+  }));
+});
+
+afterEach(() => {
+  vi.restoreAllMocks();
+});
 
 function renderParent() {
   render(
@@ -13,18 +41,22 @@ function renderParent() {
           <ParentApp />
         </AuthProvider>
       </MemoryRouter>
-    </RoleProvider>
+    </RoleProvider>,
   );
 }
 
 describe('ParentApp', () => {
-  it('renders the parent heading', () => {
+  it('renders the parent heading', async () => {
     renderParent();
-    expect(screen.getByRole('heading', { name: /家庭/ })).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { name: /家庭/ })).toBeInTheDocument();
+    });
   });
 
-  it('renders the role indicator', () => {
+  it('renders the role indicator', async () => {
     renderParent();
-    expect(screen.getByText(/家长端/)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText(/家长端/)).toBeInTheDocument();
+    });
   });
 });

@@ -205,7 +205,7 @@ export function ParentHomePage() {
     >
       <CardSection title="家庭成员">
         <div className="grid grid-cols-1 gap-3">
-          {data.members.map((member) => (
+          {(data.members ?? []).map((member) => (
             <div key={member.id} className="flex items-center justify-between rounded-cg-md bg-cg-surface-raised p-3">
               <div className="font-medium text-cg-text">{member.nickname ?? maskPhone(member.phone ?? '')}</div>
               <StatusBadge status={member.role === 'PARENT' ? 'approved' : 'pending'} />
@@ -356,7 +356,7 @@ export function ParentFamilyPage() {
     >
       <CardSection title="家庭成员">
         <div className="grid grid-cols-1 gap-3">
-          {data.members.map((member) => {
+          {(data.members ?? []).map((member) => {
             const isSelf = account != null && member.accountId === Number(account.accountId);
             const canRemove = member.role === 'PARENT' && !isSelf;
             return (

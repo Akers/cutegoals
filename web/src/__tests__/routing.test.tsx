@@ -23,6 +23,12 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
+function setupMock(defaultData: Record<string, unknown> = {}) {
+  vi.mocked(fetch).mockResolvedValue(
+    mockResponse({ data: defaultData }),
+  );
+}
+
 function renderWithRouter(
   initialEntries: string[],
   role: Role = 'child',
@@ -48,9 +54,7 @@ function renderWithRouter(
 
 describe('Role-based routing', () => {
   it('renders admin layout at /admin', async () => {
-    vi.mocked(fetch).mockResolvedValue(
-      mockResponse({ data: { initialized: true, version: 'test' } }),
-    );
+    setupMock({ initialized: true, version: 'test' });
     renderWithRouter(['/admin'], 'admin');
     await waitFor(() => {
       expect(screen.getByText(/管理后台/)).toBeInTheDocument();
@@ -58,6 +62,7 @@ describe('Role-based routing', () => {
   });
 
   it('renders parent layout at /parent', async () => {
+    setupMock();
     renderWithRouter(['/parent'], 'parent');
     await waitFor(() => {
       expect(screen.getByText(/家长端/)).toBeInTheDocument();
@@ -65,6 +70,7 @@ describe('Role-based routing', () => {
   });
 
   it('renders child layout at /child', async () => {
+    setupMock();
     renderWithRouter(['/child'], 'child');
     await waitFor(() => {
       expect(screen.getByText(/儿童端/)).toBeInTheDocument();
@@ -72,6 +78,7 @@ describe('Role-based routing', () => {
   });
 
   it('redirects / to /child by default', async () => {
+    setupMock();
     renderWithRouter(['/'], 'child');
     await waitFor(() => {
       expect(screen.getByText(/儿童端/)).toBeInTheDocument();
@@ -79,6 +86,7 @@ describe('Role-based routing', () => {
   });
 
   it('shows access denied when role does not match the route', async () => {
+    setupMock();
     renderWithRouter(['/admin'], 'child');
     await waitFor(() => {
       expect(screen.getByText(/403|访问被拒绝/i)).toBeInTheDocument();
@@ -86,6 +94,7 @@ describe('Role-based routing', () => {
   });
 
   it('shows access denied when visiting parent as admin', async () => {
+    setupMock();
     renderWithRouter(['/parent'], 'admin');
     await waitFor(() => {
       expect(screen.getByText(/403|访问被拒绝/i)).toBeInTheDocument();
@@ -93,6 +102,7 @@ describe('Role-based routing', () => {
   });
 
   it('shows a fallback while loading lazy routes', async () => {
+    setupMock();
     renderWithRouter(['/child'], 'child');
     await waitFor(() => {
       expect(screen.getByText(/儿童端/)).toBeInTheDocument();
@@ -100,6 +110,7 @@ describe('Role-based routing', () => {
   });
 
   it('redirects unknown routes to the current role home', async () => {
+    setupMock();
     renderWithRouter(['/unknown'], 'child');
     await waitFor(() => {
       expect(screen.getByText(/儿童端/)).toBeInTheDocument();
@@ -107,6 +118,11 @@ describe('Role-based routing', () => {
   });
 
   it('redirects unauthenticated users to the login flow', async () => {
+    // First call (AuthProvider /auth/me) must fail so account stays null.
+    // Subsequent calls (lazy imports, page renders) need to succeed.
+    vi.mocked(fetch)
+      .mockResolvedValueOnce(mockResponse({ error: 'unauthorized' }, false, 401))
+      .mockResolvedValue(mockResponse({ data: {} }));
     renderWithRouter(['/parent'], 'parent', false);
     await waitFor(() => {
       expect(screen.getByRole('heading', { name: /家长登录/ })).toBeInTheDocument();
