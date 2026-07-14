@@ -9,6 +9,7 @@ import com.cutegoals.common.entity.task.TaskTemplate;
 import com.cutegoals.common.exception.BusinessException;
 import com.cutegoals.common.exception.ErrorCode;
 import com.cutegoals.task.mapper.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,6 +35,7 @@ class TaskTemplateServiceTest {
     @Mock private AuditService auditService;
 
     private TaskTemplateService taskTemplateService;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     private final Long familyId = 1L;
     private final Long accountId = 100L;
@@ -42,7 +44,7 @@ class TaskTemplateServiceTest {
     void setUp() {
         taskTemplateService = new TaskTemplateService(
                 taskTemplateMapper, taskDifficultyMapper, taskRecurrenceRuleMapper,
-                taskAssignmentMapper, familyMapper, taskChildMapper, auditService);
+                taskAssignmentMapper, familyMapper, taskChildMapper, auditService, objectMapper);
     }
 
     // ========== Task 3.1: Create template ==========
@@ -67,6 +69,8 @@ class TaskTemplateServiceTest {
         diff2.put("rewardPoints", 30);
         difficulties.add(diff2);
         request.put("difficulties", difficulties);
+        request.put("taskType", "LIMITED");
+        request.put("typeConfig", "{\"end_date\":\"2026-12-31\"}");
 
         doAnswer(invocation -> {
             TaskTemplate t = invocation.getArgument(0);
@@ -169,6 +173,8 @@ class TaskTemplateServiceTest {
         ruleReq.put("ruleType", "CUSTOM_WEEKDAYS");
         ruleReq.put("customWeekdays", List.of(1, 3, 5));
         request.put("recurrenceRule", ruleReq);
+        request.put("taskType", "REPEAT");
+        request.put("typeConfig", "{\"frequency\":\"WEEKLY\",\"trigger_day\":{\"weekday\":3}}");
 
         doAnswer(invocation -> {
             TaskTemplate t = invocation.getArgument(0);
@@ -196,6 +202,8 @@ class TaskTemplateServiceTest {
         ruleReq.put("ruleType", "CUSTOM_WEEKDAYS");
         ruleReq.put("customWeekdays", new ArrayList<>());
         request.put("recurrenceRule", ruleReq);
+        request.put("taskType", "REPEAT");
+        request.put("typeConfig", "{\"frequency\":\"DAILY\"}");
 
         doAnswer(invocation -> {
             TaskTemplate t = invocation.getArgument(0);
@@ -218,6 +226,8 @@ class TaskTemplateServiceTest {
         ruleReq.put("ruleType", "CUSTOM_WEEKDAYS");
         ruleReq.put("customWeekdays", List.of(0, 8));
         request.put("recurrenceRule", ruleReq);
+        request.put("taskType", "REPEAT");
+        request.put("typeConfig", "{\"frequency\":\"DAILY\"}");
 
         doAnswer(invocation -> {
             TaskTemplate t = invocation.getArgument(0);
@@ -236,6 +246,8 @@ class TaskTemplateServiceTest {
         request.put("name", "One-off Task");
         request.put("category", "Test");
         request.put("difficulties", createSampleDifficulties());
+        request.put("taskType", "LIMITED");
+        request.put("typeConfig", "{\"end_date\":\"2026-12-31\"}");
 
         doAnswer(invocation -> {
             TaskTemplate t = invocation.getArgument(0);
@@ -303,6 +315,8 @@ class TaskTemplateServiceTest {
         diff.put("enabled", false);
         difficulties.add(diff);
         request.put("difficulties", difficulties);
+        request.put("taskType", "LIMITED");
+        request.put("typeConfig", "{\"end_date\":\"2026-12-31\"}");
 
         BusinessException e = assertThrows(BusinessException.class,
                 () -> taskTemplateService.createTemplate(request, familyId, accountId));
@@ -544,6 +558,527 @@ class TaskTemplateServiceTest {
         BusinessException e = assertThrows(BusinessException.class,
                 () -> taskTemplateService.queryTemplates(params, familyId));
         assertEquals(ErrorCode.TASK_TEMPLATE_INVALID_QUERY, e.getErrorCode());
+    }
+
+    // ========== Task 2.1/2.2: validateTypeConfig ==========
+
+    private Map<String, Object> createBaseTemplateRequest() {
+        Map<String, Object> request = new LinkedHashMap<>();
+        request.put("name", "Test Task");
+        request.put("category", "General");
+        List<Map<String, Object>> difficulties = new ArrayList<>();
+        Map<String, Object> diff = new LinkedHashMap<>();
+        diff.put("name", "Easy");
+        diff.put("displayOrder", 1);
+        diff.put("rewardPoints", 10);
+        difficulties.add(diff);
+        request.put("difficulties", difficulties);
+        return request;
+    }
+
+    // === Task 2.1: Basic taskType/typeConfig validation ===
+
+    @Test
+    void shouldFailWhenTaskTypeIsNull() {
+        Map<String, Object> request = createBaseTemplateRequest();
+        request.put("taskType", null);
+        request.put("typeConfig", "{\"end_date\":\"2026-12-31\"}");
+
+        BusinessException e = assertThrows(BusinessException.class,
+                () -> taskTemplateService.createTemplate(request, familyId, accountId));
+        assertEquals(ErrorCode.TASK_TEMPLATE_VALIDATION_FAILED, e.getErrorCode());
+    }
+
+    @Test
+    void shouldFailWhenTaskTypeIsBlank() {
+        Map<String, Object> request = createBaseTemplateRequest();
+        request.put("taskType", "  ");
+        request.put("typeConfig", "{\"end_date\":\"2026-12-31\"}");
+
+        BusinessException e = assertThrows(BusinessException.class,
+                () -> taskTemplateService.createTemplate(request, familyId, accountId));
+        assertEquals(ErrorCode.TASK_TEMPLATE_VALIDATION_FAILED, e.getErrorCode());
+    }
+
+    @Test
+    void shouldFailWhenTaskTypeIsUnknown() {
+        Map<String, Object> request = createBaseTemplateRequest();
+        request.put("taskType", "UNKNOWN_TYPE");
+        request.put("typeConfig", "{\"end_date\":\"2026-12-31\"}");
+
+        BusinessException e = assertThrows(BusinessException.class,
+                () -> taskTemplateService.createTemplate(request, familyId, accountId));
+        assertEquals(ErrorCode.TASK_TEMPLATE_VALIDATION_FAILED, e.getErrorCode());
+    }
+
+    @Test
+    void shouldFailWhenTypeConfigIsNull() {
+        Map<String, Object> request = createBaseTemplateRequest();
+        request.put("taskType", "LIMITED");
+        request.put("typeConfig", null);
+
+        BusinessException e = assertThrows(BusinessException.class,
+                () -> taskTemplateService.createTemplate(request, familyId, accountId));
+        assertEquals(ErrorCode.TASK_TEMPLATE_VALIDATION_FAILED, e.getErrorCode());
+    }
+
+    @Test
+    void shouldFailWhenTypeConfigIsBlank() {
+        Map<String, Object> request = createBaseTemplateRequest();
+        request.put("taskType", "LIMITED");
+        request.put("typeConfig", "  ");
+
+        BusinessException e = assertThrows(BusinessException.class,
+                () -> taskTemplateService.createTemplate(request, familyId, accountId));
+        assertEquals(ErrorCode.TASK_TEMPLATE_VALIDATION_FAILED, e.getErrorCode());
+    }
+
+    @Test
+    void shouldFailWhenTypeConfigIsInvalidJson() {
+        Map<String, Object> request = createBaseTemplateRequest();
+        request.put("taskType", "LIMITED");
+        request.put("typeConfig", "not-json");
+
+        BusinessException e = assertThrows(BusinessException.class,
+                () -> taskTemplateService.createTemplate(request, familyId, accountId));
+        assertEquals(ErrorCode.TASK_TEMPLATE_VALIDATION_FAILED, e.getErrorCode());
+    }
+
+    // === Task 2.2: LIMITED sub-field validation ===
+
+    @Test
+    void shouldFailWhenLimitedMissingEndDate() {
+        Map<String, Object> request = createBaseTemplateRequest();
+        request.put("taskType", "LIMITED");
+        request.put("typeConfig", "{}");
+
+        BusinessException e = assertThrows(BusinessException.class,
+                () -> taskTemplateService.createTemplate(request, familyId, accountId));
+        assertEquals(ErrorCode.TASK_TEMPLATE_VALIDATION_FAILED, e.getErrorCode());
+    }
+
+    @Test
+    void shouldPassWhenLimitedWithOnlyEndDate() {
+        Map<String, Object> request = createBaseTemplateRequest();
+        request.put("taskType", "LIMITED");
+        request.put("typeConfig", "{\"end_date\":\"2026-12-31\"}");
+
+        doAnswer(invocation -> {
+            TaskTemplate t = invocation.getArgument(0);
+            t.setId(1L);
+            return null;
+        }).when(taskTemplateMapper).insert(any(TaskTemplate.class));
+        when(taskTemplateMapper.findById(1L)).thenReturn(Optional.of(createSampleTemplate()));
+
+        TaskTemplate result = taskTemplateService.createTemplate(request, familyId, accountId);
+        assertNotNull(result);
+    }
+
+    @Test
+    void shouldPassWhenLimitedWithStartAndEndDate() {
+        Map<String, Object> request = createBaseTemplateRequest();
+        request.put("taskType", "LIMITED");
+        request.put("typeConfig", "{\"start_date\":\"2026-01-01\",\"end_date\":\"2026-12-31\"}");
+
+        doAnswer(invocation -> {
+            TaskTemplate t = invocation.getArgument(0);
+            t.setId(1L);
+            return null;
+        }).when(taskTemplateMapper).insert(any(TaskTemplate.class));
+        when(taskTemplateMapper.findById(1L)).thenReturn(Optional.of(createSampleTemplate()));
+
+        TaskTemplate result = taskTemplateService.createTemplate(request, familyId, accountId);
+        assertNotNull(result);
+    }
+
+    @Test
+    void shouldFailWhenLimitedEndDateBeforeStartDate() {
+        Map<String, Object> request = createBaseTemplateRequest();
+        request.put("taskType", "LIMITED");
+        request.put("typeConfig", "{\"start_date\":\"2026-12-31\",\"end_date\":\"2026-01-01\"}");
+
+        BusinessException e = assertThrows(BusinessException.class,
+                () -> taskTemplateService.createTemplate(request, familyId, accountId));
+        assertEquals(ErrorCode.TASK_TEMPLATE_VALIDATION_FAILED, e.getErrorCode());
+    }
+
+    // === Task 2.2: REPEAT sub-field validation ===
+
+    @Test
+    void shouldFailWhenRepeatMissingFrequency() {
+        Map<String, Object> request = createBaseTemplateRequest();
+        request.put("taskType", "REPEAT");
+        request.put("typeConfig", "{}");
+
+        BusinessException e = assertThrows(BusinessException.class,
+                () -> taskTemplateService.createTemplate(request, familyId, accountId));
+        assertEquals(ErrorCode.TASK_TEMPLATE_VALIDATION_FAILED, e.getErrorCode());
+    }
+
+    @Test
+    void shouldFailWhenRepeatInvalidFrequency() {
+        Map<String, Object> request = createBaseTemplateRequest();
+        request.put("taskType", "REPEAT");
+        request.put("typeConfig", "{\"frequency\":\"BI_WEEKLY\"}");
+
+        BusinessException e = assertThrows(BusinessException.class,
+                () -> taskTemplateService.createTemplate(request, familyId, accountId));
+        assertEquals(ErrorCode.TASK_TEMPLATE_VALIDATION_FAILED, e.getErrorCode());
+    }
+
+    @Test
+    void shouldFailWhenWeeklyMissingWeekday() {
+        Map<String, Object> request = createBaseTemplateRequest();
+        request.put("taskType", "REPEAT");
+        request.put("typeConfig", "{\"frequency\":\"WEEKLY\"}");
+
+        BusinessException e = assertThrows(BusinessException.class,
+                () -> taskTemplateService.createTemplate(request, familyId, accountId));
+        assertEquals(ErrorCode.TASK_TEMPLATE_VALIDATION_FAILED, e.getErrorCode());
+    }
+
+    @Test
+    void shouldFailWhenWeeklyInvalidWeekdayTooLow() {
+        Map<String, Object> request = createBaseTemplateRequest();
+        request.put("taskType", "REPEAT");
+        request.put("typeConfig", "{\"frequency\":\"WEEKLY\",\"trigger_day\":{\"weekday\":0}}");
+
+        BusinessException e = assertThrows(BusinessException.class,
+                () -> taskTemplateService.createTemplate(request, familyId, accountId));
+        assertEquals(ErrorCode.TASK_TEMPLATE_VALIDATION_FAILED, e.getErrorCode());
+    }
+
+    @Test
+    void shouldFailWhenWeeklyInvalidWeekdayTooHigh() {
+        Map<String, Object> request = createBaseTemplateRequest();
+        request.put("taskType", "REPEAT");
+        request.put("typeConfig", "{\"frequency\":\"WEEKLY\",\"trigger_day\":{\"weekday\":8}}");
+
+        BusinessException e = assertThrows(BusinessException.class,
+                () -> taskTemplateService.createTemplate(request, familyId, accountId));
+        assertEquals(ErrorCode.TASK_TEMPLATE_VALIDATION_FAILED, e.getErrorCode());
+    }
+
+    @Test
+    void shouldPassWhenWeeklyWithValidWeekday() {
+        Map<String, Object> request = createBaseTemplateRequest();
+        request.put("taskType", "REPEAT");
+        request.put("typeConfig", "{\"frequency\":\"WEEKLY\",\"trigger_day\":{\"weekday\":1}}");
+
+        doAnswer(invocation -> {
+            TaskTemplate t = invocation.getArgument(0);
+            t.setId(1L);
+            return null;
+        }).when(taskTemplateMapper).insert(any(TaskTemplate.class));
+        when(taskTemplateMapper.findById(1L)).thenReturn(Optional.of(createSampleTemplate()));
+
+        TaskTemplate result = taskTemplateService.createTemplate(request, familyId, accountId);
+        assertNotNull(result);
+    }
+
+    @Test
+    void shouldFailWhenMonthlyMissingMode() {
+        Map<String, Object> request = createBaseTemplateRequest();
+        request.put("taskType", "REPEAT");
+        request.put("typeConfig", "{\"frequency\":\"MONTHLY\"}");
+
+        BusinessException e = assertThrows(BusinessException.class,
+                () -> taskTemplateService.createTemplate(request, familyId, accountId));
+        assertEquals(ErrorCode.TASK_TEMPLATE_VALIDATION_FAILED, e.getErrorCode());
+    }
+
+    @Test
+    void shouldFailWhenMonthlyInvalidMode() {
+        Map<String, Object> request = createBaseTemplateRequest();
+        request.put("taskType", "REPEAT");
+        request.put("typeConfig", "{\"frequency\":\"MONTHLY\",\"trigger_day\":{\"mode\":\"INVALID\"}}");
+
+        BusinessException e = assertThrows(BusinessException.class,
+                () -> taskTemplateService.createTemplate(request, familyId, accountId));
+        assertEquals(ErrorCode.TASK_TEMPLATE_VALIDATION_FAILED, e.getErrorCode());
+    }
+
+    @Test
+    void shouldPassWhenMonthlyWithValidMode() {
+        Map<String, Object> request = createBaseTemplateRequest();
+        request.put("taskType", "REPEAT");
+        request.put("typeConfig", "{\"frequency\":\"MONTHLY\",\"trigger_day\":{\"mode\":\"FIRST_DAY\"}}");
+
+        doAnswer(invocation -> {
+            TaskTemplate t = invocation.getArgument(0);
+            t.setId(1L);
+            return null;
+        }).when(taskTemplateMapper).insert(any(TaskTemplate.class));
+        when(taskTemplateMapper.findById(1L)).thenReturn(Optional.of(createSampleTemplate()));
+
+        TaskTemplate result = taskTemplateService.createTemplate(request, familyId, accountId);
+        assertNotNull(result);
+    }
+
+    @Test
+    void shouldFailWhenYearlyMissingMonth() {
+        Map<String, Object> request = createBaseTemplateRequest();
+        request.put("taskType", "REPEAT");
+        request.put("typeConfig", "{\"frequency\":\"YEARLY\",\"trigger_day\":{\"day\":15}}");
+
+        BusinessException e = assertThrows(BusinessException.class,
+                () -> taskTemplateService.createTemplate(request, familyId, accountId));
+        assertEquals(ErrorCode.TASK_TEMPLATE_VALIDATION_FAILED, e.getErrorCode());
+    }
+
+    @Test
+    void shouldFailWhenYearlyMissingDay() {
+        Map<String, Object> request = createBaseTemplateRequest();
+        request.put("taskType", "REPEAT");
+        request.put("typeConfig", "{\"frequency\":\"YEARLY\",\"trigger_day\":{\"month\":6}}");
+
+        BusinessException e = assertThrows(BusinessException.class,
+                () -> taskTemplateService.createTemplate(request, familyId, accountId));
+        assertEquals(ErrorCode.TASK_TEMPLATE_VALIDATION_FAILED, e.getErrorCode());
+    }
+
+    @Test
+    void shouldFailWhenYearlyInvalidMonth() {
+        Map<String, Object> request = createBaseTemplateRequest();
+        request.put("taskType", "REPEAT");
+        request.put("typeConfig", "{\"frequency\":\"YEARLY\",\"trigger_day\":{\"month\":13,\"day\":15}}");
+
+        BusinessException e = assertThrows(BusinessException.class,
+                () -> taskTemplateService.createTemplate(request, familyId, accountId));
+        assertEquals(ErrorCode.TASK_TEMPLATE_VALIDATION_FAILED, e.getErrorCode());
+    }
+
+    @Test
+    void shouldFailWhenYearlyInvalidDay() {
+        Map<String, Object> request = createBaseTemplateRequest();
+        request.put("taskType", "REPEAT");
+        request.put("typeConfig", "{\"frequency\":\"YEARLY\",\"trigger_day\":{\"month\":6,\"day\":32}}");
+
+        BusinessException e = assertThrows(BusinessException.class,
+                () -> taskTemplateService.createTemplate(request, familyId, accountId));
+        assertEquals(ErrorCode.TASK_TEMPLATE_VALIDATION_FAILED, e.getErrorCode());
+    }
+
+    @Test
+    void shouldPassWhenYearlyWithValidMonthAndDay() {
+        Map<String, Object> request = createBaseTemplateRequest();
+        request.put("taskType", "REPEAT");
+        request.put("typeConfig", "{\"frequency\":\"YEARLY\",\"trigger_day\":{\"month\":6,\"day\":15}}");
+
+        doAnswer(invocation -> {
+            TaskTemplate t = invocation.getArgument(0);
+            t.setId(1L);
+            return null;
+        }).when(taskTemplateMapper).insert(any(TaskTemplate.class));
+        when(taskTemplateMapper.findById(1L)).thenReturn(Optional.of(createSampleTemplate()));
+
+        TaskTemplate result = taskTemplateService.createTemplate(request, familyId, accountId);
+        assertNotNull(result);
+    }
+
+    @Test
+    void shouldPassWhenDailyWithValidConfig() {
+        Map<String, Object> request = createBaseTemplateRequest();
+        request.put("taskType", "REPEAT");
+        request.put("typeConfig", "{\"frequency\":\"DAILY\"}");
+
+        doAnswer(invocation -> {
+            TaskTemplate t = invocation.getArgument(0);
+            t.setId(1L);
+            return null;
+        }).when(taskTemplateMapper).insert(any(TaskTemplate.class));
+        when(taskTemplateMapper.findById(1L)).thenReturn(Optional.of(createSampleTemplate()));
+
+        TaskTemplate result = taskTemplateService.createTemplate(request, familyId, accountId);
+        assertNotNull(result);
+    }
+
+    // === Task 2.2: STANDING sub-field validation ===
+
+    @Test
+    void shouldFailWhenStandingMissingMaxSubmissions() {
+        Map<String, Object> request = createBaseTemplateRequest();
+        request.put("taskType", "STANDING");
+        request.put("typeConfig", "{}");
+
+        BusinessException e = assertThrows(BusinessException.class,
+                () -> taskTemplateService.createTemplate(request, familyId, accountId));
+        assertEquals(ErrorCode.TASK_TEMPLATE_VALIDATION_FAILED, e.getErrorCode());
+    }
+
+    @Test
+    void shouldPassWhenStandingWithNullMaxSubmissions() {
+        Map<String, Object> request = createBaseTemplateRequest();
+        request.put("taskType", "STANDING");
+        request.put("typeConfig", "{\"max_submissions\":null}");
+
+        doAnswer(invocation -> {
+            TaskTemplate t = invocation.getArgument(0);
+            t.setId(1L);
+            return null;
+        }).when(taskTemplateMapper).insert(any(TaskTemplate.class));
+        when(taskTemplateMapper.findById(1L)).thenReturn(Optional.of(createSampleTemplate()));
+
+        TaskTemplate result = taskTemplateService.createTemplate(request, familyId, accountId);
+        assertNotNull(result);
+    }
+
+    @Test
+    void shouldFailWhenStandingMaxSubmissionsZero() {
+        Map<String, Object> request = createBaseTemplateRequest();
+        request.put("taskType", "STANDING");
+        request.put("typeConfig", "{\"max_submissions\":0}");
+
+        BusinessException e = assertThrows(BusinessException.class,
+                () -> taskTemplateService.createTemplate(request, familyId, accountId));
+        assertEquals(ErrorCode.TASK_TEMPLATE_VALIDATION_FAILED, e.getErrorCode());
+    }
+
+    @Test
+    void shouldFailWhenStandingMaxSubmissionsNegative() {
+        Map<String, Object> request = createBaseTemplateRequest();
+        request.put("taskType", "STANDING");
+        request.put("typeConfig", "{\"max_submissions\":-1}");
+
+        BusinessException e = assertThrows(BusinessException.class,
+                () -> taskTemplateService.createTemplate(request, familyId, accountId));
+        assertEquals(ErrorCode.TASK_TEMPLATE_VALIDATION_FAILED, e.getErrorCode());
+    }
+
+    @Test
+    void shouldFailWhenStandingMaxSubmissionsExceedsLimit() {
+        Map<String, Object> request = createBaseTemplateRequest();
+        request.put("taskType", "STANDING");
+        request.put("typeConfig", "{\"max_submissions\":10001}");
+
+        BusinessException e = assertThrows(BusinessException.class,
+                () -> taskTemplateService.createTemplate(request, familyId, accountId));
+        assertEquals(ErrorCode.TASK_TEMPLATE_VALIDATION_FAILED, e.getErrorCode());
+    }
+
+    @Test
+    void shouldPassWhenStandingWithValidMaxSubmissions() {
+        Map<String, Object> request = createBaseTemplateRequest();
+        request.put("taskType", "STANDING");
+        request.put("typeConfig", "{\"max_submissions\":5}");
+
+        doAnswer(invocation -> {
+            TaskTemplate t = invocation.getArgument(0);
+            t.setId(1L);
+            return null;
+        }).when(taskTemplateMapper).insert(any(TaskTemplate.class));
+        when(taskTemplateMapper.findById(1L)).thenReturn(Optional.of(createSampleTemplate()));
+
+        TaskTemplate result = taskTemplateService.createTemplate(request, familyId, accountId);
+        assertNotNull(result);
+    }
+
+    @Test
+    void shouldPassWhenStandingWithMaxSubmissionsAtLowerBound() {
+        Map<String, Object> request = createBaseTemplateRequest();
+        request.put("taskType", "STANDING");
+        request.put("typeConfig", "{\"max_submissions\":1}");
+
+        doAnswer(invocation -> {
+            TaskTemplate t = invocation.getArgument(0);
+            t.setId(1L);
+            return null;
+        }).when(taskTemplateMapper).insert(any(TaskTemplate.class));
+        when(taskTemplateMapper.findById(1L)).thenReturn(Optional.of(createSampleTemplate()));
+
+        TaskTemplate result = taskTemplateService.createTemplate(request, familyId, accountId);
+        assertNotNull(result);
+    }
+
+    @Test
+    void shouldPassWhenStandingWithMaxSubmissionsAtUpperBound() {
+        Map<String, Object> request = createBaseTemplateRequest();
+        request.put("taskType", "STANDING");
+        request.put("typeConfig", "{\"max_submissions\":10000}");
+
+        doAnswer(invocation -> {
+            TaskTemplate t = invocation.getArgument(0);
+            t.setId(1L);
+            return null;
+        }).when(taskTemplateMapper).insert(any(TaskTemplate.class));
+        when(taskTemplateMapper.findById(1L)).thenReturn(Optional.of(createSampleTemplate()));
+
+        TaskTemplate result = taskTemplateService.createTemplate(request, familyId, accountId);
+        assertNotNull(result);
+    }
+
+    // === Task 2.2: REPEAT monthly LAST_DAY and MID_MONTH modes ===
+
+    @Test
+    void shouldPassWhenMonthlyWithLastDayMode() {
+        Map<String, Object> request = createBaseTemplateRequest();
+        request.put("taskType", "REPEAT");
+        request.put("typeConfig", "{\"frequency\":\"MONTHLY\",\"trigger_day\":{\"mode\":\"LAST_DAY\"}}");
+
+        doAnswer(invocation -> {
+            TaskTemplate t = invocation.getArgument(0);
+            t.setId(1L);
+            return null;
+        }).when(taskTemplateMapper).insert(any(TaskTemplate.class));
+        when(taskTemplateMapper.findById(1L)).thenReturn(Optional.of(createSampleTemplate()));
+
+        TaskTemplate result = taskTemplateService.createTemplate(request, familyId, accountId);
+        assertNotNull(result);
+    }
+
+    @Test
+    void shouldPassWhenMonthlyWithMidMonthMode() {
+        Map<String, Object> request = createBaseTemplateRequest();
+        request.put("taskType", "REPEAT");
+        request.put("typeConfig", "{\"frequency\":\"MONTHLY\",\"trigger_day\":{\"mode\":\"MID_MONTH\"}}");
+
+        doAnswer(invocation -> {
+            TaskTemplate t = invocation.getArgument(0);
+            t.setId(1L);
+            return null;
+        }).when(taskTemplateMapper).insert(any(TaskTemplate.class));
+        when(taskTemplateMapper.findById(1L)).thenReturn(Optional.of(createSampleTemplate()));
+
+        TaskTemplate result = taskTemplateService.createTemplate(request, familyId, accountId);
+        assertNotNull(result);
+    }
+
+    // === Update: validateTypeConfig on update ===
+
+    @Test
+    void shouldFailUpdateTypeConfigWithInvalidValue() {
+        TaskTemplate template = createSampleTemplate();
+        template.setTaskType("LIMITED");
+        template.setTypeConfig("{\"end_date\":\"2026-12-31\"}");
+        template.setVersion(1);
+        when(taskTemplateMapper.findById(1L)).thenReturn(Optional.of(template));
+
+        Map<String, Object> request = new LinkedHashMap<>();
+        request.put("typeConfig", "{\"end_date\":null}");
+        request.put("version", 1);
+
+        BusinessException e = assertThrows(BusinessException.class,
+                () -> taskTemplateService.updateTemplate(1L, request, familyId, accountId));
+        assertEquals(ErrorCode.TASK_TEMPLATE_VALIDATION_FAILED, e.getErrorCode());
+    }
+
+    @Test
+    void shouldPassUpdateTypeConfigWithValidValue() {
+        TaskTemplate template = createSampleTemplate();
+        template.setTaskType("LIMITED");
+        template.setTypeConfig("{\"end_date\":\"2026-12-31\"}");
+        template.setVersion(1);
+        when(taskTemplateMapper.findById(1L)).thenReturn(Optional.of(template));
+        when(taskTemplateMapper.optimisticUpdate(1L, 1)).thenReturn(1);
+        when(taskTemplateMapper.findById(1L)).thenReturn(Optional.of(template));
+
+        Map<String, Object> request = new LinkedHashMap<>();
+        request.put("typeConfig", "{\"end_date\":\"2026-06-30\"}");
+        request.put("version", 1);
+
+        TaskTemplate result = taskTemplateService.updateTemplate(1L, request, familyId, accountId);
+        assertNotNull(result);
+        verify(taskTemplateMapper).optimisticUpdate(1L, 1);
     }
 
     // ========== Helpers ==========
