@@ -540,6 +540,69 @@ class TaskAssignmentServiceTest {
         assertNull(result.getSnapshotTemplateTypeConfig());
     }
 
+    // ========== Task 6.3: Template changes do not affect existing assignment snapshots ==========
+
+    @Test
+    void shouldNotAffectSnapshotWhenTemplateChangesAfterAssignment() {
+        // This verifies that after an assignment is created, modifying the template
+        // does not retroactively change the assignment's snapshot values.
+        Map<String, Object> request = new LinkedHashMap<>();
+        request.put("templateId", templateId);
+        request.put("difficultyId", difficultyId);
+        request.put("childId", childId);
+        request.put("deadline", LocalDateTime.now().plusDays(1).toString());
+
+        // Set up template with initial values
+        TaskTemplate template = createSampleTemplate();
+        template.setName("Original Name");
+        template.setCategory("Original Category");
+        template.setTaskType("LIMITED");
+        template.setTypeConfig("{\"end_date\":\"2026-12-31\"}");
+
+        TaskDifficulty difficulty = createSampleDifficulty();
+        difficulty.setName("Original Difficulty");
+        difficulty.setRewardPoints(10);
+        ChildProfile child = createSampleChild();
+
+        when(taskTemplateService.getActiveTemplate(templateId, familyId)).thenReturn(template);
+        when(taskTemplateService.getEnabledDifficulty(difficultyId, templateId)).thenReturn(difficulty);
+        when(taskChildMapper.findById(childId)).thenReturn(Optional.of(child));
+
+        // Capture the assignment as inserted
+        final TaskAssignment[] captured = new TaskAssignment[1];
+        doAnswer(invocation -> {
+            TaskAssignment a = invocation.getArgument(0);
+            a.setId(1L);
+            captured[0] = a;
+            return 1;
+        }).when(taskAssignmentMapper).insert(any(TaskAssignment.class));
+        doReturn(1).when(taskAssignmentSnapshotMapper).insert(any(TaskAssignmentSnapshot.class));
+
+        taskAssignmentService.createAssignment(request, familyId, accountId);
+
+        // Verify snapshot captured original values before template change
+        assertNotNull(captured[0]);
+        assertEquals("Original Name", captured[0].getSnapshotTemplateName());
+        assertEquals("Original Category", captured[0].getSnapshotTemplateCategory());
+        assertEquals("LIMITED", captured[0].getSnapshotTemplateTaskType());
+        assertEquals("{\"end_date\":\"2026-12-31\"}", captured[0].getSnapshotTemplateTypeConfig());
+        assertEquals("Original Difficulty", captured[0].getSnapshotDifficultyName());
+        assertEquals(Integer.valueOf(10), captured[0].getSnapshotDifficultyReward());
+
+        // Now simulate template being changed AFTER assignment creation
+        template.setName("Changed Name");
+        template.setCategory("Changed Category");
+        template.setTaskType("REPEAT");
+        template.setTypeConfig("{\"frequency\":\"DAILY\"}");
+        // The assignment's snapshot should still have the original values
+        assertEquals("Original Name", captured[0].getSnapshotTemplateName());
+        assertEquals("Original Category", captured[0].getSnapshotTemplateCategory());
+        assertEquals("LIMITED", captured[0].getSnapshotTemplateTaskType());
+        assertEquals("{\"end_date\":\"2026-12-31\"}", captured[0].getSnapshotTemplateTypeConfig());
+        assertEquals("Original Difficulty", captured[0].getSnapshotDifficultyName());
+        assertEquals(Integer.valueOf(10), captured[0].getSnapshotDifficultyReward());
+    }
+
     // ========== Helpers ==========
 
     private TaskTemplate createSampleTemplate() {
