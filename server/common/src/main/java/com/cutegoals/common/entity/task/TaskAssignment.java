@@ -75,6 +75,9 @@ public class TaskAssignment {
     @TableField("snapshot_difficulty_reward")
     private Integer snapshotDifficultyReward;
 
+    @TableField("submission_count")
+    private Integer submissionCount;
+
     @TableField(value = "created_at", fill = FieldFill.INSERT)
     private LocalDateTime createdAt;
 

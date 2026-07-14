@@ -44,6 +44,12 @@ public class TaskTemplate {
     @TableField("deleted_by")
     private Long deletedBy;
 
+    @TableField("task_type")
+    private String taskType;
+
+    @TableField("type_config")
+    private String typeConfig;
+
     @TableField(value = "created_at", fill = FieldFill.INSERT)
     private LocalDateTime createdAt;
 
