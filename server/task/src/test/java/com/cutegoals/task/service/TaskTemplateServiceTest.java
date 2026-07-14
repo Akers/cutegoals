@@ -529,6 +529,49 @@ class TaskTemplateServiceTest {
         verify(auditService).record(anyString(), eq(accountId), eq("SUCCESS"), anyString());
     }
 
+    @Test
+    void shouldEnableTemplateAndPersistToDb() {
+        TaskTemplate template = createSampleTemplate();
+        template.setEnabled(false);
+        template.setVersion(1);
+        when(taskTemplateMapper.findById(1L)).thenReturn(Optional.of(template));
+        when(taskTemplateMapper.setEnabled(1L, true, 1)).thenReturn(1);
+        when(taskTemplateMapper.findById(1L)).thenReturn(Optional.of(template));
+
+        TaskTemplate result = taskTemplateService.setTemplateEnabled(1L, true, familyId, accountId);
+        assertNotNull(result);
+        verify(taskTemplateMapper).setEnabled(1L, true, 1);
+        verify(auditService).record(anyString(), eq(accountId), eq("SUCCESS"), anyString());
+    }
+
+    @Test
+    void shouldDisableTemplateAndPersistToDb() {
+        TaskTemplate template = createSampleTemplate();
+        template.setEnabled(true);
+        template.setVersion(2);
+        when(taskTemplateMapper.findById(1L)).thenReturn(Optional.of(template));
+        when(taskTemplateMapper.setEnabled(1L, false, 2)).thenReturn(1);
+        when(taskTemplateMapper.findById(1L)).thenReturn(Optional.of(template));
+
+        TaskTemplate result = taskTemplateService.setTemplateEnabled(1L, false, familyId, accountId);
+        assertNotNull(result);
+        verify(taskTemplateMapper).setEnabled(1L, false, 2);
+        verify(auditService).record(anyString(), eq(accountId), eq("SUCCESS"), anyString());
+    }
+
+    @Test
+    void shouldThrowVersionConflictWhenEnableFails() {
+        TaskTemplate template = createSampleTemplate();
+        template.setEnabled(false);
+        template.setVersion(1);
+        when(taskTemplateMapper.findById(1L)).thenReturn(Optional.of(template));
+        when(taskTemplateMapper.setEnabled(1L, true, 1)).thenReturn(0);
+
+        BusinessException e = assertThrows(BusinessException.class,
+                () -> taskTemplateService.setTemplateEnabled(1L, true, familyId, accountId));
+        assertEquals(ErrorCode.TASK_TEMPLATE_VERSION_CONFLICT, e.getErrorCode());
+    }
+
     // ========== Role check ==========
 
     @Test

@@ -13,9 +13,9 @@ auto_transition: true
 base_ref: 396a7f25c604dcf7db412ab775ecb361b17f0341
 design_doc: null
 plan: null
-verify_result: pending
-verification_report: null
-branch_status: pending
+verify_result: fail
+verification_report: docs/superpowers/reports/2026-07-15-fix-parent-task-template-and-batch-assignment-verify.md
+branch_status: handled
 created_at: 2026-07-14
 verified_at: null
 archived: false

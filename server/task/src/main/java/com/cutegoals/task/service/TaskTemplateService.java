@@ -256,6 +256,9 @@ public class TaskTemplateService {
         }
         template.setVersion(clientVersion + 1);
 
+        // Persist the actual field changes (optimisticUpdate only increments version)
+        taskTemplateMapper.updateById(template);
+
         // Update difficulties if provided
         if (request.containsKey("difficulties")) {
             @SuppressWarnings("unchecked")
@@ -403,7 +406,7 @@ public class TaskTemplateService {
         }
 
         template.setEnabled(enabled);
-        int updated = taskTemplateMapper.optimisticUpdate(template.getId(), template.getVersion());
+        int updated = taskTemplateMapper.setEnabled(template.getId(), enabled, template.getVersion());
         if (updated == 0) {
             throw new BusinessException(ErrorCode.TASK_TEMPLATE_VERSION_CONFLICT);
         }

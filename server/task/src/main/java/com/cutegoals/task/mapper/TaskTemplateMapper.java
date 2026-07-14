@@ -25,6 +25,9 @@ public interface TaskTemplateMapper extends BaseMapper<TaskTemplate> {
     @Update("UPDATE task_template SET version = version + 1, updated_at = NOW() WHERE id = #{id} AND version = #{version}")
     int optimisticUpdate(@Param("id") Long id, @Param("version") Integer version);
 
+    @Update("UPDATE task_template SET enabled = #{enabled}, version = version + 1, updated_at = NOW() WHERE id = #{id} AND version = #{version}")
+    int setEnabled(@Param("id") Long id, @Param("enabled") boolean enabled, @Param("version") Integer version);
+
     @Select("SELECT * FROM task_template WHERE task_type = 'REPEAT' AND enabled = true AND deleted = false")
     List<TaskTemplate> findEnabledRepeatTemplates();
 }

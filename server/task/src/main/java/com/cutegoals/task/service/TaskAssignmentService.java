@@ -336,9 +336,18 @@ public class TaskAssignmentService {
         assignment.setSnapshotTemplateCategory(template.getCategory());
         assignment.setSnapshotTemplateIcon(template.getIcon());
         assignment.setSnapshotTemplateTaskType(template.getTaskType());
-        assignment.setSnapshotTemplateTypeConfig(template.getTypeConfig());
+        // PostgreSQL JSON 列对 null 写入较敏感，空对象兜底以避免类型不匹配
+        String typeConfig = template.getTypeConfig();
+        assignment.setSnapshotTemplateTypeConfig(typeConfig != null ? typeConfig : "{}");
         assignment.setSnapshotDifficultyName(difficulty.getName());
         assignment.setSnapshotDifficultyReward(difficulty.getRewardPoints());
+
+        // 避免数据库非空约束或快照不完整导致内部错误
+        if (template.getName() == null || template.getCategory() == null
+                || difficulty.getName() == null || difficulty.getRewardPoints() == null) {
+            throw new BusinessException(ErrorCode.TASK_ASSIGNMENT_TEMPLATE_INACTIVE,
+                    "Template or difficulty snapshot fields are incomplete");
+        }
 
         taskAssignmentMapper.insert(assignment);
 

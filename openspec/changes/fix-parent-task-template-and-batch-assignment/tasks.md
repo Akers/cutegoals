@@ -9,3 +9,6 @@
 - [x] 7. 运行前端格式化与类型检查（`npm run format` / `npm run lint` / `tsc --noEmit`）。
 - [x] 8. 运行后端相关测试（`TaskAssignmentServiceTest`）和构建，确保无回归。
 - [x] 9. 提交代码，并更新本任务清单。
+- [x] 10. 修复 `setTemplateEnabled` 未持久化 `enabled` 字段到数据库的问题。
+- [x] 11. 批量分配弹窗根据任务类型自动填入开始/结束日期，REPEAT 任务不显示结束日期。
+- [ ] 12. 诊断并修复批量分配 INTERNAL_ERROR（已在前端补齐日期校验、后端补齐 snapshot/typeConfig 空值保护，需用户提供服务器日志或重新构建后复测结果）。

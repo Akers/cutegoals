@@ -911,6 +911,8 @@ export function ParentTasksPage() {
   const startDate = useFormField();
   const endDate = useFormField();
   const { setValue: setDifficultyId } = difficultyId;
+  const { setValue: setStartDate } = startDate;
+  const { setValue: setEndDate } = endDate;
   const [childIds, setChildIds] = useState<number[]>([]);
   const online = useOnline();
   const [assigning, setAssigning] = useState(false);
@@ -935,6 +937,30 @@ export function ParentTasksPage() {
     }
   }, [selectedTemplate, enabledDifficulties, difficultyId.value, setDifficultyId]);
 
+  // 根据所选模板的任务类型自动填入日期
+  useEffect(() => {
+    if (!selectedTemplate) {
+      setStartDate('');
+      setEndDate('');
+      return;
+    }
+    const today = new Date().toISOString().split('T')[0];
+    if (selectedTemplate.taskType === 'LIMITED') {
+      try {
+        const config = selectedTemplate.typeConfig ? JSON.parse(selectedTemplate.typeConfig) : {};
+        setStartDate((config.start_date as string) || today);
+        setEndDate((config.end_date as string) || today);
+      } catch {
+        setStartDate(today);
+        setEndDate(today);
+      }
+    } else {
+      // REPEAT / STANDING：默认只填开始日期，结束日期与开始日期保持一致
+      setStartDate(today);
+      setEndDate(today);
+    }
+  }, [selectedTemplate, setStartDate, setEndDate]);
+
   const resetAssignForm = () => {
     templateId.reset();
     difficultyId.reset();
@@ -954,11 +980,14 @@ export function ParentTasksPage() {
       alert('请至少选择一个孩子');
       return;
     }
-    if (!startDate.value || !endDate.value) {
+    const isRepeat = selectedTemplate?.taskType === 'REPEAT';
+    const payloadStartDate = startDate.value;
+    const payloadEndDate = isRepeat ? payloadStartDate : endDate.value;
+    if (!payloadStartDate || !payloadEndDate) {
       alert('请填写开始日期和结束日期');
       return;
     }
-    if (startDate.value > endDate.value) {
+    if (payloadStartDate > payloadEndDate) {
       alert('开始日期不得晚于结束日期');
       return;
     }
@@ -967,8 +996,8 @@ export function ParentTasksPage() {
     const res = await getClient().post('/task-assignments/batch', {
       templateId: tId,
       difficultyId: dId,
-      startDate: startDate.value,
-      endDate: endDate.value,
+      startDate: payloadStartDate,
+      endDate: payloadEndDate,
       childIds,
       idempotencyKey,
     });
@@ -1100,9 +1129,11 @@ export function ParentTasksPage() {
           <FormField label="开始日期" htmlFor="assign-start-date">
             <Input id="assign-start-date" type="date" {...startDate.inputProps} />
           </FormField>
-          <FormField label="结束日期" htmlFor="assign-end-date">
-            <Input id="assign-end-date" type="date" {...endDate.inputProps} />
-          </FormField>
+          {selectedTemplate?.taskType !== 'REPEAT' && (
+            <FormField label="结束日期" htmlFor="assign-end-date">
+              <Input id="assign-end-date" type="date" {...endDate.inputProps} />
+            </FormField>
+          )}
           <Button onClick={handleAssign} isLoading={assigning} type="button" className="w-full">
             分配
           </Button>
