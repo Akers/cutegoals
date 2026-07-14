@@ -73,6 +73,8 @@ interface Difficulty {
   enabled: boolean;
 }
 
+type TaskType = 'LIMITED' | 'REPEAT' | 'STANDING';
+
 interface TaskTemplate {
   id: number;
   name: string;
@@ -82,6 +84,8 @@ interface TaskTemplate {
   enabled: boolean;
   version: number;
   recurrenceRule?: { ruleType: string };
+  taskType: TaskType;
+  typeConfig: string; // JSON string
 }
 
 interface TaskAssignment {
