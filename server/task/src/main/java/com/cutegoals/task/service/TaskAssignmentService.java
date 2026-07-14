@@ -335,6 +335,8 @@ public class TaskAssignmentService {
         assignment.setSnapshotTemplateDescription(template.getDescription());
         assignment.setSnapshotTemplateCategory(template.getCategory());
         assignment.setSnapshotTemplateIcon(template.getIcon());
+        assignment.setSnapshotTemplateTaskType(template.getTaskType());
+        assignment.setSnapshotTemplateTypeConfig(template.getTypeConfig());
         assignment.setSnapshotDifficultyName(difficulty.getName());
         assignment.setSnapshotDifficultyReward(difficulty.getRewardPoints());
 

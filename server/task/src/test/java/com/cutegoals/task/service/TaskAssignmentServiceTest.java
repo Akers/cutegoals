@@ -455,6 +455,8 @@ class TaskAssignmentServiceTest {
 
         TaskTemplate template = createSampleTemplate();
         template.setName("Snapshot Test");
+        template.setTaskType("REPEAT");
+        template.setTypeConfig("{\"interval\":\"daily\"}");
         TaskDifficulty difficulty = createSampleDifficulty();
         difficulty.setName("Expert");
         difficulty.setRewardPoints(50);
@@ -471,6 +473,8 @@ class TaskAssignmentServiceTest {
             assertEquals("Expert", a.getSnapshotDifficultyName());
             assertEquals(Integer.valueOf(50), a.getSnapshotDifficultyReward());
             assertEquals("Study", a.getSnapshotTemplateCategory());
+            assertEquals("REPEAT", a.getSnapshotTemplateTaskType());
+            assertEquals("{\"interval\":\"daily\"}", a.getSnapshotTemplateTypeConfig());
             return 1;
         }).when(taskAssignmentMapper).insert(any(TaskAssignment.class));
 
@@ -486,6 +490,56 @@ class TaskAssignmentServiceTest {
         verify(taskAssignmentSnapshotMapper).insert(any(TaskAssignmentSnapshot.class));
     }
 
+    @Test
+    void shouldSnapshotTaskTypeAndTypeConfigOnCreate() {
+        Map<String, Object> request = new LinkedHashMap<>();
+        request.put("templateId", templateId);
+        request.put("difficultyId", difficultyId);
+        request.put("childId", childId);
+        request.put("deadline", LocalDateTime.now().plusDays(1).toString());
+
+        TaskTemplate template = createSampleTemplate();
+        template.setTaskType("STANDING");
+        template.setTypeConfig("{\"maxStandingMinutes\":30}");
+        TaskDifficulty difficulty = createSampleDifficulty();
+        ChildProfile child = createSampleChild();
+
+        when(taskTemplateService.getActiveTemplate(templateId, familyId)).thenReturn(template);
+        when(taskTemplateService.getEnabledDifficulty(difficultyId, templateId)).thenReturn(difficulty);
+        when(taskChildMapper.findById(childId)).thenReturn(Optional.of(child));
+
+        final TaskAssignment[] captured = new TaskAssignment[1];
+        doAnswer(invocation -> {
+            TaskAssignment a = invocation.getArgument(0);
+            a.setId(1L);
+            captured[0] = a;
+            return 1;
+        }).when(taskAssignmentMapper).insert(any(TaskAssignment.class));
+
+        doReturn(1).when(taskAssignmentSnapshotMapper).insert(any(TaskAssignmentSnapshot.class));
+
+        taskAssignmentService.createAssignment(request, familyId, accountId);
+
+        assertNotNull(captured[0]);
+        assertEquals("STANDING", captured[0].getSnapshotTemplateTaskType());
+        assertEquals("{\"maxStandingMinutes\":30}", captured[0].getSnapshotTemplateTypeConfig());
+    }
+
+    @Test
+    void shouldNotAffectHistoricalNullRecords() {
+        // This verifies that existing assignments with NULL snapshot_template_task_type
+        // and snapshot_template_type_config remain untouched (no migration needed).
+        TaskAssignment historical = createSampleAssignment();
+        historical.setSnapshotTemplateTaskType(null);
+        historical.setSnapshotTemplateTypeConfig(null);
+
+        when(taskAssignmentMapper.findById(1L)).thenReturn(Optional.of(historical));
+
+        TaskAssignment result = taskAssignmentMapper.findById(1L).orElseThrow();
+        assertNull(result.getSnapshotTemplateTaskType());
+        assertNull(result.getSnapshotTemplateTypeConfig());
+    }
+
     // ========== Helpers ==========
 
     private TaskTemplate createSampleTemplate() {
@@ -498,6 +552,8 @@ class TaskAssignmentServiceTest {
         t.setEnabled(true);
         t.setDeleted(false);
         t.setVersion(1);
+        t.setTaskType("LIMITED");
+        t.setTypeConfig("{\"maxTimes\":3}");
         return t;
     }
 
