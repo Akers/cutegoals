@@ -233,3 +233,70 @@ MVP 每个实例 MUST 仅服务一个家庭。只有该家庭的家长角色 SHA
 - **Then**: 所有 `SET type_config = ...` 语句成功执行，生成合法 JSON 值
 - **And**: 同样的脚本在 H2 测试环境中也成功执行
 
+### Requirement: 前端模板管理支持任务类型选择与配置
+家长端任务模板管理 UI MUST 在创建和编辑模板时展示任务类型选择器，支持 `LIMITED`、`REPEAT`、`STANDING` 三种选项。选择不同任务类型时，表单 MUST 动态显示对应的配置字段：`LIMITED` 显示开始日期（可空）和结束日期；`REPEAT` 显示重复周期（DAILY/WEEKLY/MONTHLY/YEARLY）和触发日配置；`STANDING` 显示最大提交次数（可设为无限或正整数）。前端提交前 MUST 按后端期望的 JSON 结构组装 `typeConfig`，不得以错误结构调用 API。
+
+#### Scenario: 创建限时模板
+- **WHEN** 家长在模板表单中选择“限时任务”并填写结束日期
+- **THEN** 前端提交 `taskType=LIMITED` 与 `typeConfig={end_date:"2026-08-20"}` 到后端
+
+#### Scenario: 创建重复模板
+- **WHEN** 家长选择“重复任务”，设置频率为“每周”，并选择周三
+- **THEN** 前端提交 `taskType=REPEAT` 与 `typeConfig={frequency:"WEEKLY",trigger_day:{weekday:3}}`
+
+#### Scenario: 创建常驻模板并设置无限次
+- **WHEN** 家长选择“常驻任务”并勾选“无限次提交”
+- **THEN** 前端提交 `taskType=STANDING` 与 `typeConfig={max_submissions:null}`
+
+### Requirement: 模板列表接口支持按任务类型筛选
+后端 `GET /api/task-templates` 接口 MUST 支持 `taskType` 查询参数，允许传入单值或逗号分隔的多值。系统 MUST 返回当前家庭中 `task_type` 与查询值匹配的模板列表；传入未知任务类型值 MUST 返回错误码 `TASK_TEMPLATE_INVALID_QUERY`。
+
+#### Scenario: 按单值筛选
+- **WHEN** 家长请求 `GET /api/task-templates?taskType=REPEAT`
+- **THEN** 系统仅返回任务类型为 REPEAT 的模板
+
+#### Scenario: 按多值筛选
+- **WHEN** 家长请求 `GET /api/task-templates?taskType=LIMITED,STANDING`
+- **THEN** 系统返回 LIMITED 或 STANDING 类型的模板
+
+#### Scenario: 传入未知任务类型
+- **WHEN** 家长请求 `GET /api/task-templates?taskType=UNKNOWN`
+- **THEN** 系统返回错误码 `TASK_TEMPLATE_INVALID_QUERY`
+
+### Requirement: 后端完整校验任务类型与类型配置
+后端在创建和更新模板时 MUST 校验 `taskType` 必填且取值必须为 `LIMITED`、`REPEAT`、`STANDING` 之一；`typeConfig` 必填且结构必须与 `taskType` 匹配。校验失败 MUST 返回错误码 `TASK_TEMPLATE_VALIDATION_FAILED` 并附带字段级错误。`taskType` 字段 MUST NOT 在更新时修改；尝试修改 MUST 返回 `TASK_TEMPLATE_TYPE_IMMUTABLE` 且不增加模板版本。
+
+#### Scenario: 缺失 taskType
+- **WHEN** 家长提交创建模板请求但未提供 `taskType`
+- **THEN** 系统返回错误码 `TASK_TEMPLATE_VALIDATION_FAILED` 并提示 taskType 缺失
+
+#### Scenario: typeConfig 与 taskType 不匹配
+- **WHEN** 家长提交 `taskType=REPEAT` 但 `typeConfig` 缺少 `frequency`
+- **THEN** 系统返回错误码 `TASK_TEMPLATE_VALIDATION_FAILED` 并提示 typeConfig 不合法
+
+#### Scenario: 更新时修改 taskType
+- **WHEN** 家长更新模板时将 `taskType` 从 LIMITED 改为 STANDING
+- **THEN** 系统返回错误码 `TASK_TEMPLATE_TYPE_IMMUTABLE` 且版本不增加
+
+### Requirement: 任务分配创建时快照任务类型与类型配置
+创建任务分配时，系统 MUST 将当前模板的 `task_type` 和 `type_config` 写入 `task_assignment.snapshot_template_task_type` 和 `snapshot_template_type_config` 字段。模板后续修改 MUST NOT 影响既有分配中的快照字段。数据库表 MUST 支持这两个字段，并允许现有数据为 NULL（历史数据不回填）。
+
+#### Scenario: 新分配携带快照
+- **WHEN** 家长基于 `taskType=LIMITED` 的模板创建分配
+- **THEN** 系统创建的 `task_assignment` 记录包含 `snapshot_template_task_type=LIMITED` 和对应 `snapshot_template_type_config`
+
+#### Scenario: 模板修改不影响既有分配快照
+- **WHEN** 家长修改模板名称后，查询既有分配详情
+- **THEN** 系统展示的快照名称不变，且 `snapshot_template_task_type` 保持原值
+
+### Requirement: 新增错误码同步到前端
+后端已定义的 6 个错误码（`TASK_TEMPLATE_TYPE_IMMUTABLE`、`TASK_TEMPLATE_TYPE_CONFIG_MISMATCH`、`TASK_LIMITED_NOT_STARTED`、`TASK_LIMITED_EXPIRED`、`TASK_REPEAT_NOT_TRIGGER_DAY`、`TASK_STANDING_LIMIT_REACHED`）MUST 在前端 `ErrorCodes` 常量表和中文错误映射中同时存在。当后端返回这些错误码时，前端 MUST 展示对应中文提示，不得以“未知错误”兜底。
+
+#### Scenario: 错误码常量完整
+- **WHEN** 前端工程编译时
+- **THEN** `ErrorCodes` 包含全部 6 个新增错误码
+
+#### Scenario: 中文提示完整
+- **WHEN** 后端返回 `TASK_STANDING_LIMIT_REACHED`
+- **THEN** 前端展示中文提示“已达最大提交次数，不能再提交”
+

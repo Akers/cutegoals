@@ -2,6 +2,7 @@
 change: task-template-type-completion
 design-doc: docs/superpowers/specs/2026-07-14-task-template-type-completion-design.md
 base-ref: 8d16c5e0b5a37d7af15c4c062ec5dfc1de67a754
+archived-with: 2026-07-14-task-template-type-completion
 ---
 
 # task-template-type-completion 实施计划
@@ -15,6 +16,7 @@ base-ref: 8d16c5e0b5a37d7af15c4c062ec5dfc1de67a754
 > **实施顺序**：10 步（Design Doc §10 定义），按 数据库 → 后端 → 前端 → 测试推进
 > **测试策略**：Design Doc §8（后端单元测试 → 集成测试 → 前端测试 → 回归测试）
 
+archived-with: 2026-07-14-task-template-type-completion
 ---
 
 ## 计划概览
@@ -35,6 +37,7 @@ Phase 1 (DB 迁移) ──→ Phase 3 (快照写入)
 Phase 4 (前端错误码/类型) ──→ Phase 5 (前端UI) ──┘
 ```
 
+archived-with: 2026-07-14-task-template-type-completion
 ---
 
 ## 阶段 1：数据库迁移（2 子任务）
@@ -98,6 +101,7 @@ Phase 4 (前端错误码/类型) ──→ Phase 5 (前端UI) ──┘
   mvn -pl :task -am compile
   ```
 
+archived-with: 2026-07-14-task-template-type-completion
 ---
 
 ## 阶段 2：后端校验与接口补全（4 子任务）
@@ -217,6 +221,7 @@ Phase 4 (前端错误码/类型) ──→ Phase 5 (前端UI) ──┘
   mvn -pl :task -am test -Dtest=*TaskTemplateService*
   ```
 
+archived-with: 2026-07-14-task-template-type-completion
 ---
 
 ## 阶段 3：后端分配快照写入（1 子任务）
@@ -253,6 +258,7 @@ Phase 4 (前端错误码/类型) ──→ Phase 5 (前端UI) ──┘
   mvn -pl :task -am test -Dtest=*TaskAssignmentService*
   ```
 
+archived-with: 2026-07-14-task-template-type-completion
 ---
 
 ## 阶段 4：前端类型与错误码（3 子任务）
@@ -339,6 +345,7 @@ Phase 4 (前端错误码/类型) ──→ Phase 5 (前端UI) ──┘
   cd web && npx tsc -b --noEmit
   ```
 
+archived-with: 2026-07-14-task-template-type-completion
 ---
 
 ## 阶段 5：前端模板管理 UI（5 子任务）
@@ -505,6 +512,7 @@ Phase 4 (前端错误码/类型) ──→ Phase 5 (前端UI) ──┘
   # 手动浏览器验证：模板列表页筛选器正常交互
   ```
 
+archived-with: 2026-07-14-task-template-type-completion
 ---
 
 ## 阶段 6：测试与回归（6 子任务）
@@ -635,6 +643,7 @@ Phase 4 (前端错误码/类型) ──→ Phase 5 (前端UI) ──┘
   mvn test && cd web && npm run test && npm run build
   ```
 
+archived-with: 2026-07-14-task-template-type-completion
 ---
 
 ## 附加：Build 阶段 Verify Point 汇总
@@ -650,6 +659,7 @@ Phase 4 (前端错误码/类型) ──→ Phase 5 (前端UI) ──┘
 | 7 | 模板表单是组件还是内联 | DD §5.3 | 任务 5.1-5.4 实现方式 | 阶段 5 开始前 |
 | 8 | Testcontainers 是否已配置 | DD §8.2 | 任务 6.2 集成测试 | 阶段 6 开始前 |
 
+archived-with: 2026-07-14-task-template-type-completion
 ---
 
 ## 附加：Risks & Mitigations 摘要（来自 Design Doc §9）
@@ -661,6 +671,7 @@ Phase 4 (前端错误码/类型) ──→ Phase 5 (前端UI) ──┘
 | 3 | 多值 `taskType` 参数解析不一致 | 统一解析逗号分隔字符串，拒绝未知值 | 阶段 2 |
 | 4 | 数据库迁移失败 | 新增列 nullable，迁移脚本幂等可重试 | 阶段 1 |
 
+archived-with: 2026-07-14-task-template-type-completion
 ---
 
 ## 附加：Testing Strategy 汇总（来自 Design Doc §8）
@@ -676,6 +687,7 @@ Phase 4 (前端错误码/类型) ──→ Phase 5 (前端UI) ──┘
 | 全量前端测试 | `cd web && npm run test` | baseline 一致，0 新增失败 | 阶段 6 |
 | 全量前端构建 | `cd web && npm run build` | 构建产物正常 | 阶段 6 |
 
+archived-with: 2026-07-14-task-template-type-completion
 ---
 
 ## 附录：文件改动清单
@@ -694,3 +706,4 @@ Phase 4 (前端错误码/类型) ──→ Phase 5 (前端UI) ──┘
 | `web/src/shared/api/errors.ts` | 修改 | +6 行 | 错误码中文映射 |
 | `web/src/parent/pages/index.tsx` | 修改 | +100~150 行 | TaskTemplate 类型扩展 + 动态表单 + 列表筛选器 |
 | `web/src/parent/components/__tests__/TaskTypeForm.test.tsx` | 新建 | +~80 行 | 组件测试 |
+

@@ -2,6 +2,8 @@
 comet_change: task-template-type-completion
 role: technical-design
 canonical_spec: openspec
+archived-with: 2026-07-14-task-template-type-completion
+status: final
 ---
 
 # CuteGoals 2.0 任务模板属性补全设计文档
@@ -214,3 +216,4 @@ TASK_STANDING_LIMIT_REACHED: 'TASK_STANDING_LIMIT_REACHED',
 - `openspec/changes/task-template-type-completion/specs/task-template/spec.md` 是验收事实源。
 - 本 Design Doc 中所有技术决策均服务于该 delta spec 和 `openspec/specs/task-template/spec.md`，不引入新需求。
 - 若实施中发现 spec 仍存歧义，必须回写 spec 并重新运行 `openspec validate task-template-type-completion --strict`。
+
