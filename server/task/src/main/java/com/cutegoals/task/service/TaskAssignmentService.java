@@ -11,6 +11,8 @@ import com.cutegoals.common.entity.family.Family;
 import com.cutegoals.common.entity.task.*;
 import com.cutegoals.common.exception.BusinessException;
 import com.cutegoals.common.exception.ErrorCode;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.dao.DuplicateKeyException;
 import com.cutegoals.task.mapper.*;
 import lombok.RequiredArgsConstructor;
@@ -702,6 +704,9 @@ public class TaskAssignmentService {
         item.put("snapshotTemplateIcon", assignment.getSnapshotTemplateIcon());
         item.put("snapshotDifficultyName", assignment.getSnapshotDifficultyName());
         item.put("snapshotDifficultyReward", assignment.getSnapshotDifficultyReward());
+
+        // Task 11.3: STANDING submission count
+        item.put("submissionCount", assignment.getSubmissionCount());
 
         // Overdue is derived: strictly later than deadline
         boolean isOverdue = now.isAfter(assignment.getDeadline())

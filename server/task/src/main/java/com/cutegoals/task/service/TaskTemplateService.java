@@ -195,6 +195,15 @@ public class TaskTemplateService {
                     "Template was modified by another user. Current version: " + template.getVersion());
         }
 
+        // Task type is immutable after creation
+        if (request.containsKey("taskType")) {
+            String requestedType = (String) request.get("taskType");
+            if (!requestedType.equals(template.getTaskType())) {
+                throw new BusinessException(ErrorCode.TASK_TEMPLATE_TYPE_IMMUTABLE,
+                        "Task type cannot be changed after creation");
+            }
+        }
+
         // Update fields
         if (request.containsKey("name")) {
             String name = extractAndValidateString(request, "name", true, 1, NAME_MAX_LENGTH, "name");

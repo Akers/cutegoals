@@ -12,14 +12,18 @@ import com.cutegoals.common.entity.points.PointsLedger;
 import com.cutegoals.common.entity.task.TaskAssignment;
 import com.cutegoals.common.entity.task.TaskAttempt;
 import com.cutegoals.common.entity.task.TaskReview;
+import com.cutegoals.common.entity.task.TaskTemplate;
 import com.cutegoals.common.exception.BusinessException;
 import com.cutegoals.common.exception.ErrorCode;
 import com.cutegoals.points.mapper.PointsBalanceMapper;
 import com.cutegoals.points.mapper.PointsLedgerMapper;
 import com.cutegoals.task.mapper.TaskAssignmentMapper;
 import com.cutegoals.task.mapper.TaskChildMapper;
+import com.cutegoals.task.mapper.TaskTemplateMapper;
 import com.cutegoals.taskreview.mapper.TaskAttemptMapper;
 import com.cutegoals.taskreview.mapper.TaskReviewMapper;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,6 +55,8 @@ public class TaskReviewService {
     private final PointsLedgerMapper pointsLedgerMapper;
     private final PointsBalanceMapper pointsBalanceMapper;
     private final AuditService auditService;
+    private final TaskTemplateMapper taskTemplateMapper;
+    private final ObjectMapper objectMapper;
 
     private static final int DEFAULT_PAGE_SIZE = 20;
     private static final int MAX_PAGE_SIZE = 100;
@@ -155,6 +161,31 @@ public class TaskReviewService {
         if (isLate && "REJECT".equals(latePolicy)) {
             throw new BusinessException(ErrorCode.TASK_SUBMISSION_LATE_NOT_ALLOWED,
                     "Late submissions are not allowed for this task");
+        }
+
+        // Task 11.3: LIMITED type date window check
+        TaskTemplate template = taskTemplateMapper.findById(assignment.getTemplateId())
+                .orElseThrow(() -> new BusinessException(ErrorCode.TASK_TEMPLATE_NOT_FOUND));
+        if ("LIMITED".equals(template.getTaskType())) {
+            LocalDateTime limitedStart = parseLimitedDate(template.getTypeConfig(), "start_date");
+            LocalDateTime limitedEnd = parseLimitedDate(template.getTypeConfig(), "end_date");
+            if (limitedStart != null && now.isBefore(limitedStart)) {
+                throw new BusinessException(ErrorCode.TASK_TEMPLATE_LIMITED_NOT_STARTED,
+                        "This LIMITED task has not started yet (starts at: " + limitedStart + ")");
+            }
+            if (limitedEnd != null && now.isAfter(limitedEnd)) {
+                throw new BusinessException(ErrorCode.TASK_TEMPLATE_LIMITED_EXPIRED,
+                        "This LIMITED task has expired (ended at: " + limitedEnd + ")");
+            }
+        }
+        // STANDING: check if max submissions reached
+        if ("STANDING".equals(template.getTaskType())) {
+            Integer currentCount = assignment.getSubmissionCount();
+            Integer maxSubmissions = parseMaxSubmissions(template.getTypeConfig());
+            if (maxSubmissions != null && currentCount != null && currentCount >= maxSubmissions) {
+                throw new BusinessException(ErrorCode.TASK_ASSIGNMENT_STANDING_LIMIT_REACHED,
+                        "Maximum submissions reached for this STANDING task");
+            }
         }
 
         // Determine next attempt number
@@ -391,7 +422,28 @@ public class TaskReviewService {
 
         // Update assignment status to APPROVED
         assignment.setStatus("APPROVED");
+
+        // Task 11.3: STANDING type — increment submission_count
+        TaskTemplate template = taskTemplateMapper.findById(assignment.getTemplateId())
+                .orElse(null);
+        boolean standingCompleted = false;
+        if (template != null && "STANDING".equals(template.getTaskType())) {
+            int currentCount = assignment.getSubmissionCount() != null ? assignment.getSubmissionCount() : 0;
+            int newCount = currentCount + 1;
+            assignment.setSubmissionCount(newCount);
+            Integer maxSubmissions = parseMaxSubmissions(template.getTypeConfig());
+            if (maxSubmissions != null && newCount >= maxSubmissions) {
+                assignment.setStatus("COMPLETED");
+                standingCompleted = true;
+            }
+        }
+
         taskAssignmentMapper.updateById(assignment);
+
+        if (standingCompleted) {
+            log.info("STANDING task completed: assignmentId={}, submissions={}",
+                    assignment.getId(), assignment.getSubmissionCount());
+        }
 
         // Create EARN points ledger entry if reward > 0
         if (rewardPoints > 0) {
@@ -715,6 +767,52 @@ public class TaskReviewService {
         item.put("attempts", attemptData);
 
         return item;
+    }
+
+    // ========== Task 11.3: Type config helpers ==========
+
+    /**
+     * Parse a date field (start_date / end_date) from the type_config JSON.
+     * Returns null if the field is missing or invalid.
+     */
+    private LocalDateTime parseLimitedDate(String typeConfig, String field) {
+        if (typeConfig == null || typeConfig.isBlank()) {
+            return null;
+        }
+        try {
+            @SuppressWarnings("unchecked")
+            Map<String, Object> config = objectMapper.readValue(typeConfig, Map.class);
+            Object val = config.get(field);
+            if (val == null) {
+                return null;
+            }
+            return LocalDateTime.parse(val.toString());
+        } catch (JsonProcessingException | java.time.format.DateTimeParseException e) {
+            log.debug("Failed to parse {} from type_config: {}", field, e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Parse max_submissions from the STANDING type_config JSON.
+     * Returns null if not configured (unlimited submissions).
+     */
+    private Integer parseMaxSubmissions(String typeConfig) {
+        if (typeConfig == null || typeConfig.isBlank()) {
+            return null;
+        }
+        try {
+            @SuppressWarnings("unchecked")
+            Map<String, Object> config = objectMapper.readValue(typeConfig, Map.class);
+            Object val = config.get("max_submissions");
+            if (val == null) {
+                return null;
+            }
+            return ((Number) val).intValue();
+        } catch (JsonProcessingException | ClassCastException e) {
+            log.debug("Failed to parse max_submissions from type_config: {}", e.getMessage());
+            return null;
+        }
     }
 
     private Map<String, Object> buildApprovalResult(TaskReview review, Long attemptId) {

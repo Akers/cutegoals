@@ -459,6 +459,41 @@ class TaskTemplateServiceTest {
         assertEquals(ErrorCode.TASK_TEMPLATE_VERSION_CONFLICT, e.getErrorCode());
     }
 
+    // ========== Task 11.3: Type Immutability ==========
+
+    @Test
+    void shouldRejectTaskTypeChange() {
+        TaskTemplate template = createSampleTemplate();
+        template.setTaskType("LIMITED");
+        when(taskTemplateMapper.findById(1L)).thenReturn(Optional.of(template));
+
+        Map<String, Object> request = new LinkedHashMap<>();
+        request.put("taskType", "STANDING");
+        request.put("version", 1);
+
+        BusinessException e = assertThrows(BusinessException.class,
+                () -> taskTemplateService.updateTemplate(1L, request, familyId, accountId));
+        assertEquals(ErrorCode.TASK_TEMPLATE_TYPE_IMMUTABLE, e.getErrorCode());
+    }
+
+    @Test
+    void shouldAllowSameTaskTypeInUpdate() {
+        TaskTemplate template = createSampleTemplate();
+        template.setTaskType("LIMITED");
+        template.setVersion(1);
+        when(taskTemplateMapper.findById(1L)).thenReturn(Optional.of(template));
+        when(taskTemplateMapper.optimisticUpdate(1L, 1)).thenReturn(1);
+        when(taskTemplateMapper.findById(1L)).thenReturn(Optional.of(template));
+
+        Map<String, Object> request = new LinkedHashMap<>();
+        request.put("taskType", "LIMITED");
+        request.put("version", 1);
+
+        TaskTemplate result = taskTemplateService.updateTemplate(1L, request, familyId, accountId);
+        assertNotNull(result);
+        verify(taskTemplateMapper).optimisticUpdate(1L, 1);
+    }
+
     @Test
     void shouldSuccessfullyUpdateWithCorrectVersion() {
         TaskTemplate template = createSampleTemplate();
@@ -524,6 +559,8 @@ class TaskTemplateServiceTest {
         t.setEnabled(true);
         t.setDeleted(false);
         t.setVersion(1);
+        t.setTaskType("LIMITED");
+        t.setTypeConfig(null);
         t.setCreatedAt(LocalDateTime.now());
         t.setUpdatedAt(LocalDateTime.now());
         return t;

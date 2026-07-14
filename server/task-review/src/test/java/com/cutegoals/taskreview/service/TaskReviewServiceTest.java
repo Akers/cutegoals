@@ -10,6 +10,7 @@ import com.cutegoals.common.entity.points.PointsLedger;
 import com.cutegoals.common.entity.task.TaskAssignment;
 import com.cutegoals.common.entity.task.TaskAttempt;
 import com.cutegoals.common.entity.task.TaskReview;
+import com.cutegoals.common.entity.task.TaskTemplate;
 import com.cutegoals.common.exception.BusinessException;
 import com.cutegoals.common.exception.ErrorCode;
 import com.cutegoals.common.entity.points.PointsBalance;
@@ -18,8 +19,10 @@ import com.cutegoals.points.mapper.PointsBalanceMapper;
 import com.cutegoals.points.mapper.PointsLedgerMapper;
 import com.cutegoals.task.mapper.TaskAssignmentMapper;
 import com.cutegoals.task.mapper.TaskChildMapper;
+import com.cutegoals.task.mapper.TaskTemplateMapper;
 import com.cutegoals.taskreview.mapper.TaskAttemptMapper;
 import com.cutegoals.taskreview.mapper.TaskReviewMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -45,6 +48,8 @@ class TaskReviewServiceTest {
     @Mock private PointsLedgerMapper pointsLedgerMapper;
     @Mock private PointsBalanceMapper pointsBalanceMapper;
     @Mock private AuditService auditService;
+    @Mock private TaskTemplateMapper taskTemplateMapper;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     private TaskReviewService taskReviewService;
 
@@ -59,7 +64,7 @@ class TaskReviewServiceTest {
         taskReviewService = new TaskReviewService(
                 taskAttemptMapper, taskReviewMapper, taskAssignmentMapper,
                 taskChildMapper, familyMapper, pointsLedgerMapper,
-                pointsBalanceMapper, auditService);
+                pointsBalanceMapper, auditService, taskTemplateMapper, objectMapper);
     }
 
     // ========== Task 4.1: Submission ==========
@@ -76,6 +81,7 @@ class TaskReviewServiceTest {
 
         when(taskAttemptMapper.getMaxAttemptNumber(assignmentId, childId)).thenReturn(0);
         when(taskAttemptMapper.findByIdempotencyKey(childId, "idem-001")).thenReturn(Optional.empty());
+        when(taskTemplateMapper.findById(assignment.getTemplateId())).thenReturn(Optional.of(createDefaultTemplate()));
 
         doAnswer(invocation -> {
             TaskAttempt a = invocation.getArgument(0);
@@ -234,6 +240,7 @@ class TaskReviewServiceTest {
 
         when(taskAttemptMapper.findByIdempotencyKey(childId, "idem-002")).thenReturn(Optional.empty());
         when(taskAttemptMapper.getMaxAttemptNumber(assignmentId, childId)).thenReturn(0);
+        when(taskTemplateMapper.findById(assignment.getTemplateId())).thenReturn(Optional.of(createDefaultTemplate()));
 
         doAnswer(invocation -> {
             TaskAttempt a = invocation.getArgument(0);
@@ -263,6 +270,7 @@ class TaskReviewServiceTest {
 
         when(taskAttemptMapper.findByIdempotencyKey(childId, "idem-003")).thenReturn(Optional.empty());
         when(taskAttemptMapper.getMaxAttemptNumber(assignmentId, childId)).thenReturn(0);
+        when(taskTemplateMapper.findById(assignment.getTemplateId())).thenReturn(Optional.of(createDefaultTemplate()));
 
         doAnswer(invocation -> {
             TaskAttempt a = invocation.getArgument(0);
@@ -360,6 +368,7 @@ class TaskReviewServiceTest {
 
         when(taskAttemptMapper.findByIdempotencyKey(childId, "idem-004")).thenReturn(Optional.empty());
         when(taskAttemptMapper.getMaxAttemptNumber(assignmentId, childId)).thenReturn(1); // One previous attempt
+        when(taskTemplateMapper.findById(assignment.getTemplateId())).thenReturn(Optional.of(createDefaultTemplate()));
 
         doAnswer(invocation -> {
             TaskAttempt a = invocation.getArgument(0);
@@ -583,6 +592,143 @@ class TaskReviewServiceTest {
         assertEquals(ErrorCode.TASK_REVIEW_ALREADY_DECIDED, ex.getErrorCode());
     }
 
+    // ========== Task 11.3: STANDING ==========
+
+    @Test
+    void shouldIncrementSubmissionCountOnStandingApproval() throws Exception {
+        TaskAssignment assignment = createSampleAssignment("SUBMITTED", false);
+        assignment.setSubmissionCount(0);
+        assignment.setSnapshotDifficultyReward(0); // No points to avoid ledger mock
+        TaskAttempt attempt = createSampleAttempt(1);
+        TaskTemplate template = createSampleTemplate("STANDING", "{\"max_submissions\":5}");
+
+        when(taskAttemptMapper.findByIdForUpdate(attemptId)).thenReturn(Optional.of(attempt));
+        when(taskAssignmentMapper.findById(attempt.getAssignmentId())).thenReturn(Optional.of(assignment));
+        when(taskAttemptMapper.getMaxAttemptNumber(assignmentId, childId)).thenReturn(1);
+        when(taskReviewMapper.findByAttemptIdForUpdate(attemptId)).thenReturn(Optional.empty());
+        when(taskTemplateMapper.findById(assignment.getTemplateId())).thenReturn(Optional.of(template));
+
+        Map<String, Object> request = new LinkedHashMap<>();
+        request.put("reason", "Good job!");
+        taskReviewService.approveAttempt(attemptId, request, familyId, accountId);
+
+        assertEquals(Integer.valueOf(1), assignment.getSubmissionCount());
+        assertEquals("APPROVED", assignment.getStatus());
+        verify(taskAssignmentMapper).updateById(assignment);
+    }
+
+    @Test
+    void shouldCompleteStandingTaskWhenMaxReached() throws Exception {
+        TaskAssignment assignment = createSampleAssignment("SUBMITTED", false);
+        assignment.setSubmissionCount(4);
+        assignment.setSnapshotDifficultyReward(0); // No points to avoid ledger mock
+        TaskAttempt attempt = createSampleAttempt(1);
+        TaskTemplate template = createSampleTemplate("STANDING", "{\"max_submissions\":5}");
+
+        when(taskAttemptMapper.findByIdForUpdate(attemptId)).thenReturn(Optional.of(attempt));
+        when(taskAssignmentMapper.findById(attempt.getAssignmentId())).thenReturn(Optional.of(assignment));
+        when(taskAttemptMapper.getMaxAttemptNumber(assignmentId, childId)).thenReturn(1);
+        when(taskReviewMapper.findByAttemptIdForUpdate(attemptId)).thenReturn(Optional.empty());
+        when(taskTemplateMapper.findById(assignment.getTemplateId())).thenReturn(Optional.of(template));
+
+        Map<String, Object> request = new LinkedHashMap<>();
+        request.put("reason", "Good job!");
+        taskReviewService.approveAttempt(attemptId, request, familyId, accountId);
+
+        assertEquals(Integer.valueOf(5), assignment.getSubmissionCount());
+        assertEquals("COMPLETED", assignment.getStatus());
+        verify(taskAssignmentMapper).updateById(assignment);
+    }
+
+    @Test
+    void shouldRejectStandingSubmissionWhenMaxReached() throws Exception {
+        TaskAssignment assignment = createSampleAssignment("PENDING", false);
+        assignment.setSubmissionCount(5);
+        TaskTemplate template = createSampleTemplate("STANDING", "{\"max_submissions\":5}");
+
+        when(taskAssignmentMapper.findByIdForUpdate(assignmentId)).thenReturn(Optional.of(assignment));
+        when(taskTemplateMapper.findById(assignment.getTemplateId())).thenReturn(Optional.of(template));
+
+        Map<String, Object> request = new LinkedHashMap<>();
+        request.put("assignmentId", assignmentId);
+        request.put("content", "Attempt after limit");
+        request.put("idempotencyKey", "standing-limit-test");
+
+        BusinessException ex = assertThrows(BusinessException.class,
+                () -> taskReviewService.submitTask(request, childId, familyId, accountId));
+        assertEquals(ErrorCode.TASK_ASSIGNMENT_STANDING_LIMIT_REACHED, ex.getErrorCode());
+    }
+
+    // ========== Task 11.3: LIMITED ==========
+
+    @Test
+    void shouldRejectLimitedSubmissionBeforeStartDate() throws Exception {
+        TaskAssignment assignment = createSampleAssignment("PENDING", false);
+        TaskTemplate template = createSampleTemplate("LIMITED",
+                "{\"start_date\":\"2099-01-01T00:00:00\",\"end_date\":\"2099-12-31T23:59:59\"}");
+
+        when(taskAssignmentMapper.findByIdForUpdate(assignmentId)).thenReturn(Optional.of(assignment));
+        when(taskTemplateMapper.findById(assignment.getTemplateId())).thenReturn(Optional.of(template));
+
+        Map<String, Object> request = new LinkedHashMap<>();
+        request.put("assignmentId", assignmentId);
+        request.put("content", "Too early attempt");
+        request.put("idempotencyKey", "limited-start-test");
+
+        BusinessException ex = assertThrows(BusinessException.class,
+                () -> taskReviewService.submitTask(request, childId, familyId, accountId));
+        assertEquals(ErrorCode.TASK_TEMPLATE_LIMITED_NOT_STARTED, ex.getErrorCode());
+    }
+
+    @Test
+    void shouldRejectLimitedSubmissionAfterEndDate() throws Exception {
+        TaskAssignment assignment = createSampleAssignment("PENDING", false);
+        TaskTemplate template = createSampleTemplate("LIMITED",
+                "{\"start_date\":\"2020-01-01T00:00:00\",\"end_date\":\"2020-12-31T23:59:59\"}");
+
+        when(taskAssignmentMapper.findByIdForUpdate(assignmentId)).thenReturn(Optional.of(assignment));
+        when(taskTemplateMapper.findById(assignment.getTemplateId())).thenReturn(Optional.of(template));
+
+        Map<String, Object> request = new LinkedHashMap<>();
+        request.put("assignmentId", assignmentId);
+        request.put("content", "Too late attempt");
+        request.put("idempotencyKey", "limited-end-test");
+
+        BusinessException ex = assertThrows(BusinessException.class,
+                () -> taskReviewService.submitTask(request, childId, familyId, accountId));
+        assertEquals(ErrorCode.TASK_TEMPLATE_LIMITED_EXPIRED, ex.getErrorCode());
+    }
+
+    @Test
+    void shouldAllowLimitedSubmissionWithinWindow() throws Exception {
+        TaskAssignment assignment = createSampleAssignment("PENDING", false);
+        LocalDateTime now = LocalDateTime.now();
+        String startDate = now.minusDays(1).toString();
+        String endDate = now.plusDays(1).toString();
+        TaskTemplate template = createSampleTemplate("LIMITED",
+                "{\"start_date\":\"" + startDate + "\",\"end_date\":\"" + endDate + "\"}");
+
+        when(taskAssignmentMapper.findByIdForUpdate(assignmentId)).thenReturn(Optional.of(assignment));
+        when(taskAttemptMapper.getMaxAttemptNumber(assignmentId, childId)).thenReturn(0);
+        when(taskAttemptMapper.findByIdempotencyKey(childId, "limited-ok-test")).thenReturn(Optional.empty());
+        when(taskTemplateMapper.findById(assignment.getTemplateId())).thenReturn(Optional.of(template));
+        doAnswer(invocation -> {
+            TaskAttempt a = invocation.getArgument(0);
+            a.setId(attemptId);
+            return null;
+        }).when(taskAttemptMapper).insert(any(TaskAttempt.class));
+
+        Map<String, Object> request = new LinkedHashMap<>();
+        request.put("assignmentId", assignmentId);
+        request.put("content", "On-time attempt");
+        request.put("idempotencyKey", "limited-ok-test");
+
+        TaskAttempt result = taskReviewService.submitTask(request, childId, familyId, accountId);
+        assertNotNull(result);
+        assertEquals(attemptId, result.getId());
+        verify(taskAttemptMapper).insert(any(TaskAttempt.class));
+    }
+
     // ========== Helpers ==========
 
     private TaskAssignment createSampleAssignment(String status, boolean cancelled) {
@@ -601,6 +747,24 @@ class TaskReviewServiceTest {
         a.setSnapshotDifficultyReward(5);
         a.setVersion(1);
         return a;
+    }
+
+    private TaskTemplate createSampleTemplate(String taskType, String typeConfig) {
+        TaskTemplate t = new TaskTemplate();
+        t.setId(10L);
+        t.setFamilyId(familyId);
+        t.setName("Test Template");
+        t.setCategory("Test");
+        t.setTaskType(taskType);
+        t.setTypeConfig(typeConfig);
+        t.setEnabled(true);
+        t.setDeleted(false);
+        return t;
+    }
+
+    /** Template with no date restrictions — passes all LIMITED/STANDING checks. */
+    private TaskTemplate createDefaultTemplate() {
+        return createSampleTemplate("LIMITED", null);
     }
 
     private TaskAttempt createSampleAttempt(int attemptNumber) {
