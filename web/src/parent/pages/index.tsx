@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getClient } from '@shared/api';
+import type { ApiError } from '@shared/api';
 import {
   Button,
   CardSection,
@@ -22,6 +23,8 @@ import {
 import { useAuth } from '@shared/auth';
 import { useApi, useFormField } from '@shared/hooks/useApi';
 import { useOnline } from '@shared/theme';
+import { TaskTypeConfigForms, type TaskTypeValue, type TypeConfigValue } from '@parent/components/TaskTypeConfigForms';
+import { TaskTypeFilter } from '@parent/components/TaskTypeFilter';
 
 // 后端分页响应统一契约：{content,page,pageSize,totalElements,totalPages}
 interface PageResult<T> {
@@ -586,15 +589,47 @@ export function ParentChildrenPage() {
 }
 
 export function ParentTemplatesPage() {
-  const { items, loading, error, refetch } = usePaginatedData<TaskTemplate>('/task-templates');
+  const [page] = useState(1);
+  const [pageSize] = useState(20);
+  const [items, setItems] = useState<TaskTemplate[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<ApiError | undefined>();
   const [showModal, setShowModal] = useState(false);
   const [editing, setEditing] = useState<TaskTemplate | null>(null);
   const title = useFormField();
   const description = useFormField();
   const category = useFormField();
   const basePoints = useFormField('10');
+  const [taskType, setTaskType] = useState<TaskTypeValue | ''>('');
+  const [typeConfig, setTypeConfig] = useState<TypeConfigValue>({});
+  const [selectedTypes, setSelectedTypes] = useState<TaskTypeValue[]>([]);
   const online = useOnline();
   const [saving, setSaving] = useState(false);
+
+  // 动态获取模板列表（支持 taskType 筛选）
+  const fetchTemplates = useCallback(async () => {
+    if (!online) {
+      setError({ error_code: 'NETWORK_ERROR', message: '当前处于离线状态' });
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+    setError(undefined);
+    const filterParam = selectedTypes.length > 0 ? `&taskType=${selectedTypes.join(',')}` : '';
+    const response = await getClient().get<PageResult<TaskTemplate>>(
+      `/task-templates?page=${page}&pageSize=${pageSize}${filterParam}`,
+    );
+    if (response.error) {
+      setError(response.error);
+    } else {
+      setItems(response.data?.content ?? []);
+    }
+    setLoading(false);
+  }, [online, page, pageSize, selectedTypes]);
+
+  useEffect(() => {
+    fetchTemplates();
+  }, [fetchTemplates]);
 
   const openNew = () => {
     setEditing(null);
@@ -602,6 +637,8 @@ export function ParentTemplatesPage() {
     description.reset();
     category.reset();
     basePoints.setValue('10');
+    setTaskType('');
+    setTypeConfig({});
     setShowModal(true);
   };
 
@@ -611,6 +648,13 @@ export function ParentTemplatesPage() {
     description.setValue(t.description ?? '');
     category.setValue(t.category ?? '');
     basePoints.setValue(String(t.difficulties?.[0]?.rewardPoints ?? 10));
+    setTaskType(t.taskType ?? '');
+    try {
+      const parsed = t.typeConfig ? JSON.parse(t.typeConfig) : {};
+      setTypeConfig(parsed);
+    } catch {
+      setTypeConfig({});
+    }
     setShowModal(true);
   };
 
@@ -624,6 +668,11 @@ export function ParentTemplatesPage() {
         { name: '标准', displayOrder: 1, rewardPoints: Number(basePoints.value) || 1, enabled: true },
       ],
     };
+    // 添加任务类型和配置
+    if (taskType) {
+      payload.taskType = taskType;
+      payload.typeConfig = JSON.stringify(typeConfig);
+    }
     if (editing) {
       payload.version = editing.version;
       const res = await getClient().put(`/task-templates/${editing.id}`, payload);
@@ -634,17 +683,17 @@ export function ParentTemplatesPage() {
     }
     setSaving(false);
     setShowModal(false);
-    await refetch();
+    await fetchTemplates();
   };
 
   const toggleEnabled = async (t: TaskTemplate) => {
     await getClient().put(`/task-templates/${t.id}/enabled`, { enabled: !t.enabled });
-    await refetch();
+    await fetchTemplates();
   };
 
-  if (!online) return <PageShell title="任务模板"><OfflineState onRetry={refetch} /></PageShell>;
+  if (!online) return <PageShell title="任务模板"><OfflineState onRetry={fetchTemplates} /></PageShell>;
   if (loading) return <PageShell title="任务模板"><LoadingState /></PageShell>;
-  if (error) return <PageShell title="任务模板"><ErrorState onRetry={refetch} message={error.message} /></PageShell>;
+  if (error) return <PageShell title="任务模板"><ErrorState onRetry={fetchTemplates} message={error.message} /></PageShell>;
 
   return (
     <PageShell
@@ -655,6 +704,9 @@ export function ParentTemplatesPage() {
         </Button>
       }
     >
+      {/* 任务类型筛选器 */}
+      <TaskTypeFilter selected={selectedTypes} onChange={setSelectedTypes} />
+
       <div className="grid grid-cols-1 gap-3">
         {items.map((t) => (
           <div key={t.id} className="cg-card p-4">
@@ -665,6 +717,11 @@ export function ParentTemplatesPage() {
                 <div className="mt-1 flex gap-2 text-sm">
                   <span className="rounded-cg-sm bg-cg-surface-raised px-2 py-0.5">{t.category}</span>
                   <span className="rounded-cg-sm bg-cg-surface-raised px-2 py-0.5">{t.difficulties?.[0]?.rewardPoints ?? '-'} 积分</span>
+                  {t.taskType && (
+                    <span className="rounded-cg-sm bg-cg-surface-raised px-2 py-0.5">
+                      {t.taskType === 'LIMITED' ? '限时' : t.taskType === 'REPEAT' ? '重复' : '常驻'}
+                    </span>
+                  )}
                 </div>
               </div>
               <div className="flex gap-2">
@@ -696,6 +753,15 @@ export function ParentTemplatesPage() {
           <FormField label="基础积分" htmlFor="tpl-points">
             <Input id="tpl-points" type="number" {...basePoints.inputProps} />
           </FormField>
+
+          {/* 任务类型选择器和配置表单 */}
+          <TaskTypeConfigForms
+            taskType={taskType}
+            onTaskTypeChange={setTaskType}
+            typeConfig={typeConfig}
+            onTypeConfigChange={setTypeConfig}
+          />
+
           <Button onClick={handleSave} isLoading={saving} type="button" className="w-full">
             保存
           </Button>
