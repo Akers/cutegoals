@@ -28,12 +28,12 @@ WHERE t.type_config IS NULL
   );
 
 -- Migrate CUSTOM_WEEKDAYS → WEEKLY with first custom weekday.
--- Uses SUBSTR/INSTR instead of SPLIT_PART for H2 compatibility.
+-- Uses POSITION(...) instead of INSTR for PostgreSQL/H2 compatibility.
 UPDATE task_template t
 SET type_config = '{"frequency":"WEEKLY","trigger_day":{"weekday":' ||
     TRIM(SUBSTR(r.custom_weekdays, 1, CASE
-        WHEN INSTR(r.custom_weekdays, ',') > 0
-        THEN INSTR(r.custom_weekdays, ',') - 1
+        WHEN POSITION(',' IN r.custom_weekdays) > 0
+        THEN POSITION(',' IN r.custom_weekdays) - 1
         ELSE LENGTH(r.custom_weekdays)
     END)) || '}}'
 FROM task_recurrence_rule r
