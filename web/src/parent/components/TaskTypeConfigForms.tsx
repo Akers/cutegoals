@@ -14,14 +14,14 @@ export interface TaskTypeConfigFormsProps {
 }
 
 // ---- 星期标签 ----
-const WEEKDAY_LABELS: { value: string; label: string }[] = [
-  { value: '1', label: '周一' },
-  { value: '2', label: '周二' },
-  { value: '3', label: '周三' },
-  { value: '4', label: '周四' },
-  { value: '5', label: '周五' },
-  { value: '6', label: '周六' },
-  { value: '7', label: '周日' },
+const WEEKDAY_LABELS: { value: number; label: string }[] = [
+  { value: 1, label: '周一' },
+  { value: 2, label: '周二' },
+  { value: 3, label: '周三' },
+  { value: 4, label: '周四' },
+  { value: 5, label: '周五' },
+  { value: 6, label: '周六' },
+  { value: 7, label: '周日' },
 ];
 
 // ---- LIMITED 子表单 ----
@@ -73,6 +73,15 @@ function LimitedConfigForm({
 // ---- REPEAT 子表单 ----
 type Frequency = 'DAILY' | 'WEEKLY' | 'MONTHLY' | 'YEARLY';
 
+/** 从 config 中提取 trigger_day 的指定字段 */
+function getTriggerField<T>(config: TypeConfigValue, key: string, fallback: T): T {
+  const td = config.trigger_day;
+  if (td && typeof td === 'object' && key in (td as Record<string, unknown>)) {
+    return (td as Record<string, unknown>)[key] as T;
+  }
+  return fallback;
+}
+
 function RepeatConfigForm({
   config,
   onChange,
@@ -83,85 +92,88 @@ function RepeatConfigForm({
   const [frequency, setFrequency] = useState<Frequency>(
     (config.frequency as Frequency) ?? 'DAILY',
   );
-  const [triggerDays, setTriggerDays] = useState<string[]>(
-    config.trigger_day ? String(config.trigger_day).split(',').filter(Boolean) : [],
+  const [weekday, setWeekday] = useState<number | null>(
+    getTriggerField<number | null>(config, 'weekday', null),
   );
   const [monthlyMode, setMonthlyMode] = useState(
-    (config.trigger_day as string) ?? 'FIRST_DAY',
+    getTriggerField<string>(config, 'mode', 'FIRST_DAY'),
   );
-  const [yearMonth, setYearMonth] = useState('1');
-  const [yearDay, setYearDay] = useState('1');
+  const [yearMonth, setYearMonth] = useState(
+    String(getTriggerField<number>(config, 'month', 1)),
+  );
+  const [yearDay, setYearDay] = useState(
+    String(getTriggerField<number>(config, 'day', 1)),
+  );
 
+  // 外部 config 变化时同步到本地状态
   useEffect(() => {
     setFrequency((config.frequency as Frequency) ?? 'DAILY');
-    if (config.frequency === 'WEEKLY' && config.trigger_day) {
-      setTriggerDays(String(config.trigger_day).split(',').filter(Boolean));
+    const td = config.trigger_day;
+    if (td && typeof td === 'object') {
+      const obj = td as Record<string, unknown>;
+      setWeekday('weekday' in obj ? (Number(obj.weekday) || null) : null);
+      setMonthlyMode('mode' in obj ? ((obj.mode as string) ?? 'FIRST_DAY') : 'FIRST_DAY');
+      setYearMonth('month' in obj ? String(obj.month ?? 1) : '1');
+      setYearDay('day' in obj ? String(obj.day ?? 1) : '1');
+    } else {
+      setWeekday(null);
+      setMonthlyMode('FIRST_DAY');
+      setYearMonth('1');
+      setYearDay('1');
     }
   }, [config.frequency, config.trigger_day]);
 
-  const buildConfig = useCallback(
-    (freq: Frequency, tDays: string[], mMode?: string): TypeConfigValue => {
-      const cfg: TypeConfigValue = { frequency: freq };
-      if (freq === 'WEEKLY') {
-        const sorted = tDays.sort((a, b) => Number(a) - Number(b)).join(',');
-        if (sorted) cfg.trigger_day = sorted;
-      } else if (freq === 'MONTHLY') {
-        cfg.trigger_day = mMode ?? 'FIRST_DAY';
-      } else if (freq === 'YEARLY') {
-        cfg.trigger_day = `${yearMonth}-${yearDay}`;
-      }
-      return cfg;
-    },
-    [yearMonth, yearDay],
-  );
+  /** 根据频率和当前配置生成 typeConfig 对象 */
+  function buildConfig(
+    freq: Frequency,
+    wd: number | null,
+    mm: string,
+    ym: string,
+    yd: string,
+  ): TypeConfigValue {
+    const cfg: TypeConfigValue = { frequency: freq };
+    if (freq === 'WEEKLY') {
+      if (wd != null) cfg.trigger_day = { weekday: wd };
+    } else if (freq === 'MONTHLY') {
+      cfg.trigger_day = { mode: mm };
+    } else if (freq === 'YEARLY') {
+      cfg.trigger_day = { month: Number(ym), day: Number(yd) };
+    }
+    return cfg;
+  }
 
   const handleFrequencyChange = useCallback(
     (e: React.ChangeEvent<HTMLSelectElement>) => {
       const v = e.target.value as Frequency;
       setFrequency(v);
-      if (v === 'WEEKLY') {
-        setTriggerDays([]);
-        onChange(buildConfig(v, []));
-      } else if (v === 'MONTHLY') {
-        setMonthlyMode('FIRST_DAY');
-        onChange(buildConfig(v, [], 'FIRST_DAY'));
-      } else if (v === 'YEARLY') {
-        onChange(buildConfig(v, []));
-      } else {
-        onChange(buildConfig(v, []));
-      }
+      onChange(buildConfig(v, null, 'FIRST_DAY', '1', '1'));
     },
-    [onChange, buildConfig],
+    [onChange],
   );
 
-  const handleWeekdayToggle = useCallback(
-    (day: string) => {
-      const next = triggerDays.includes(day)
-        ? triggerDays.filter((d) => d !== day)
-        : [...triggerDays, day];
-      setTriggerDays(next);
-      onChange(buildConfig(frequency, next));
+  const handleWeekdayChange = useCallback(
+    (day: number) => {
+      setWeekday(day);
+      onChange(buildConfig(frequency, day, monthlyMode, yearMonth, yearDay));
     },
-    [frequency, triggerDays, onChange, buildConfig],
+    [frequency, monthlyMode, yearMonth, yearDay, onChange],
   );
 
   const handleMonthlyModeChange = useCallback(
     (e: React.ChangeEvent<HTMLSelectElement>) => {
       const v = e.target.value;
       setMonthlyMode(v);
-      onChange(buildConfig(frequency, triggerDays, v));
+      onChange(buildConfig(frequency, weekday, v, yearMonth, yearDay));
     },
-    [frequency, triggerDays, onChange, buildConfig],
+    [frequency, weekday, yearMonth, yearDay, onChange],
   );
 
-  // 年月日变更时重新通知。此处依赖 frequency/onChange 变化时无需执行，
-  // 因为 onChange 引用稳定（来自父组件 render），且 YEARLY 分支仅需在 yearMonth/yearDay 变化时重新触发。
+  // 年月日变更时重新通知
   useEffect(() => {
     if (frequency === 'YEARLY') {
-      onChange({ frequency: 'YEARLY', trigger_day: `${yearMonth}-${yearDay}` });
+      onChange(buildConfig(frequency, weekday, monthlyMode, yearMonth, yearDay));
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [yearMonth, yearDay]);
+  }, [frequency, yearMonth, yearDay, weekday, monthlyMode, onChange]);
 
   return (
     <div className="space-y-3">
@@ -181,11 +193,12 @@ function RepeatConfigForm({
             {WEEKDAY_LABELS.map((wd) => (
               <label key={wd.value} className="flex items-center gap-1 text-sm text-cg-text">
                 <input
-                  type="checkbox"
+                  type="radio"
+                  name="weekday"
                   value={wd.value}
-                  checked={triggerDays.includes(wd.value)}
-                  onChange={() => handleWeekdayToggle(wd.value)}
-                  className="h-4 w-4 rounded border-cg-border text-cg-focus focus:ring-cg-focus"
+                  checked={weekday === wd.value}
+                  onChange={() => handleWeekdayChange(wd.value)}
+                  className="h-4 w-4 border-cg-border text-cg-focus focus:ring-cg-focus"
                   aria-label={wd.label}
                 />
                 {wd.label}

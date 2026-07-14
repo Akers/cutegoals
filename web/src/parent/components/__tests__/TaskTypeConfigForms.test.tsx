@@ -217,7 +217,7 @@ describe('REPEAT 配置表单', () => {
     expect(screen.getByLabelText('周日')).toBeInTheDocument();
   });
 
-  it('WEEKLY 选择星期时触发 onChange', async () => {
+  it('WEEKLY 选择星期时触发 onChange（单选，对象格式）', async () => {
     const onTaskTypeChange = vi.fn();
     const onTypeConfigChange = vi.fn();
     render(
@@ -228,12 +228,73 @@ describe('REPEAT 配置表单', () => {
         onTypeConfigChange={onTypeConfigChange}
       />,
     );
-    const mondayCheckbox = screen.getByLabelText('周一');
-    await userEvent.click(mondayCheckbox);
+    const mondayRadio = screen.getByLabelText('周一');
+    await userEvent.click(mondayRadio);
     expect(onTypeConfigChange).toHaveBeenLastCalledWith(
       expect.objectContaining({
         frequency: 'WEEKLY',
-        trigger_day: expect.stringMatching(/(^|,)1(,|$)/),
+        trigger_day: { weekday: 1 },
+      }),
+    );
+  });
+
+  it('WEEKLY 切换星期时更新选中项', async () => {
+    const onTaskTypeChange = vi.fn();
+    const onTypeConfigChange = vi.fn();
+    render(
+      <TaskTypeConfigForms
+        taskType="REPEAT"
+        onTaskTypeChange={onTaskTypeChange}
+        typeConfig={{ frequency: 'WEEKLY' }}
+        onTypeConfigChange={onTypeConfigChange}
+      />,
+    );
+    const wedRadio = screen.getByLabelText('周三') as HTMLInputElement;
+    await userEvent.click(wedRadio);
+    expect(wedRadio.checked).toBe(true);
+    expect(onTypeConfigChange).toHaveBeenLastCalledWith(
+      expect.objectContaining({ trigger_day: { weekday: 3 } }),
+    );
+  });
+
+  it('MONTHLY 选择模式时触发 onChange', async () => {
+    const onTaskTypeChange = vi.fn();
+    const onTypeConfigChange = vi.fn();
+    render(
+      <TaskTypeConfigForms
+        taskType="REPEAT"
+        onTaskTypeChange={onTaskTypeChange}
+        typeConfig={{ frequency: 'MONTHLY' }}
+        onTypeConfigChange={onTypeConfigChange}
+      />,
+    );
+    const select = screen.getByRole('combobox', { name: /模式/ });
+    await userEvent.selectOptions(select, 'LAST_DAY');
+    expect(onTypeConfigChange).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        frequency: 'MONTHLY',
+        trigger_day: { mode: 'LAST_DAY' },
+      }),
+    );
+  });
+
+  it('YEARLY 修改日期时触发 onChange', async () => {
+    const onTaskTypeChange = vi.fn();
+    const onTypeConfigChange = vi.fn();
+    render(
+      <TaskTypeConfigForms
+        taskType="REPEAT"
+        onTaskTypeChange={onTaskTypeChange}
+        typeConfig={{ frequency: 'YEARLY' }}
+        onTypeConfigChange={onTypeConfigChange}
+      />,
+    );
+    const monthSelect = screen.getByRole('combobox', { name: /月份/ });
+    await userEvent.selectOptions(monthSelect, '6');
+    expect(onTypeConfigChange).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        frequency: 'YEARLY',
+        trigger_day: { month: 6, day: 1 },
       }),
     );
   });
@@ -357,9 +418,19 @@ describe('TaskTypeConfigForms - 提交序列化', () => {
     expect(JSON.stringify(config)).toBe('{"frequency":"DAILY"}');
   });
 
-  it('REPEAT WEEKLY 配置序列化为 JSON', () => {
-    const config = { frequency: 'WEEKLY', trigger_day: '1,3,5' };
-    expect(JSON.stringify(config)).toBe('{"frequency":"WEEKLY","trigger_day":"1,3,5"}');
+  it('REPEAT WEEKLY 配置序列化为 JSON（对象格式）', () => {
+    const config = { frequency: 'WEEKLY', trigger_day: { weekday: 3 } };
+    expect(JSON.stringify(config)).toBe('{"frequency":"WEEKLY","trigger_day":{"weekday":3}}');
+  });
+
+  it('REPEAT MONTHLY 配置序列化为 JSON', () => {
+    const config = { frequency: 'MONTHLY', trigger_day: { mode: 'FIRST_DAY' } };
+    expect(JSON.stringify(config)).toBe('{"frequency":"MONTHLY","trigger_day":{"mode":"FIRST_DAY"}}');
+  });
+
+  it('REPEAT YEARLY 配置序列化为 JSON', () => {
+    const config = { frequency: 'YEARLY', trigger_day: { month: 6, day: 15 } };
+    expect(JSON.stringify(config)).toBe('{"frequency":"YEARLY","trigger_day":{"month":6,"day":15}}');
   });
 
   it('STANDING 无限提交序列化为 JSON', () => {
