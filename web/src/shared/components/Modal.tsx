@@ -12,6 +12,10 @@ interface ModalProps {
 
 export function Modal({ isOpen, onClose, title, children, footer, size = 'md' }: ModalProps) {
   const dialogRef = useRef<HTMLDivElement>(null);
+  // 保存最新的 onClose 到 ref，避免父组件渲染导致 onClose 引用变化时
+  // useEffect 重复触发（会使对话框容器重新 focus，从而抢走输入框焦点）。
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
   const titleId = `${title}-title`;
 
   useEffect(() => {
@@ -21,7 +25,7 @@ export function Modal({ isOpen, onClose, title, children, footer, size = 'md' }:
 
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
-        onClose();
+        onCloseRef.current();
       }
     };
 
@@ -30,7 +34,7 @@ export function Modal({ isOpen, onClose, title, children, footer, size = 'md' }:
       document.removeEventListener('keydown', onKeyDown);
       previouslyFocused?.focus();
     };
-  }, [isOpen, onClose]);
+  }, [isOpen]);
 
   if (!isOpen) return null;
 

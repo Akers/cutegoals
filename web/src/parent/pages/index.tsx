@@ -259,10 +259,11 @@ export function ParentFamilyPage() {
         pin: childPin.value || undefined,
         birthday: childBirthday.value || undefined,
       });
-      setShowChildModal(false);
-      resetChildForm();
+      // 先刷新数据再关闭弹窗，确保列表及时更新。
       await refetchChildren();
       await refetch();
+      setShowChildModal(false);
+      resetChildForm();
     } catch (err: any) {
       setActionError(err.message ?? '添加孩子失败');
     } finally {
