@@ -37,6 +37,7 @@ interface Family {
   id: number;
   name: string;
   members: FamilyMember[];
+  children: ChildProfile[];
 }
 
 interface FamilyMember {
@@ -59,6 +60,9 @@ interface ChildProfile {
   nickname: string;
   pin?: string;
   birthday?: string;
+  birthYear?: number;
+  avatar?: string;
+  status?: string;
 }
 
 interface Difficulty {
@@ -215,7 +219,6 @@ export function ParentHomePage() {
 export function ParentFamilyPage() {
   const { data, loading, error, refetch } = useApi<Family>('/family');
   const { items: invitations, refetch: refetchInvitations } = usePaginatedData<Invitation>('/family/invitations');
-  const { items: children, refetch: refetchChildren } = usePaginatedData<ChildProfile>('/family/children');
   const [showInvite, setShowInvite] = useState(false);
   const [showChildModal, setShowChildModal] = useState(false);
   const [confirm, setConfirm] = useState<{ type: 'remove' | 'leave' | 'removeChild'; member?: FamilyMember; child?: ChildProfile } | null>(null);
@@ -259,8 +262,7 @@ export function ParentFamilyPage() {
         pin: childPin.value || undefined,
         birthday: childBirthday.value || undefined,
       });
-      // 先刷新数据再关闭弹窗，确保列表及时更新。
-      await refetchChildren();
+      // 刷新家庭概览即可同步成员与孩子（单一数据源）。
       await refetch();
       setShowChildModal(false);
       resetChildForm();
@@ -290,7 +292,6 @@ export function ParentFamilyPage() {
     setActionError(null);
     try {
       await getClient().delete(`/family/children/${child.id}`);
-      await refetchChildren();
       await refetch();
     } catch (err: any) {
       setActionError(err.message ?? '移除孩子失败');
@@ -375,11 +376,11 @@ export function ParentFamilyPage() {
       </CardSection>
 
       <CardSection title="孩子">
-        {children.length === 0 ? (
+        {(data.children ?? []).length === 0 ? (
           <p className="text-cg-text-muted">暂无孩子，点击上方「添加孩子」创建档案。</p>
         ) : (
           <div className="grid grid-cols-1 gap-3">
-            {children.map((child) => (
+            {(data.children ?? []).map((child) => (
               <div key={child.id} className="flex items-center justify-between rounded-cg-md bg-cg-surface-raised p-3">
                 <div>
                   <div className="font-medium text-cg-text">{child.nickname}</div>
