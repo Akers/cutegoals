@@ -65,12 +65,32 @@
 
 ## 风险与残留
 
-1. **Phase 6 的 5 个 reservations（non-blocking）**：是否在进入 verify 前补做，需用户决策或等 final review 后处理。
-2. **设计文档可能的漂移**：plan 1.x review 中标记的 prize_snapshot/points_transaction 表与 design doc 不一致（遗留记录，待 verify 阶段决定）。
+1. **设计文档可能的漂移**：plan 1.x review 中标记的 prize_snapshot/points_transaction 表与 design doc 不一致（遗留记录，待 verify 阶段决定）。
 
 ## 派发记录
 
 - 2026-07-14：分析阶段，未派发 explorer（由进度 ledger 直接确认已完成）。
 - 2026-07-14：派发 `fix-1` (fixer) 修复 `web/` 前端测试偏离，已提交 `7bc9dcc`。
 - 2026-07-14：批量勾选 `tasks.md` 第 1-9 章，已提交 `e20b0fc`。
-- 当前 HEAD：`e20b0fc`
+- 2026-07-14：派发 `verify` (verifier subagent) 执行 full 模式验证。
+
+### 验证结果 (verify phase)
+
+- **状态**: **BLOCKED** — 3 个 CRITICAL 问题必须在归档前修复
+- **报告**: `docs/superpowers/reports/2026-07-14-core-features-verify.md`
+- **分数卡**: 完整性 75% / 正确性 90% / 一致性 85%
+- **测试结果**: ✅ server 66 tests PASS / ✅ web 79 tests PASS / ✅ openspec validate PASS
+
+**3 个 CRITICAL 问题**:
+1. **C1**: 任务模板三类型系统（`task_type`/`type_config`）未在数据库/实体/代码中实现。缺失 5 个错误码。
+2. **C2**: REPEAT 任务双触发器（`RepeatTaskScheduler` + 提交钩子）完全未实现。项目无 `@Scheduled`。
+3. **C3**: 周期规则模型与规范不一致（`rule_type` 简化模型 vs 规范要求的 `frequency`+`trigger_day` 丰富模型）。
+
+**2 个 WARNING**:
+- W1: 家庭数据导出缺业务历史（Phase 6 R1）
+- W2: 全链路审计接入不完整（Phase 6 R2）
+
+**Phase 6 已知残留**: R1-R5 均跟踪在 report 中，均为 non-blocking。
+
+- 2026-07-14：verify-fail → 回退 build。追加 tasks.md 第 11 章（5 个修复任务），已提交 `98ac954`。
+- 2026-07-14：派发 `fix-2` (fixer, ses_0a0bb4972ffeDmj5CelO7asLxI) 实现任务 11.1（task_type/type_config 数据库+实体+错误码）。后台运行中。
