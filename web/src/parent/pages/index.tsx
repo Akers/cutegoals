@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getClient } from '@shared/api';
 import type { TaskTypeValue } from '@shared/api/types';
@@ -21,7 +21,7 @@ import {
   TextArea,
 } from '@shared/components';
 import { useAuth } from '@shared/auth';
-import { useApi, useFormField } from '@shared/hooks/useApi';
+import { useApi, useFormField, useIdempotencyKey } from '@shared/hooks/useApi';
 import { useOnline } from '@shared/theme';
 import { TaskTypeConfigForms, type TypeConfigValue } from '@parent/components/TaskTypeConfigForms';
 import { TaskTypeFilter } from '@parent/components/TaskTypeFilter';
@@ -165,7 +165,8 @@ function usePaginatedData<T>(path: string, filters?: Record<string, string>) {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
   const filterString = filters
-    ? '&' + Object.entries(filters)
+    ? '&' +
+      Object.entries(filters)
         .map(([k, v]) => `${k}=${encodeURIComponent(v)}`)
         .join('&')
     : '';
@@ -196,10 +197,30 @@ export function ParentHomePage() {
   const online = useOnline();
   const navigate = useNavigate();
 
-  if (!online) return <PageShell title="家庭"><OfflineState onRetry={refetch} /></PageShell>;
-  if (loading) return <PageShell title="家庭"><LoadingState /></PageShell>;
-  if (error) return <PageShell title="家庭"><ErrorState onRetry={refetch} message={error.message} /></PageShell>;
-  if (!data) return <PageShell title="家庭"><EmptyState /></PageShell>;
+  if (!online)
+    return (
+      <PageShell title="家庭">
+        <OfflineState onRetry={refetch} />
+      </PageShell>
+    );
+  if (loading)
+    return (
+      <PageShell title="家庭">
+        <LoadingState />
+      </PageShell>
+    );
+  if (error)
+    return (
+      <PageShell title="家庭">
+        <ErrorState onRetry={refetch} message={error.message} />
+      </PageShell>
+    );
+  if (!data)
+    return (
+      <PageShell title="家庭">
+        <EmptyState />
+      </PageShell>
+    );
 
   return (
     <PageShell
@@ -218,8 +239,13 @@ export function ParentHomePage() {
       <CardSection title="家庭成员">
         <div className="grid grid-cols-1 gap-3">
           {(data.members ?? []).map((member) => (
-            <div key={member.id} className="flex items-center justify-between rounded-cg-md bg-cg-surface-raised p-3">
-              <div className="font-medium text-cg-text">{member.nickname ?? maskPhone(member.phone ?? '')}</div>
+            <div
+              key={member.id}
+              className="flex items-center justify-between rounded-cg-md bg-cg-surface-raised p-3"
+            >
+              <div className="font-medium text-cg-text">
+                {member.nickname ?? maskPhone(member.phone ?? '')}
+              </div>
               <StatusBadge status={member.role === 'PARENT' ? 'approved' : 'pending'} />
             </div>
           ))}
@@ -231,10 +257,15 @@ export function ParentHomePage() {
 
 export function ParentFamilyPage() {
   const { data, loading, error, refetch } = useApi<Family>('/family');
-  const { items: invitations, refetch: refetchInvitations } = usePaginatedData<Invitation>('/family/invitations');
+  const { items: invitations, refetch: refetchInvitations } =
+    usePaginatedData<Invitation>('/family/invitations');
   const [showInvite, setShowInvite] = useState(false);
   const [showChildModal, setShowChildModal] = useState(false);
-  const [confirm, setConfirm] = useState<{ type: 'remove' | 'leave' | 'removeChild'; member?: FamilyMember; child?: ChildProfile } | null>(null);
+  const [confirm, setConfirm] = useState<{
+    type: 'remove' | 'leave' | 'removeChild';
+    member?: FamilyMember;
+    child?: ChildProfile;
+  } | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
   const phone = useFormField();
@@ -283,8 +314,8 @@ export function ParentFamilyPage() {
       await refetch();
       setShowChildModal(false);
       resetChildForm();
-    } catch (err: any) {
-      setActionError(err.message ?? '添加孩子失败');
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : '添加孩子失败');
     } finally {
       setChildSaving(false);
     }
@@ -296,8 +327,8 @@ export function ParentFamilyPage() {
     try {
       await getClient().delete(`/family/members/${member.id}`);
       await refetch();
-    } catch (err: any) {
-      setActionError(err.message ?? '移除失败');
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : '移除失败');
     } finally {
       setActionLoading(false);
       setConfirm(null);
@@ -314,8 +345,8 @@ export function ParentFamilyPage() {
         return;
       }
       await refetch();
-    } catch (err: any) {
-      setActionError(err.message ?? '移除孩子失败');
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : '移除孩子失败');
     } finally {
       setActionLoading(false);
       setConfirm(null);
@@ -328,29 +359,53 @@ export function ParentFamilyPage() {
     try {
       await getClient().post('/family/members/me/leave');
       await refetch();
-    } catch (err: any) {
-      setActionError(err.message ?? '退出失败');
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : '退出失败');
     } finally {
       setActionLoading(false);
       setConfirm(null);
     }
   };
 
-  if (!online) return <PageShell title="家庭"><OfflineState onRetry={refetch} /></PageShell>;
-  if (loading) return <PageShell title="家庭"><LoadingState /></PageShell>;
-  if (error) return <PageShell title="家庭"><ErrorState onRetry={refetch} message={error.message} /></PageShell>;
-  if (!data) return <PageShell title="家庭"><EmptyState /></PageShell>;
+  if (!online)
+    return (
+      <PageShell title="家庭">
+        <OfflineState onRetry={refetch} />
+      </PageShell>
+    );
+  if (loading)
+    return (
+      <PageShell title="家庭">
+        <LoadingState />
+      </PageShell>
+    );
+  if (error)
+    return (
+      <PageShell title="家庭">
+        <ErrorState onRetry={refetch} message={error.message} />
+      </PageShell>
+    );
+  if (!data)
+    return (
+      <PageShell title="家庭">
+        <EmptyState />
+      </PageShell>
+    );
 
   const confirmTitle =
-    confirm?.type === 'leave' ? '退出家庭' :
-    confirm?.type === 'removeChild' ? '移除孩子' : '移除成员';
+    confirm?.type === 'leave'
+      ? '退出家庭'
+      : confirm?.type === 'removeChild'
+        ? '移除孩子'
+        : '移除成员';
   const confirmMessage =
-    confirm?.type === 'leave' ? '退出后你将无法管理该家庭，是否继续？' :
-    confirm?.type === 'removeChild' ? '移除后该孩子将无法继续使用家庭功能，是否继续？' :
-    '移除后该家长将无法管理此家庭，是否继续？';
+    confirm?.type === 'leave'
+      ? '退出后你将无法管理该家庭，是否继续？'
+      : confirm?.type === 'removeChild'
+        ? '移除后该孩子将无法继续使用家庭功能，是否继续？'
+        : '移除后该家长将无法管理此家庭，是否继续？';
   const confirmButtonText =
-    confirm?.type === 'leave' ? '退出' :
-    confirm?.type === 'removeChild' ? '移除' : '移除';
+    confirm?.type === 'leave' ? '退出' : confirm?.type === 'removeChild' ? '移除' : '移除';
 
   return (
     <PageShell
@@ -372,20 +427,37 @@ export function ParentFamilyPage() {
             const isSelf = account != null && member.accountId === Number(account.accountId);
             const canRemove = member.role === 'PARENT' && !isSelf;
             return (
-              <div key={member.id} className="flex items-center justify-between rounded-cg-md bg-cg-surface-raised p-3">
+              <div
+                key={member.id}
+                className="flex items-center justify-between rounded-cg-md bg-cg-surface-raised p-3"
+              >
                 <div>
-                  <div className="font-medium text-cg-text">{member.nickname ?? maskPhone(member.phone ?? '')}</div>
-                  {member.phone && <div className="text-xs text-cg-text-muted">{maskPhone(member.phone)}</div>}
+                  <div className="font-medium text-cg-text">
+                    {member.nickname ?? maskPhone(member.phone ?? '')}
+                  </div>
+                  {member.phone && (
+                    <div className="text-xs text-cg-text-muted">{maskPhone(member.phone)}</div>
+                  )}
                 </div>
                 <div className="flex items-center gap-2">
                   <StatusBadge status={member.role === 'PARENT' ? 'approved' : 'pending'} />
                   {isSelf && (
-                    <Button variant="danger" size="sm" onClick={() => setConfirm({ type: 'leave' })} isLoading={actionLoading}>
+                    <Button
+                      variant="danger"
+                      size="sm"
+                      onClick={() => setConfirm({ type: 'leave' })}
+                      isLoading={actionLoading}
+                    >
                       退出家庭
                     </Button>
                   )}
                   {canRemove && (
-                    <Button variant="danger" size="sm" onClick={() => setConfirm({ type: 'remove', member })} isLoading={actionLoading}>
+                    <Button
+                      variant="danger"
+                      size="sm"
+                      onClick={() => setConfirm({ type: 'remove', member })}
+                      isLoading={actionLoading}
+                    >
                       移除
                     </Button>
                   )}
@@ -402,10 +474,15 @@ export function ParentFamilyPage() {
         ) : (
           <div className="grid grid-cols-1 gap-3">
             {(data.children ?? []).map((child) => (
-              <div key={child.id} className="flex items-center justify-between rounded-cg-md bg-cg-surface-raised p-3">
+              <div
+                key={child.id}
+                className="flex items-center justify-between rounded-cg-md bg-cg-surface-raised p-3"
+              >
                 <div>
                   <div className="font-medium text-cg-text">{child.nickname}</div>
-                  {child.birthday && <div className="text-xs text-cg-text-muted">生日 {child.birthday}</div>}
+                  {child.birthday && (
+                    <div className="text-xs text-cg-text-muted">生日 {child.birthday}</div>
+                  )}
                 </div>
                 <Button
                   variant="danger"
@@ -427,7 +504,10 @@ export function ParentFamilyPage() {
         ) : (
           <div className="grid grid-cols-1 gap-3">
             {invitations.map((inv) => (
-              <div key={inv.id} className="flex items-center justify-between rounded-cg-md bg-cg-surface-raised p-3">
+              <div
+                key={inv.id}
+                className="flex items-center justify-between rounded-cg-md bg-cg-surface-raised p-3"
+              >
                 <div>
                   <div className="font-medium text-cg-text">{maskPhone(inv.inviteePhone)}</div>
                   <div className="text-xs text-cg-text-muted">{inv.createdAt}</div>
@@ -439,9 +519,7 @@ export function ParentFamilyPage() {
         )}
       </CardSection>
 
-      {actionError && (
-        <div className="text-sm text-red-600">{actionError}</div>
-      )}
+      {actionError && <div className="text-sm text-red-600">{actionError}</div>}
 
       <Modal isOpen={showInvite} onClose={() => setShowInvite(false)} title="邀请家长">
         <form className="flex flex-col gap-4">
@@ -465,7 +543,12 @@ export function ParentFamilyPage() {
           <FormField label="生日" htmlFor="child-birthday">
             <Input id="child-birthday" type="date" {...childBirthday.inputProps} />
           </FormField>
-          <Button onClick={handleSaveChild} isLoading={childSaving} type="button" className="w-full">
+          <Button
+            onClick={handleSaveChild}
+            isLoading={childSaving}
+            type="button"
+            className="w-full"
+          >
             保存
           </Button>
         </form>
@@ -541,9 +624,24 @@ export function ParentChildrenPage() {
     await refetch();
   };
 
-  if (!online) return <PageShell title="孩子档案"><OfflineState onRetry={refetch} /></PageShell>;
-  if (loading) return <PageShell title="孩子档案"><LoadingState /></PageShell>;
-  if (error) return <PageShell title="孩子档案"><ErrorState onRetry={refetch} message={error.message} /></PageShell>;
+  if (!online)
+    return (
+      <PageShell title="孩子档案">
+        <OfflineState onRetry={refetch} />
+      </PageShell>
+    );
+  if (loading)
+    return (
+      <PageShell title="孩子档案">
+        <LoadingState />
+      </PageShell>
+    );
+  if (error)
+    return (
+      <PageShell title="孩子档案">
+        <ErrorState onRetry={refetch} message={error.message} />
+      </PageShell>
+    );
 
   return (
     <PageShell
@@ -560,8 +658,12 @@ export function ParentChildrenPage() {
             <div className="flex items-center justify-between">
               <div className="font-medium text-cg-text">{child.nickname}</div>
               <div className="flex gap-2">
-                <Button variant="ghost" size="sm" onClick={() => openEdit(child)}>编辑</Button>
-                <Button variant="danger" size="sm" onClick={() => handleDelete(child.id)}>删除</Button>
+                <Button variant="ghost" size="sm" onClick={() => openEdit(child)}>
+                  编辑
+                </Button>
+                <Button variant="danger" size="sm" onClick={() => handleDelete(child.id)}>
+                  删除
+                </Button>
               </div>
             </div>
             {child.birthday && <p className="text-sm text-cg-text-muted">生日 {child.birthday}</p>}
@@ -607,7 +709,10 @@ export function ParentTemplatesPage() {
   const [saving, setSaving] = useState(false);
 
   const filterParams = selectedTypes.length > 0 ? { taskType: selectedTypes.join(',') } : undefined;
-  const { items, loading, error, refetch } = usePaginatedData<TaskTemplate>('/task-templates', filterParams);
+  const { items, loading, error, refetch } = usePaginatedData<TaskTemplate>(
+    '/task-templates',
+    filterParams,
+  );
 
   const openNew = () => {
     setEditing(null);
@@ -643,7 +748,12 @@ export function ParentTemplatesPage() {
       description: description.value,
       category: category.value,
       difficulties: [
-        { name: '标准', displayOrder: 1, rewardPoints: Number(basePoints.value) || 1, enabled: true },
+        {
+          name: '标准',
+          displayOrder: 1,
+          rewardPoints: Number(basePoints.value) || 1,
+          enabled: true,
+        },
       ],
     };
     // 添加任务类型和配置
@@ -654,10 +764,18 @@ export function ParentTemplatesPage() {
     if (editing) {
       payload.version = editing.version;
       const res = await getClient().put(`/task-templates/${editing.id}`, payload);
-      if (res.error) { setSaving(false); alert(res.error.message ?? '保存失败'); return; }
+      if (res.error) {
+        setSaving(false);
+        alert(res.error.message ?? '保存失败');
+        return;
+      }
     } else {
       const res = await getClient().post('/task-templates', payload);
-      if (res.error) { setSaving(false); alert(res.error.message ?? '保存失败'); return; }
+      if (res.error) {
+        setSaving(false);
+        alert(res.error.message ?? '保存失败');
+        return;
+      }
     }
     setSaving(false);
     setShowModal(false);
@@ -669,9 +787,24 @@ export function ParentTemplatesPage() {
     await refetch();
   };
 
-  if (!online) return <PageShell title="任务模板"><OfflineState onRetry={refetch} /></PageShell>;
-  if (loading) return <PageShell title="任务模板"><LoadingState /></PageShell>;
-  if (error) return <PageShell title="任务模板"><ErrorState onRetry={refetch} message={error.message} /></PageShell>;
+  if (!online)
+    return (
+      <PageShell title="任务模板">
+        <OfflineState onRetry={refetch} />
+      </PageShell>
+    );
+  if (loading)
+    return (
+      <PageShell title="任务模板">
+        <LoadingState />
+      </PageShell>
+    );
+  if (error)
+    return (
+      <PageShell title="任务模板">
+        <ErrorState onRetry={refetch} message={error.message} />
+      </PageShell>
+    );
 
   return (
     <PageShell
@@ -692,18 +825,34 @@ export function ParentTemplatesPage() {
               <div>
                 <div className="font-medium text-cg-text">{t.name}</div>
                 <p className="text-sm text-cg-text-muted">{t.description}</p>
-                <div className="mt-1 flex gap-2 text-sm">
-                  <span className="rounded-cg-sm bg-cg-surface-raised px-2 py-0.5">{t.category}</span>
-                  <span className="rounded-cg-sm bg-cg-surface-raised px-2 py-0.5">{t.difficulties?.[0]?.rewardPoints ?? '-'} 积分</span>
+                <div className="mt-1 flex flex-wrap gap-2 text-sm">
+                  <span className="rounded-cg-sm bg-cg-surface-raised px-2 py-0.5">
+                    {t.category}
+                  </span>
+                  <span className="rounded-cg-sm bg-cg-surface-raised px-2 py-0.5">
+                    {t.difficulties?.[0]?.rewardPoints ?? '-'} 积分
+                  </span>
                   {t.taskType && (
                     <span className="rounded-cg-sm bg-cg-surface-raised px-2 py-0.5">
-                      {t.taskType === 'LIMITED' ? '限时' : t.taskType === 'REPEAT' ? '重复' : '常驻'}
+                      {t.taskType === 'LIMITED'
+                        ? '限时'
+                        : t.taskType === 'REPEAT'
+                          ? '重复'
+                          : '常驻'}
                     </span>
                   )}
+                  <span
+                    className={`rounded-cg-sm px-2 py-0.5 ${t.enabled ? 'bg-cg-success-bg text-cg-success' : 'bg-cg-surface-raised text-cg-text-muted'}`}
+                    aria-label={t.enabled ? '已启用' : '已停用'}
+                  >
+                    {t.enabled ? '已启用' : '已停用'}
+                  </span>
                 </div>
               </div>
               <div className="flex gap-2">
-                <Button variant="ghost" size="sm" onClick={() => openEdit(t)}>编辑</Button>
+                <Button variant="ghost" size="sm" onClick={() => openEdit(t)}>
+                  编辑
+                </Button>
                 <Button variant="secondary" size="sm" onClick={() => toggleEnabled(t)}>
                   {t.enabled ? '停用' : '启用'}
                 </Button>
@@ -751,35 +900,106 @@ export function ParentTemplatesPage() {
 
 export function ParentTasksPage() {
   const [date, setDate] = useState(() => new Date().toISOString().split('T')[0]);
-  const { data, loading, error, refetch } = useApi<PageResult<TaskAssignment>>(`/task-assignments?page=1&pageSize=100&startDate=${date}&endDate=${date}`);
+  const { data, loading, error, refetch } = useApi<PageResult<TaskAssignment>>(
+    `/task-assignments?page=1&pageSize=100&startDate=${date}&endDate=${date}`,
+  );
   const { data: templates } = useApi<PageResult<TaskTemplate>>('/task-templates');
   const { data: children } = useApi<PageResult<ChildProfile>>('/family/children');
   const [showAssign, setShowAssign] = useState(false);
   const templateId = useFormField();
-  const childId = useFormField();
-  const deadline = useFormField();
+  const difficultyId = useFormField();
+  const startDate = useFormField();
+  const endDate = useFormField();
+  const { setValue: setDifficultyId } = difficultyId;
+  const [childIds, setChildIds] = useState<number[]>([]);
   const online = useOnline();
   const [assigning, setAssigning] = useState(false);
+  const idempotencyKey = useIdempotencyKey();
+
+  const selectedTemplate = useMemo(() => {
+    return (templates?.content ?? []).find((t) => String(t.id) === templateId.value);
+  }, [templates, templateId.value]);
+
+  const enabledDifficulties = useMemo(() => {
+    return (selectedTemplate?.difficulties ?? []).filter((d) => d.enabled);
+  }, [selectedTemplate]);
+
+  useEffect(() => {
+    if (selectedTemplate && enabledDifficulties.length > 0) {
+      const first = enabledDifficulties[0];
+      if (String(first.id) !== difficultyId.value) {
+        setDifficultyId(String(first.id));
+      }
+    } else if (!selectedTemplate) {
+      setDifficultyId('');
+    }
+  }, [selectedTemplate, enabledDifficulties, difficultyId.value, setDifficultyId]);
+
+  const resetAssignForm = () => {
+    templateId.reset();
+    difficultyId.reset();
+    startDate.reset();
+    endDate.reset();
+    setChildIds([]);
+  };
 
   const handleAssign = async () => {
+    const tId = Number(templateId.value);
+    const dId = Number(difficultyId.value);
+    if (!tId || !dId) {
+      alert('请选择模板和难度');
+      return;
+    }
+    if (childIds.length === 0) {
+      alert('请至少选择一个孩子');
+      return;
+    }
+    if (!startDate.value || !endDate.value) {
+      alert('请填写开始日期和结束日期');
+      return;
+    }
+    if (startDate.value > endDate.value) {
+      alert('开始日期不得晚于结束日期');
+      return;
+    }
+
     setAssigning(true);
-    await getClient().post('/task-assignments/batch', {
-      assignments: [
-        {
-          templateId: Number(templateId.value),
-          childId: Number(childId.value),
-          deadline: deadline.value,
-        },
-      ],
+    const res = await getClient().post('/task-assignments/batch', {
+      templateId: tId,
+      difficultyId: dId,
+      startDate: startDate.value,
+      endDate: endDate.value,
+      childIds,
+      idempotencyKey,
     });
     setAssigning(false);
+    if (res.error) {
+      alert(res.error.message ?? '分配失败');
+      return;
+    }
     setShowAssign(false);
+    resetAssignForm();
     await refetch();
   };
 
-  if (!online) return <PageShell title="任务分配"><OfflineState onRetry={refetch} /></PageShell>;
-  if (loading) return <PageShell title="任务分配"><LoadingState /></PageShell>;
-  if (error) return <PageShell title="任务分配"><ErrorState onRetry={refetch} message={error.message} /></PageShell>;
+  if (!online)
+    return (
+      <PageShell title="任务分配">
+        <OfflineState onRetry={refetch} />
+      </PageShell>
+    );
+  if (loading)
+    return (
+      <PageShell title="任务分配">
+        <LoadingState />
+      </PageShell>
+    );
+  if (error)
+    return (
+      <PageShell title="任务分配">
+        <ErrorState onRetry={refetch} message={error.message} />
+      </PageShell>
+    );
 
   const assignments = data?.content ?? [];
 
@@ -787,7 +1007,13 @@ export function ParentTasksPage() {
     <PageShell
       title="任务分配"
       actions={
-        <Button variant="secondary" onClick={() => setShowAssign(true)}>
+        <Button
+          variant="secondary"
+          onClick={() => {
+            resetAssignForm();
+            setShowAssign(true);
+          }}
+        >
           批量分配
         </Button>
       }
@@ -800,12 +1026,19 @@ export function ParentTasksPage() {
       <CardSection title="任务列表">
         <div className="grid grid-cols-1 gap-3">
           {assignments.map((a) => (
-            <div key={a.id} className={`cg-card p-4 ${a.isOverdue ? 'border-l-4 border-l-cg-warning' : ''}`}>
+            <div
+              key={a.id}
+              className={`cg-card p-4 ${a.isOverdue ? 'border-l-4 border-l-cg-warning' : ''}`}
+            >
               <div className="flex items-start justify-between">
                 <div>
                   <div className="font-medium text-cg-text">{a.templateTitle}</div>
-                  <div className="text-sm text-cg-text-muted">{a.childNickname} · 截止 {a.deadline}</div>
-                  {a.isOverdue && <div className="mt-1 text-sm font-semibold text-cg-warning">已逾期</div>}
+                  <div className="text-sm text-cg-text-muted">
+                    {a.childNickname} · 截止 {a.deadline}
+                  </div>
+                  {a.isOverdue && (
+                    <div className="mt-1 text-sm font-semibold text-cg-warning">已逾期</div>
+                  )}
                 </div>
                 <div className="flex flex-col items-end gap-1">
                   <StatusBadge status={a.status.toLowerCase()} />
@@ -830,18 +1063,45 @@ export function ParentTasksPage() {
               ))}
             </Select>
           </FormField>
+          <FormField label="难度" htmlFor="assign-difficulty">
+            <Select
+              id="assign-difficulty"
+              {...difficultyId.inputProps}
+              disabled={!selectedTemplate}
+            >
+              <option value="">请选择难度</option>
+              {enabledDifficulties.map((d) => (
+                <option key={d.id} value={d.id}>
+                  {d.name}（{d.rewardPoints} 积分）
+                </option>
+              ))}
+            </Select>
+          </FormField>
           <FormField label="孩子" htmlFor="assign-child">
-            <Select id="assign-child" {...childId.inputProps}>
-              <option value="">请选择孩子</option>
+            <select
+              id="assign-child"
+              multiple
+              size={4}
+              value={childIds.map(String)}
+              onChange={(e) => {
+                const selected = Array.from(e.target.selectedOptions).map((o) => Number(o.value));
+                setChildIds(selected);
+              }}
+              className="w-full rounded-cg-md border border-cg-border bg-cg-surface px-3 py-2 text-cg-text focus:border-cg-focus focus:outline-none focus:ring-2 focus:ring-cg-focus min-h-touch"
+            >
               {(children?.content ?? []).map((c) => (
                 <option key={c.id} value={c.id}>
                   {c.nickname}
                 </option>
               ))}
-            </Select>
+            </select>
+            <p className="text-xs text-cg-text-muted">按住 Ctrl/Cmd 可选择多个孩子</p>
           </FormField>
-          <FormField label="截止时间" htmlFor="assign-deadline">
-            <Input id="assign-deadline" type="datetime-local" {...deadline.inputProps} />
+          <FormField label="开始日期" htmlFor="assign-start-date">
+            <Input id="assign-start-date" type="date" {...startDate.inputProps} />
+          </FormField>
+          <FormField label="结束日期" htmlFor="assign-end-date">
+            <Input id="assign-end-date" type="date" {...endDate.inputProps} />
           </FormField>
           <Button onClick={handleAssign} isLoading={assigning} type="button" className="w-full">
             分配
@@ -871,9 +1131,24 @@ export function ParentReviewsPage() {
     await refetch();
   };
 
-  if (!online) return <PageShell title="任务审核"><OfflineState onRetry={refetch} /></PageShell>;
-  if (loading) return <PageShell title="任务审核"><LoadingState /></PageShell>;
-  if (error) return <PageShell title="任务审核"><ErrorState onRetry={refetch} message={error.message} /></PageShell>;
+  if (!online)
+    return (
+      <PageShell title="任务审核">
+        <OfflineState onRetry={refetch} />
+      </PageShell>
+    );
+  if (loading)
+    return (
+      <PageShell title="任务审核">
+        <LoadingState />
+      </PageShell>
+    );
+  if (error)
+    return (
+      <PageShell title="任务审核">
+        <ErrorState onRetry={refetch} message={error.message} />
+      </PageShell>
+    );
 
   const pending = data?.content ?? [];
 
@@ -885,16 +1160,29 @@ export function ParentReviewsPage() {
             <p className="text-cg-text-muted">暂无待审核任务</p>
           ) : (
             pending.map((item) => (
-              <div key={item.attemptId} className={`cg-card p-4 ${item.isOverdue ? 'border-l-4 border-l-cg-warning' : ''}`}>
+              <div
+                key={item.attemptId}
+                className={`cg-card p-4 ${item.isOverdue ? 'border-l-4 border-l-cg-warning' : ''}`}
+              >
                 <div className="flex items-start justify-between">
                   <div>
                     <div className="font-medium text-cg-text">{item.templateTitle}</div>
-                    <div className="text-sm text-cg-text-muted">{item.childNickname} · {item.submittedAt}</div>
+                    <div className="text-sm text-cg-text-muted">
+                      {item.childNickname} · {item.submittedAt}
+                    </div>
                     {item.notes && <p className="mt-1 text-sm text-cg-text">{item.notes}</p>}
-                    {item.isOverdue && <div className="mt-1 text-sm font-semibold text-cg-warning">已逾期</div>}
+                    {item.isOverdue && (
+                      <div className="mt-1 text-sm font-semibold text-cg-warning">已逾期</div>
+                    )}
                   </div>
                   <div className="flex flex-col gap-2">
-                    <Button size="sm" onClick={() => decide(item.attemptId, true)} isLoading={submitting}>通过</Button>
+                    <Button
+                      size="sm"
+                      onClick={() => decide(item.attemptId, true)}
+                      isLoading={submitting}
+                    >
+                      通过
+                    </Button>
                     <Button
                       variant="danger"
                       size="sm"
@@ -919,7 +1207,9 @@ export function ParentReviewsPage() {
             (history?.content ?? []).map((item) => (
               <div key={item.attemptId} className="cg-card p-4">
                 <div className="font-medium text-cg-text">{item.templateTitle}</div>
-                <div className="text-sm text-cg-text-muted">{item.childNickname} · {item.submittedAt}</div>
+                <div className="text-sm text-cg-text-muted">
+                  {item.childNickname} · {item.submittedAt}
+                </div>
               </div>
             ))
           )}
@@ -942,7 +1232,9 @@ export function ParentReviewsPage() {
             aria-label="驳回原因"
           />
           <div className="flex gap-2">
-            <Button variant="secondary" onClick={() => setActive(null)}>取消</Button>
+            <Button variant="secondary" onClick={() => setActive(null)}>
+              取消
+            </Button>
             <Button
               variant="danger"
               onClick={() => active && decide(active.attemptId, false)}
@@ -963,7 +1255,13 @@ export function ParentPointsPage() {
   const [selectedChild, setSelectedChild] = useState('');
   const { data, loading, error, refetch } = useApi<{
     balance: number;
-    transactions: { id: number; amount: number; type: string; createdAt: string; reason?: string }[];
+    transactions: {
+      id: number;
+      amount: number;
+      type: string;
+      createdAt: string;
+      reason?: string;
+    }[];
   }>(selectedChild ? `/points/ledger/${selectedChild}` : '', { skip: !selectedChild });
   const online = useOnline();
   const amount = useFormField();
@@ -984,9 +1282,24 @@ export function ParentPointsPage() {
     await refetch();
   };
 
-  if (!online) return <PageShell title="积分"><OfflineState onRetry={refetch} /></PageShell>;
-  if (loading) return <PageShell title="积分"><LoadingState /></PageShell>;
-  if (error) return <PageShell title="积分"><ErrorState onRetry={refetch} message={error.message} /></PageShell>;
+  if (!online)
+    return (
+      <PageShell title="积分">
+        <OfflineState onRetry={refetch} />
+      </PageShell>
+    );
+  if (loading)
+    return (
+      <PageShell title="积分">
+        <LoadingState />
+      </PageShell>
+    );
+  if (error)
+    return (
+      <PageShell title="积分">
+        <ErrorState onRetry={refetch} message={error.message} />
+      </PageShell>
+    );
 
   return (
     <PageShell title="积分">
@@ -1014,24 +1327,33 @@ export function ParentPointsPage() {
               <FormField label="原因" htmlFor="adjust-reason">
                 <Input id="adjust-reason" {...reason.inputProps} />
               </FormField>
-              <Button onClick={handleAdjust} isLoading={adjusting}>确认调整</Button>
+              <Button onClick={handleAdjust} isLoading={adjusting}>
+                确认调整
+              </Button>
             </div>
           </CardSection>
           <CardSection title="流水">
             <div className="grid grid-cols-1 gap-2">
               {(data?.transactions ?? []).map((tx) => (
-                <div key={tx.id} className="flex items-center justify-between rounded-cg-md bg-cg-surface-raised p-3">
+                <div
+                  key={tx.id}
+                  className="flex items-center justify-between rounded-cg-md bg-cg-surface-raised p-3"
+                >
                   <div>
                     <div className="text-sm text-cg-text">{tx.reason ?? tx.type}</div>
                     <div className="text-xs text-cg-text-muted">{tx.createdAt}</div>
                   </div>
-                  <div className={`font-medium ${tx.amount >= 0 ? 'text-cg-success' : 'text-cg-danger'}`}>
+                  <div
+                    className={`font-medium ${tx.amount >= 0 ? 'text-cg-success' : 'text-cg-danger'}`}
+                  >
                     {tx.amount > 0 ? '+' : ''}
                     {tx.amount}
                   </div>
                 </div>
               ))}
-              {(data?.transactions ?? []).length === 0 && <p className="text-cg-text-muted">暂无流水</p>}
+              {(data?.transactions ?? []).length === 0 && (
+                <p className="text-cg-text-muted">暂无流水</p>
+              )}
             </div>
           </CardSection>
         </>
@@ -1087,9 +1409,24 @@ export function ParentPrizesPage() {
     await refetch();
   };
 
-  if (!online) return <PageShell title="奖品"><OfflineState onRetry={refetch} /></PageShell>;
-  if (loading) return <PageShell title="奖品"><LoadingState /></PageShell>;
-  if (error) return <PageShell title="奖品"><ErrorState onRetry={refetch} message={error.message} /></PageShell>;
+  if (!online)
+    return (
+      <PageShell title="奖品">
+        <OfflineState onRetry={refetch} />
+      </PageShell>
+    );
+  if (loading)
+    return (
+      <PageShell title="奖品">
+        <LoadingState />
+      </PageShell>
+    );
+  if (error)
+    return (
+      <PageShell title="奖品">
+        <ErrorState onRetry={refetch} message={error.message} />
+      </PageShell>
+    );
 
   return (
     <PageShell
@@ -1112,14 +1449,20 @@ export function ParentPrizesPage() {
                 </div>
               </div>
               <div className="flex gap-2">
-                <Button variant="ghost" size="sm" onClick={() => openEdit(p)}>编辑</Button>
+                <Button variant="ghost" size="sm" onClick={() => openEdit(p)}>
+                  编辑
+                </Button>
               </div>
             </div>
           </div>
         ))}
       </div>
 
-      <Modal isOpen={showModal} onClose={() => setShowModal(false)} title={editing ? '编辑奖品' : '新增奖品'}>
+      <Modal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        title={editing ? '编辑奖品' : '新增奖品'}
+      >
         <form className="flex flex-col gap-4">
           <FormField label="名称" htmlFor="prize-name">
             <Input id="prize-name" {...name.inputProps} />
@@ -1145,12 +1488,29 @@ export function ParentPrizesPage() {
 export function ParentBlindBoxesPage() {
   const { items, loading, error, refetch } = usePaginatedData<BlindBox>('/blind-boxes');
   const [selected, setSelected] = useState<BlindBox | null>(null);
-  const { data: candidates } = useApi<{ candidates: BlindBoxCandidate[] }>(selected ? `/blind-boxes/${selected.id}/candidates` : '');
+  const { data: candidates } = useApi<{ candidates: BlindBoxCandidate[] }>(
+    selected ? `/blind-boxes/${selected.id}/candidates` : '',
+  );
   const online = useOnline();
 
-  if (!online) return <PageShell title="盲盒"><OfflineState onRetry={refetch} /></PageShell>;
-  if (loading) return <PageShell title="盲盒"><LoadingState /></PageShell>;
-  if (error) return <PageShell title="盲盒"><ErrorState onRetry={refetch} message={error.message} /></PageShell>;
+  if (!online)
+    return (
+      <PageShell title="盲盒">
+        <OfflineState onRetry={refetch} />
+      </PageShell>
+    );
+  if (loading)
+    return (
+      <PageShell title="盲盒">
+        <LoadingState />
+      </PageShell>
+    );
+  if (error)
+    return (
+      <PageShell title="盲盒">
+        <ErrorState onRetry={refetch} message={error.message} />
+      </PageShell>
+    );
 
   return (
     <PageShell title="盲盒">
@@ -1167,7 +1527,9 @@ export function ParentBlindBoxesPage() {
             }}
           >
             <div className="font-medium text-cg-text">{box.name}</div>
-            <div className="text-sm text-cg-text-muted">{box.cost} 积分 · 版本 {box.availabilityVersion.slice(0, 8)}...</div>
+            <div className="text-sm text-cg-text-muted">
+              {box.cost} 积分 · 版本 {box.availabilityVersion.slice(0, 8)}...
+            </div>
           </div>
         ))}
       </div>
@@ -1176,12 +1538,19 @@ export function ParentBlindBoxesPage() {
         <CardSection title="概率预览">
           <div className="grid grid-cols-1 gap-2">
             {(candidates?.candidates ?? []).map((c) => (
-              <div key={c.prizeId} className="flex items-center justify-between rounded-cg-md bg-cg-surface-raised p-3">
+              <div
+                key={c.prizeId}
+                className="flex items-center justify-between rounded-cg-md bg-cg-surface-raised p-3"
+              >
                 <span className="text-cg-text">{c.prizeName}</span>
-                <span className="font-medium text-cg-text">{(c.probability * 100).toFixed(1)}%</span>
+                <span className="font-medium text-cg-text">
+                  {(c.probability * 100).toFixed(1)}%
+                </span>
               </div>
             ))}
-            {(candidates?.candidates ?? []).length === 0 && <p className="text-cg-text-muted">暂无候选</p>}
+            {(candidates?.candidates ?? []).length === 0 && (
+              <p className="text-cg-text-muted">暂无候选</p>
+            )}
           </div>
         </CardSection>
       )}
@@ -1210,9 +1579,24 @@ export function ParentExchangesPage() {
     await refetch();
   };
 
-  if (!online) return <PageShell title="兑换履约"><OfflineState onRetry={refetch} /></PageShell>;
-  if (loading) return <PageShell title="兑换履约"><LoadingState /></PageShell>;
-  if (error) return <PageShell title="兑换履约"><ErrorState onRetry={refetch} message={error.message} /></PageShell>;
+  if (!online)
+    return (
+      <PageShell title="兑换履约">
+        <OfflineState onRetry={refetch} />
+      </PageShell>
+    );
+  if (loading)
+    return (
+      <PageShell title="兑换履约">
+        <LoadingState />
+      </PageShell>
+    );
+  if (error)
+    return (
+      <PageShell title="兑换履约">
+        <ErrorState onRetry={refetch} message={error.message} />
+      </PageShell>
+    );
 
   return (
     <PageShell title="兑换履约">
@@ -1238,7 +1622,12 @@ export function ParentExchangesPage() {
                       <Button size="sm" onClick={() => setConfirmId(ex.id)} isLoading={acting}>
                         兑现
                       </Button>
-                      <Button variant="secondary" size="sm" onClick={() => cancel(ex.id)} isLoading={acting}>
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        onClick={() => cancel(ex.id)}
+                        isLoading={acting}
+                      >
                         取消
                       </Button>
                     </>
