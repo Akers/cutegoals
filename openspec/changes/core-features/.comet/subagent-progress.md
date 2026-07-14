@@ -93,4 +93,7 @@
 **Phase 6 已知残留**: R1-R5 均跟踪在 report 中，均为 non-blocking。
 
 - 2026-07-14：verify-fail → 回退 build。追加 tasks.md 第 11 章（5 个修复任务），已提交 `98ac954`。
-- 2026-07-14：派发 `fix-2` (fixer, ses_0a0bb4972ffeDmj5CelO7asLxI) 实现任务 11.1（task_type/type_config 数据库+实体+错误码）。后台运行中。
+- 2026-07-14：派发 `fix-2` (fixer, ses_0a0bb4972ffeDmj5CelO7asLxI) 实现任务 11.1（task_type/type_config 数据库+实体+错误码），已完成 `d25aba4`。
+- 2026-07-14：复用 `fix-2` 派发任务 11.2（重构周期规则为 frequency+trigger_day 模型），已完成 `94a8203`。
+- 2026-07-14：复用 `fix-2` 派发任务 11.3（STANDING/LIMITED 业务逻辑），已完成 `d5f1ebe`。
+- 2026-07-14：复用 `fix-2` 派发任务 11.4（REPEAT 双触发器实现），后台运行中。
