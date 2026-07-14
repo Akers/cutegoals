@@ -1,4 +1,4 @@
-## MODIFIED Requirements
+## ADDED Requirements
 
 ### Requirement: 迁移脚本 MUST 兼容 PostgreSQL 与 H2
 

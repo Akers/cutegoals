@@ -1,0 +1,6 @@
+{
+  "id": "classic-archive:fix-v11-postgresql-instr",
+  "stepId": "hotfix.build.execute",
+  "type": "checkpoint",
+  "ref": "fix-v11-postgresql-instr"
+}
