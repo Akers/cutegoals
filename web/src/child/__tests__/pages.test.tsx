@@ -207,6 +207,9 @@ describe('Child pages', () => {
           },
         }),
       )
+      // Initial empty-path fetch for candidates (selected=null → path='').
+      // After selection change, useApi re-fetches with the real path.
+      .mockResolvedValueOnce(mockResponse({ data: [] }))
       .mockResolvedValueOnce(
         mockResponse({
           data: [{ prizeId: 1, prizeName: '神秘贴纸', probability: 1 }],

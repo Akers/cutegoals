@@ -1,7 +1,7 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getClient } from '@shared/api';
-import type { ApiError } from '@shared/api';
+import type { TaskTypeValue } from '@shared/api/types';
 import {
   Button,
   CardSection,
@@ -23,7 +23,7 @@ import {
 import { useAuth } from '@shared/auth';
 import { useApi, useFormField } from '@shared/hooks/useApi';
 import { useOnline } from '@shared/theme';
-import { TaskTypeConfigForms, type TaskTypeValue, type TypeConfigValue } from '@parent/components/TaskTypeConfigForms';
+import { TaskTypeConfigForms, type TypeConfigValue } from '@parent/components/TaskTypeConfigForms';
 import { TaskTypeFilter } from '@parent/components/TaskTypeFilter';
 
 // 后端分页响应统一契约：{content,page,pageSize,totalElements,totalPages}
@@ -76,8 +76,6 @@ interface Difficulty {
   enabled: boolean;
 }
 
-type TaskType = 'LIMITED' | 'REPEAT' | 'STANDING';
-
 interface TaskTemplate {
   id: number;
   name: string;
@@ -87,7 +85,7 @@ interface TaskTemplate {
   enabled: boolean;
   version: number;
   recurrenceRule?: { ruleType: string };
-  taskType: TaskType;
+  taskType: TaskTypeValue;
   typeConfig: string; // JSON string
 }
 
@@ -163,10 +161,17 @@ function PageShell({
   );
 }
 
-function usePaginatedData<T>(path: string) {
+function usePaginatedData<T>(path: string, filters?: Record<string, string>) {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
-  const { data, loading, error, refetch } = useApi<PageResult<T>>(`${path}?page=${page}&pageSize=${pageSize}`);
+  const filterString = filters
+    ? '&' + Object.entries(filters)
+        .map(([k, v]) => `${k}=${encodeURIComponent(v)}`)
+        .join('&')
+    : '';
+  const { data, loading, error, refetch } = useApi<PageResult<T>>(
+    `${path}?page=${page}&pageSize=${pageSize}${filterString}`,
+  );
   return {
     items: data?.content ?? [],
     total: data?.totalElements ?? 0,
@@ -589,11 +594,6 @@ export function ParentChildrenPage() {
 }
 
 export function ParentTemplatesPage() {
-  const [page] = useState(1);
-  const [pageSize] = useState(20);
-  const [items, setItems] = useState<TaskTemplate[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<ApiError | undefined>();
   const [showModal, setShowModal] = useState(false);
   const [editing, setEditing] = useState<TaskTemplate | null>(null);
   const title = useFormField();
@@ -606,30 +606,8 @@ export function ParentTemplatesPage() {
   const online = useOnline();
   const [saving, setSaving] = useState(false);
 
-  // 动态获取模板列表（支持 taskType 筛选）
-  const fetchTemplates = useCallback(async () => {
-    if (!online) {
-      setError({ error_code: 'NETWORK_ERROR', message: '当前处于离线状态' });
-      setLoading(false);
-      return;
-    }
-    setLoading(true);
-    setError(undefined);
-    const filterParam = selectedTypes.length > 0 ? `&taskType=${selectedTypes.join(',')}` : '';
-    const response = await getClient().get<PageResult<TaskTemplate>>(
-      `/task-templates?page=${page}&pageSize=${pageSize}${filterParam}`,
-    );
-    if (response.error) {
-      setError(response.error);
-    } else {
-      setItems(response.data?.content ?? []);
-    }
-    setLoading(false);
-  }, [online, page, pageSize, selectedTypes]);
-
-  useEffect(() => {
-    fetchTemplates();
-  }, [fetchTemplates]);
+  const filterParams = selectedTypes.length > 0 ? { taskType: selectedTypes.join(',') } : undefined;
+  const { items, loading, error, refetch } = usePaginatedData<TaskTemplate>('/task-templates', filterParams);
 
   const openNew = () => {
     setEditing(null);
@@ -683,17 +661,17 @@ export function ParentTemplatesPage() {
     }
     setSaving(false);
     setShowModal(false);
-    await fetchTemplates();
+    await refetch();
   };
 
   const toggleEnabled = async (t: TaskTemplate) => {
     await getClient().put(`/task-templates/${t.id}/enabled`, { enabled: !t.enabled });
-    await fetchTemplates();
+    await refetch();
   };
 
-  if (!online) return <PageShell title="任务模板"><OfflineState onRetry={fetchTemplates} /></PageShell>;
+  if (!online) return <PageShell title="任务模板"><OfflineState onRetry={refetch} /></PageShell>;
   if (loading) return <PageShell title="任务模板"><LoadingState /></PageShell>;
-  if (error) return <PageShell title="任务模板"><ErrorState onRetry={fetchTemplates} message={error.message} /></PageShell>;
+  if (error) return <PageShell title="任务模板"><ErrorState onRetry={refetch} message={error.message} /></PageShell>;
 
   return (
     <PageShell

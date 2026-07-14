@@ -1,8 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { FormField, Input, Select } from '@shared/components';
-
-/** 任务类型 */
-export type TaskTypeValue = 'LIMITED' | 'REPEAT' | 'STANDING';
+import type { TaskTypeValue } from '@shared/api/types';
 
 /** 类型配置（Record 形式，序列化为 JSON） */
 export type TypeConfigValue = Record<string, unknown>;
@@ -156,7 +154,8 @@ function RepeatConfigForm({
     [frequency, triggerDays, onChange, buildConfig],
   );
 
-  // 年月日变更时重新通知
+  // 年月日变更时重新通知。此处依赖 frequency/onChange 变化时无需执行，
+  // 因为 onChange 引用稳定（来自父组件 render），且 YEARLY 分支仅需在 yearMonth/yearDay 变化时重新触发。
   useEffect(() => {
     if (frequency === 'YEARLY') {
       onChange({ frequency: 'YEARLY', trigger_day: `${yearMonth}-${yearDay}` });
@@ -331,9 +330,9 @@ export function TaskTypeConfigForms({
     (e: React.ChangeEvent<HTMLSelectElement>) => {
       const v = e.target.value as TaskTypeValue | '';
       onTaskTypeChange(v);
-      // 切换类型时重置配置为默认值
+      // 切换类型时重置配置为默认值（空字符串属性在序列化为 JSON 时会保留，故省略）
       if (v === 'LIMITED') {
-        onTypeConfigChange({ start_date: '', end_date: '' });
+        onTypeConfigChange({ end_date: '' });
       } else if (v === 'REPEAT') {
         onTypeConfigChange({ frequency: 'DAILY' });
       } else if (v === 'STANDING') {

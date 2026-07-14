@@ -1,8 +1,6 @@
 import { useCallback } from 'react';
 import { CardSection } from '@shared/components';
-
-/** 任务类型 */
-export type TaskTypeValue = 'LIMITED' | 'REPEAT' | 'STANDING';
+import type { TaskTypeValue } from '@shared/api/types';
 
 /** TaskTypeFilter 属性 */
 export interface TaskTypeFilterProps {

@@ -151,6 +151,9 @@ export const ErrorCodes = {
   INTERNAL_ERROR: 'INTERNAL_ERROR',
 } as const;
 
+/** 任务类型 */
+export type TaskTypeValue = 'LIMITED' | 'REPEAT' | 'STANDING';
+
 export type ErrorCode = (typeof ErrorCodes)[keyof typeof ErrorCodes];
 
 /** Structured API error from the server */
