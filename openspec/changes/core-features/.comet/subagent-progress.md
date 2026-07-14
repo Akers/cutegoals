@@ -65,11 +65,12 @@
 
 ## 风险与残留
 
-1. **5 个 InstanceHealthServiceTest 测试失败**（Phase 6 引入，Phase 9 未修复）
-2. **Phase 6 残留 Important 问题**（具体清单待 explorer 核查）
-3. **base_ref 历史不一致**：plan fa33ca3 vs .comet.yaml 1ee61b63（plan 已修正）
-4. **设计文档可能的漂移**：plan 1.x review 中标记的 prize_snapshot/points_transaction 表与 design doc 不一致
+1. **Phase 6 的 5 个 reservations（non-blocking）**：是否在进入 verify 前补做，需用户决策或等 final review 后处理。
+2. **设计文档可能的漂移**：plan 1.x review 中标记的 prize_snapshot/points_transaction 表与 design doc 不一致（遗留记录，待 verify 阶段决定）。
 
 ## 派发记录
 
-- 2026-07-14：分析阶段，待派发 explorer 做 gap 核查
+- 2026-07-14：分析阶段，未派发 explorer（由进度 ledger 直接确认已完成）。
+- 2026-07-14：派发 `fix-1` (fixer) 修复 `web/` 前端测试偏离，已提交 `7bc9dcc`。
+- 2026-07-14：批量勾选 `tasks.md` 第 1-9 章，已提交 `e20b0fc`。
+- 当前 HEAD：`e20b0fc`
