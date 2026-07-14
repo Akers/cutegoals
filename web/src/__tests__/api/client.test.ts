@@ -301,7 +301,7 @@ describe('network error retry', () => {
 describe('CSRF token injection', () => {
   beforeEach(() => {
     document.querySelectorAll('meta[name="csrf-token"]').forEach((el) => el.remove());
-    document.cookie = 'XSRF-TOKEN=; Max-Age=-1; path=/';
+    document.cookie = 'csrf_token=; Max-Age=-1; path=/';
   });
 
   it('reads CSRF token from meta tag', async () => {
@@ -322,7 +322,7 @@ describe('CSRF token injection', () => {
   });
 
   it('reads CSRF token from cookie when meta is absent', async () => {
-    document.cookie = 'XSRF-TOKEN=cookie-token-xyz; path=/';
+    document.cookie = 'csrf_token=cookie-token-xyz; path=/';
 
     mockFetchOnce({ body: { data: 'ok' } });
     const client = createTestClient();

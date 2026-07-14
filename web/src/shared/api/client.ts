@@ -24,8 +24,8 @@ function getCsrfToken(): string | undefined {
     if (token) return token;
   }
 
-  // Try cookie
-  const match = document.cookie.match(/(?:^|;\s*)XSRF-TOKEN=([^;]*)/);
+  // Try cookie — backend sets cookie named "csrf_token" (AuthConstants.COOKIE_CSRF_TOKEN)
+  const match = document.cookie.match(/(?:^|;\s*)csrf_token=([^;]*)/);
   if (match) return decodeURIComponent(match[1]);
 
   return undefined;

@@ -257,11 +257,15 @@ export function ParentFamilyPage() {
     setChildSaving(true);
     setActionError(null);
     try {
-      await getClient().post('/family/children', {
+      const res = await getClient().post('/family/children', {
         nickname: childNickname.value,
         pin: childPin.value || undefined,
         birthday: childBirthday.value || undefined,
       });
+      if (res.error) {
+        setActionError(res.error.message ?? '添加孩子失败');
+        return;
+      }
       // 刷新家庭概览即可同步成员与孩子（单一数据源）。
       await refetch();
       setShowChildModal(false);
@@ -291,7 +295,11 @@ export function ParentFamilyPage() {
     setActionLoading(true);
     setActionError(null);
     try {
-      await getClient().delete(`/family/children/${child.id}`);
+      const res = await getClient().delete(`/family/children/${child.id}`);
+      if (res.error) {
+        setActionError(res.error.message ?? '移除孩子失败');
+        return;
+      }
       await refetch();
     } catch (err: any) {
       setActionError(err.message ?? '移除孩子失败');
