@@ -1,6 +1,7 @@
 package com.cutegoals.common.entity.task;
 
 import com.baomidou.mybatisplus.annotation.*;
+import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -78,7 +79,7 @@ public class TaskAssignment {
     @TableField("snapshot_template_task_type")
     private String snapshotTemplateTaskType;
 
-    @TableField("snapshot_template_type_config")
+    @TableField(value = "snapshot_template_type_config", typeHandler = JacksonTypeHandler.class)
     private String snapshotTemplateTypeConfig;
 
     @TableField("submission_count")

@@ -1,6 +1,7 @@
 package com.cutegoals.common.entity.task;
 
 import com.baomidou.mybatisplus.annotation.*;
+import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -47,7 +48,7 @@ public class TaskTemplate {
     @TableField("task_type")
     private String taskType;
 
-    @TableField("type_config")
+    @TableField(value = "type_config", typeHandler = JacksonTypeHandler.class)
     private String typeConfig;
 
     @TableField(value = "created_at", fill = FieldFill.INSERT)
