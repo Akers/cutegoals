@@ -130,3 +130,11 @@
 - [x] 10.8 [deployment-operations] 执行备份恢复与升级故障演练并保存报告；验证：RPO/RTO、数据一致性和操作步骤达标。
 - [x] 10.9 [web-app][auth] 完成依赖漏洞、秘密扫描、Cookie/CSRF、日志脱敏和无障碍检查；验证：无未处置高风险问题。
 - [x] 10.10 [all] 运行后端/前端完整测试、容器检查及 openspec validate core-features --strict；验证：全部通过并将证据写入验证报告后才允许勾选 change 完成。
+
+## 11. 验证失败修复（core-features verify 回退 build）
+
+- [ ] 11.1 [task-template] 实现任务模板三类型系统数据库层与错误码：在 `task_template` 表添加 `task_type`/`type_config`，在 `task_assignment` 表添加 `submission_count`，在 `ErrorCode` 补充 `TASK_TEMPLATE_TYPE_IMMUTABLE`、`TASK_LIMITED_NOT_STARTED`、`TASK_LIMITED_EXPIRED`、`TASK_STANDING_LIMIT_REACHED`、`TASK_REPEAT_NOT_TRIGGER_DAY`；验证：迁移在空库和现有库均可重复执行，错误码被全局处理器识别。
+- [ ] 11.2 [task-template] 重构周期规则模型为 `frequency` + `trigger_day`：移除 `task_recurrence_rule` 简化表，将 DAILY/WEEKLY/MONTHLY/YEARLY 和 `trigger_day` 结构（含 weekday/mode/month/day 与月末自适应）作为 `task_template.type_config` 的 JSON 字段；验证：原有数据迁移不丢失，四种频率合法/非法输入与月末自适应测试通过。
+- [ ] 11.3 [task-template] 实现 STANDING 与 LIMITED 任务类型业务逻辑：STANDING 按孩子独立 `submission_count` 计数、达上限切换 COMPLETED 并返回 `TASK_STANDING_LIMIT_REACHED`；LIMITED 解析 `start_date`/`end_date` 并维护 PENDING→SUBMITTABLE→ACTIVE→EXPIRED 状态机，未到开始日期返回 `TASK_LIMITED_NOT_STARTED`，已过期返回 `TASK_LIMITED_EXPIRED`；验证：状态转换、错误码和审计覆盖。
+- [ ] 11.4 [task-template][task-assignment] 实现 REPEAT 任务双触发器：时间触发器 `RepeatTaskScheduler` 每日 Asia/Shanghai 00:05 扫描并推进 OPEN/EXPIRED 与 PENDING_OPEN→OPEN；提交触发器在审核通过事件中同步创建下一期 PENDING_OPEN 实例；实现 `nextTriggerDate()` 支持 DAILY/WEEKLY/MONTHLY/YEARLY 含闰年自适应；验证：调度重跑幂等、并发不产生重复、非触发日提交返回 `TASK_REPEAT_NOT_TRIGGER_DAY`。
+- [ ] 11.5 [task-template][task-assignment] 补充任务模板三类型系统端到端测试：覆盖 LIMITED/REPEAT/STANDING 的 CRUD、类型不可变、批量分配、状态机、触发器、错误码和 API 契约；验证：新增测试与既有测试全部通过。
