@@ -1,0 +1,8 @@
+{
+  "openspec_proposal": "openspec/changes/task-template-type-completion/proposal.md",
+  "openspec_design": "openspec/changes/task-template-type-completion/design.md",
+  "openspec_tasks": "openspec/changes/task-template-type-completion/tasks.md",
+  "openspec_delta_spec": "openspec/changes/task-template-type-completion/specs/task-template/spec.md",
+  "handoff_context": "openspec/changes/task-template-type-completion/.comet/handoff/design-context.json",
+  "handoff_markdown": "openspec/changes/task-template-type-completion/.comet/handoff/design-context.md"
+}
