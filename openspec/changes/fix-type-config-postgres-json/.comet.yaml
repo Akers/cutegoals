@@ -1,6 +1,6 @@
 workflow: hotfix
 language: zh-CN
-phase: verify
+phase: archive
 context_compression: off
 build_mode: direct
 build_pause: null
@@ -13,11 +13,11 @@ auto_transition: true
 base_ref: e4b2e8c4567df1290c29ca965ab7ff697777774e
 design_doc: null
 plan: null
-verify_result: pending
+verify_result: pass
 verification_report: docs/superpowers/reports/2026-07-14-fix-type-config-postgres-json-verify.md
-branch_status: pending
+branch_status: handled
 created_at: 2026-07-14
-verified_at: null
+verified_at: 2026-07-14
 archived: false
 direct_override: null
 handoff_context: null

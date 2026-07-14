@@ -6,10 +6,12 @@
 #### Scenario: 在 PostgreSQL 中创建含 type_config 的任务模板
 - **WHEN** 家长创建 `task_type=LIMITED` 且 `type_config` 为合法 JSON 文本的任务模板
 - **THEN** 数据库插入成功，`type_config` 以 JSON 类型存储
+- **AND** 参数绑定使用 PostgreSQL 原生 `json` 类型（`PGobject`）而非 `character varying`
 
 #### Scenario: 在 PostgreSQL 中创建含快照 type_config 的任务分配
 - **WHEN** 系统基于已有模板创建任务分配
 - **THEN** `snapshot_template_type_config` 字段成功写入 PostgreSQL JSON 列，无类型转换错误
+- **AND** 参数绑定使用 PostgreSQL 原生 `json` 类型
 
 #### Scenario: H2 单元测试行为不变
 - **WHEN** 运行 `TaskTemplateServiceTest` 和 `TaskAssignmentServiceTest`
