@@ -2,6 +2,8 @@
 comet_change: core-features
 role: technical-design
 canonical_spec: openspec
+archived-with: 2026-07-14-core-features
+status: final
 ---
 
 # CuteGoals 2.0 core-features 技术设计文档
@@ -289,6 +291,8 @@ web/
 - 本 Design Doc 中所有技术决策均服务于这些 spec，不引入新需求。
 - 若实施中发现 spec 仍存歧义，必须回写 spec 并重新运行 `openspec validate core-features --strict`。
 
+archived-with: 2026-07-14-core-features
+status: final
 ---
 
 ## 附录 B：任务类型扩展设计（2026-07-14 增量）
@@ -536,3 +540,4 @@ LocalDate nextTriggerDate(RecurrenceConfig cfg, LocalDate from) {
 6. **集成与回归**:跨模块(分配、提交、审核、积分)联动测试
 
 LIMITED/STANDING 相对简单,优先实施可降低 REPEAT 的复杂度风险。
+

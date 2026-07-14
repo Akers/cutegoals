@@ -2,6 +2,7 @@
 change: core-features
 design-doc: docs/superpowers/specs/2026-07-10-core-features-design.md
 base-ref: 1ee61b63fa21919e0a5c4255ab694d90e5f55c2c
+archived-with: 2026-07-14-core-features
 ---
 
 # CuteGoals 2.0 core-features 实施计划
@@ -13,6 +14,7 @@ base-ref: 1ee61b63fa21919e0a5c4255ab694d90e5f55c2c
 > - 验收事实源：`openspec/changes/core-features/specs/*/spec.md`（12 个 capability spec）
 > **总阶段数**：10 阶段（工程基线 → 数据库 → 6 业务阶段 → Web 前端 → 部署运维 → 综合验证）
 
+archived-with: 2026-07-14-core-features
 ---
 
 ## 计划概览
@@ -27,6 +29,7 @@ base-ref: 1ee61b63fa21919e0a5c4255ab694d90e5f55c2c
 
 **建议提交粒度**：每个独立子任务可作为一个 commit，commit message 格式：`{capability}: {简短描述} (task {任务编号})`。
 
+archived-with: 2026-07-14-core-features
 ---
 
 ## 阶段 0：工程基线与模块边界（7 项任务）
@@ -117,6 +120,7 @@ base-ref: 1ee61b63fa21919e0a5c4255ab694d90e5f55c2c
 - **建议提交粒度**：1 个 commit（`.github/workflows/ci.yml`）
 - 🧪 **测试任务**
 
+archived-with: 2026-07-14-core-features
 ---
 
 ## 阶段 1：数据库模型与迁移（8 项任务）
@@ -209,6 +213,7 @@ base-ref: 1ee61b63fa21919e0a5c4255ab694d90e5f55c2c
 - **建议提交粒度**：1 个 commit
 - 🔒 **安全敏感任务**
 
+archived-with: 2026-07-14-core-features
 ---
 
 ## 阶段 2：初始化、认证与家庭成员（12 项任务）
@@ -399,6 +404,7 @@ base-ref: 1ee61b63fa21919e0a5c4255ab694d90e5f55c2c
 - **建议提交粒度**：2 个 commits（设备绑定 + PIN 登录）
 - 🔒 **安全敏感任务**
 
+archived-with: 2026-07-14-core-features
 ---
 
 ## 阶段 3：任务模板与任务分配（10 项任务）
@@ -540,6 +546,7 @@ base-ref: 1ee61b63fa21919e0a5c4255ab694d90e5f55c2c
 - **建议提交粒度**：1 个 commit
 - ⚡ **并发/幂等/事务边界**
 
+archived-with: 2026-07-14-core-features
 ---
 
 ## 阶段 4：提交审核与积分账本（9 项任务）
@@ -677,6 +684,7 @@ base-ref: 1ee61b63fa21919e0a5c4255ab694d90e5f55c2c
 - **依赖任务**：4.8
 - **建议提交粒度**：1 个 commit
 
+archived-with: 2026-07-14-core-features
 ---
 
 ## 阶段 5：奖品、盲盒与兑换履约（11 项任务）
@@ -826,6 +834,7 @@ base-ref: 1ee61b63fa21919e0a5c4255ab694d90e5f55c2c
 - **建议提交粒度**：1 个 commit
 - ⚡ **并发/幂等/事务边界**
 
+archived-with: 2026-07-14-core-features
 ---
 
 ## 阶段 6：实例管理、安全与审计（8 项任务）
@@ -943,6 +952,7 @@ base-ref: 1ee61b63fa21919e0a5c4255ab694d90e5f55c2c
 - **依赖任务**：0.5（日志配置就绪）
 - **建议提交粒度**：1 个 commit（`common/exception/` + `web/GlobalExceptionHandler`）
 
+archived-with: 2026-07-14-core-features
 ---
 
 ## 阶段 7：三端 Web 体验（10 项任务）
@@ -1072,6 +1082,7 @@ base-ref: 1ee61b63fa21919e0a5c4255ab694d90e5f55c2c
 - **建议提交粒度**：3 个 commits（响应式 + 可访问性 + 性能）
 - 🧪 **测试任务**
 
+archived-with: 2026-07-14-core-features
 ---
 
 ## 阶段 8：私有化部署、备份与升级（10 项任务）
@@ -1185,6 +1196,7 @@ base-ref: 1ee61b63fa21919e0a5c4255ab694d90e5f55c2c
 - **依赖任务**：8.2-8.9
 - **建议提交粒度**：1 个 commit
 
+archived-with: 2026-07-14-core-features
 ---
 
 ## 阶段 9：综合验证与交付门禁（10 项任务）
@@ -1299,6 +1311,7 @@ base-ref: 1ee61b63fa21919e0a5c4255ab694d90e5f55c2c
 - **建议提交粒度**：1 个 commit（验证报告文档）
 - 🧪 **测试任务**
 
+archived-with: 2026-07-14-core-features
 ---
 
 ## 附录 A：跨阶段依赖图
@@ -1372,6 +1385,8 @@ base-ref: 1ee61b63fa21919e0a5c4255ab694d90e5f55c2c
 | 7.2 | 认证页面 | 令牌不落 localStorage |
 | 9.9 | 安全扫描 | 漏洞/秘密/CSRF 全扫描 |
 
+archived-with: 2026-07-14-core-features
 ---
 
 *计划版本: 1.0 | 生成日期: 2026-07-10 | 对应 change: core-features*
+

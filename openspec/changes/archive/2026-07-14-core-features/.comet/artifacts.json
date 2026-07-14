@@ -4,5 +4,6 @@
   "openspec_tasks": "openspec/changes/core-features/tasks.md",
   "openspec_delta_spec": "openspec/changes/core-features/specs/auth/spec.md",
   "handoff_context": "openspec/changes/core-features/.comet/handoff/design-context.json",
-  "handoff_markdown": "openspec/changes/core-features/.comet/handoff/design-context.md"
+  "handoff_markdown": "openspec/changes/core-features/.comet/handoff/design-context.md",
+  "archive_directory": "openspec/changes/archive/2026-07-14-core-features"
 }
