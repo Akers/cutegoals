@@ -380,7 +380,33 @@ describe('getErrorMessage coverage (§5.2)', () => {
     verify('EXCHANGE_INVALID_QUERY');
   });
 
-  it('TASK_*', () => {
+  it('TASK_TEMPLATE_*', () => {
+    verify('TASK_TEMPLATE_FORBIDDEN');
+    verify('TASK_TEMPLATE_NOT_FOUND');
+    verify('TASK_TEMPLATE_VALIDATION_FAILED');
+    verify('TASK_TEMPLATE_REQUIRES_ACTIVE_DIFFICULTY');
+    verify('TASK_TEMPLATE_INVALID_RECURRENCE');
+    verify('TASK_TEMPLATE_VERSION_CONFLICT');
+    verify('TASK_TEMPLATE_INACTIVE');
+    verify('TASK_TEMPLATE_TYPE_IMMUTABLE');
+    verify('TASK_TEMPLATE_TYPE_CONFIG_MISMATCH');
+    verify('TASK_TEMPLATE_INVALID_QUERY');
+  });
+
+  it('TASK_LIMITED_*', () => {
+    verify('TASK_LIMITED_NOT_STARTED');
+    verify('TASK_LIMITED_EXPIRED');
+  });
+
+  it('TASK_REPEAT_*', () => {
+    verify('TASK_REPEAT_NOT_TRIGGER_DAY');
+  });
+
+  it('TASK_STANDING_*', () => {
+    verify('TASK_STANDING_LIMIT_REACHED');
+  });
+
+  it('TASK_REVIEW_*', () => {
     verify('TASK_REVIEW_FORBIDDEN');
     verify('TASK_REVIEW_NOT_FOUND');
     verify('TASK_SUBMISSION_VALIDATION_FAILED');

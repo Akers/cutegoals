@@ -37,7 +37,19 @@ export const ERROR_MESSAGES: Record<string, string> = {
   [ErrorCodes.TASK_TEMPLATE_INVALID_RECURRENCE]: '任务模板周期规则不合法',
   [ErrorCodes.TASK_TEMPLATE_VERSION_CONFLICT]: '任务模板版本冲突，请刷新后重试',
   [ErrorCodes.TASK_TEMPLATE_INACTIVE]: '任务模板已停用',
+  [ErrorCodes.TASK_TEMPLATE_TYPE_IMMUTABLE]: '任务类型不可修改',
+  [ErrorCodes.TASK_TEMPLATE_TYPE_CONFIG_MISMATCH]: '任务类型配置不匹配',
   [ErrorCodes.TASK_TEMPLATE_INVALID_QUERY]: '任务模板查询参数不合法',
+
+  // TASK_LIMITED
+  [ErrorCodes.TASK_LIMITED_NOT_STARTED]: '该任务尚未到达开始日期',
+  [ErrorCodes.TASK_LIMITED_EXPIRED]: '该任务已过期',
+
+  // TASK_REPEAT
+  [ErrorCodes.TASK_REPEAT_NOT_TRIGGER_DAY]: '今天不是该重复任务的触发日',
+
+  // TASK_STANDING
+  [ErrorCodes.TASK_STANDING_LIMIT_REACHED]: '该常驻任务已达到最大提交次数',
 
   // TASK_ASSIGNMENT
   [ErrorCodes.TASK_ASSIGNMENT_FORBIDDEN]: '无权访问该任务分配',
