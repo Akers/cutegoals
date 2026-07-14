@@ -288,3 +288,251 @@ web/
 - `openspec/changes/core-features/specs/*/spec.md` 是验收事实源。
 - 本 Design Doc 中所有技术决策均服务于这些 spec，不引入新需求。
 - 若实施中发现 spec 仍存歧义，必须回写 spec 并重新运行 `openspec validate core-features --strict`。
+
+---
+
+## 附录 B：任务类型扩展设计（2026-07-14 增量）
+
+### B.1 背景
+
+家长端任务模板管理中,任务模板实体新增 `task_type` 属性,支持三类任务类型:限时任务(LIMITED)、重复任务(REPEAT)、常驻任务(STANDING)。本附录是对原 task-template 设计的扩展,与原设计吸收合并:原 `recurrence` 字段(DAILY/WEEKDAYS/WEEKENDS/CUSTOM_WEEKDAYS)被废弃,新 `task_type=REPEAT` 子配置取而代之。
+
+### B.2 数据模型
+
+#### B.2.1 `task_template` 表扩展
+
+```sql
+ALTER TABLE task_template
+  ADD COLUMN task_type ENUM('LIMITED','REPEAT','STANDING') NOT NULL AFTER icon,
+  ADD COLUMN type_config JSON NULL AFTER task_type;
+```
+
+- `task_type` 必填,创建后不可改(`TASK_TEMPLATE_TYPE_IMMUTABLE`)
+- `type_config` JSON 结构按 `task_type` 分支(见 B.2.2)
+- 原 `recurrence` 字段废弃;因 `server/business/` 实际未实施,无数据迁移负担
+
+#### B.2.2 `type_config` JSON Schema
+
+**LIMITED 类型**
+```json
+{
+  "start_date": "2026-07-20" | null,
+  "end_date": "2026-08-20"
+}
+```
+- `start_date` 为 null = 模板激活那一刻可提交
+- `end_date` 必填,Asia/Shanghai 当地 23:59:59.999 截止
+- 校验:`end_date >= start_date`(若 `start_date` 非 null)
+
+**REPEAT 类型**
+```json
+{
+  "frequency": "DAILY | WEEKLY | MONTHLY | YEARLY",
+  "trigger_day": { /* 按 frequency 分支 */ }
+}
+```
+- `frequency=DAILY`:`trigger_day` 缺省,每日触发
+- `frequency=WEEKLY`:`trigger_day = { "weekday": 1~7 }`(ISO 8601,1=周一)
+- `frequency=MONTHLY`:`trigger_day = { "mode": "FIRST_DAY" | "LAST_DAY" | "MID_MONTH" }`,月末自适应(平年 2 月 28、闰年 2 月 29、4/6/9/11 月 30、其余月 31),`MID_MONTH` 解析为 15 日
+- `frequency=YEARLY`:`trigger_day = { "month": 1~12, "day": 1~31 }`,`day` 按 `month` 自适应,非法组合(如 2 月 30 日)拒绝
+
+**STANDING 类型**
+```json
+{
+  "max_submissions": 10 | null
+}
+```
+- `null` = 无限;正整数 = 上限(1~10000)
+- 校验:必须为 null 或 1~10000 正整数
+
+#### B.2.3 `task_assignment` 表扩展
+
+```sql
+ALTER TABLE task_assignment
+  ADD COLUMN submission_count INT NOT NULL DEFAULT 0 AFTER status;
+```
+
+- 仅 STANDING 类型实例使用
+- 每次审核通过后自增 1;审核驳回/拒绝不自增
+- 达到 `max_submissions` 后实例状态切换为 COMPLETED
+
+### B.3 三类任务的状态机
+
+#### B.3.1 LIMITED 状态机
+
+```
+[家长分配] → PENDING (start_date 未到)
+              ↓ (start_date 为 null 或 Asia/Shanghai 当日 00:00 到达)
+          SUBMITTABLE
+              ↓ (提交+审核通过)            ↓ (end_date 当地 23:59:59.999 过去)
+          COMPLETED                     EXPIRED
+```
+
+**关键约束**
+- PENDING 状态提交返回 `TASK_LIMITED_NOT_STARTED`
+- EXPIRED 状态提交返回 `TASK_LIMITED_EXPIRED`
+- 过期不可补交,不可复活
+
+#### B.3.2 STANDING 状态机
+
+```
+[家长分配] → ACTIVE (count=0)
+              ↓ (每次审核通过,count++)
+          ACTIVE (count++) 或 COMPLETED (count == max_submissions)
+```
+
+**关键约束**
+- 每个孩子独立计数(`task_assignment.submission_count`)
+- `max_submissions=null` 永远 ACTIVE,接受无限次审核通过
+- `max_submissions=N`,count==N 后切换 COMPLETED
+- COMPLETED 状态提交返回 `TASK_STANDING_LIMIT_REACHED`
+- 审核驳回/拒绝不影响 count
+
+#### B.3.3 REPEAT 状态机(单期)
+
+```
+[模板分配] → PENDING_OPEN (首期, 若当日不是触发日)
+              ↓ (触发日到达)
+          OPEN
+              ↓ (提交+审核通过)            ↓ (下个触发日到来仍未提交)
+          COMPLETED (本期)                EXPIRED (本期)
+          + 生成下一期 PENDING_OPEN       + 生成下一期 PENDING_OPEN 或 OPEN
+```
+
+**模板层面**:永不终结(除非停用/删除)。**实例层面**:每期有独立状态。
+
+### B.4 REPEAT 双触发推进机制
+
+#### B.4.1 提交触发器(同步)
+
+实现位置:`task-review` 模块的"审核通过"事件钩子。
+
+```
+审核通过事件
+  ↓ (在事务内)
+1. 当前实例状态 OPEN → COMPLETED
+2. 计算下一触发日 nextTriggerDate(type_config, today)
+3. 创建新 task_assignment (status=PENDING_OPEN, trigger_day=下一触发日)
+4. 提交事务
+```
+
+注意:下一期立刻创建为 PENDING_OPEN,孩子可见但不可提交。需等到下个触发日由时间触发器切换为 OPEN。
+
+#### B.4.2 时间触发器(异步)
+
+实现位置:`task` 模块的 `RepeatTaskScheduler`(Spring `@Scheduled`)。
+
+```
+@Scheduled(cron = "0 5 0 * * ?", zone = "Asia/Shanghai")
+每日 00:05 运行:
+  扫描所有未删除未停用的 REPEAT 模板的当前实例
+    动作 A:trigger_day + 1 日 < today 的 OPEN 实例
+      → 切换为 EXPIRED
+      → 创建下一期(若新触发日 == today 则 OPEN,否则 PENDING_OPEN)
+    动作 B:trigger_day == today 的 PENDING_OPEN 实例
+      → 切换为 OPEN
+  事务边界:每模板独立事务,失败回滚不影响其他模板
+  幂等保证:assignment_id + trigger_day 唯一约束
+  审计日志:记录扫描数、推进数、错误
+```
+
+#### B.4.3 触发日计算函数
+
+```java
+LocalDate nextTriggerDate(RecurrenceConfig cfg, LocalDate from) {
+    return switch (cfg.frequency()) {
+        case DAILY    -> from.plusDays(1);
+        case WEEKLY   -> nextWeekday(from, cfg.triggerDay().weekday());
+        case MONTHLY  -> nextMonthlyDay(from, cfg.triggerDay().mode());
+        case YEARLY   -> nextYearlyDay(from, cfg.triggerDay().month(), cfg.triggerDay().day());
+    };
+}
+
+// WEEKLY:从 from 起找下一个 weekday 等于指定值的日期
+// MONTHLY:从 from 起找下一个 mode 对应日(FIRST_DAY=下月1日, LAST_DAY=下月最后一日, MID_MONTH=下月15日)
+// YEARLY:从 from 起找下一个 month/day 组合(注意闰年 2 月 29 日只在闰年触发)
+```
+
+### B.5 错误码清单(新增)
+
+| 错误码 | 触发场景 | HTTP 状态 |
+|---|---|---|
+| `TASK_TEMPLATE_TYPE_IMMUTABLE` | PUT 请求尝试修改 `task_type` 字段 | 409 Conflict |
+| `TASK_TEMPLATE_TYPE_CONFIG_MISMATCH` | `type_config` 与 `task_type` 不匹配 | 400 Bad Request |
+| `TASK_LIMITED_NOT_STARTED` | LIMITED 实例 PENDING 状态提交 | 409 Conflict |
+| `TASK_LIMITED_EXPIRED` | LIMITED 实例 EXPIRED 状态提交 | 409 Conflict |
+| `TASK_REPEAT_NOT_TRIGGER_DAY` | REPEAT 实例 PENDING_OPEN 状态提交 | 409 Conflict |
+| `TASK_STANDING_LIMIT_REACHED` | STANDING 实例 count == max_submissions 时提交 | 409 Conflict |
+
+注:`TASK_TEMPLATE_TYPE_CONFIG_MISMATCH` 在 spec.md 中实际由 `TASK_TEMPLATE_VALIDATION_FAILED` 表达(作为字段级错误),独立的 `TYPE_CONFIG_MISMATCH` 错误码留作内部异常日志使用。
+
+### B.6 API 影响
+
+#### B.6.1 模板接口
+
+| 接口 | 变更 |
+|---|---|
+| `POST /api/task-templates` | 请求体新增 `task_type`(必填)+ `type_config`(必填) |
+| `PUT /api/task-templates/{id}` | 允许修改 `type_config` 内字段;`task_type` 不可改 |
+| `GET /api/task-templates` | 筛选条件新增 `task_type`(可多选) |
+| `GET /api/task-templates/{id}` | 响应体包含 `task_type` 与 `type_config` |
+
+#### B.6.2 分配/实例接口
+
+| 接口 | 变更 |
+|---|---|
+| `POST /api/task-assignments` | LIMITED/STANDING:直接创建实例(继承模板 type_config);REPEAT:创建首期(状态根据激活日与首触发日决定 PENDING_OPEN 或 OPEN) |
+| `POST /api/task-submissions` | 新增前置校验:LIMITED 必须 SUBMITTABLE、REPEAT 必须 OPEN、STANDING 必须 ACTIVE 且 count < max_submissions |
+
+### B.7 与原 recurrence 字段的吸收合并说明
+
+| 原 recurrence 值 | 新 task_type=REPEAT 等价 | 迁移策略 |
+|---|---|---|
+| `DAILY` | `frequency=DAILY` | 自动等价 |
+| `WEEKDAYS`(周一到周五) | 无等价(WEEKLY 仅支持单一 weekday) | 不迁移,家长重建 |
+| `WEEKENDS`(周六周日) | 无等价(WEEKLY 仅支持单一 weekday) | 不迁移,家长重建 |
+| `CUSTOM_WEEKDAYS`(自定义多选) | 无等价(WEEKLY 仅支持单一 weekday) | 不迁移,家长重建 |
+
+因 `server/business/` 模块实际未实施,无数据迁移负担。家长若需要"每周三天"的语义,只能创建多个 REPEAT+WEEKLY 模板(每个对应一天)。这是 MVP 简化,YAGNI 原则下不引入复杂多选规则。
+
+### B.8 测试策略
+
+#### B.8.1 单元测试
+
+- 触发日计算函数 `nextTriggerDate()`:DAILY/WEEKLY/MONTHLY/YEARLY 各覆盖
+  - WEEKLY:跨周边界
+  - MONTHLY:月末自适应(2 月 28/29、4/6/9/11 月 30、其余 31)
+  - YEARLY:闰年 2 月 29 日只在闰年触发
+- `type_config` 校验逻辑:每种 task_type 的合法/非法输入
+- 状态机切换:LIMITED/STANDING/REPEAT 各自
+- STANDING 计数器与审核结果关系
+
+#### B.8.2 集成测试(Testcontainers)
+
+- REPEAT 双触发推进:
+  - 提交触发:审核通过 → 本期 COMPLETED → 下一期 PENDING_OPEN 创建
+  - 时间触发:定时任务推进 EXPIRED + 创建下一期 + PENDING_OPEN→OPEN 切换
+- 时间触发器幂等性:同一日期多次运行不重复创建
+- STANDING 计数器并发:多孩子同时提交,count 不串号
+- task_type 不可改性:PUT 尝试修改返回错误码
+
+#### B.8.3 端到端测试(Playwright)
+
+- 家长配置三类模板的完整流程
+- 孩子在不同状态下提交的边界:
+  - LIMITED 过期、未开始
+  - REPEAT 非触发日、过期未提交
+  - STANDING 达上限
+
+### B.9 实施顺序建议
+
+在 tasks.md 第 4 章(任务模板)中,建议按以下顺序实施任务类型扩展:
+
+1. **数据层**:数据库迁移(task_template 加 task_type/type_config、task_assignment 加 submission_count)
+2. **基础校验**:task_type/type_config 的输入校验、错误码
+3. **LIMITED 实现**:状态机 + 时间窗口校验(简单,先跑通)
+4. **STANDING 实现**:计数器 + 上限校验
+5. **REPEAT 实现**:触发日计算函数 + 状态机 + 双触发推进
+6. **集成与回归**:跨模块(分配、提交、审核、积分)联动测试
+
+LIMITED/STANDING 相对简单,优先实施可降低 REPEAT 的复杂度风险。

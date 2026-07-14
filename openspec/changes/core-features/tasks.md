@@ -36,16 +36,24 @@
 
 ## 4. 任务模板与任务分配
 
-- [ ] 4.1 [task-template] 实现模板创建、更新、分页查询、分类筛选和启停；验证：权限与字段校验测试通过。
-- [ ] 4.2 [task-template] 实现可选周期规则及其格式、时区和边界校验；验证：无周期、每日、工作日和自定义星期场景通过。
+- [ ] 4.1 [task-template] 实现模板创建、更新、分页查询、分类筛选和启停，包含 `task_type`（LIMITED/REPEAT/STANDING）与 `type_config` 字段的 CRUD；验证：权限校验、字段校验、`type_config` 与 `task_type` 匹配测试通过。
+- [ ] 4.2 [task-template] 实现重复任务的触发日规则（DAILY/WEEKLY/MONTHLY/YEARLY 四种 frequency），包括 ISO 周几(1-7)、月模式(FIRST_DAY/LAST_DAY/MID_MONTH 含月末自适应)、年月日(含闰年/月份合法性自适应)；验证：四种 frequency 的合法/非法输入、月末自适应、Asia/Shanghai 时区边界通过。
 - [ ] 4.3 [task-template] 实现难度等级、顺序和正整数奖励积分管理；验证：重复等级、非正积分和引用中删除场景通过。
 - [ ] 4.4 [task-template] 实现模板软删除及历史引用保护；验证：现有分配和历史查询不受后续编辑影响。
-- [ ] 4.5 [task-assignment] 实现单次任务分配并固化模板、难度、积分和截止时间快照；验证：模板修改不追溯已有分配。
-- [ ] 4.6 [task-assignment] 实现批量分配、客户端幂等键和参数冲突检测；验证：重试不重复，复用键但参数不同返回冲突。
-- [ ] 4.7 [task-assignment] 实现周期任务滚动生成和稳定发生键；验证：调度重跑、夏令时边界和并发执行不产生重复。
-- [ ] 4.8 [task-assignment] 实现家庭默认迟交策略与单任务覆盖；验证：允许/禁止迟交及稳定错误码测试通过。
-- [ ] 4.9 [task-assignment] 实现按日、月和孩子筛选的日历查询及逾期派生标记；验证：Asia/Shanghai 日期边界测试通过。
-- [ ] 4.10 [task-assignment] 实现未批准任务的取消与审计；验证：已批准任务不可取消且历史记录保留。
+- [ ] 4.5 [task-assignment] 实现单次任务分配并固化模板、难度、积分、截止时间和任务类型快照；验证：LIMITED/STANDING 直接创建实例、模板修改不追溯已有分配。
+- [ ] 4.6 [task-assignment] 实现批量分配、客户端幂等键和参数冲突检测，覆盖三类 task_type；验证：重试不重复，复用键但参数不同返回冲突，三类模板批量分配幂等。
+- [ ] 4.7 [task-assignment] 实现 REPEAT 模板的双触发推进（提交触发器在审核通过事件中创建下一期、时间触发器每日 Asia/Shanghai 00:05 运行扫描过期与切换状态）和稳定 `assignment_id + trigger_day` 发生键；验证：调度重跑、夏令时边界、并发执行不产生重复。
+- [ ] 4.8 [task-assignment] 实现家庭默认迟交策略与单任务覆盖，覆盖 LIMITED/REPEAT 的 EXPIRED 状态不可补交；验证：允许/禁止迟交、LIMITED 过期、REPEAT 非触发日、稳定错误码测试通过。
+- [ ] 4.9 [task-assignment] 实现按日、月和孩子筛选的日历查询，显示三类任务的状态(PENDING/SUBMITTABLE/ACTIVE/PENDING_OPEN/OPEN/COMPLETED/EXPIRED)及逾期派生标记；验证：Asia/Shanghai 日期边界、三类任务在日历视图正确展示通过。
+- [ ] 4.10 [task-assignment] 实现未批准任务的取消与审计，支持三类 task_type 的取消语义（LIMITED/SANDING 取消实例、REPEAT 取消当前期并停止后续生成）；验证：已批准任务不可取消且历史记录保留，REPEAT 取消后不生成新期。
+- [ ] 4.11 [task-template] 实现 LIMITED 任务的时间窗口状态机：`start_date`/`end_date` 解析（Asia/Shanghai 当地 00:00 与 23:59:59.999）、PENDING→SUBMITTABLE 自动切换、EXPIRED 自动标记；验证：未到开始日期、过期、空 start_date 即时开始场景通过。
+- [ ] 4.12 [task-template] 实现 STANDING 任务的 `submission_count` 字段和按孩子独立计数（每次审核通过自增 1，驳回/拒绝不自增）；验证：单孩子多次提交、多孩子并发提交不串号通过。
+- [ ] 4.13 [task-template] 实现 STANDING 任务达上限处理：`max_submissions=null` 永远 ACTIVE、`max_submissions=N` 时 count==N 切换 COMPLETED；验证：达上限后提交返回 `TASK_STANDING_LIMIT_REACHED`、列表展示提示通过。
+- [ ] 4.14 [task-template] 实现 REPEAT 触发日计算函数 `nextTriggerDate()`：DAILY（plusDays(1)）、WEEKLY（下一个指定 weekday）、MONTHLY（FIRST_DAY/LAST_DAY/MID_MONTH 月末自适应）、YEARLY（含闰年 2 月 29 日只在闰年触发）；验证：四种 frequency 的跨周期边界通过。
+- [ ] 4.15 [task-template] 实现 REPEAT 提交触发钩子：审核通过事件中同步将本期切换 COMPLETED 并创建下一期 PENDING_OPEN 实例；验证：审核通过后下一期立刻可见但不可提交，到下个触发日才可提交。
+- [ ] 4.16 [task-template] 实现 REPEAT 时间触发器 `RepeatTaskScheduler`：每日 Asia/Shanghai 00:05 运行，扫描 OPEN 实例推进 EXPIRED、PENDING_OPEN 切换 OPEN；验证：单模板失败不影响其他、同日多次运行幂等、审计日志写入通过。
+- [ ] 4.17 [task-template] 实现 REPEAT 单期状态机 PENDING_OPEN→OPEN→COMPLETED/EXPIRED 与模板分配即生成首期逻辑；验证：分配当日是/否触发日两种场景、非触发日提交返回 `TASK_REPEAT_NOT_TRIGGER_DAY` 通过。
+- [ ] 4.18 [task-template] 实现 `task_type` 不可改性验证：PUT 请求中 `task_type` 字段与既有值不一致时返回 `TASK_TEMPLATE_TYPE_IMMUTABLE` 且不增加版本；`type_config` 内字段允许修改。验证：尝试改类型被拒绝、修改 type_config 内字段成功通过。
 
 ## 5. 提交审核与积分账本
 
