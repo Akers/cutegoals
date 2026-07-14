@@ -1,7 +1,7 @@
 ---
 change: core-features
 design-doc: docs/superpowers/specs/2026-07-10-core-features-design.md
-base-ref: fa33ca3
+base-ref: 1ee61b63fa21919e0a5c4255ab694d90e5f55c2c
 ---
 
 # CuteGoals 2.0 core-features 实施计划
