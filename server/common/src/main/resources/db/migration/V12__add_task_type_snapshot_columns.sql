@@ -11,5 +11,7 @@ ALTER TABLE task_assignment
 ALTER TABLE task_assignment
     ADD COLUMN snapshot_template_type_config JSON DEFAULT NULL;
 
-COMMENT ON COLUMN task_assignment.snapshot_template_task_type IS '快照：任务类型（LIMITED/REPEAT/STANDING）';
-COMMENT ON COLUMN task_assignment.snapshot_template_type_config IS '快照：类型配置（JSON，与 task_template.type_config 结构一致）';
+-- COMMENT ON COLUMN is not compatible with MySQL 8+;
+-- H2/PostgreSQL comments can be added manually if needed.
+-- COMMENT ON COLUMN task_assignment.snapshot_template_task_type IS '快照：任务类型（LIMITED/REPEAT/STANDING）';
+-- COMMENT ON COLUMN task_assignment.snapshot_template_type_config IS '快照：类型配置（JSON，与 task_template.type_config 结构一致）';

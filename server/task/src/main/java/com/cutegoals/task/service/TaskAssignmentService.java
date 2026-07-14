@@ -704,6 +704,8 @@ public class TaskAssignmentService {
         item.put("snapshotTemplateDescription", assignment.getSnapshotTemplateDescription());
         item.put("snapshotTemplateCategory", assignment.getSnapshotTemplateCategory());
         item.put("snapshotTemplateIcon", assignment.getSnapshotTemplateIcon());
+        item.put("snapshotTemplateTaskType", assignment.getSnapshotTemplateTaskType());
+        item.put("snapshotTemplateTypeConfig", assignment.getSnapshotTemplateTypeConfig());
         item.put("snapshotDifficultyName", assignment.getSnapshotDifficultyName());
         item.put("snapshotDifficultyReward", assignment.getSnapshotDifficultyReward());
 
