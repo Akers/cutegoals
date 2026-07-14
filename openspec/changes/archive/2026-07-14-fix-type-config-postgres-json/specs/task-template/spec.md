@@ -1,4 +1,4 @@
-## MODIFIED Requirements
+## ADDED Requirements
 
 ### Requirement: 任务模板 typeConfig 持久化兼容 PostgreSQL JSON 列
 任务模板的 `type_config` 字段以及任务分配的 `snapshot_template_type_config` 字段在持久化到 PostgreSQL 数据库时，MUST 正确绑定到 `JSON` 列类型，不得产生 `character varying` 到 `json` 的类型不匹配错误。系统 MUST 保持 H2 单元测试与 PostgreSQL 生产环境的行为一致，且不修改业务规则或接口契约。
