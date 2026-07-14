@@ -59,8 +59,8 @@ class FlywayMigrationTest {
                 .load();
         MigrateResult result = flyway.migrate();
 
-        assertEquals(10, result.migrationsExecuted,
-                "Expected exactly 10 migrations (V1 through V10) to be executed");
+        assertEquals(11, result.migrationsExecuted,
+                "Expected exactly 11 migrations (V1 through V11) to be executed");
 
 
         // Verify all migration versions
@@ -81,6 +81,7 @@ class FlywayMigrationTest {
         assertTrue(versions.contains("8"), "V8 instance management tables should be applied");
         assertTrue(versions.contains("9"), "V9 assignment occurrence_key unique constraint should be applied");
         assertTrue(versions.contains("10"), "V10 task type and type config should be applied");
+        assertTrue(versions.contains("11"), "V11 frequency data migration should be applied");
 
         // Verify reentrancy
         MigrateResult reentrantResult = flyway.migrate();
