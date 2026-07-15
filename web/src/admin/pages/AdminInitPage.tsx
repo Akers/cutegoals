@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { history } from 'umi';
 import { getClient } from '@shared/api';
 import { useAuth, maskPhone } from '@shared/auth';
-import { Button, FormField, Input, PageHeader } from '@shared/components';
+import { Button, Input } from 'antd';
+import { FormField, PageHeader } from '@shared/components';
 import { useFormField } from '@shared/hooks/useApi';
 
 export function AdminInitPage() {
-  const navigate = useNavigate();
   const { login } = useAuth();
   const token = useFormField();
   const phone = useFormField();
@@ -21,10 +21,10 @@ export function AdminInitPage() {
       .get<{ instanceStatus: string }>('/instance/status')
       .then((response) => {
         if (response.data?.instanceStatus === 'INITIALIZED') {
-          navigate('/admin/login', { replace: true });
+          history.replace('/admin/login');
         }
       });
-  }, [navigate]);
+  }, []);
 
   const validate = (): string | null => {
     if (!token.value.trim()) return '请输入初始化令牌';
@@ -65,7 +65,7 @@ export function AdminInitPage() {
         roles: data.roles,
         familyId: data.familyId,
       });
-      navigate('/admin', { replace: true });
+      history.replace('/admin');
     }
   };
 
@@ -91,7 +91,7 @@ export function AdminInitPage() {
           <FormField label="确认密码" htmlFor="init-confirm">
             <Input id="init-confirm" type="password" placeholder="再次输入密码" {...confirmPassword.inputProps} />
           </FormField>
-          <Button type="submit" isLoading={loading} className="w-full">
+          <Button type="primary" htmlType="submit" loading={loading} className="w-full">
             完成初始化
           </Button>
         </form>

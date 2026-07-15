@@ -1,13 +1,8 @@
 import { useEffect, useState } from 'react';
 import { getClient } from '@shared/api';
+import { Button, Card, Empty, Result, Spin } from 'antd';
 import {
-  Button,
-  CardSection,
-  EmptyState,
-  ErrorState,
   Layout,
-  LoadingState,
-  OfflineState,
   PageHeader,
   StatusBadge,
 } from '@shared/components';
@@ -40,16 +35,16 @@ export function AdminOverviewPage() {
   const { data, loading, error, refetch } = useApi<OverviewData>('/instance/status');
   const online = useOnline();
 
-  if (!online) return <Layout><OfflineState onRetry={refetch} /></Layout>;
-  if (loading) return <Layout><LoadingState /></Layout>;
-  if (error) return <Layout><ErrorState title="加载失败" message={error.message ?? '未知错误'} onRetry={refetch} /></Layout>;
-  if (!data) return <Layout><EmptyState title="暂无数据" /></Layout>;
+  if (!online) return <Layout><Result status="warning" title="当前处于离线状态" subTitle="请检查网络连接，恢复后重试" extra={<Button onClick={refetch}>重试</Button>} /></Layout>;
+  if (loading) return <Layout><Spin className="flex justify-center py-12" /></Layout>;
+  if (error) return <Layout><Result status="error" title="加载失败" subTitle={error.message ?? '未知错误'} extra={<Button onClick={refetch}>重试</Button>} /></Layout>;
+  if (!data) return <Layout><Empty description="暂无数据" /></Layout>;
 
   return (
     <Layout>
       <PageHeader title="实例概览" />
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <CardSection title="初始化状态">
+        <Card title="初始化状态">
           <div className="flex items-center gap-2">
             <StatusBadge
               status={
@@ -60,8 +55,8 @@ export function AdminOverviewPage() {
             />
             <span className="text-cg-text-muted">{data.version ?? '—'}</span>
           </div>
-        </CardSection>
-        <CardSection title="备份状态">
+        </Card>
+        <Card title="备份状态">
           {data.lastBackupAt ? (
             <div className="flex items-center gap-2">
               <StatusBadge status={data.lastBackupStatus === 'SUCCESS' ? 'completed' : 'cancelled'} />
@@ -70,8 +65,8 @@ export function AdminOverviewPage() {
           ) : (
             <p className="text-cg-text-muted">暂无备份记录</p>
           )}
-        </CardSection>
-        <CardSection title="恢复演练">
+        </Card>
+        <Card title="恢复演练">
           {data.recoveryDrill ? (
             <div className="space-y-1 text-sm">
               <div className="flex items-center gap-2">
@@ -85,7 +80,7 @@ export function AdminOverviewPage() {
           ) : (
             <p className="text-cg-text-muted">尚未运行恢复演练</p>
           )}
-        </CardSection>
+        </Card>
       </div>
     </Layout>
   );
@@ -108,10 +103,10 @@ export function AdminConfigPage() {
     await refetch();
   };
 
-  if (!online) return <Layout><OfflineState onRetry={refetch} /></Layout>;
-  if (loading) return <Layout><LoadingState /></Layout>;
-  if (error) return <Layout><ErrorState title="加载失败" message={error.message ?? '未知错误'} onRetry={refetch} /></Layout>;
-  if (!data) return <Layout><EmptyState title="暂无配置" /></Layout>;
+  if (!online) return <Layout><Result status="warning" title="当前处于离线状态" subTitle="请检查网络连接，恢复后重试" extra={<Button onClick={refetch}>重试</Button>} /></Layout>;
+  if (loading) return <Layout><Spin className="flex justify-center py-12" /></Layout>;
+  if (error) return <Layout><Result status="error" title="加载失败" subTitle={error.message ?? '未知错误'} extra={<Button onClick={refetch}>重试</Button>} /></Layout>;
+  if (!data) return <Layout><Empty description="暂无配置" /></Layout>;
 
   return (
     <Layout>
@@ -129,7 +124,7 @@ export function AdminConfigPage() {
               />
             </div>
           ))}
-          <Button onClick={handleSave} isLoading={saving}>保存配置</Button>
+          <Button onClick={handleSave} loading={saving}>保存配置</Button>
         </div>
       </div>
     </Layout>
@@ -159,10 +154,10 @@ export function AdminAccountsPage() {
 
   const mask = (phone: string) => phone.slice(0, 3) + '****' + phone.slice(7);
 
-  if (!online) return <Layout><OfflineState onRetry={refetch} /></Layout>;
-  if (loading) return <Layout><LoadingState /></Layout>;
-  if (error) return <Layout><ErrorState title="加载失败" message={error.message ?? '未知错误'} onRetry={refetch} /></Layout>;
-  if (!data || data.content.length === 0) return <Layout><EmptyState title="暂无账号" /></Layout>;
+  if (!online) return <Layout><Result status="warning" title="当前处于离线状态" subTitle="请检查网络连接，恢复后重试" extra={<Button onClick={refetch}>重试</Button>} /></Layout>;
+  if (loading) return <Layout><Spin className="flex justify-center py-12" /></Layout>;
+  if (error) return <Layout><Result status="error" title="加载失败" subTitle={error.message ?? '未知错误'} extra={<Button onClick={refetch}>重试</Button>} /></Layout>;
+  if (!data || data.content.length === 0) return <Layout><Empty description="暂无账号" /></Layout>;
 
   return (
     <Layout>
@@ -187,9 +182,9 @@ export function AdminAccountsPage() {
                 </td>
                 <td className="px-4 py-3">
                   <Button
-                    variant={account.status === 'ACTIVE' ? 'secondary' : 'primary'}
-                    size="sm"
-                    isLoading={acting === account.id}
+                    type={account.status === 'ACTIVE' ? 'default' : 'primary'}
+                    size="small"
+                    loading={acting === account.id}
                     onClick={() => toggle(account.id, account.status !== 'ACTIVE')}
                   >
                     {account.status === 'ACTIVE' ? '停用' : '启用'}
@@ -221,10 +216,10 @@ export function AdminAuditPage() {
   const { data, loading, error, refetch } = useApi<PageResult<AuditLog>>('/admin/audit-logs');
   const online = useOnline();
 
-  if (!online) return <Layout><OfflineState onRetry={refetch} /></Layout>;
-  if (loading) return <Layout><LoadingState /></Layout>;
-  if (error) return <Layout><ErrorState title="加载失败" message={error.message ?? '未知错误'} onRetry={refetch} /></Layout>;
-  if (!data || data.content.length === 0) return <Layout><EmptyState title="暂无审计日志" /></Layout>;
+  if (!online) return <Layout><Result status="warning" title="当前处于离线状态" subTitle="请检查网络连接，恢复后重试" extra={<Button onClick={refetch}>重试</Button>} /></Layout>;
+  if (loading) return <Layout><Spin className="flex justify-center py-12" /></Layout>;
+  if (error) return <Layout><Result status="error" title="加载失败" subTitle={error.message ?? '未知错误'} extra={<Button onClick={refetch}>重试</Button>} /></Layout>;
+  if (!data || data.content.length === 0) return <Layout><Empty description="暂无审计日志" /></Layout>;
 
   return (
     <Layout>
@@ -289,10 +284,10 @@ export function AdminHealthPage() {
   const { data, loading, error, refetch } = useApi<HealthData>('/admin/health');
   const online = useOnline();
 
-  if (!online) return <Layout><OfflineState onRetry={refetch} /></Layout>;
-  if (loading) return <Layout><LoadingState /></Layout>;
-  if (error) return <Layout><ErrorState title="加载失败" message={error.message ?? '未知错误'} onRetry={refetch} /></Layout>;
-  if (!data) return <Layout><EmptyState title="暂无健康数据" /></Layout>;
+  if (!online) return <Layout><Result status="warning" title="当前处于离线状态" subTitle="请检查网络连接，恢复后重试" extra={<Button onClick={refetch}>重试</Button>} /></Layout>;
+  if (loading) return <Layout><Spin className="flex justify-center py-12" /></Layout>;
+  if (error) return <Layout><Result status="error" title="加载失败" subTitle={error.message ?? '未知错误'} extra={<Button onClick={refetch}>重试</Button>} /></Layout>;
+  if (!data) return <Layout><Empty description="暂无健康数据" /></Layout>;
 
   const checks: HealthCheck[] = [
     {

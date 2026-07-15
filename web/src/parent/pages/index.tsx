@@ -1,25 +1,17 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { history } from 'umi';
 import { getClient } from '@shared/api';
 import type { TaskTypeValue } from '@shared/api/types';
+import { Button, Card, Empty, Input, Modal, Result, Spin } from 'antd';
 import {
-  Button,
-  CardSection,
   ConfirmModal,
-  EmptyState,
-  ErrorState,
   FormField,
-  Input,
   Label,
   Layout,
-  LoadingState,
-  Modal,
-  OfflineState,
   PageHeader,
-  Select,
   StatusBadge,
-  TextArea,
 } from '@shared/components';
+const { TextArea } = Input;
 import { useAuth } from '@shared/auth';
 import { useApi, useFormField, useIdempotencyKey } from '@shared/hooks/useApi';
 import { useOnline } from '@shared/theme';
@@ -195,30 +187,29 @@ function maskPhone(phone: string): string {
 export function ParentHomePage() {
   const { data, loading, error, refetch } = useApi<Family>('/family');
   const online = useOnline();
-  const navigate = useNavigate();
 
   if (!online)
     return (
       <PageShell title="家庭">
-        <OfflineState onRetry={refetch} />
+        <Result status="warning" title="当前处于离线状态" subTitle="请检查网络连接，恢复后重试" extra={<Button onClick={refetch}>重试</Button>} />
       </PageShell>
     );
   if (loading)
     return (
       <PageShell title="家庭">
-        <LoadingState />
+        <Spin className="flex justify-center py-12" />
       </PageShell>
     );
   if (error)
     return (
       <PageShell title="家庭">
-        <ErrorState onRetry={refetch} message={error.message} />
+        <Result status="error" title="加载失败" subTitle={error.message} extra={<Button onClick={refetch}>重试</Button>} />
       </PageShell>
     );
   if (!data)
     return (
       <PageShell title="家庭">
-        <EmptyState />
+        <Empty description="暂无数据" />
       </PageShell>
     );
 
@@ -227,16 +218,16 @@ export function ParentHomePage() {
       title="家庭"
       actions={
         <div className="flex items-center gap-2">
-          <Button variant="secondary" onClick={() => navigate('/parent/family')}>
+          <Button onClick={() => history.push('/parent/family')}>
             管理家庭
           </Button>
-          <Button variant="secondary" onClick={() => navigate('/parent/templates')}>
+          <Button onClick={() => history.push('/parent/templates')}>
             任务模板
           </Button>
         </div>
       }
     >
-      <CardSection title="家庭成员">
+      <Card title="家庭成员">
         <div className="grid grid-cols-1 gap-3">
           {(data.members ?? []).map((member) => (
             <div
@@ -250,7 +241,7 @@ export function ParentHomePage() {
             </div>
           ))}
         </div>
-      </CardSection>
+      </Card>
     </PageShell>
   );
 }
@@ -370,25 +361,25 @@ export function ParentFamilyPage() {
   if (!online)
     return (
       <PageShell title="家庭">
-        <OfflineState onRetry={refetch} />
+        <Result status="warning" title="当前处于离线状态" subTitle="请检查网络连接，恢复后重试" extra={<Button onClick={refetch}>重试</Button>} />
       </PageShell>
     );
   if (loading)
     return (
       <PageShell title="家庭">
-        <LoadingState />
+        <Spin className="flex justify-center py-12" />
       </PageShell>
     );
   if (error)
     return (
       <PageShell title="家庭">
-        <ErrorState onRetry={refetch} message={error.message} />
+        <Result status="error" title="加载失败" subTitle={error.message} extra={<Button onClick={refetch}>重试</Button>} />
       </PageShell>
     );
   if (!data)
     return (
       <PageShell title="家庭">
-        <EmptyState />
+        <Empty description="暂无数据" />
       </PageShell>
     );
 
@@ -412,16 +403,16 @@ export function ParentFamilyPage() {
       title="家庭"
       actions={
         <div className="flex items-center gap-2">
-          <Button variant="secondary" onClick={() => setShowInvite(true)}>
+          <Button onClick={() => setShowInvite(true)}>
             邀请家长
           </Button>
-          <Button variant="secondary" onClick={openNewChild}>
+          <Button onClick={openNewChild}>
             添加孩子
           </Button>
         </div>
       }
     >
-      <CardSection title="家庭成员">
+      <Card title="家庭成员">
         <div className="grid grid-cols-1 gap-3">
           {(data.members ?? []).map((member) => {
             const isSelf = account != null && member.accountId === Number(account.accountId);
@@ -443,20 +434,20 @@ export function ParentFamilyPage() {
                   <StatusBadge status={member.role === 'PARENT' ? 'approved' : 'pending'} />
                   {isSelf && (
                     <Button
-                      variant="danger"
-                      size="sm"
+                      danger
+                      size="small"
                       onClick={() => setConfirm({ type: 'leave' })}
-                      isLoading={actionLoading}
+                      loading={actionLoading}
                     >
                       退出家庭
                     </Button>
                   )}
                   {canRemove && (
                     <Button
-                      variant="danger"
-                      size="sm"
+                      danger
+                      size="small"
                       onClick={() => setConfirm({ type: 'remove', member })}
-                      isLoading={actionLoading}
+                      loading={actionLoading}
                     >
                       移除
                     </Button>
@@ -466,9 +457,9 @@ export function ParentFamilyPage() {
             );
           })}
         </div>
-      </CardSection>
+      </Card>
 
-      <CardSection title="孩子">
+      <Card title="孩子">
         {(data.children ?? []).length === 0 ? (
           <p className="text-cg-text-muted">暂无孩子，点击上方「添加孩子」创建档案。</p>
         ) : (
@@ -485,10 +476,10 @@ export function ParentFamilyPage() {
                   )}
                 </div>
                 <Button
-                  variant="danger"
-                  size="sm"
+                  danger
+                  size="small"
                   onClick={() => setConfirm({ type: 'removeChild', child })}
-                  isLoading={actionLoading}
+                  loading={actionLoading}
                 >
                   移除
                 </Button>
@@ -496,9 +487,9 @@ export function ParentFamilyPage() {
             ))}
           </div>
         )}
-      </CardSection>
+      </Card>
 
-      <CardSection title="待处理邀请">
+      <Card title="待处理邀请">
         {invitations.length === 0 ? (
           <p className="text-cg-text-muted">暂无邀请</p>
         ) : (
@@ -517,22 +508,22 @@ export function ParentFamilyPage() {
             ))}
           </div>
         )}
-      </CardSection>
+      </Card>
 
       {actionError && <div className="text-sm text-red-600">{actionError}</div>}
 
-      <Modal isOpen={showInvite} onClose={() => setShowInvite(false)} title="邀请家长">
+      <Modal open={showInvite} onCancel={() => setShowInvite(false)} title="邀请家长">
         <form className="flex flex-col gap-4">
           <FormField label="被邀请人手机号" htmlFor="invite-phone">
             <Input id="invite-phone" type="tel" placeholder="11 位手机号" {...phone.inputProps} />
           </FormField>
-          <Button onClick={handleInvite} isLoading={sending} type="button" className="w-full">
+          <Button onClick={handleInvite} loading={sending} htmlType="button" className="w-full">
             发送邀请
           </Button>
         </form>
       </Modal>
 
-      <Modal isOpen={showChildModal} onClose={() => setShowChildModal(false)} title="添加孩子">
+      <Modal open={showChildModal} onCancel={() => setShowChildModal(false)} title="添加孩子">
         <form className="flex flex-col gap-4">
           <FormField label="昵称" htmlFor="child-nickname">
             <Input id="child-nickname" {...childNickname.inputProps} />
@@ -545,8 +536,8 @@ export function ParentFamilyPage() {
           </FormField>
           <Button
             onClick={handleSaveChild}
-            isLoading={childSaving}
-            type="button"
+            loading={childSaving}
+            htmlType="button"
             className="w-full"
           >
             保存
@@ -627,19 +618,19 @@ export function ParentChildrenPage() {
   if (!online)
     return (
       <PageShell title="孩子档案">
-        <OfflineState onRetry={refetch} />
+        <Result status="warning" title="当前处于离线状态" subTitle="请检查网络连接，恢复后重试" extra={<Button onClick={refetch}>重试</Button>} />
       </PageShell>
     );
   if (loading)
     return (
       <PageShell title="孩子档案">
-        <LoadingState />
+        <Spin className="flex justify-center py-12" />
       </PageShell>
     );
   if (error)
     return (
       <PageShell title="孩子档案">
-        <ErrorState onRetry={refetch} message={error.message} />
+        <Result status="error" title="加载失败" subTitle={error.message} extra={<Button onClick={refetch}>重试</Button>} />
       </PageShell>
     );
 
@@ -647,7 +638,7 @@ export function ParentChildrenPage() {
     <PageShell
       title="孩子档案"
       actions={
-        <Button variant="secondary" onClick={openNew}>
+        <Button onClick={openNew}>
           新增档案
         </Button>
       }
@@ -658,10 +649,10 @@ export function ParentChildrenPage() {
             <div className="flex items-center justify-between">
               <div className="font-medium text-cg-text">{child.nickname}</div>
               <div className="flex gap-2">
-                <Button variant="ghost" size="sm" onClick={() => openEdit(child)}>
+                <Button type="text" size="small" onClick={() => openEdit(child)}>
                   编辑
                 </Button>
-                <Button variant="danger" size="sm" onClick={() => handleDelete(child.id)}>
+                <Button danger size="small" onClick={() => handleDelete(child.id)}>
                   删除
                 </Button>
               </div>
@@ -672,8 +663,8 @@ export function ParentChildrenPage() {
       </div>
 
       <Modal
-        isOpen={showModal}
-        onClose={() => setShowModal(false)}
+        open={showModal}
+        onCancel={() => setShowModal(false)}
         title={editing ? '编辑档案' : '新增档案'}
       >
         <form className="flex flex-col gap-4">
@@ -686,7 +677,7 @@ export function ParentChildrenPage() {
           <FormField label="生日" htmlFor="child-birthday">
             <Input id="child-birthday" type="date" {...birthday.inputProps} />
           </FormField>
-          <Button onClick={handleSave} isLoading={saving} type="button" className="w-full">
+          <Button onClick={handleSave} loading={saving} htmlType="button" className="w-full">
             保存
           </Button>
         </form>
@@ -790,19 +781,19 @@ export function ParentTemplatesPage() {
   if (!online)
     return (
       <PageShell title="任务模板">
-        <OfflineState onRetry={refetch} />
+        <Result status="warning" title="当前处于离线状态" subTitle="请检查网络连接，恢复后重试" extra={<Button onClick={refetch}>重试</Button>} />
       </PageShell>
     );
   if (loading)
     return (
       <PageShell title="任务模板">
-        <LoadingState />
+        <Spin className="flex justify-center py-12" />
       </PageShell>
     );
   if (error)
     return (
       <PageShell title="任务模板">
-        <ErrorState onRetry={refetch} message={error.message} />
+        <Result status="error" title="加载失败" subTitle={error.message} extra={<Button onClick={refetch}>重试</Button>} />
       </PageShell>
     );
 
@@ -810,7 +801,7 @@ export function ParentTemplatesPage() {
     <PageShell
       title="任务模板"
       actions={
-        <Button variant="secondary" onClick={openNew}>
+        <Button onClick={openNew}>
           新建模板
         </Button>
       }
@@ -850,10 +841,10 @@ export function ParentTemplatesPage() {
                 </div>
               </div>
               <div className="flex gap-2">
-                <Button variant="ghost" size="sm" onClick={() => openEdit(t)}>
+                <Button type="text" size="small" onClick={() => openEdit(t)}>
                   编辑
                 </Button>
-                <Button variant="secondary" size="sm" onClick={() => toggleEnabled(t)}>
+                <Button size="small" onClick={() => toggleEnabled(t)}>
                   {t.enabled ? '停用' : '启用'}
                 </Button>
               </div>
@@ -863,8 +854,8 @@ export function ParentTemplatesPage() {
       </div>
 
       <Modal
-        isOpen={showModal}
-        onClose={() => setShowModal(false)}
+        open={showModal}
+        onCancel={() => setShowModal(false)}
         title={editing ? '编辑模板' : '新建模板'}
       >
         <form className="flex flex-col gap-4">
@@ -889,7 +880,7 @@ export function ParentTemplatesPage() {
             onTypeConfigChange={setTypeConfig}
           />
 
-          <Button onClick={handleSave} isLoading={saving} type="button" className="w-full">
+          <Button onClick={handleSave} loading={saving} htmlType="button" className="w-full">
             保存
           </Button>
         </form>
@@ -1014,19 +1005,19 @@ export function ParentTasksPage() {
   if (!online)
     return (
       <PageShell title="任务分配">
-        <OfflineState onRetry={refetch} />
+        <Result status="warning" title="当前处于离线状态" subTitle="请检查网络连接，恢复后重试" extra={<Button onClick={refetch}>重试</Button>} />
       </PageShell>
     );
   if (loading)
     return (
       <PageShell title="任务分配">
-        <LoadingState />
+        <Spin className="flex justify-center py-12" />
       </PageShell>
     );
   if (error)
     return (
       <PageShell title="任务分配">
-        <ErrorState onRetry={refetch} message={error.message} />
+        <Result status="error" title="加载失败" subTitle={error.message} extra={<Button onClick={refetch}>重试</Button>} />
       </PageShell>
     );
 
@@ -1037,7 +1028,7 @@ export function ParentTasksPage() {
       title="任务分配"
       actions={
         <Button
-          variant="secondary"
+         
           onClick={() => {
             resetAssignForm();
             setShowAssign(true);
@@ -1047,12 +1038,12 @@ export function ParentTasksPage() {
         </Button>
       }
     >
-      <CardSection title="日历">
+      <Card title="日历">
         <Label htmlFor="task-date">选择日期</Label>
         <Input id="task-date" type="date" value={date} onChange={(e) => setDate(e.target.value)} />
-      </CardSection>
+      </Card>
 
-      <CardSection title="任务列表">
+      <Card title="任务列表">
         <div className="grid grid-cols-1 gap-3">
           {assignments.map((a) => (
             <div
@@ -1078,22 +1069,22 @@ export function ParentTasksPage() {
           ))}
           {assignments.length === 0 && <p className="text-cg-text-muted">当天暂无任务</p>}
         </div>
-      </CardSection>
+      </Card>
 
-      <Modal isOpen={showAssign} onClose={() => setShowAssign(false)} title="批量分配任务">
+      <Modal open={showAssign} onCancel={() => setShowAssign(false)} title="批量分配任务">
         <form className="flex flex-col gap-4">
           <FormField label="模板" htmlFor="assign-template">
-            <Select id="assign-template" {...templateId.inputProps}>
+            <select id="assign-template" {...templateId.inputProps}>
               <option value="">请选择模板</option>
               {(templates?.content ?? []).map((t) => (
                 <option key={t.id} value={t.id}>
                   {t.name}
                 </option>
               ))}
-            </Select>
+            </select>
           </FormField>
           <FormField label="难度" htmlFor="assign-difficulty">
-            <Select
+            <select
               id="assign-difficulty"
               {...difficultyId.inputProps}
               disabled={!selectedTemplate}
@@ -1104,7 +1095,7 @@ export function ParentTasksPage() {
                   {d.name}（{d.rewardPoints} 积分）
                 </option>
               ))}
-            </Select>
+            </select>
           </FormField>
           <FormField label="孩子" htmlFor="assign-child">
             <select
@@ -1134,7 +1125,7 @@ export function ParentTasksPage() {
               <Input id="assign-end-date" type="date" {...endDate.inputProps} />
             </FormField>
           )}
-          <Button onClick={handleAssign} isLoading={assigning} type="button" className="w-full">
+          <Button onClick={handleAssign} loading={assigning} htmlType="button" className="w-full">
             分配
           </Button>
         </form>
@@ -1165,19 +1156,19 @@ export function ParentReviewsPage() {
   if (!online)
     return (
       <PageShell title="任务审核">
-        <OfflineState onRetry={refetch} />
+        <Result status="warning" title="当前处于离线状态" subTitle="请检查网络连接，恢复后重试" extra={<Button onClick={refetch}>重试</Button>} />
       </PageShell>
     );
   if (loading)
     return (
       <PageShell title="任务审核">
-        <LoadingState />
+        <Spin className="flex justify-center py-12" />
       </PageShell>
     );
   if (error)
     return (
       <PageShell title="任务审核">
-        <ErrorState onRetry={refetch} message={error.message} />
+        <Result status="error" title="加载失败" subTitle={error.message} extra={<Button onClick={refetch}>重试</Button>} />
       </PageShell>
     );
 
@@ -1185,7 +1176,7 @@ export function ParentReviewsPage() {
 
   return (
     <PageShell title="任务审核">
-      <CardSection title="待审核">
+      <Card title="待审核">
         <div className="grid grid-cols-1 gap-3">
           {pending.length === 0 ? (
             <p className="text-cg-text-muted">暂无待审核任务</p>
@@ -1208,17 +1199,17 @@ export function ParentReviewsPage() {
                   </div>
                   <div className="flex flex-col gap-2">
                     <Button
-                      size="sm"
+                      size="small"
                       onClick={() => decide(item.attemptId, true)}
-                      isLoading={submitting}
+                      loading={submitting}
                     >
                       通过
                     </Button>
                     <Button
-                      variant="danger"
-                      size="sm"
+                      danger
+                      size="small"
                       onClick={() => setActive(item)}
-                      isLoading={submitting}
+                      loading={submitting}
                     >
                       驳回
                     </Button>
@@ -1228,9 +1219,9 @@ export function ParentReviewsPage() {
             ))
           )}
         </div>
-      </CardSection>
+      </Card>
 
-      <CardSection title="审核历史">
+      <Card title="审核历史">
         <div className="grid grid-cols-1 gap-3">
           {(history?.content ?? []).length === 0 ? (
             <p className="text-cg-text-muted">暂无历史</p>
@@ -1245,11 +1236,11 @@ export function ParentReviewsPage() {
             ))
           )}
         </div>
-      </CardSection>
+      </Card>
 
       <Modal
-        isOpen={!!active}
-        onClose={() => {
+        open={!!active}
+        onCancel={() => {
           setActive(null);
           setReason('');
         }}
@@ -1263,13 +1254,13 @@ export function ParentReviewsPage() {
             aria-label="驳回原因"
           />
           <div className="flex gap-2">
-            <Button variant="secondary" onClick={() => setActive(null)}>
+            <Button onClick={() => setActive(null)}>
               取消
             </Button>
             <Button
-              variant="danger"
+              danger
               onClick={() => active && decide(active.attemptId, false)}
-              isLoading={submitting}
+              loading={submitting}
               disabled={!reason.trim()}
             >
               确认驳回
@@ -1316,41 +1307,41 @@ export function ParentPointsPage() {
   if (!online)
     return (
       <PageShell title="积分">
-        <OfflineState onRetry={refetch} />
+        <Result status="warning" title="当前处于离线状态" subTitle="请检查网络连接，恢复后重试" extra={<Button onClick={refetch}>重试</Button>} />
       </PageShell>
     );
   if (loading)
     return (
       <PageShell title="积分">
-        <LoadingState />
+        <Spin className="flex justify-center py-12" />
       </PageShell>
     );
   if (error)
     return (
       <PageShell title="积分">
-        <ErrorState onRetry={refetch} message={error.message} />
+        <Result status="error" title="加载失败" subTitle={error.message} extra={<Button onClick={refetch}>重试</Button>} />
       </PageShell>
     );
 
   return (
     <PageShell title="积分">
-      <CardSection title="选择孩子">
-        <Select value={selectedChild} onChange={(e) => setSelectedChild(e.target.value)}>
+      <Card title="选择孩子">
+        <select value={selectedChild} onChange={(e) => setSelectedChild(e.target.value)}>
           <option value="">请选择孩子</option>
           {(children?.content ?? []).map((c) => (
             <option key={c.id} value={c.id}>
               {c.nickname}
             </option>
           ))}
-        </Select>
-      </CardSection>
+        </select>
+      </Card>
 
       {selectedChild && (
         <>
-          <CardSection title="积分余额">
+          <Card title="积分余额">
             <div className="text-3xl font-bold text-cg-text">{data?.balance ?? 0} 积分</div>
-          </CardSection>
-          <CardSection title="积分调整">
+          </Card>
+          <Card title="积分调整">
             <div className="flex flex-col gap-3">
               <FormField label="调整数量（正数奖励、负数扣除）" htmlFor="adjust-amount">
                 <Input id="adjust-amount" type="number" {...amount.inputProps} />
@@ -1358,12 +1349,12 @@ export function ParentPointsPage() {
               <FormField label="原因" htmlFor="adjust-reason">
                 <Input id="adjust-reason" {...reason.inputProps} />
               </FormField>
-              <Button onClick={handleAdjust} isLoading={adjusting}>
+              <Button onClick={handleAdjust} loading={adjusting}>
                 确认调整
               </Button>
             </div>
-          </CardSection>
-          <CardSection title="流水">
+          </Card>
+          <Card title="流水">
             <div className="grid grid-cols-1 gap-2">
               {(data?.transactions ?? []).map((tx) => (
                 <div
@@ -1386,7 +1377,7 @@ export function ParentPointsPage() {
                 <p className="text-cg-text-muted">暂无流水</p>
               )}
             </div>
-          </CardSection>
+          </Card>
         </>
       )}
     </PageShell>
@@ -1443,19 +1434,19 @@ export function ParentPrizesPage() {
   if (!online)
     return (
       <PageShell title="奖品">
-        <OfflineState onRetry={refetch} />
+        <Result status="warning" title="当前处于离线状态" subTitle="请检查网络连接，恢复后重试" extra={<Button onClick={refetch}>重试</Button>} />
       </PageShell>
     );
   if (loading)
     return (
       <PageShell title="奖品">
-        <LoadingState />
+        <Spin className="flex justify-center py-12" />
       </PageShell>
     );
   if (error)
     return (
       <PageShell title="奖品">
-        <ErrorState onRetry={refetch} message={error.message} />
+        <Result status="error" title="加载失败" subTitle={error.message} extra={<Button onClick={refetch}>重试</Button>} />
       </PageShell>
     );
 
@@ -1463,7 +1454,7 @@ export function ParentPrizesPage() {
     <PageShell
       title="奖品"
       actions={
-        <Button variant="secondary" onClick={openNew}>
+        <Button onClick={openNew}>
           新增奖品
         </Button>
       }
@@ -1480,7 +1471,7 @@ export function ParentPrizesPage() {
                 </div>
               </div>
               <div className="flex gap-2">
-                <Button variant="ghost" size="sm" onClick={() => openEdit(p)}>
+                <Button type="text" size="small" onClick={() => openEdit(p)}>
                   编辑
                 </Button>
               </div>
@@ -1490,8 +1481,8 @@ export function ParentPrizesPage() {
       </div>
 
       <Modal
-        isOpen={showModal}
-        onClose={() => setShowModal(false)}
+        open={showModal}
+        onCancel={() => setShowModal(false)}
         title={editing ? '编辑奖品' : '新增奖品'}
       >
         <form className="flex flex-col gap-4">
@@ -1507,7 +1498,7 @@ export function ParentPrizesPage() {
           <FormField label="库存" htmlFor="prize-stock">
             <Input id="prize-stock" type="number" {...availableStock.inputProps} />
           </FormField>
-          <Button onClick={handleSave} isLoading={saving} type="button" className="w-full">
+          <Button onClick={handleSave} loading={saving} htmlType="button" className="w-full">
             保存
           </Button>
         </form>
@@ -1527,19 +1518,19 @@ export function ParentBlindBoxesPage() {
   if (!online)
     return (
       <PageShell title="盲盒">
-        <OfflineState onRetry={refetch} />
+        <Result status="warning" title="当前处于离线状态" subTitle="请检查网络连接，恢复后重试" extra={<Button onClick={refetch}>重试</Button>} />
       </PageShell>
     );
   if (loading)
     return (
       <PageShell title="盲盒">
-        <LoadingState />
+        <Spin className="flex justify-center py-12" />
       </PageShell>
     );
   if (error)
     return (
       <PageShell title="盲盒">
-        <ErrorState onRetry={refetch} message={error.message} />
+        <Result status="error" title="加载失败" subTitle={error.message} extra={<Button onClick={refetch}>重试</Button>} />
       </PageShell>
     );
 
@@ -1566,7 +1557,7 @@ export function ParentBlindBoxesPage() {
       </div>
 
       {selected && (
-        <CardSection title="概率预览">
+        <Card title="概率预览">
           <div className="grid grid-cols-1 gap-2">
             {(candidates?.candidates ?? []).map((c) => (
               <div
@@ -1583,7 +1574,7 @@ export function ParentBlindBoxesPage() {
               <p className="text-cg-text-muted">暂无候选</p>
             )}
           </div>
-        </CardSection>
+        </Card>
       )}
     </PageShell>
   );
@@ -1613,19 +1604,19 @@ export function ParentExchangesPage() {
   if (!online)
     return (
       <PageShell title="兑换履约">
-        <OfflineState onRetry={refetch} />
+        <Result status="warning" title="当前处于离线状态" subTitle="请检查网络连接，恢复后重试" extra={<Button onClick={refetch}>重试</Button>} />
       </PageShell>
     );
   if (loading)
     return (
       <PageShell title="兑换履约">
-        <LoadingState />
+        <Spin className="flex justify-center py-12" />
       </PageShell>
     );
   if (error)
     return (
       <PageShell title="兑换履约">
-        <ErrorState onRetry={refetch} message={error.message} />
+        <Result status="error" title="加载失败" subTitle={error.message} extra={<Button onClick={refetch}>重试</Button>} />
       </PageShell>
     );
 
@@ -1633,7 +1624,7 @@ export function ParentExchangesPage() {
     <PageShell title="兑换履约">
       <div className="grid grid-cols-1 gap-3">
         {items.length === 0 ? (
-          <EmptyState />
+          <Empty description="暂无数据" />
         ) : (
           items.map((ex) => (
             <div key={ex.id} className="cg-card p-4">
@@ -1650,14 +1641,14 @@ export function ParentExchangesPage() {
                 <div className="flex flex-col gap-2">
                   {ex.status === 'PENDING_FULFILLMENT' && (
                     <>
-                      <Button size="sm" onClick={() => setConfirmId(ex.id)} isLoading={acting}>
+                      <Button size="small" onClick={() => setConfirmId(ex.id)} loading={acting}>
                         兑现
                       </Button>
                       <Button
-                        variant="secondary"
-                        size="sm"
+                       
+                        size="small"
                         onClick={() => cancel(ex.id)}
-                        isLoading={acting}
+                        loading={acting}
                       >
                         取消
                       </Button>

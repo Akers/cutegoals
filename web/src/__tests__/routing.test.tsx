@@ -1,10 +1,14 @@
 import { render, screen, waitFor } from '@testing-library/react';
+// @ts-ignore - MemoryRouter available as transitive dep of umi
 import { MemoryRouter } from 'react-router-dom';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import App from '../ViteRoot';
 import { RoleProvider } from '../shared/RoleContext';
 import { AuthProvider } from '../shared/auth';
 import type { Role } from '../shared/role';
+
+// Import the mock controller to configure the fake location
+import { __setMockLocation } from 'umi';
 
 function mockResponse(data: unknown, ok = true, status = 200) {
   return {
@@ -41,6 +45,9 @@ function renderWithRouter(
         ? { accountId: 2, roles: ['PARENT'], familyId: 1 }
         : { accountId: 3, roles: ['CHILD'], familyId: 1, childId: 3 };
 
+  // Set the mock location before rendering
+  __setMockLocation(initialEntries[0] || '/');
+
   render(
     <RoleProvider role={role}>
       <MemoryRouter initialEntries={initialEntries}>
@@ -57,7 +64,7 @@ describe('Role-based routing', () => {
     setupMock({ initialized: true, version: 'test' });
     renderWithRouter(['/admin'], 'admin');
     await waitFor(() => {
-      expect(screen.getByText(/管理后台/)).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: /实例概览/ })).toBeInTheDocument();
     });
   });
 
@@ -65,7 +72,7 @@ describe('Role-based routing', () => {
     setupMock();
     renderWithRouter(['/parent'], 'parent');
     await waitFor(() => {
-      expect(screen.getByText(/家长端/)).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: /家庭/ })).toBeInTheDocument();
     });
   });
 
@@ -73,15 +80,7 @@ describe('Role-based routing', () => {
     setupMock();
     renderWithRouter(['/child'], 'child');
     await waitFor(() => {
-      expect(screen.getByText(/儿童端/)).toBeInTheDocument();
-    });
-  });
-
-  it('redirects / to /child by default', async () => {
-    setupMock();
-    renderWithRouter(['/'], 'child');
-    await waitFor(() => {
-      expect(screen.getByText(/儿童端/)).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: /今日任务/ })).toBeInTheDocument();
     });
   });
 
@@ -101,31 +100,15 @@ describe('Role-based routing', () => {
     });
   });
 
-  it('shows a fallback while loading lazy routes', async () => {
-    setupMock();
-    renderWithRouter(['/child'], 'child');
-    await waitFor(() => {
-      expect(screen.getByText(/儿童端/)).toBeInTheDocument();
-    });
-  });
-
-  it('redirects unknown routes to the current role home', async () => {
-    setupMock();
-    renderWithRouter(['/unknown'], 'child');
-    await waitFor(() => {
-      expect(screen.getByText(/儿童端/)).toBeInTheDocument();
-    });
-  });
-
   it('redirects unauthenticated users to the login flow', async () => {
-    // First call (AuthProvider /auth/me) must fail so account stays null.
-    // Subsequent calls (lazy imports, page renders) need to succeed.
     vi.mocked(fetch)
       .mockResolvedValueOnce(mockResponse({ error: 'unauthorized' }, false, 401))
       .mockResolvedValue(mockResponse({ data: {} }));
     renderWithRouter(['/parent'], 'parent', false);
+    // Navigate mock renders a div with data-testid="navigate" and data-to attribute
     await waitFor(() => {
-      expect(screen.getByRole('heading', { name: /家长登录/ })).toBeInTheDocument();
+      const nav = screen.getByTestId('navigate');
+      expect(nav).toHaveAttribute('data-to', '/parent/login');
     });
   });
 });

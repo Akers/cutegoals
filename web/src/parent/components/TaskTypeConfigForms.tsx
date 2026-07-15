@@ -1,5 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
-import { FormField, Input, Select } from '@shared/components';
+import { FormField, Input } from '@shared/components';
+// Native HTML select (not antd Select) for controlled form compatibility
+const Select = (props: React.SelectHTMLAttributes<HTMLSelectElement>) => <select {...props} />;
 import type { TaskTypeValue } from '@shared/api/types';
 
 /** 类型配置（Record 形式，序列化为 JSON） */

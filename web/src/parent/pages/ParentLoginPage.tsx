@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { history } from 'umi';
 import { getClient } from '@shared/api';
 import { useAuth, maskPhone } from '@shared/auth';
-import { Button, FormField, Input, PageHeader } from '@shared/components';
+import { Button, Input } from 'antd';
+import { FormField, PageHeader } from '@shared/components';
 import { useFormField } from '@shared/hooks/useApi';
 
 export function ParentLoginPage() {
-  const navigate = useNavigate();
   const { login } = useAuth();
   const phone = useFormField();
   const password = useFormField();
@@ -44,7 +44,7 @@ export function ParentLoginPage() {
         familyId: data.familyId,
         expiresIn: data.expiresIn,
       });
-      navigate('/parent');
+      history.push('/parent');
     }
   };
 
@@ -64,7 +64,7 @@ export function ParentLoginPage() {
           <FormField label="密码" htmlFor="parent-password">
             <Input id="parent-password" type="password" autoComplete="current-password" placeholder="请输入密码" {...password.inputProps} />
           </FormField>
-          <Button type="submit" isLoading={loading} className="w-full">
+          <Button type="primary" htmlType="submit" loading={loading} className="w-full">
             登录
           </Button>
           <p className="text-center text-sm text-cg-text-muted">

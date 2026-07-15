@@ -1,9 +1,11 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
+// @ts-ignore - MemoryRouter available as transitive dep of umi
 import { MemoryRouter } from 'react-router-dom';
 import userEvent from '@testing-library/user-event';
 import { AdminInitPage } from '@admin/pages/AdminInitPage';
 import { ParentLoginPage } from '@parent/pages/ParentLoginPage';
+import { ConfigProvider } from 'antd';
 import { RoleProvider } from '@shared/RoleContext';
 import { AuthProvider } from '@shared/auth';
 
@@ -18,13 +20,15 @@ function mockResponse(data: unknown, ok = true, status = 200) {
 
 function renderAuthPage(role: 'admin' | 'parent', element: React.ReactElement) {
   return render(
-    <RoleProvider role={role}>
-      <MemoryRouter>
-        <AuthProvider>
-          {element}
-        </AuthProvider>
-      </MemoryRouter>
-    </RoleProvider>,
+    <ConfigProvider button={{ autoInsertSpace: false }}>
+      <RoleProvider role={role}>
+        <MemoryRouter>
+          <AuthProvider>
+            {element}
+          </AuthProvider>
+        </MemoryRouter>
+      </RoleProvider>
+    </ConfigProvider>,
   );
 }
 

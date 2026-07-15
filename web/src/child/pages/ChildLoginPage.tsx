@@ -1,15 +1,15 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { history, useSearchParams } from 'umi';
 import { getClient } from '@shared/api';
 import { useAuth } from '@shared/auth';
-import { ErrorState, LoadingState, PageHeader } from '@shared/components';
+import { Result, Spin } from 'antd';
+import { PageHeader } from '@shared/components';
 import { useOnline } from '@shared/theme';
 
 const LOCK_DURATION_MS = 15 * 60 * 1000;
 const MAX_ATTEMPTS = 5;
 
 export function ChildLoginPage() {
-  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const childId = searchParams.get('childId');
   const deviceId = searchParams.get('deviceId') ?? '';
@@ -24,9 +24,9 @@ export function ChildLoginPage() {
 
   useEffect(() => {
     if (!childId) {
-      navigate('/child/bind');
+      history.push('/child/bind');
     }
-  }, [childId, navigate]);
+  }, [childId]);
 
   useEffect(() => {
     if (!lockedUntil) return;
@@ -94,7 +94,7 @@ export function ChildLoginPage() {
         childId: data.childId ?? Number(childId),
         expiresIn: data.expiresIn,
       });
-      navigate('/child');
+      history.push('/child');
     }
   };
 
@@ -105,8 +105,8 @@ export function ChildLoginPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pin]);
 
-  if (!childId) return <LoadingState />;
-  if (!online) return <ErrorState title="离线" message="请连接网络后重试" />;
+  if (!childId) return <Spin className="flex justify-center py-12" />;
+  if (!online) return <Result status="warning" title="离线" subTitle="请连接网络后重试" />;
 
   return (
     <div className="cg-page flex min-h-screen flex-col items-center justify-center">
@@ -166,7 +166,7 @@ export function ChildLoginPage() {
             type="button"
             onClick={() => {
               setPin('');
-              navigate('/child/bind');
+              history.push('/child/bind');
             }}
             disabled={loading}
             className="min-h-touch rounded-cg-md bg-cg-surface-raised text-sm text-cg-text hover:bg-cg-border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cg-focus disabled:opacity-50"

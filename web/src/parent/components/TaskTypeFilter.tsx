@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { CardSection } from '@shared/components';
+import { Card } from 'antd';
 import type { TaskTypeValue } from '@shared/api/types';
 
 /** TaskTypeFilter 属性 */
@@ -41,7 +41,7 @@ export function TaskTypeFilter({ selected, onChange }: TaskTypeFilterProps) {
   );
 
   return (
-    <CardSection title="任务类型筛选">
+    <Card title="任务类型筛选">
       <div className="flex flex-wrap gap-4">
         {TYPE_OPTIONS.map((opt) => (
           <label key={opt.value} className="flex items-center gap-2 text-sm text-cg-text">
@@ -56,6 +56,6 @@ export function TaskTypeFilter({ selected, onChange }: TaskTypeFilterProps) {
           </label>
         ))}
       </div>
-    </CardSection>
+    </Card>
   );
 }

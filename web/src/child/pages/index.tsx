@@ -1,23 +1,16 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, history } from 'umi';
 import { getClient } from '@shared/api';
 import { useAuth } from '@shared/auth';
+import { App, Button, Card, Empty, Input, Modal, Result, Spin } from 'antd';
 import {
-  Button,
-  CardSection,
   ConfirmModal,
-  EmptyState,
-  ErrorState,
   FormField,
   Layout,
-  LoadingState,
-  Modal,
-  OfflineState,
   PageHeader,
   StatusBadge,
-  TextArea,
-  useToast,
 } from '@shared/components';
+const { TextArea } = Input;
 import { useApi, useFormField } from '@shared/hooks/useApi';
 import { useLowPerformance, useOnline, useReducedMotion } from '@shared/theme';
 
@@ -98,10 +91,11 @@ function useChildId(): number | undefined {
 }
 
 function StateHandler({
+  children,
   loading,
   error,
   onRetry,
-  children,
+
 }: {
   loading: boolean;
   error?: { message?: string };
@@ -109,15 +103,14 @@ function StateHandler({
   children: React.ReactNode;
 }) {
   const online = useOnline();
-  if (!online) return <OfflineState onRetry={onRetry} />;
-  if (loading) return <LoadingState />;
-  if (error) return <ErrorState title="加载失败" message={error.message} onRetry={onRetry} />;
+  if (!online) return <Result status="warning" title="当前处于离线状态" subTitle="请检查网络连接，恢复后重试" extra={onRetry ? <Button onClick={onRetry}>重试</Button> : undefined} />;
+  if (loading) return <Spin className="flex justify-center py-12" />;
+  if (error) return <Result status="error" title="加载失败" subTitle={error.message} extra={onRetry ? <Button onClick={onRetry}>重试</Button> : undefined} />;
   return <>{children}</>;
 }
 
 export function ChildHomePage() {
   const childId = useChildId();
-  const navigate = useNavigate();
   const {
     data: assignments,
     loading: assignmentsLoading,
@@ -138,26 +131,26 @@ export function ChildHomePage() {
     <PageShell
       title="今日任务"
       actions={
-        <Button variant="secondary" onClick={() => navigate('/child/prizes')}>
+        <Button onClick={() => history.push('/child/prizes')}>
           去商城
         </Button>
       }
     >
       <div className="grid grid-cols-1 gap-4">
-        <CardSection title="积分余额">
+        <Card title="积分余额">
           <StateHandler loading={balanceLoading} error={balanceError} onRetry={refetchBalance}>
             <div className="text-3xl font-bold text-cg-text">{balance?.balance ?? 0} 积分</div>
           </StateHandler>
-        </CardSection>
+        </Card>
 
-        <CardSection title="今日任务">
+        <Card title="今日任务">
           <StateHandler
             loading={assignmentsLoading}
             error={assignmentsError}
             onRetry={refetchAssignments}
           >
             {todayTasks.length === 0 ? (
-              <EmptyState title="今天没有任务" description="好好休息，明天见！" />
+              <Empty description="今天没有任务" />
             ) : (
               <div className="grid grid-cols-1 gap-3">
                 {todayTasks.map((task) => (
@@ -183,7 +176,7 @@ export function ChildHomePage() {
               </div>
             )}
           </StateHandler>
-        </CardSection>
+        </Card>
 
         <div className="grid grid-cols-2 gap-3">
           <Link
@@ -206,7 +199,7 @@ export function ChildHomePage() {
 
 export function ChildTasksPage() {
   const childId = useChildId();
-  const { showToast } = useToast();
+  const { message } = App.useApp();
   const {
     data: assignments,
     loading,
@@ -235,9 +228,9 @@ export function ChildTasksPage() {
     setSubmitting(false);
     setSubmittingId(null);
     if (response.error) {
-      showToast(response.error.message ?? '提交失败', 'error');
+      message.error(response.error.message ?? '提交失败');
     } else {
-      showToast('提交成功，等待家长审核', 'success');
+      message.success('提交成功，等待家长审核');
       setActive(null);
       await refetch();
     }
@@ -247,7 +240,7 @@ export function ChildTasksPage() {
     <PageShell title="我的任务">
       <StateHandler loading={loading} error={error} onRetry={refetch}>
         {(assignments?.items ?? []).length === 0 ? (
-          <EmptyState title="暂无任务" description="快去做点有趣的事吧" />
+          <Empty description="暂无任务" />
         ) : (
           <div className="grid grid-cols-1 gap-3">
             {(assignments?.items ?? []).map((task) => (
@@ -271,12 +264,12 @@ export function ChildTasksPage() {
                   </div>
                   <div className="ml-2 flex flex-col gap-2">
                     {task.status === 'PENDING' && (
-                      <Button size="sm" onClick={() => openSubmit(task)} isLoading={submittingId === task.id}>
+                      <Button size="small" onClick={() => openSubmit(task)} loading={submittingId === task.id}>
                         提交
                       </Button>
                     )}
                     {task.status === 'REJECTED' && (
-                      <Button size="sm" onClick={() => openSubmit(task)} isLoading={submittingId === task.id}>
+                      <Button size="small" onClick={() => openSubmit(task)} loading={submittingId === task.id}>
                         重新提交
                       </Button>
                     )}
@@ -289,8 +282,8 @@ export function ChildTasksPage() {
       </StateHandler>
 
       <Modal
-        isOpen={!!active}
-        onClose={() => {
+        open={!!active}
+        onCancel={() => {
           setActive(null);
           notes.reset();
         }}
@@ -305,7 +298,7 @@ export function ChildTasksPage() {
               {...notes.inputProps}
             />
           </FormField>
-          <Button onClick={handleSubmit} isLoading={submitting} disabled={!notes.value.trim()}>
+          <Button onClick={handleSubmit} loading={submitting} disabled={!notes.value.trim()}>
             {active?.status === 'REJECTED' ? '重新提交' : '提交'}
           </Button>
         </div>
@@ -316,8 +309,7 @@ export function ChildTasksPage() {
 
 export function ChildPrizesPage() {
   const childId = useChildId();
-  const navigate = useNavigate();
-  const { showToast } = useToast();
+  const { message } = App.useApp();
   const {
     data: balance,
     loading: balanceLoading,
@@ -336,7 +328,7 @@ export function ChildPrizesPage() {
   const exchange = async () => {
     if (!selected || !childId) return;
     if ((balance?.balance ?? 0) < selected.pointsCost) {
-      showToast('积分不足', 'warning');
+      message.warning('积分不足');
       return;
     }
     setExchanging(true);
@@ -348,12 +340,12 @@ export function ChildPrizesPage() {
     setExchanging(false);
     setSelected(null);
     if (response.error) {
-      showToast(response.error.message ?? '兑换失败', 'error');
+      message.error(response.error.message ?? '兑换失败');
     } else {
-      showToast('兑换成功，请等待家长兑现', 'success');
+      message.success('兑换成功，请等待家长兑现');
       await refetchBalance();
       await refetchPrizes();
-      navigate('/child/exchanges');
+      history.push('/child/exchanges');
     }
   };
 
@@ -367,7 +359,7 @@ export function ChildPrizesPage() {
       </div>
       <StateHandler loading={prizesLoading || balanceLoading} error={prizesError ?? balanceError} onRetry={refetchPrizes}>
         {(prizes?.items ?? []).length === 0 ? (
-          <EmptyState title="商城暂无奖品" description="去问问家长什么时候上架吧" />
+          <Empty description="商城暂无奖品" />
         ) : (
           <div className="grid grid-cols-1 gap-3">
             {(prizes?.items ?? []).map((prize) => (
@@ -381,7 +373,7 @@ export function ChildPrizesPage() {
                     </div>
                   </div>
                   <Button
-                    size="sm"
+                    size="small"
                     disabled={!canAfford(prize) || prize.availableStock <= 0}
                     onClick={() => setSelected(prize)}
                   >
@@ -410,7 +402,7 @@ export function ChildPrizesPage() {
 
 export function ChildBlindBoxesPage() {
   const childId = useChildId();
-  const { showToast } = useToast();
+  const { message } = App.useApp();
   const reducedMotion = useReducedMotion();
   const lowPerf = useLowPerformance();
   const {
@@ -440,7 +432,7 @@ export function ChildBlindBoxesPage() {
   const openBox = async () => {
     if (!selected || !childId) return;
     if ((balance?.balance ?? 0) < selected.cost) {
-      showToast('积分不足', 'warning');
+      message.warning('积分不足');
       return;
     }
     setConfirming(false);
@@ -460,12 +452,12 @@ export function ChildBlindBoxesPage() {
     setOpening(false);
     if (response.error) {
       if (response.error.error_code === 'BLIND_BOX_POOL_CHANGED') {
-        showToast('盲盒奖池已变更，请重新确认', 'warning');
+        message.warning('盲盒奖池已变更，请重新确认');
         setReconfirm(true);
         await refetchCandidates();
         return;
       }
-      showToast(response.error.message ?? '开启失败', 'error');
+      message.error(response.error.message ?? '开启失败');
       return;
     }
     const data = response.data as BlindBoxResult | undefined;
@@ -487,7 +479,7 @@ export function ChildBlindBoxesPage() {
       </div>
       <StateHandler loading={boxesLoading || balanceLoading} error={boxesError ?? balanceError} onRetry={refetchBoxes}>
         {(boxes?.items ?? []).length === 0 ? (
-          <EmptyState title="暂无盲盒" description="稍后再来看看吧" />
+          <Empty description="暂无盲盒" />
         ) : (
           <div className="grid grid-cols-1 gap-3">
             {(boxes?.items ?? []).map((box) => (
@@ -516,7 +508,7 @@ export function ChildBlindBoxesPage() {
       </StateHandler>
 
       {selected && (
-        <CardSection title="候选概率">
+        <Card title="候选概率">
           <StateHandler loading={candidatesLoading} error={candidatesError} onRetry={refetchCandidates}>
             {(candidates ?? []).length === 0 ? (
               <p className="text-cg-text-muted">暂无候选奖品</p>
@@ -542,7 +534,7 @@ export function ChildBlindBoxesPage() {
               开启盲盒（{selected.cost} 积分）
             </Button>
           </StateHandler>
-        </CardSection>
+        </Card>
       )}
 
       <ConfirmModal
@@ -556,8 +548,8 @@ export function ChildBlindBoxesPage() {
       />
 
       <Modal
-        isOpen={!!result}
-        onClose={closeResult}
+        open={!!result}
+        onCancel={closeResult}
         title="盲盒结果"
         footer={
           <Button onClick={closeResult} className="w-full">
@@ -590,7 +582,7 @@ export function ChildExchangesPage() {
     <PageShell title="兑换历史">
       <StateHandler loading={loading} error={error} onRetry={refetch}>
         {(exchanges?.items ?? []).length === 0 ? (
-          <EmptyState title="还没有兑换记录" description="去商城或盲盒兑换奖品吧" />
+          <Empty description="还没有兑换记录" />
         ) : (
           <div className="grid grid-cols-1 gap-3">
             {(exchanges?.items ?? []).map((ex) => (

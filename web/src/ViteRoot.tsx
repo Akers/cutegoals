@@ -1,8 +1,8 @@
 import { lazy, Suspense } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation } from 'umi';
 import AccessDenied from '@shared/AccessDenied';
 import { useRole } from '@shared/role';
-import { ToastProvider, LoadingState } from '@shared/components';
+import { Spin } from 'antd';
 import { getRoleFromPath } from '@shared/theme';
 
 const AdminApp = lazy(() => import('@admin/App'));
@@ -21,11 +21,9 @@ function App() {
   const RoleApp = role === 'admin' ? AdminApp : role === 'parent' ? ParentApp : ChildApp;
 
   return (
-    <ToastProvider>
-      <Suspense fallback={<LoadingState />}>
-        <RoleApp />
-      </Suspense>
-    </ToastProvider>
+    <Suspense fallback={<Spin className="flex justify-center py-12" />}>
+      <RoleApp />
+    </Suspense>
   );
 }
 

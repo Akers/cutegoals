@@ -7,7 +7,7 @@ import {
   useMemo,
   useState,
 } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { history } from 'umi';
 import { getClient, configureClient } from '@shared/api/client';
 import type { ApiError } from '@shared/api/types';
 
@@ -49,7 +49,6 @@ export function AuthProvider({
   const [account, setAccount] = useState<Account | null>(initialAccount ?? null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const navigate = useNavigate();
 
   const handleUnauthorized = useCallback(() => {
     setAccount(null);
@@ -68,13 +67,13 @@ export function AuthProvider({
       return;
     }
     if (path.startsWith('/admin')) {
-      navigate('/admin/login');
+      history.push('/admin/login');
     } else if (path.startsWith('/parent')) {
-      navigate('/parent/login');
+      history.push('/parent/login');
     } else {
-      navigate('/child/login');
+      history.push('/child/login');
     }
-  }, [navigate]);
+  }, []);
 
   useEffect(() => {
     configureClient({

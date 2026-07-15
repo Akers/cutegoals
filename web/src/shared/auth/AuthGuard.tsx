@@ -1,7 +1,7 @@
-import { Navigate, useLocation } from 'react-router-dom';
+import { Navigate, useLocation } from 'umi';
 import { useAuth } from '@shared/auth';
 import { useRole } from '@shared/role';
-import { LoadingState } from '@shared/components';
+import { Spin } from 'antd';
 
 interface AuthGuardProps {
   children: React.ReactNode;
@@ -13,7 +13,7 @@ export function AuthGuard({ children, fallback }: AuthGuardProps) {
   const { role } = useRole();
   const location = useLocation();
 
-  if (loading) return <LoadingState />;
+  if (loading) return <Spin className="flex justify-center py-12" />;
 
   if (!isAuthenticated) {
     const loginPath =

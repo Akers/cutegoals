@@ -4,6 +4,10 @@ node_modules
 # Build output
 dist
 
+# UmiJS generated files
+.umi
+.umi-production
+
 # TypeScript composite build info
 *.tsBuildInfo
 

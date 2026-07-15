@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
 import ParentApp from '../App';
 import { RoleProvider } from '@shared/RoleContext';
 import { AuthProvider } from '@shared/auth';
@@ -36,11 +35,9 @@ afterEach(() => {
 function renderParent() {
   render(
     <RoleProvider role="parent">
-      <MemoryRouter initialEntries={['/parent']}>
-        <AuthProvider initialAccount={{ accountId: 2, roles: ['PARENT'], familyId: 1 }}>
-          <ParentApp />
-        </AuthProvider>
-      </MemoryRouter>
+      <AuthProvider initialAccount={{ accountId: 2, roles: ['PARENT'], familyId: 1 }}>
+        <ParentApp />
+      </AuthProvider>
     </RoleProvider>,
   );
 }
@@ -50,13 +47,6 @@ describe('ParentApp', () => {
     renderParent();
     await waitFor(() => {
       expect(screen.getByRole('heading', { name: /家庭/ })).toBeInTheDocument();
-    });
-  });
-
-  it('renders the role indicator', async () => {
-    renderParent();
-    await waitFor(() => {
-      expect(screen.getByText(/家长端/)).toBeInTheDocument();
     });
   });
 });

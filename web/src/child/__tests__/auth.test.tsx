@@ -1,11 +1,13 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
 import userEvent from '@testing-library/user-event';
+// @ts-ignore - MemoryRouter available as transitive dep of umi
+import { MemoryRouter } from 'react-router-dom';
 import { ChildBindPage } from '../pages/ChildBindPage';
 import { ChildLoginPage } from '../pages/ChildLoginPage';
 import { RoleProvider } from '@shared/RoleContext';
 import { AuthProvider } from '@shared/auth';
+import { __setMockLocation } from 'umi';
 
 function mockResponse(data: unknown, ok = true, status = 200) {
   return {
@@ -16,10 +18,11 @@ function mockResponse(data: unknown, ok = true, status = 200) {
   } as unknown as Response;
 }
 
-function renderChildPage(element: React.ReactElement, initialEntries: string[]) {
+function renderChildPage(element: React.ReactElement, path: string) {
+  __setMockLocation(path);
   return render(
     <RoleProvider role="child">
-      <MemoryRouter initialEntries={initialEntries}>
+      <MemoryRouter>
         <AuthProvider>
           {element}
         </AuthProvider>
@@ -30,6 +33,8 @@ function renderChildPage(element: React.ReactElement, initialEntries: string[]) 
 
 beforeEach(() => {
   vi.spyOn(globalThis, 'fetch').mockReset();
+  // Set up a default mock location with the childId query param for login tests
+  __setMockLocation('/child/login?childId=3');
 });
 
 afterEach(() => {
@@ -40,7 +45,7 @@ describe('ChildBindPage', () => {
   it('shows device binding instructions when no children are available', async () => {
     vi.mocked(fetch).mockResolvedValue(mockResponse({ data: [] }));
 
-    renderChildPage(<ChildBindPage />, ['/child/bind']);
+    renderChildPage(<ChildBindPage />, '/child/bind');
 
     await waitFor(() => {
       expect(screen.getByRole('heading', { name: /设备绑定/ })).toBeInTheDocument();
@@ -53,7 +58,7 @@ describe('ChildBindPage', () => {
       mockResponse({ data: [{ id: 3, nickname: '小明' }] }),
     );
 
-    renderChildPage(<ChildBindPage />, ['/child/bind']);
+    renderChildPage(<ChildBindPage />, '/child/bind');
 
     await waitFor(() => {
       expect(screen.getByText('小明')).toBeInTheDocument();
@@ -67,7 +72,7 @@ describe('ChildLoginPage', () => {
       mockResponse({ data: { childId: 3, nickname: '小明', familyId: 1 } }),
     );
 
-    renderChildPage(<ChildLoginPage />, ['/child/login?childId=3']);
+    renderChildPage(<ChildLoginPage />, '/child/login?childId=3');
 
     await waitFor(() => {
       expect(screen.getByRole('heading', { name: /输入 PIN/ })).toBeInTheDocument();
@@ -93,7 +98,7 @@ describe('ChildLoginPage', () => {
       mockResponse({ code: 'CHILD_AUTHENTICATION_FAILED', message: 'PIN 错误' }, false, 400),
     );
 
-    renderChildPage(<ChildLoginPage />, ['/child/login?childId=3']);
+    renderChildPage(<ChildLoginPage />, '/child/login?childId=3');
 
     await waitFor(() => {
       expect(screen.getByRole('heading', { name: /输入 PIN/ })).toBeInTheDocument();
@@ -106,7 +111,6 @@ describe('ChildLoginPage', () => {
       await userEvent.click(screen.getByRole('button', { name: '4' }));
       await userEvent.click(screen.getByRole('button', { name: '5' }));
       await userEvent.click(screen.getByRole('button', { name: '6' }));
-      // wait for async response to clear the PIN display
       await waitFor(() => {
         expect(screen.getByRole('heading', { name: /输入 PIN/ })).toBeInTheDocument();
       });

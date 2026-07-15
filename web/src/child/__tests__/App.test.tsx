@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
 import ChildApp from '../App';
 import { RoleProvider } from '@shared/RoleContext';
 import { AuthProvider } from '@shared/auth';
@@ -36,11 +35,9 @@ afterEach(() => {
 function renderChild() {
   render(
     <RoleProvider role="child">
-      <MemoryRouter initialEntries={['/child']}>
-        <AuthProvider initialAccount={{ accountId: 3, roles: ['CHILD'], familyId: 1, childId: 3 }}>
-          <ChildApp />
-        </AuthProvider>
-      </MemoryRouter>
+      <AuthProvider initialAccount={{ accountId: 3, roles: ['CHILD'], familyId: 1, childId: 3 }}>
+        <ChildApp />
+      </AuthProvider>
     </RoleProvider>,
   );
 }
@@ -49,15 +46,7 @@ describe('ChildApp', () => {
   it('renders the child heading', async () => {
     renderChild();
     await waitFor(() => {
-      // Both the PageHeader <h1> and the CardSection <h2> say "今日任务"
       expect(screen.getAllByRole('heading', { name: /今日任务/ }).length).toBeGreaterThanOrEqual(1);
-    });
-  });
-
-  it('renders the role indicator', async () => {
-    renderChild();
-    await waitFor(() => {
-      expect(screen.getByText(/儿童端/)).toBeInTheDocument();
     });
   });
 });

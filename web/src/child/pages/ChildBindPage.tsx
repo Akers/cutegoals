@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { history, useSearchParams } from 'umi';
 import { getClient } from '@shared/api';
-import { Button, LoadingState, ErrorState, PageHeader } from '@shared/components';
+import { Button, Result, Spin } from 'antd';
+import { PageHeader } from '@shared/components';
 import { useOnline } from '@shared/theme';
 
 interface ChildProfile {
@@ -24,7 +25,6 @@ function getDeviceId(): string {
 }
 
 export function ChildBindPage() {
-  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [deviceId] = useState(() => searchParams.get('deviceId') ?? getDeviceId());
   const [children, setChildren] = useState<ChildProfile[]>([]);
@@ -65,9 +65,9 @@ export function ChildBindPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [deviceId, online]);
 
-  if (loading && !polling) return <LoadingState message="正在检查设备授权..." />;
-  if (!online) return <ErrorState title="离线" message="请连接网络后重试" onRetry={fetchChildren} />;
-  if (error) return <ErrorState title="查询失败" message={error} onRetry={fetchChildren} />;
+  if (loading && !polling) return <Spin tip="正在检查设备授权..."><div className="py-12" /></Spin>;
+  if (!online) return <Result status="warning" title="离线" subTitle="请连接网络后重试" extra={<Button onClick={fetchChildren}>重试</Button>} />;
+  if (error) return <Result status="error" title="查询失败" subTitle={error} extra={<Button onClick={fetchChildren}>重试</Button>} />;
 
   if (children.length === 0) {
     return (
@@ -81,7 +81,7 @@ export function ChildBindPage() {
           <p className="mb-4 text-sm text-cg-text-muted">
             在家长端「家庭设置」中点击「授权设备」，并输入上方设备标识。
           </p>
-          <Button onClick={fetchChildren} isLoading={loading}>
+          <Button onClick={fetchChildren} loading={loading}>
             我已授权，继续
           </Button>
         </div>
@@ -97,7 +97,7 @@ export function ChildBindPage() {
           {children.map((child) => (
             <button
               key={child.id}
-              onClick={() => navigate(`/child/login?childId=${child.id}&deviceId=${encodeURIComponent(deviceId)}`)}
+              onClick={() => history.push(`/child/login?childId=${child.id}&deviceId=${encodeURIComponent(deviceId)}`)}
               className="flex items-center gap-4 rounded-cg-lg border border-cg-border bg-cg-surface p-4 text-left transition-shadow hover:shadow-cg-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cg-focus min-h-touch"
             >
               <div className="flex h-12 w-12 items-center justify-center rounded-full bg-cg-primary text-lg text-cg-primary-text">

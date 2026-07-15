@@ -22,9 +22,10 @@
       "@shared/*": ["./src/shared/*"],
       "@admin/*": ["./src/admin/*"],
       "@parent/*": ["./src/parent/*"],
-      "@child/*": ["./src/child/*"]
+      "@child/*": ["./src/child/*"],
+      "@@/*": ["./src/.umi/*"],
+      "@fs/*": ["*"]
     }
   },
-  "include": ["src", ".umi/**/*.ts"],
-  "references": [{ "path": "./tsconfig.node.json" }]
+  "include": ["src", ".umi/**/*.ts"]
 }
