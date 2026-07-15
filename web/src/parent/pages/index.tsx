@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { history } from 'umi';
 import { getClient } from '@shared/api';
 import type { TaskTypeValue } from '@shared/api/types';
-import { Alert, Button, Card, Empty, Input, Modal, Result, Row, Select, Space, Spin, Tag, Typography } from 'antd';
+import { Alert, Button, Card, Empty, Input, Modal, Result, Row, Select, Space, Spin, Table, Tag, Typography } from 'antd';
 const { TextArea } = Input;
 import { useAuth } from '@shared/auth';
 import { useApi, useFormField, useIdempotencyKey } from '@shared/hooks/useApi';
@@ -491,7 +491,7 @@ export function ParentFamilyPage() {
 }
 
 export function ParentChildrenPage() {
-  const { items, loading, error, refetch } = usePaginatedData<ChildProfile>('/family/children');
+  const { items, loading, error, refetch, page, pageSize, setPage, total } = usePaginatedData<ChildProfile>('/family/children');
   const [showModal, setShowModal] = useState(false);
   const [editing, setEditing] = useState<ChildProfile | null>(null);
   const nickname = useFormField();
@@ -556,22 +556,31 @@ export function ParentChildrenPage() {
         <Button onClick={openNew}>新增档案</Button>
       </Row>
 
-      <Space direction="vertical" size="small" style={{ width: '100%' }}>
-        {items.map((child) => (
-          <Card key={child.id} size="small">
-            <Row justify="space-between" align="middle">
-              <Space direction="vertical" size={0}>
-                <Typography.Text strong>{child.nickname}</Typography.Text>
-                {child.birthday && <Typography.Text type="secondary" style={{ fontSize: 12 }}>生日 {child.birthday}</Typography.Text>}
-              </Space>
+      <Table
+        dataSource={items}
+        rowKey="id"
+        loading={loading}
+        pagination={{
+          current: page + 1,
+          total,
+          pageSize,
+          onChange: (p) => setPage(p - 1),
+        }}
+        columns={[
+          { title: '名称', dataIndex: 'nickname', key: 'nickname' },
+          { title: '年龄', dataIndex: 'birthday', key: 'birthday', render: (v: string | undefined) => v ?? '-' },
+          {
+            title: '操作',
+            key: 'actions',
+            render: (_: unknown, record: ChildProfile) => (
               <Space>
-                <Button type="text" size="small" onClick={() => openEdit(child)}>编辑</Button>
-                <Button danger size="small" onClick={() => handleDelete(child.id)}>删除</Button>
+                <Button type="text" size="small" onClick={() => openEdit(record)}>编辑</Button>
+                <Button danger size="small" onClick={() => handleDelete(record.id)}>删除</Button>
               </Space>
-            </Row>
-          </Card>
-        ))}
-      </Space>
+            ),
+          },
+        ]}
+      />
 
       <Modal
         open={showModal}
@@ -616,7 +625,7 @@ export function ParentTemplatesPage() {
   const [saving, setSaving] = useState(false);
 
   const filterParams = selectedTypes.length > 0 ? { taskType: selectedTypes.join(',') } : undefined;
-  const { items, loading, error, refetch } = usePaginatedData<TaskTemplate>(
+  const { items, loading, error, refetch, page, pageSize, setPage, total } = usePaginatedData<TaskTemplate>(
     '/task-templates',
     filterParams,
   );
@@ -715,32 +724,40 @@ export function ParentTemplatesPage() {
       {/* 任务类型筛选器 */}
       <TaskTypeFilter selected={selectedTypes} onChange={setSelectedTypes} />
 
-      <Space direction="vertical" size="small" style={{ width: '100%' }}>
-        {items.map((t) => (
-          <Card key={t.id} size="small">
-            <Row justify="space-between" align="top">
-              <Space direction="vertical" size={2}>
-                <Typography.Text strong>{t.name}</Typography.Text>
-                <Typography.Text type="secondary" style={{ fontSize: 12 }}>{t.description}</Typography.Text>
-                <Space size={4} wrap>
-                  <Tag>{t.category}</Tag>
-                  <Tag>{t.difficulties?.[0]?.rewardPoints ?? '-'} 积分</Tag>
-                  {t.taskType && (
-                    <Tag>{t.taskType === 'LIMITED' ? '限时' : t.taskType === 'REPEAT' ? '重复' : '常驻'}</Tag>
-                  )}
-                  <Tag color={t.enabled ? 'success' : 'default'}>{t.enabled ? '已启用' : '已停用'}</Tag>
-                </Space>
-              </Space>
+      <Table
+        dataSource={items}
+        rowKey="id"
+        loading={loading}
+        pagination={{
+          current: page + 1,
+          total,
+          pageSize,
+          onChange: (p) => setPage(p - 1),
+        }}
+        columns={[
+          { title: '模板名称', dataIndex: 'name', key: 'name' },
+          { title: '分类', dataIndex: 'category', key: 'category' },
+          {
+            title: '状态',
+            key: 'enabled',
+            render: (_: unknown, record: TaskTemplate) => (
+              <Tag color={record.enabled ? 'success' : 'default'}>{record.enabled ? '已启用' : '已停用'}</Tag>
+            ),
+          },
+          {
+            title: '操作',
+            key: 'actions',
+            render: (_: unknown, record: TaskTemplate) => (
               <Space>
-                <Button type="text" size="small" onClick={() => openEdit(t)}>编辑</Button>
-                <Button size="small" onClick={() => toggleEnabled(t)}>
-                  {t.enabled ? '停用' : '启用'}
+                <Button type="text" size="small" onClick={() => openEdit(record)}>编辑</Button>
+                <Button size="small" onClick={() => toggleEnabled(record)}>
+                  {record.enabled ? '停用' : '启用'}
                 </Button>
               </Space>
-            </Row>
-          </Card>
-        ))}
-      </Space>
+            ),
+          },
+        ]}
+      />
 
       <Modal
         open={showModal}
@@ -1218,7 +1235,7 @@ export function ParentPointsPage() {
 }
 
 export function ParentPrizesPage() {
-  const { items, loading, error, refetch } = usePaginatedData<Prize>('/prizes');
+  const { items, loading, error, refetch, page, pageSize, setPage, total } = usePaginatedData<Prize>('/prizes');
   const [showModal, setShowModal] = useState(false);
   const [editing, setEditing] = useState<Prize | null>(null);
   const name = useFormField();
@@ -1282,20 +1299,36 @@ export function ParentPrizesPage() {
         <Button onClick={openNew}>新增奖品</Button>
       </Row>
 
-      <Space direction="vertical" size="small" style={{ width: '100%' }}>
-        {items.map((p) => (
-          <Card key={p.id} size="small">
-            <Row justify="space-between" align="top">
-              <Space direction="vertical" size={2}>
-                <Typography.Text strong>{p.name}</Typography.Text>
-                <Typography.Text type="secondary" style={{ fontSize: 12 }}>{p.description}</Typography.Text>
-                <Typography.Text style={{ fontSize: 12 }}>{p.pointsCost} 积分 · 库存 {p.availableStock}</Typography.Text>
-              </Space>
-              <Button type="text" size="small" onClick={() => openEdit(p)}>编辑</Button>
-            </Row>
-          </Card>
-        ))}
-      </Space>
+      <Table
+        dataSource={items}
+        rowKey="id"
+        loading={loading}
+        pagination={{
+          current: page + 1,
+          total,
+          pageSize,
+          onChange: (p) => setPage(p - 1),
+        }}
+        columns={[
+          { title: '奖品名称', dataIndex: 'name', key: 'name' },
+          { title: '积分', dataIndex: 'pointsCost', key: 'pointsCost' },
+          { title: '库存', dataIndex: 'availableStock', key: 'availableStock' },
+          {
+            title: '状态',
+            key: 'enabled',
+            render: (_: unknown, record: Prize) => (
+              <Tag color={record.enabled ? 'success' : 'default'}>{record.enabled ? '启用' : '停用'}</Tag>
+            ),
+          },
+          {
+            title: '操作',
+            key: 'actions',
+            render: (_: unknown, record: Prize) => (
+              <Button type="text" size="small" onClick={() => openEdit(record)}>编辑</Button>
+            ),
+          },
+        ]}
+      />
 
       <Modal
         open={showModal}
@@ -1329,7 +1362,7 @@ export function ParentPrizesPage() {
 }
 
 export function ParentBlindBoxesPage() {
-  const { items, loading, error, refetch } = usePaginatedData<BlindBox>('/blind-boxes');
+  const { items, loading, error, refetch, page, pageSize, setPage, total } = usePaginatedData<BlindBox>('/blind-boxes');
   const [selected, setSelected] = useState<BlindBox | null>(null);
   const { data: candidates } = useApi<{ candidates: BlindBoxCandidate[] }>(
     selected ? `/blind-boxes/${selected.id}/candidates` : '',
@@ -1351,22 +1384,41 @@ export function ParentBlindBoxesPage() {
     <Space direction="vertical" size="large" style={{ width: '100%' }}>
       <Typography.Title level={4} style={{ margin: 0 }}>盲盒</Typography.Title>
 
-      <Space direction="vertical" size="small" style={{ width: '100%' }}>
-        {items.map((box) => (
-          <Card
-            key={box.id}
-            size="small"
-            hoverable
-            style={selected?.id === box.id ? { borderColor: '#1677ff' } : {}}
-            onClick={() => setSelected(box)}
-          >
-            <Typography.Text strong>{box.name}</Typography.Text>
-            <Typography.Text type="secondary" style={{ display: 'block', fontSize: 12 }}>
-              {box.cost} 积分 · 版本 {box.availabilityVersion.slice(0, 8)}...
-            </Typography.Text>
-          </Card>
-        ))}
-      </Space>
+      <Table
+        dataSource={items}
+        rowKey="id"
+        loading={loading}
+        pagination={{
+          current: page + 1,
+          total,
+          pageSize,
+          onChange: (p) => setPage(p - 1),
+        }}
+        columns={[
+          { title: '名称', dataIndex: 'name', key: 'name' },
+          { title: '价格', dataIndex: 'cost', key: 'cost', render: (v: number) => `${v} 积分` },
+          {
+            title: '状态',
+            key: 'enabled',
+            render: (_: unknown, record: BlindBox) => (
+              <Tag color={record.enabled ? 'success' : 'default'}>{record.enabled ? '启用' : '停用'}</Tag>
+            ),
+          },
+          {
+            title: '操作',
+            key: 'actions',
+            render: (_: unknown, record: BlindBox) => (
+              <Button
+                type={selected?.id === record.id ? 'primary' : 'default'}
+                size="small"
+                onClick={() => setSelected(record)}
+              >
+                查看概率
+              </Button>
+            ),
+          },
+        ]}
+      />
 
       {selected && (
         <Card title="概率预览">
@@ -1388,7 +1440,7 @@ export function ParentBlindBoxesPage() {
 }
 
 export function ParentExchangesPage() {
-  const { items, loading, error, refetch } = usePaginatedData<Exchange>('/exchanges');
+  const { items, loading, error, refetch, page, pageSize, setPage, total } = usePaginatedData<Exchange>('/exchanges');
   const [confirmId, setConfirmId] = useState<number | null>(null);
   const online = useOnline();
   const [acting, setActing] = useState(false);
@@ -1423,33 +1475,38 @@ export function ParentExchangesPage() {
     <Space direction="vertical" size="large" style={{ width: '100%' }}>
       <Typography.Title level={4} style={{ margin: 0 }}>兑换履约</Typography.Title>
 
-      {items.length === 0 ? (
-        <Empty description="暂无数据" />
-      ) : (
-        <Space direction="vertical" size="small" style={{ width: '100%' }}>
-          {items.map((ex) => (
-            <Card key={ex.id} size="small">
-              <Row justify="space-between" align="top">
-                <Space direction="vertical" size={2}>
-                  <Typography.Text strong>{ex.targetName}</Typography.Text>
-                  <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-                    {ex.childNickname} · {ex.pointsCost} 积分 · {ex.createdAt}
-                  </Typography.Text>
-                  <Tag>{statusLabel(ex.status.toLowerCase())}</Tag>
+      <Table
+        dataSource={items}
+        rowKey="id"
+        loading={loading}
+        pagination={{
+          current: page + 1,
+          total,
+          pageSize,
+          onChange: (p) => setPage(p - 1),
+        }}
+        locale={{ emptyText: <Empty description="暂无数据" /> }}
+        columns={[
+          { title: '孩子', dataIndex: 'childNickname', key: 'childNickname' },
+          { title: '奖品', dataIndex: 'targetName', key: 'targetName' },
+          {
+            title: '状态',
+            key: 'status',
+            render: (_: unknown, record: Exchange) => <Tag>{statusLabel(record.status.toLowerCase())}</Tag>,
+          },
+          {
+            title: '操作',
+            key: 'actions',
+            render: (_: unknown, record: Exchange) =>
+              record.status === 'PENDING_FULFILLMENT' ? (
+                <Space>
+                  <Button size="small" onClick={() => setConfirmId(record.id)} loading={acting}>兑现</Button>
+                  <Button size="small" onClick={() => cancel(record.id)} loading={acting}>取消</Button>
                 </Space>
-                <Space direction="vertical" size={2}>
-                  {ex.status === 'PENDING_FULFILLMENT' && (
-                    <>
-                      <Button size="small" onClick={() => setConfirmId(ex.id)} loading={acting}>兑现</Button>
-                      <Button size="small" onClick={() => cancel(ex.id)} loading={acting}>取消</Button>
-                    </>
-                  )}
-                </Space>
-              </Row>
-            </Card>
-          ))}
-        </Space>
-      )}
+              ) : null,
+          },
+        ]}
+      />
 
       <Modal
         open={confirmId !== null}
