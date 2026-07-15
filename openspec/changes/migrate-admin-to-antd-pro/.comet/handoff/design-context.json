@@ -1,0 +1,14 @@
+{
+  "change": "migrate-admin-to-antd-pro",
+  "phase": "design",
+  "mode": "compact",
+  "canonical_spec": "openspec",
+  "generated_by": "comet-handoff.sh",
+  "context_hash": "285168afb964242c099f3fb2e900dd51b67eabc047a090f843eef4ee8392da94",
+  "files": [
+    { "path": "openspec/changes/migrate-admin-to-antd-pro/proposal.md", "sha256": "533d3439196e5de5f186cbcf0763fa504fdbb9699e428e35deaa2a1b08ef9776" },
+    { "path": "openspec/changes/migrate-admin-to-antd-pro/design.md", "sha256": "67f65d0a6565d6f29176dab45203047f431225f8d152a4d9c29100cc00063eae" },
+    { "path": "openspec/changes/migrate-admin-to-antd-pro/tasks.md", "sha256": "0dc48a20a1d7a8a1e26a81f58c275d2ea4f98a18de4ccdd610df546af308e3bd" },
+    { "path": "openspec/changes/migrate-admin-to-antd-pro/specs/admin-page-migration/spec.md", "sha256": "8c4134e317bb50373c43c95d88904ca67556b2024a06e6435bbba593da3cac38" }
+  ]
+}
