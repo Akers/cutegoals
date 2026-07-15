@@ -20,10 +20,10 @@
 
 | Task | 阶段 | 状态 | 提交 | 风险 | 审查 |
 |------|------|------|------|------|------|
-| 1.1 | P1 环境初始化 | ✅ done | e360cab | 无 | 跳过(non-risk) |
-| 1.2 | P1 | ✅ done | afaf859 | 无 | 跳过(non-risk) |
-| 1.3 | P1 | pending | - | - | - |
-| 1.4 | P1 | pending | - | - | - |
+| 1.1 | P1 环境初始化 | ✅ done | e360cab | 无 | 跳过 |
+| 1.2 | P1 | ✅ done | afaf859 | 无 | 跳过 |
+| 1.3 | P1 | ✅ done | 015ef10 | 无 | 跳过 |
+| 1.4 | P1 | ⏳ running | - | - | - |
 | 2.1-2.5 | P2 ProLayout | pending | - | - | - |
 | 3.1-3.5 | P3 主题 | pending | - | - | - |
 | 4.1-4.9 | P4 路由+Auth | pending | - | - | - |
@@ -34,10 +34,9 @@
 
 ## 当前任务
 
-- **Task**: 1.2 创建 UmiJS 配置文件
+- **Task**: 1.4 验证 UmiJS 开发服务器启动
 - **阶段**: implementing
-- **派发 agent**: fixer（多文件配置，需验证）
-- **起始 commit**: e360cab
+- **派发 agent**: fixer（创建最小 app.tsx + routes，验证 dev server）
 
 ## 审查-修复轮次追踪
 
