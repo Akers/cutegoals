@@ -1,7 +1,7 @@
 ## 1. 环境初始化
 
 - [x] 1.1 安装 Ant Design Pro 依赖：将 `umi`、`@ant-design/pro-components`、`@ant-design/icons`、`antd` 添加到 `web/package.json`，执行 `npm install`
-- [ ] 1.2 创建 UmiJS 配置文件 `web/config/config.ts`，配置路径别名 `@/` → `src/`、history 类型为 browser、开启 hash 路由
+- [x] 1.2 创建 UmiJS 配置文件 `web/config/config.ts`，配置路径别名 `@/` → `src/`、history 类型为 browser、开启 hash 路由
 - [ ] 1.3 配置 UmiJS TypeScript：更新 `web/tsconfig.json`，添加 `@/` 路径映射、JSX 配置、确保 UmiJS 类型定义可用
 - [ ] 1.4 验证开发服务器：执行 `npm run start`，确认 UmiJS 开发服务器正常启动（页面可为空白占位）
 
