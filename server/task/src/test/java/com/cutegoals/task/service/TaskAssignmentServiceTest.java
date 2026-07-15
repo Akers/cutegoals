@@ -232,6 +232,32 @@ class TaskAssignmentServiceTest {
     }
 
     @Test
+    void shouldCreateBatchAssignmentsWithIntegerChildIds() {
+        Map<String, Object> request = new LinkedHashMap<>();
+        request.put("templateId", templateId);
+        request.put("difficultyId", difficultyId);
+        request.put("childIds", List.of(childId.intValue()));
+        request.put("startDate", LocalDate.now().toString());
+        request.put("endDate", LocalDate.now().plusDays(2).toString());
+        request.put("idempotencyKey", "batch-key-integer");
+
+        TaskTemplate template = createSampleTemplate();
+        TaskDifficulty difficulty = createSampleDifficulty();
+        ChildProfile child = createSampleChild();
+
+        when(taskAssignmentMapper.findByIdempotencyKey("batch-key-integer", familyId)).thenReturn(Optional.empty());
+        when(taskTemplateService.getActiveTemplate(templateId, familyId)).thenReturn(template);
+        when(taskTemplateService.getEnabledDifficulty(difficultyId, templateId)).thenReturn(difficulty);
+        when(taskChildMapper.findById(childId)).thenReturn(Optional.of(child));
+        doReturn(1).when(taskAssignmentMapper).insert(any(TaskAssignment.class));
+        doReturn(1).when(taskAssignmentSnapshotMapper).insert(any(TaskAssignmentSnapshot.class));
+
+        List<TaskAssignment> results = taskAssignmentService.createBatchAssignments(request, familyId, accountId);
+        assertEquals(1, results.size());
+        assertEquals(childId, results.get(0).getChildId());
+    }
+
+    @Test
     void shouldRejectBatchWithInvalidDateRange() {
         Map<String, Object> request = new LinkedHashMap<>();
         request.put("templateId", templateId);

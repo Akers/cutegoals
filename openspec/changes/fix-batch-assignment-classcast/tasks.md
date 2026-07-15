@@ -1,0 +1,4 @@
+- [ ] 实现 `extractLongList` 并修复 `createBatchAssignments` 的 `childIds` 类型转换
+- [ ] 补充 `TaskAssignmentServiceTest` 中 childIds 为整数列表的回归测试
+- [ ] 运行 `mvn -pl :task -am test` 并确认全部通过
+- [ ] 提交代码并归档 hotfix

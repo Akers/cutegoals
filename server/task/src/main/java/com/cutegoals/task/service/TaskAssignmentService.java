@@ -134,8 +134,7 @@ public class TaskAssignmentService {
         String startDateStr = extractString(request, "startDate");
         String endDateStr = extractString(request, "endDate");
 
-        @SuppressWarnings("unchecked")
-        List<Long> childIds = (List<Long>) request.get("childIds");
+        List<Long> childIds = extractLongList(request, "childIds");
         if (childIds == null || childIds.isEmpty()) {
             throw new BusinessException(ErrorCode.VALIDATION_FAILED, "At least one childId is required");
         }
@@ -794,6 +793,22 @@ public class TaskAssignmentService {
         Object val = map.get(key);
         if (val == null) return null;
         return ((Number) val).longValue();
+    }
+
+    private List<Long> extractLongList(Map<String, Object> map, String key) {
+        Object val = map.get(key);
+        if (val == null) return null;
+        if (!(val instanceof List<?> list)) {
+            throw new BusinessException(ErrorCode.VALIDATION_FAILED, key + " must be an array");
+        }
+        List<Long> result = new ArrayList<>(list.size());
+        for (Object item : list) {
+            if (item == null) {
+                throw new BusinessException(ErrorCode.VALIDATION_FAILED, key + " must not contain null");
+            }
+            result.add(((Number) item).longValue());
+        }
+        return result;
     }
 
     private String extractString(Map<String, Object> map, String key) {
