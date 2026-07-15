@@ -1,6 +1,6 @@
 workflow: hotfix
 language: zh-CN
-phase: verify
+phase: archive
 context_compression: off
 build_mode: direct
 build_pause: null
@@ -13,11 +13,11 @@ auto_transition: true
 base_ref: 3c52978b6f8b58a04bf9455007125980729001cf
 design_doc: null
 plan: null
-verify_result: pending
+verify_result: pass
 verification_report: docs/superpowers/reports/2026-07-15-batch-assign-disabled-template-filter-verify.md
 branch_status: handled
 created_at: 2026-07-15
-verified_at: null
+verified_at: 2026-07-15
 archived: false
 direct_override: null
 handoff_context: null
