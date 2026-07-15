@@ -1,6 +1,6 @@
 workflow: hotfix
 language: zh-CN
-phase: verify
+phase: archive
 context_compression: off
 build_mode: direct
 build_pause: null
@@ -13,12 +13,12 @@ auto_transition: true
 base_ref: a68222c21e0c2f2f545e81b6e4ee2b3d8b68a8a8
 design_doc: null
 plan: null
-verify_result: pending
+verify_result: pass
 verification_report: docs/superpowers/reports/2026-07-15-fix-batch-assignment-classcast-verify.md
 branch_status: handled
 created_at: 2026-07-15
-verified_at: null
-archived: false
+verified_at: 2026-07-15
+archived: true
 direct_override: null
 handoff_context: null
 handoff_hash: null
