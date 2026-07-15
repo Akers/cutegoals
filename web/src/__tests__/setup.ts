@@ -1,6 +1,16 @@
 import '@testing-library/jest-dom';
 import { vi } from 'vitest';
 
+// jsdom doesn't implement getComputedStyle, which antd Modal uses for scrollbar measurement
+const noop = () => {};
+Object.defineProperty(window, 'getComputedStyle', {
+  value: () => ({
+    getPropertyValue: noop,
+    length: 0,
+  }),
+});
+(globalThis as any).CSS = { supports: () => false };
+
 // Create a controllable mock for 'umi' module.
 // Tests can configure the mock behavior using:
 //   import { __setMockLocation } from 'umi';

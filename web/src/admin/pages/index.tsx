@@ -1,11 +1,7 @@
 import { useEffect, useState } from 'react';
 import { getClient } from '@shared/api';
-import { Button, Card, Empty, Result, Spin } from 'antd';
-import {
-  Layout,
-  PageHeader,
-  StatusBadge,
-} from '@shared/components';
+import { Button, Card, Col, Empty, Input, Row, Space, Table, Tag, Typography } from 'antd';
+import { Result, Spin } from '@shared/components';
 import { useOnline } from '@shared/theme';
 import { useApi } from '@shared/hooks/useApi';
 
@@ -35,54 +31,60 @@ export function AdminOverviewPage() {
   const { data, loading, error, refetch } = useApi<OverviewData>('/instance/status');
   const online = useOnline();
 
-  if (!online) return <Layout><Result status="warning" title="当前处于离线状态" subTitle="请检查网络连接，恢复后重试" extra={<Button onClick={refetch}>重试</Button>} /></Layout>;
-  if (loading) return <Layout><Spin className="flex justify-center py-12" /></Layout>;
-  if (error) return <Layout><Result status="error" title="加载失败" subTitle={error.message ?? '未知错误'} extra={<Button onClick={refetch}>重试</Button>} /></Layout>;
-  if (!data) return <Layout><Empty description="暂无数据" /></Layout>;
+  if (!online) return <Result status="warning" title="当前处于离线状态" subTitle="请检查网络连接，恢复后重试" extra={<Button onClick={refetch}>重试</Button>} />;
+  if (loading) return <Spin />;
+  if (error) return <Result status="error" title="加载失败" subTitle={error.message ?? '未知错误'} extra={<Button onClick={refetch}>重试</Button>} />;
+  if (!data) return <Empty description="暂无数据" />;
 
   return (
-    <Layout>
-      <PageHeader title="实例概览" />
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <Card title="初始化状态">
-          <div className="flex items-center gap-2">
-            <StatusBadge
-              status={
-                (data.initialized ?? data.instanceStatus === 'INITIALIZED')
-                  ? 'completed'
-                  : 'pending'
-              }
-            />
-            <span className="text-cg-text-muted">{data.version ?? '—'}</span>
-          </div>
-        </Card>
-        <Card title="备份状态">
-          {data.lastBackupAt ? (
-            <div className="flex items-center gap-2">
-              <StatusBadge status={data.lastBackupStatus === 'SUCCESS' ? 'completed' : 'cancelled'} />
-              <span className="text-cg-text-muted">{data.lastBackupAt}</span>
-            </div>
-          ) : (
-            <p className="text-cg-text-muted">暂无备份记录</p>
-          )}
-        </Card>
-        <Card title="恢复演练">
-          {data.recoveryDrill ? (
-            <div className="space-y-1 text-sm">
-              <div className="flex items-center gap-2">
-                结果
-                <StatusBadge status={data.recoveryDrill.success ? 'completed' : 'rejected'} />
-              </div>
-              <div>RPO: {data.recoveryDrill.rpo}</div>
-              <div>RTO: {data.recoveryDrill.rto}</div>
-              <div>时间: {data.recoveryDrill.ranAt}</div>
-            </div>
-          ) : (
-            <p className="text-cg-text-muted">尚未运行恢复演练</p>
-          )}
-        </Card>
-      </div>
-    </Layout>
+    <>
+      <Typography.Title level={3}>实例概览</Typography.Title>
+      <Row gutter={[16, 16]}>
+        <Col span={24} md={12}>
+          <Card title="初始化状态">
+            <Space>
+              <Tag color={(data.initialized ?? data.instanceStatus === 'INITIALIZED') ? 'success' : 'default'}>
+                {(data.initialized ?? data.instanceStatus === 'INITIALIZED') ? '已初始化' : '未初始化'}
+              </Tag>
+              <Typography.Text type="secondary">{data.version ?? '—'}</Typography.Text>
+            </Space>
+          </Card>
+        </Col>
+        <Col span={24} md={12}>
+          <Card title="备份状态">
+            {data.lastBackupAt ? (
+              <Space>
+                <Tag color={data.lastBackupStatus === 'SUCCESS' ? 'success' : 'error'}>
+                  {data.lastBackupStatus === 'SUCCESS' ? '成功' : '失败'}
+                </Tag>
+                <Typography.Text type="secondary">{data.lastBackupAt}</Typography.Text>
+              </Space>
+            ) : (
+              <Typography.Text type="secondary">暂无备份记录</Typography.Text>
+            )}
+          </Card>
+        </Col>
+        <Col span={24} md={12}>
+          <Card title="恢复演练">
+            {data.recoveryDrill ? (
+              <Space direction="vertical" size="small">
+                <Space>
+                  <Typography.Text>结果</Typography.Text>
+                  <Tag color={data.recoveryDrill.success ? 'success' : 'error'}>
+                    {data.recoveryDrill.success ? '成功' : '失败'}
+                  </Tag>
+                </Space>
+                <Typography.Text type="secondary">RPO: {data.recoveryDrill.rpo}</Typography.Text>
+                <Typography.Text type="secondary">RTO: {data.recoveryDrill.rto}</Typography.Text>
+                <Typography.Text type="secondary">时间: {data.recoveryDrill.ranAt}</Typography.Text>
+              </Space>
+            ) : (
+              <Typography.Text type="secondary">尚未运行恢复演练</Typography.Text>
+            )}
+          </Card>
+        </Col>
+      </Row>
+    </>
   );
 }
 
@@ -103,31 +105,30 @@ export function AdminConfigPage() {
     await refetch();
   };
 
-  if (!online) return <Layout><Result status="warning" title="当前处于离线状态" subTitle="请检查网络连接，恢复后重试" extra={<Button onClick={refetch}>重试</Button>} /></Layout>;
-  if (loading) return <Layout><Spin className="flex justify-center py-12" /></Layout>;
-  if (error) return <Layout><Result status="error" title="加载失败" subTitle={error.message ?? '未知错误'} extra={<Button onClick={refetch}>重试</Button>} /></Layout>;
-  if (!data) return <Layout><Empty description="暂无配置" /></Layout>;
+  if (!online) return <Result status="warning" title="当前处于离线状态" subTitle="请检查网络连接，恢复后重试" extra={<Button onClick={refetch}>重试</Button>} />;
+  if (loading) return <Spin />;
+  if (error) return <Result status="error" title="加载失败" subTitle={error.message ?? '未知错误'} extra={<Button onClick={refetch}>重试</Button>} />;
+  if (!data) return <Empty description="暂无配置" />;
 
   return (
-    <Layout>
-      <PageHeader title="系统配置" />
-      <div className="cg-card p-4">
-        <div className="flex flex-col gap-4">
+    <>
+      <Typography.Title level={3}>系统配置</Typography.Title>
+      <Card>
+        <Space direction="vertical" size="middle" style={{ width: '100%' }}>
           {Object.entries(data).map(([key]) => (
-            <div key={key} className="flex flex-col gap-1">
-              <label className="text-sm font-medium text-cg-text">{key}</label>
-              <input
+            <Space key={key} direction="vertical" style={{ width: '100%' }}>
+              <Typography.Text strong>{key}</Typography.Text>
+              <Input
                 type={key.toLowerCase().includes('secret') || key.toLowerCase().includes('password') ? 'password' : 'text'}
                 value={values[key] ?? ''}
                 onChange={(e) => setValues((prev) => ({ ...prev, [key]: e.target.value }))}
-                className="w-full rounded-cg-md border border-cg-border bg-cg-surface px-3 py-2 text-cg-text min-h-touch"
               />
-            </div>
+            </Space>
           ))}
-          <Button onClick={handleSave} loading={saving}>保存配置</Button>
-        </div>
-      </div>
-    </Layout>
+          <Button type="primary" onClick={handleSave} loading={saving}>保存配置</Button>
+        </Space>
+      </Card>
+    </>
   );
 }
 
@@ -154,48 +155,39 @@ export function AdminAccountsPage() {
 
   const mask = (phone: string) => phone.slice(0, 3) + '****' + phone.slice(7);
 
-  if (!online) return <Layout><Result status="warning" title="当前处于离线状态" subTitle="请检查网络连接，恢复后重试" extra={<Button onClick={refetch}>重试</Button>} /></Layout>;
-  if (loading) return <Layout><Spin className="flex justify-center py-12" /></Layout>;
-  if (error) return <Layout><Result status="error" title="加载失败" subTitle={error.message ?? '未知错误'} extra={<Button onClick={refetch}>重试</Button>} /></Layout>;
-  if (!data || data.content.length === 0) return <Layout><Empty description="暂无账号" /></Layout>;
+  if (!online) return <Result status="warning" title="当前处于离线状态" subTitle="请检查网络连接，恢复后重试" extra={<Button onClick={refetch}>重试</Button>} />;
+  if (loading) return <Spin />;
+  if (error) return <Result status="error" title="加载失败" subTitle={error.message ?? '未知错误'} extra={<Button onClick={refetch}>重试</Button>} />;
+  if (!data || data.content.length === 0) return <Empty description="暂无账号" />;
+
+  const accountColumns = [
+    { title: '手机号', dataIndex: 'phone', key: 'phone', render: (p: string) => mask(p) },
+    { title: '角色', dataIndex: 'roles', key: 'roles', render: (r: string[]) => r.join(', ') },
+    { title: '状态', dataIndex: 'status', key: 'status',
+      render: (s: string) => <Tag color={s === 'ACTIVE' ? 'success' : 'error'}>{s}</Tag> },
+    { title: '操作', key: 'action',
+      render: (_: unknown, record: Account) => (
+        <Button
+          type={record.status === 'ACTIVE' ? 'default' : 'primary'}
+          size="small"
+          loading={acting === record.id}
+          onClick={() => toggle(record.id, record.status !== 'ACTIVE')}
+        >
+          {record.status === 'ACTIVE' ? '停用' : '启用'}
+        </Button>
+      )},
+  ];
 
   return (
-    <Layout>
-      <PageHeader title="账号管理" />
-      <div className="cg-card overflow-hidden">
-        <table className="w-full text-left text-sm">
-          <thead className="bg-cg-surface-raised">
-            <tr>
-              <th className="px-4 py-3 font-medium">手机号</th>
-              <th className="px-4 py-3 font-medium">角色</th>
-              <th className="px-4 py-3 font-medium">状态</th>
-              <th className="px-4 py-3 font-medium">操作</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-cg-border">
-            {data.content.map((account) => (
-              <tr key={account.id}>
-                <td className="px-4 py-3">{mask(account.phone)}</td>
-                <td className="px-4 py-3">{account.roles.join(', ')}</td>
-                <td className="px-4 py-3">
-                  <StatusBadge status={account.status === 'ACTIVE' ? 'approved' : 'cancelled'} />
-                </td>
-                <td className="px-4 py-3">
-                  <Button
-                    type={account.status === 'ACTIVE' ? 'default' : 'primary'}
-                    size="small"
-                    loading={acting === account.id}
-                    onClick={() => toggle(account.id, account.status !== 'ACTIVE')}
-                  >
-                    {account.status === 'ACTIVE' ? '停用' : '启用'}
-                  </Button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </Layout>
+    <>
+      <Typography.Title level={3}>账号管理</Typography.Title>
+      <Table
+        columns={accountColumns}
+        dataSource={data.content}
+        rowKey="id"
+        pagination={data.totalPages > 1 ? { current: data.page + 1, total: data.totalElements, pageSize: data.pageSize } : false}
+      />
+    </>
   );
 }
 
@@ -216,39 +208,29 @@ export function AdminAuditPage() {
   const { data, loading, error, refetch } = useApi<PageResult<AuditLog>>('/admin/audit-logs');
   const online = useOnline();
 
-  if (!online) return <Layout><Result status="warning" title="当前处于离线状态" subTitle="请检查网络连接，恢复后重试" extra={<Button onClick={refetch}>重试</Button>} /></Layout>;
-  if (loading) return <Layout><Spin className="flex justify-center py-12" /></Layout>;
-  if (error) return <Layout><Result status="error" title="加载失败" subTitle={error.message ?? '未知错误'} extra={<Button onClick={refetch}>重试</Button>} /></Layout>;
-  if (!data || data.content.length === 0) return <Layout><Empty description="暂无审计日志" /></Layout>;
+  if (!online) return <Result status="warning" title="当前处于离线状态" subTitle="请检查网络连接，恢复后重试" extra={<Button onClick={refetch}>重试</Button>} />;
+  if (loading) return <Spin />;
+  if (error) return <Result status="error" title="加载失败" subTitle={error.message ?? '未知错误'} extra={<Button onClick={refetch}>重试</Button>} />;
+  if (!data || data.content.length === 0) return <Empty description="暂无审计日志" />;
+
+  const auditColumns = [
+    { title: '时间', dataIndex: 'createdAt', key: 'createdAt' },
+    { title: '操作者', key: 'actor', render: (_: unknown, r: AuditLog) => `${r.actorType}#${r.actorId}` },
+    { title: '动作', dataIndex: 'eventType', key: 'eventType' },
+    { title: '结果', dataIndex: 'result', key: 'result' },
+    { title: '对象', key: 'object', render: (_: unknown, r: AuditLog) => `${r.objectType}#${r.objectId}` },
+  ];
 
   return (
-    <Layout>
-      <PageHeader title="审计日志" />
-      <div className="cg-card overflow-hidden">
-        <table className="w-full text-left text-sm">
-          <thead className="bg-cg-surface-raised">
-            <tr>
-              <th className="px-4 py-3 font-medium">时间</th>
-              <th className="px-4 py-3 font-medium">操作者</th>
-              <th className="px-4 py-3 font-medium">动作</th>
-              <th className="px-4 py-3 font-medium">结果</th>
-              <th className="px-4 py-3 font-medium">对象</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-cg-border">
-            {data.content.map((log) => (
-              <tr key={log.id}>
-                <td className="px-4 py-3">{log.createdAt}</td>
-                <td className="px-4 py-3">{log.actorType}#{log.actorId}</td>
-                <td className="px-4 py-3">{log.eventType}</td>
-                <td className="px-4 py-3">{log.result}</td>
-                <td className="px-4 py-3">{log.objectType}#{log.objectId}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </Layout>
+    <>
+      <Typography.Title level={3}>审计日志</Typography.Title>
+      <Table
+        columns={auditColumns}
+        dataSource={data.content}
+        rowKey="id"
+        pagination={data.totalPages > 1 ? { current: data.page + 1, total: data.totalElements, pageSize: data.pageSize } : false}
+      />
+    </>
   );
 }
 
@@ -284,10 +266,10 @@ export function AdminHealthPage() {
   const { data, loading, error, refetch } = useApi<HealthData>('/admin/health');
   const online = useOnline();
 
-  if (!online) return <Layout><Result status="warning" title="当前处于离线状态" subTitle="请检查网络连接，恢复后重试" extra={<Button onClick={refetch}>重试</Button>} /></Layout>;
-  if (loading) return <Layout><Spin className="flex justify-center py-12" /></Layout>;
-  if (error) return <Layout><Result status="error" title="加载失败" subTitle={error.message ?? '未知错误'} extra={<Button onClick={refetch}>重试</Button>} /></Layout>;
-  if (!data) return <Layout><Empty description="暂无健康数据" /></Layout>;
+  if (!online) return <Result status="warning" title="当前处于离线状态" subTitle="请检查网络连接，恢复后重试" extra={<Button onClick={refetch}>重试</Button>} />;
+  if (loading) return <Spin />;
+  if (error) return <Result status="error" title="加载失败" subTitle={error.message ?? '未知错误'} extra={<Button onClick={refetch}>重试</Button>} />;
+  if (!data) return <Empty description="暂无健康数据" />;
 
   const checks: HealthCheck[] = [
     {
@@ -322,24 +304,28 @@ export function AdminHealthPage() {
   }
 
   return (
-    <Layout>
-      <PageHeader title="健康面板" />
-      <div className="mb-4 flex items-center gap-2">
-        整体状态
-        <StatusBadge status={data.status === 'UP' ? 'approved' : 'rejected'} />
-      </div>
-      <div className="grid grid-cols-1 gap-3">
+    <>
+      <Typography.Title level={3}>健康面板</Typography.Title>
+      <Space style={{ marginBottom: 16 }}>
+        <Typography.Text>整体状态</Typography.Text>
+        <Tag color={data.status === 'UP' ? 'success' : 'error'}>
+          {data.status === 'UP' ? '正常' : '异常'}
+        </Tag>
+      </Space>
+      <Space direction="vertical" size="middle" style={{ width: '100%' }}>
         {checks.map((check) => (
-          <div key={check.name} className="cg-card p-4">
-            <div className="flex items-center justify-between">
-              <span className="font-medium text-cg-text">{check.name}</span>
-              <StatusBadge status={check.healthy ? 'approved' : 'rejected'} />
-            </div>
-            <p className="mt-1 text-sm text-cg-text-muted">{check.message}</p>
-          </div>
+          <Card key={check.name} size="small">
+            <Space style={{ justifyContent: 'space-between', width: '100%' }}>
+              <Typography.Text strong>{check.name}</Typography.Text>
+              <Tag color={check.healthy ? 'success' : 'error'}>
+                {check.healthy ? '正常' : '异常'}
+              </Tag>
+            </Space>
+            <Typography.Text type="secondary" style={{ display: 'block', marginTop: 4 }}>{check.message}</Typography.Text>
+          </Card>
         ))}
-      </div>
-    </Layout>
+      </Space>
+    </>
   );
 }
 
