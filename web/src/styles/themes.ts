@@ -6,3 +6,10 @@ import type { ThemeConfig } from 'antd';
 export const adminTheme: ThemeConfig = {
   token: {},
 };
+
+/**
+ * Parent 主题 token（占位，Task 3.2 完善）
+ */
+export const parentTheme: ThemeConfig = {
+  token: {},
+};
