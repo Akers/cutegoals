@@ -5,6 +5,23 @@ import { Result, Spin } from '@shared/components';
 import { useOnline } from '@shared/theme';
 import { useApi } from '@shared/hooks/useApi';
 
+/** Map API status/result values to Chinese labels (match StatusBadge conventions) */
+function statusLabel(s: string): string {
+  const map: Record<string, string> = {
+    active: '启用',
+    disabled: '停用',
+    success: '成功',
+    failed: '失败',
+    approved: '已通过',
+    rejected: '已驳回',
+    pending: '待处理',
+    submitted: '已提交',
+    completed: '已完成',
+    cancelled: '已取消',
+  };
+  return map[s.toLowerCase()] ?? s;
+}
+
 interface PageResult<T> {
   content: T[];
   page: number;
@@ -142,7 +159,8 @@ interface Account {
 }
 
 export function AdminAccountsPage() {
-  const { data, loading, error, refetch } = useApi<PageResult<Account>>('/admin/accounts');
+  const [page, setPage] = useState(0);
+  const { data, loading, error, refetch } = useApi<PageResult<Account>>(`/admin/accounts?page=${page + 1}`);
   const online = useOnline();
   const [acting, setActing] = useState<number | null>(null);
 
@@ -164,7 +182,7 @@ export function AdminAccountsPage() {
     { title: '手机号', dataIndex: 'phone', key: 'phone', render: (p: string) => mask(p) },
     { title: '角色', dataIndex: 'roles', key: 'roles', render: (r: string[]) => r.join(', ') },
     { title: '状态', dataIndex: 'status', key: 'status',
-      render: (s: string) => <Tag color={s === 'ACTIVE' ? 'success' : 'error'}>{s}</Tag> },
+      render: (s: string) => <Tag color={s === 'ACTIVE' ? 'success' : 'error'}>{statusLabel(s)}</Tag> },
     { title: '操作', key: 'action',
       render: (_: unknown, record: Account) => (
         <Button
@@ -185,7 +203,8 @@ export function AdminAccountsPage() {
         columns={accountColumns}
         dataSource={data.content}
         rowKey="id"
-        pagination={data.totalPages > 1 ? { current: data.page + 1, total: data.totalElements, pageSize: data.pageSize } : false}
+        pagination={data.totalPages > 1 ? { current: data.page, total: data.totalElements, pageSize: data.pageSize } : false}
+        onChange={(pagination: any) => setPage(pagination.current! - 1)}
       />
     </>
   );
@@ -205,7 +224,8 @@ interface AuditLog {
 }
 
 export function AdminAuditPage() {
-  const { data, loading, error, refetch } = useApi<PageResult<AuditLog>>('/admin/audit-logs');
+  const [page, setPage] = useState(0);
+  const { data, loading, error, refetch } = useApi<PageResult<AuditLog>>(`/admin/audit-logs?page=${page + 1}`);
   const online = useOnline();
 
   if (!online) return <Result status="warning" title="当前处于离线状态" subTitle="请检查网络连接，恢复后重试" extra={<Button onClick={refetch}>重试</Button>} />;
@@ -217,7 +237,7 @@ export function AdminAuditPage() {
     { title: '时间', dataIndex: 'createdAt', key: 'createdAt' },
     { title: '操作者', key: 'actor', render: (_: unknown, r: AuditLog) => `${r.actorType}#${r.actorId}` },
     { title: '动作', dataIndex: 'eventType', key: 'eventType' },
-    { title: '结果', dataIndex: 'result', key: 'result' },
+    { title: '结果', dataIndex: 'result', key: 'result', render: (s: string) => <Tag>{statusLabel(s)}</Tag> },
     { title: '对象', key: 'object', render: (_: unknown, r: AuditLog) => `${r.objectType}#${r.objectId}` },
   ];
 
@@ -228,7 +248,8 @@ export function AdminAuditPage() {
         columns={auditColumns}
         dataSource={data.content}
         rowKey="id"
-        pagination={data.totalPages > 1 ? { current: data.page + 1, total: data.totalElements, pageSize: data.pageSize } : false}
+        pagination={data.totalPages > 1 ? { current: data.page, total: data.totalElements, pageSize: data.pageSize } : false}
+        onChange={(pagination: any) => setPage(pagination.current! - 1)}
       />
     </>
   );
