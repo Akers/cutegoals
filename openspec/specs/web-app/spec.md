@@ -6,6 +6,8 @@ TBD - created by archiving change core-features. Update Purpose after archive.
 ### Requirement: 单一 React SPA 与三角色入口
 前端 SHALL 作为单一 React SPA 提供三个固定路由前缀：`/admin` 用于实例管理、`/parent` 用于家长操作、`/child` 用于孩子操作。各入口 MUST 共享认证状态但按路由拆分非首屏资源；反向代理 MUST 将受支持的深层链接回退至 SPA 入口，浏览器刷新不得产生代理层 404。
 
+**实现变更**：路由实现从 React Router DOM v7 迁移至 UmiJS 约定路由（`config/routes.ts`），构建工具从 Vite 5.4 迁移至 UmiJS 4。SPA 入口行为、三角色路由前缀、深层链接兼容性保持不变。
+
 #### Scenario: 访问实例管理入口
 - **WHEN** 已认证实例管理员打开 `/admin` 下的受支持页面
 - **THEN** SPA MUST 呈现实例管理导航和管理员工作区，且不得加载家长或孩子的受限业务数据

@@ -2,6 +2,8 @@
 comet_change: migrate-to-antd-pro-infra
 role: technical-design
 canonical_spec: openspec
+archived-with: 2026-07-15-migrate-to-antd-pro-infra
+status: final
 ---
 
 # Ant Design Pro 基础设施迁移 — 深度技术设计
@@ -175,3 +177,4 @@ export default [
 5. 组件映射：自建 → antd 直接替换
 6. 清理：移除 Vite/Tailwind/React Router DOM/自建组件
 7. 验证：类型检查 → 单元测试 → 构建 → E2E
+
