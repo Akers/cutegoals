@@ -9,6 +9,7 @@
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
+    "esModuleInterop": true,
     "noEmit": true,
     "jsx": "react-jsx",
     "strict": true,
@@ -17,12 +18,13 @@
     "noFallthroughCasesInSwitch": true,
     "baseUrl": ".",
     "paths": {
+      "@/*": ["./src/*"],
       "@shared/*": ["./src/shared/*"],
       "@admin/*": ["./src/admin/*"],
       "@parent/*": ["./src/parent/*"],
       "@child/*": ["./src/child/*"]
     }
   },
-  "include": ["src"],
+  "include": ["src", ".umi/**/*.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
