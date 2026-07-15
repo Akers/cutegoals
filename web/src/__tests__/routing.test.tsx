@@ -1,7 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import App from '../App';
+import App from '../ViteRoot';
 import { RoleProvider } from '../shared/RoleContext';
 import { AuthProvider } from '../shared/auth';
 import type { Role } from '../shared/role';

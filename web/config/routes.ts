@@ -1,5 +1,46 @@
-const routes = [
-  { path: '/', component: 'index' },
+export default [
+  {
+    path: '/admin',
+    component: '@/layouts/AdminLayout',
+    routes: [
+      { path: '/admin/init', component: '@/pages/admin/init' },
+      { path: '/admin/login', component: '@/pages/admin/login' },
+      { path: '/admin', component: '@/pages/admin/dashboard', wrappers: ['@/wrappers/AuthGuard'] },
+      { path: '/admin/config', component: '@/pages/admin/config', wrappers: ['@/wrappers/AuthGuard'] },
+      { path: '/admin/accounts', component: '@/pages/admin/accounts', wrappers: ['@/wrappers/AuthGuard'] },
+      { path: '/admin/audit', component: '@/pages/admin/audit', wrappers: ['@/wrappers/AuthGuard'] },
+      { path: '/admin/health', component: '@/pages/admin/health', wrappers: ['@/wrappers/AuthGuard'] },
+    ],
+  },
+  {
+    path: '/parent',
+    component: '@/layouts/ParentLayout',
+    routes: [
+      { path: '/parent/login', component: '@/pages/parent/login' },
+      { path: '/parent', component: '@/pages/parent/home', wrappers: ['@/wrappers/AuthGuard'] },
+      { path: '/parent/family', component: '@/pages/parent/family', wrappers: ['@/wrappers/AuthGuard'] },
+      { path: '/parent/children', component: '@/pages/parent/children', wrappers: ['@/wrappers/AuthGuard'] },
+      { path: '/parent/templates', component: '@/pages/parent/templates', wrappers: ['@/wrappers/AuthGuard'] },
+      { path: '/parent/tasks', component: '@/pages/parent/tasks', wrappers: ['@/wrappers/AuthGuard'] },
+      { path: '/parent/reviews', component: '@/pages/parent/reviews', wrappers: ['@/wrappers/AuthGuard'] },
+      { path: '/parent/points', component: '@/pages/parent/points', wrappers: ['@/wrappers/AuthGuard'] },
+      { path: '/parent/prizes', component: '@/pages/parent/prizes', wrappers: ['@/wrappers/AuthGuard'] },
+      { path: '/parent/blind-boxes', component: '@/pages/parent/blind-boxes', wrappers: ['@/wrappers/AuthGuard'] },
+      { path: '/parent/exchanges', component: '@/pages/parent/exchanges', wrappers: ['@/wrappers/AuthGuard'] },
+    ],
+  },
+  {
+    path: '/child',
+    component: '@/layouts/ChildLayout',
+    routes: [
+      { path: '/child/bind', component: '@/pages/child/bind' },
+      { path: '/child/login', component: '@/pages/child/login' },
+      { path: '/child', component: '@/pages/child/home', wrappers: ['@/wrappers/AuthGuard'] },
+      { path: '/child/tasks', component: '@/pages/child/tasks', wrappers: ['@/wrappers/AuthGuard'] },
+      { path: '/child/prizes', component: '@/pages/child/prizes', wrappers: ['@/wrappers/AuthGuard'] },
+      { path: '/child/blind-boxes', component: '@/pages/child/blind-boxes', wrappers: ['@/wrappers/AuthGuard'] },
+      { path: '/child/exchanges', component: '@/pages/child/exchanges', wrappers: ['@/wrappers/AuthGuard'] },
+    ],
+  },
+  { path: '/', redirect: '/parent' },
 ];
-
-export default routes;
