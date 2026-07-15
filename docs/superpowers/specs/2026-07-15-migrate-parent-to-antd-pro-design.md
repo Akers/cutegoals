@@ -2,6 +2,8 @@
 comet_change: migrate-parent-to-antd-pro
 role: technical-design
 canonical_spec: openspec
+archived-with: 2026-07-15-migrate-parent-to-antd-pro
+status: final
 ---
 
 # Parent 页面 Ant Design Pro 迁移 — 深度技术设计
@@ -81,3 +83,4 @@ canonical_spec: openspec
 
 - 94 tests 保持通过
 - 焦点：ParentTasksPage 批量分配、ParentTemplatesPage CRUD
+
