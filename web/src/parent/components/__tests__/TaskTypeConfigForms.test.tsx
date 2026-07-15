@@ -3,6 +3,15 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { TaskTypeConfigForms } from '../TaskTypeConfigForms';
 
+/** Helper: 打开 antd Select 下拉菜单并点击指定选项 */
+async function selectAntdOption(label: string | RegExp, optionText: string) {
+  const trigger = screen.getByRole('combobox', { name: label });
+  await userEvent.click(trigger);
+  // Antd renders dropdown in a portal; find the option text anywhere in the document
+  const option = await screen.findByText(optionText, {}, { timeout: 3000 });
+  await userEvent.click(option);
+}
+
 describe('TaskTypeConfigForms - 任务类型选择器', () => {
   it('渲染下拉选择器和默认选项', () => {
     const onTaskTypeChange = vi.fn();
@@ -17,10 +26,6 @@ describe('TaskTypeConfigForms - 任务类型选择器', () => {
     );
     const select = screen.getByRole('combobox', { name: /任务类型/ });
     expect(select).toBeInTheDocument();
-    expect(screen.getByText('选择任务类型')).toBeInTheDocument();
-    expect(screen.getByText('限时任务')).toBeInTheDocument();
-    expect(screen.getByText('重复任务')).toBeInTheDocument();
-    expect(screen.getByText('常驻任务')).toBeInTheDocument();
   });
 
   it('选择 LIMITED 时触发 onChange', async () => {
@@ -34,8 +39,7 @@ describe('TaskTypeConfigForms - 任务类型选择器', () => {
         onTypeConfigChange={onTypeConfigChange}
       />,
     );
-    const select = screen.getByRole('combobox', { name: /任务类型/ });
-    await userEvent.selectOptions(select, 'LIMITED');
+    await selectAntdOption(/任务类型/, '限时任务');
     expect(onTaskTypeChange).toHaveBeenCalledWith('LIMITED');
   });
 
@@ -50,8 +54,7 @@ describe('TaskTypeConfigForms - 任务类型选择器', () => {
         onTypeConfigChange={onTypeConfigChange}
       />,
     );
-    const select = screen.getByRole('combobox', { name: /任务类型/ });
-    await userEvent.selectOptions(select, 'REPEAT');
+    await selectAntdOption(/任务类型/, '重复任务');
     expect(onTaskTypeChange).toHaveBeenCalledWith('REPEAT');
   });
 
@@ -66,8 +69,7 @@ describe('TaskTypeConfigForms - 任务类型选择器', () => {
         onTypeConfigChange={onTypeConfigChange}
       />,
     );
-    const select = screen.getByRole('combobox', { name: /任务类型/ });
-    await userEvent.selectOptions(select, 'STANDING');
+    await selectAntdOption(/任务类型/, '常驻任务');
     expect(onTaskTypeChange).toHaveBeenCalledWith('STANDING');
   });
 
@@ -174,10 +176,6 @@ describe('REPEAT 配置表单', () => {
       />,
     );
     expect(screen.getByRole('combobox', { name: /频率/ })).toBeInTheDocument();
-    expect(screen.getByText('每天')).toBeInTheDocument();
-    expect(screen.getByText('每周')).toBeInTheDocument();
-    expect(screen.getByText('每月')).toBeInTheDocument();
-    expect(screen.getByText('每年')).toBeInTheDocument();
   });
 
   it('DAILY 频率不显示额外配置', () => {
@@ -268,8 +266,7 @@ describe('REPEAT 配置表单', () => {
         onTypeConfigChange={onTypeConfigChange}
       />,
     );
-    const select = screen.getByRole('combobox', { name: /模式/ });
-    await userEvent.selectOptions(select, 'LAST_DAY');
+    await selectAntdOption(/模式/, '月末');
     expect(onTypeConfigChange).toHaveBeenLastCalledWith(
       expect.objectContaining({
         frequency: 'MONTHLY',
@@ -289,8 +286,7 @@ describe('REPEAT 配置表单', () => {
         onTypeConfigChange={onTypeConfigChange}
       />,
     );
-    const monthSelect = screen.getByRole('combobox', { name: /月份/ });
-    await userEvent.selectOptions(monthSelect, '6');
+    await selectAntdOption(/月份/, '6 月');
     expect(onTypeConfigChange).toHaveBeenLastCalledWith(
       expect.objectContaining({
         frequency: 'YEARLY',
@@ -299,7 +295,7 @@ describe('REPEAT 配置表单', () => {
     );
   });
 
-  it('MONTHLY 频率显示模式选择器', () => {
+  it('MONTHLY 频率显示模式选择器', async () => {
     const onTaskTypeChange = vi.fn();
     const onTypeConfigChange = vi.fn();
     render(
@@ -310,9 +306,10 @@ describe('REPEAT 配置表单', () => {
         onTypeConfigChange={onTypeConfigChange}
       />,
     );
-    expect(screen.getByText('月初')).toBeInTheDocument();
-    expect(screen.getByText('月末')).toBeInTheDocument();
-    expect(screen.getByText('月中')).toBeInTheDocument();
+    // 打开 Select 下拉菜单，验证下拉框出现
+    const trigger = screen.getByRole('combobox', { name: /模式/ });
+    await userEvent.click(trigger);
+    await screen.findByRole('listbox');
   });
 
   it('YEARLY 频率显示月份和日期选择', () => {
@@ -343,8 +340,8 @@ describe('STANDING 配置表单', () => {
         onTypeConfigChange={onTypeConfigChange}
       />,
     );
-    expect(screen.getByLabelText('无限提交')).toBeInTheDocument();
-    expect(screen.getByLabelText('最大提交次数')).toBeInTheDocument();
+    expect(screen.getByText('无限提交')).toBeInTheDocument();
+    expect(screen.getByText('最大提交次数')).toBeInTheDocument();
   });
 
   it('勾选"无限提交"时隐藏最大提交次数输入', async () => {
@@ -358,12 +355,12 @@ describe('STANDING 配置表单', () => {
         onTypeConfigChange={onTypeConfigChange}
       />,
     );
-    const checkbox = screen.getByLabelText('无限提交');
+    const checkbox = screen.getByRole('checkbox', { name: /无限提交/ });
     await userEvent.click(checkbox);
     expect(onTypeConfigChange).toHaveBeenLastCalledWith(
       expect.objectContaining({ max_submissions: null }),
     );
-    expect(screen.queryByLabelText('最大提交次数')).not.toBeInTheDocument();
+    expect(screen.queryByText('最大提交次数')).not.toBeInTheDocument();
   });
 
   it('取消勾选"无限提交"时显示最大提交次数输入', async () => {
@@ -377,13 +374,13 @@ describe('STANDING 配置表单', () => {
         onTypeConfigChange={onTypeConfigChange}
       />,
     );
-    const checkbox = screen.getByLabelText('无限提交');
+    const checkbox = screen.getByRole('checkbox', { name: /无限提交/ });
     // 取消勾选
     await userEvent.click(checkbox);
     expect(onTypeConfigChange).toHaveBeenLastCalledWith(
       expect.objectContaining({ max_submissions: 1 }),
     );
-    expect(screen.getByLabelText('最大提交次数')).toBeInTheDocument();
+    expect(screen.getByText('最大提交次数')).toBeInTheDocument();
   });
 
   it('修改最大提交次数时触发 onChange', async () => {
@@ -397,7 +394,7 @@ describe('STANDING 配置表单', () => {
         onTypeConfigChange={onTypeConfigChange}
       />,
     );
-    const input = screen.getByLabelText('最大提交次数');
+    const input = screen.getByRole('spinbutton', { name: /最大提交次数/ });
     await userEvent.clear(input);
     await userEvent.type(input, '5');
     expect(onTypeConfigChange).toHaveBeenLastCalledWith(

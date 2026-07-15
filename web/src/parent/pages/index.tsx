@@ -2,21 +2,23 @@ import { useEffect, useMemo, useState } from 'react';
 import { history } from 'umi';
 import { getClient } from '@shared/api';
 import type { TaskTypeValue } from '@shared/api/types';
-import { Button, Card, Empty, Input, Modal, Result, Spin } from 'antd';
-import {
-  ConfirmModal,
-  FormField,
-  Label,
-  Layout,
-  PageHeader,
-  StatusBadge,
-} from '@shared/components';
+import { Alert, Button, Card, Empty, Input, Modal, Result, Row, Select, Space, Spin, Tag, Typography } from 'antd';
 const { TextArea } = Input;
 import { useAuth } from '@shared/auth';
 import { useApi, useFormField, useIdempotencyKey } from '@shared/hooks/useApi';
 import { useOnline } from '@shared/theme';
 import { TaskTypeConfigForms, type TypeConfigValue } from '@parent/components/TaskTypeConfigForms';
 import { TaskTypeFilter } from '@parent/components/TaskTypeFilter';
+
+/** Map API status values to Chinese labels */
+function statusLabel(s: string): string {
+  const map: Record<string, string> = {
+    completed: '已完成', approved: '已通过', rejected: '已驳回',
+    cancelled: '已取消', active: '启用', disabled: '停用',
+    pending: '待处理', locked: '已锁定', success: '成功', failed: '失败',
+  };
+  return map[s?.toLowerCase()] ?? s;
+}
 
 // 后端分页响应统一契约：{content,page,pageSize,totalElements,totalPages}
 interface PageResult<T> {
@@ -136,23 +138,6 @@ interface Exchange {
 }
 
 // Generic helpers
-function PageShell({
-  title,
-  children,
-  actions,
-}: {
-  title: string;
-  children: React.ReactNode;
-  actions?: React.ReactNode;
-}) {
-  return (
-    <Layout>
-      <PageHeader title={title} actions={actions} />
-      {children}
-    </Layout>
-  );
-}
-
 function usePaginatedData<T>(path: string, filters?: Record<string, string>) {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
@@ -190,59 +175,39 @@ export function ParentHomePage() {
 
   if (!online)
     return (
-      <PageShell title="家庭">
-        <Result status="warning" title="当前处于离线状态" subTitle="请检查网络连接，恢复后重试" extra={<Button onClick={refetch}>重试</Button>} />
-      </PageShell>
+      <Result status="warning" title="当前处于离线状态" subTitle="请检查网络连接，恢复后重试" extra={<Button onClick={refetch}>重试</Button>} />
     );
   if (loading)
-    return (
-      <PageShell title="家庭">
-        <Spin className="flex justify-center py-12" />
-      </PageShell>
-    );
+    return <Spin />;
   if (error)
     return (
-      <PageShell title="家庭">
-        <Result status="error" title="加载失败" subTitle={error.message} extra={<Button onClick={refetch}>重试</Button>} />
-      </PageShell>
+      <Result status="error" title="加载失败" subTitle={error.message} extra={<Button onClick={refetch}>重试</Button>} />
     );
   if (!data)
-    return (
-      <PageShell title="家庭">
-        <Empty description="暂无数据" />
-      </PageShell>
-    );
+    return <Empty description="暂无数据" />;
 
   return (
-    <PageShell
-      title="家庭"
-      actions={
-        <div className="flex items-center gap-2">
-          <Button onClick={() => history.push('/parent/family')}>
-            管理家庭
-          </Button>
-          <Button onClick={() => history.push('/parent/templates')}>
-            任务模板
-          </Button>
-        </div>
-      }
-    >
+    <Space direction="vertical" size="large" style={{ width: '100%' }}>
+      <Row justify="space-between" align="middle">
+        <Typography.Title level={4} style={{ margin: 0 }}>家庭</Typography.Title>
+        <Space>
+          <Button onClick={() => history.push('/parent/family')}>管理家庭</Button>
+          <Button onClick={() => history.push('/parent/templates')}>任务模板</Button>
+        </Space>
+      </Row>
       <Card title="家庭成员">
-        <div className="grid grid-cols-1 gap-3">
+        <Space direction="vertical" size="small" style={{ width: '100%' }}>
           {(data.members ?? []).map((member) => (
-            <div
-              key={member.id}
-              className="flex items-center justify-between rounded-cg-md bg-cg-surface-raised p-3"
-            >
-              <div className="font-medium text-cg-text">
+            <Row key={member.id} justify="space-between" align="middle">
+              <Typography.Text strong>
                 {member.nickname ?? maskPhone(member.phone ?? '')}
-              </div>
-              <StatusBadge status={member.role === 'PARENT' ? 'approved' : 'pending'} />
-            </div>
+              </Typography.Text>
+              <Tag>{statusLabel(member.role === 'PARENT' ? 'approved' : 'pending')}</Tag>
+            </Row>
           ))}
-        </div>
+        </Space>
       </Card>
-    </PageShell>
+    </Space>
   );
 }
 
@@ -360,28 +325,16 @@ export function ParentFamilyPage() {
 
   if (!online)
     return (
-      <PageShell title="家庭">
-        <Result status="warning" title="当前处于离线状态" subTitle="请检查网络连接，恢复后重试" extra={<Button onClick={refetch}>重试</Button>} />
-      </PageShell>
+      <Result status="warning" title="当前处于离线状态" subTitle="请检查网络连接，恢复后重试" extra={<Button onClick={refetch}>重试</Button>} />
     );
   if (loading)
-    return (
-      <PageShell title="家庭">
-        <Spin className="flex justify-center py-12" />
-      </PageShell>
-    );
+    return <Spin />;
   if (error)
     return (
-      <PageShell title="家庭">
-        <Result status="error" title="加载失败" subTitle={error.message} extra={<Button onClick={refetch}>重试</Button>} />
-      </PageShell>
+      <Result status="error" title="加载失败" subTitle={error.message} extra={<Button onClick={refetch}>重试</Button>} />
     );
   if (!data)
-    return (
-      <PageShell title="家庭">
-        <Empty description="暂无数据" />
-      </PageShell>
-    );
+    return <Empty description="暂无数据" />;
 
   const confirmTitle =
     confirm?.type === 'leave'
@@ -399,171 +352,141 @@ export function ParentFamilyPage() {
     confirm?.type === 'leave' ? '退出' : confirm?.type === 'removeChild' ? '移除' : '移除';
 
   return (
-    <PageShell
-      title="家庭"
-      actions={
-        <div className="flex items-center gap-2">
-          <Button onClick={() => setShowInvite(true)}>
-            邀请家长
-          </Button>
-          <Button onClick={openNewChild}>
-            添加孩子
-          </Button>
-        </div>
-      }
-    >
+    <Space direction="vertical" size="large" style={{ width: '100%' }}>
+      <Row justify="space-between" align="middle">
+        <Typography.Title level={4} style={{ margin: 0 }}>家庭</Typography.Title>
+        <Space>
+          <Button onClick={() => setShowInvite(true)}>邀请家长</Button>
+          <Button onClick={openNewChild}>添加孩子</Button>
+        </Space>
+      </Row>
+
       <Card title="家庭成员">
-        <div className="grid grid-cols-1 gap-3">
+        <Space direction="vertical" size="small" style={{ width: '100%' }}>
           {(data.members ?? []).map((member) => {
             const isSelf = account != null && member.accountId === Number(account.accountId);
             const canRemove = member.role === 'PARENT' && !isSelf;
             return (
-              <div
-                key={member.id}
-                className="flex items-center justify-between rounded-cg-md bg-cg-surface-raised p-3"
-              >
-                <div>
-                  <div className="font-medium text-cg-text">
+              <Row key={member.id} justify="space-between" align="middle">
+                <Space direction="vertical" size={0}>
+                  <Typography.Text strong>
                     {member.nickname ?? maskPhone(member.phone ?? '')}
-                  </div>
+                  </Typography.Text>
                   {member.phone && (
-                    <div className="text-xs text-cg-text-muted">{maskPhone(member.phone)}</div>
+                    <Typography.Text type="secondary" style={{ fontSize: 12 }}>{maskPhone(member.phone)}</Typography.Text>
                   )}
-                </div>
-                <div className="flex items-center gap-2">
-                  <StatusBadge status={member.role === 'PARENT' ? 'approved' : 'pending'} />
+                </Space>
+                <Space>
+                  <Tag>{statusLabel(member.role === 'PARENT' ? 'approved' : 'pending')}</Tag>
                   {isSelf && (
-                    <Button
-                      danger
-                      size="small"
-                      onClick={() => setConfirm({ type: 'leave' })}
-                      loading={actionLoading}
-                    >
+                    <Button danger size="small" onClick={() => setConfirm({ type: 'leave' })} loading={actionLoading}>
                       退出家庭
                     </Button>
                   )}
                   {canRemove && (
-                    <Button
-                      danger
-                      size="small"
-                      onClick={() => setConfirm({ type: 'remove', member })}
-                      loading={actionLoading}
-                    >
+                    <Button danger size="small" onClick={() => setConfirm({ type: 'remove', member })} loading={actionLoading}>
                       移除
                     </Button>
                   )}
-                </div>
-              </div>
+                </Space>
+              </Row>
             );
           })}
-        </div>
+        </Space>
       </Card>
 
       <Card title="孩子">
         {(data.children ?? []).length === 0 ? (
-          <p className="text-cg-text-muted">暂无孩子，点击上方「添加孩子」创建档案。</p>
+          <Typography.Text type="secondary">暂无孩子，点击上方「添加孩子」创建档案。</Typography.Text>
         ) : (
-          <div className="grid grid-cols-1 gap-3">
+          <Space direction="vertical" size="small" style={{ width: '100%' }}>
             {(data.children ?? []).map((child) => (
-              <div
-                key={child.id}
-                className="flex items-center justify-between rounded-cg-md bg-cg-surface-raised p-3"
-              >
-                <div>
-                  <div className="font-medium text-cg-text">{child.nickname}</div>
+              <Row key={child.id} justify="space-between" align="middle">
+                <Space direction="vertical" size={0}>
+                  <Typography.Text strong>{child.nickname}</Typography.Text>
                   {child.birthday && (
-                    <div className="text-xs text-cg-text-muted">生日 {child.birthday}</div>
+                    <Typography.Text type="secondary" style={{ fontSize: 12 }}>生日 {child.birthday}</Typography.Text>
                   )}
-                </div>
-                <Button
-                  danger
-                  size="small"
-                  onClick={() => setConfirm({ type: 'removeChild', child })}
-                  loading={actionLoading}
-                >
+                </Space>
+                <Button danger size="small" onClick={() => setConfirm({ type: 'removeChild', child })} loading={actionLoading}>
                   移除
                 </Button>
-              </div>
+              </Row>
             ))}
-          </div>
+          </Space>
         )}
       </Card>
 
       <Card title="待处理邀请">
         {invitations.length === 0 ? (
-          <p className="text-cg-text-muted">暂无邀请</p>
+          <Typography.Text type="secondary">暂无邀请</Typography.Text>
         ) : (
-          <div className="grid grid-cols-1 gap-3">
+          <Space direction="vertical" size="small" style={{ width: '100%' }}>
             {invitations.map((inv) => (
-              <div
-                key={inv.id}
-                className="flex items-center justify-between rounded-cg-md bg-cg-surface-raised p-3"
-              >
-                <div>
-                  <div className="font-medium text-cg-text">{maskPhone(inv.inviteePhone)}</div>
-                  <div className="text-xs text-cg-text-muted">{inv.createdAt}</div>
-                </div>
-                <StatusBadge status={inv.status.toLowerCase()} />
-              </div>
+              <Row key={inv.id} justify="space-between" align="middle">
+                <Space direction="vertical" size={0}>
+                  <Typography.Text strong>{maskPhone(inv.inviteePhone)}</Typography.Text>
+                  <Typography.Text type="secondary" style={{ fontSize: 12 }}>{inv.createdAt}</Typography.Text>
+                </Space>
+                <Tag>{statusLabel(inv.status.toLowerCase())}</Tag>
+              </Row>
             ))}
-          </div>
+          </Space>
         )}
       </Card>
 
-      {actionError && <div className="text-sm text-red-600">{actionError}</div>}
+      {actionError && (
+        <Alert message={actionError} type="error" closable onClose={() => setActionError(null)} />
+      )}
 
       <Modal open={showInvite} onCancel={() => setShowInvite(false)} title="邀请家长">
-        <form className="flex flex-col gap-4">
-          <FormField label="被邀请人手机号" htmlFor="invite-phone">
+        <Space direction="vertical" size="middle" style={{ width: '100%' }}>
+          <div>
+            <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>被邀请人手机号</Typography.Text>
             <Input id="invite-phone" type="tel" placeholder="11 位手机号" {...phone.inputProps} />
-          </FormField>
-          <Button onClick={handleInvite} loading={sending} htmlType="button" className="w-full">
+          </div>
+          <Button onClick={handleInvite} loading={sending} htmlType="button" style={{ width: '100%' }}>
             发送邀请
           </Button>
-        </form>
+        </Space>
       </Modal>
 
       <Modal open={showChildModal} onCancel={() => setShowChildModal(false)} title="添加孩子">
-        <form className="flex flex-col gap-4">
-          <FormField label="昵称" htmlFor="child-nickname">
+        <Space direction="vertical" size="middle" style={{ width: '100%' }}>
+          <div>
+            <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>昵称</Typography.Text>
             <Input id="child-nickname" {...childNickname.inputProps} />
-          </FormField>
-          <FormField label="PIN" htmlFor="child-pin">
+          </div>
+          <div>
+            <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>PIN</Typography.Text>
             <Input id="child-pin" type="password" {...childPin.inputProps} />
-          </FormField>
-          <FormField label="生日" htmlFor="child-birthday">
+          </div>
+          <div>
+            <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>生日</Typography.Text>
             <Input id="child-birthday" type="date" {...childBirthday.inputProps} />
-          </FormField>
-          <Button
-            onClick={handleSaveChild}
-            loading={childSaving}
-            htmlType="button"
-            className="w-full"
-          >
+          </div>
+          <Button onClick={handleSaveChild} loading={childSaving} htmlType="button" style={{ width: '100%' }}>
             保存
           </Button>
-        </form>
+        </Space>
       </Modal>
 
-      <ConfirmModal
-        isOpen={confirm != null}
-        onClose={() => setConfirm(null)}
+      <Modal
+        open={confirm != null}
+        onCancel={() => setConfirm(null)}
         title={confirmTitle}
-        message={confirmMessage}
-        confirmText={confirmButtonText}
-        confirmVariant="danger"
-        onConfirm={() => {
-          if (confirm?.type === 'leave') {
-            handleLeave();
-          } else if (confirm?.type === 'remove' && confirm.member) {
-            handleRemove(confirm.member);
-          } else if (confirm?.type === 'removeChild' && confirm.child) {
-            handleRemoveChild(confirm.child);
-          }
-        }}
-        isConfirming={actionLoading}
-      />
-    </PageShell>
+        footer={[
+          <Button key="cancel" onClick={() => setConfirm(null)} disabled={actionLoading}>取消</Button>,
+          <Button key="confirm" danger onClick={() => {
+            if (confirm?.type === 'leave') handleLeave();
+            else if (confirm?.type === 'remove' && confirm.member) handleRemove(confirm.member);
+            else if (confirm?.type === 'removeChild' && confirm.child) handleRemoveChild(confirm.child);
+          }} loading={actionLoading}>{confirmButtonText}</Button>,
+        ]}
+      >
+        <Typography.Text>{confirmMessage}</Typography.Text>
+      </Modal>
+    </Space>
   );
 }
 
@@ -617,72 +540,65 @@ export function ParentChildrenPage() {
 
   if (!online)
     return (
-      <PageShell title="孩子档案">
-        <Result status="warning" title="当前处于离线状态" subTitle="请检查网络连接，恢复后重试" extra={<Button onClick={refetch}>重试</Button>} />
-      </PageShell>
+      <Result status="warning" title="当前处于离线状态" subTitle="请检查网络连接，恢复后重试" extra={<Button onClick={refetch}>重试</Button>} />
     );
   if (loading)
-    return (
-      <PageShell title="孩子档案">
-        <Spin className="flex justify-center py-12" />
-      </PageShell>
-    );
+    return <Spin />;
   if (error)
     return (
-      <PageShell title="孩子档案">
-        <Result status="error" title="加载失败" subTitle={error.message} extra={<Button onClick={refetch}>重试</Button>} />
-      </PageShell>
+      <Result status="error" title="加载失败" subTitle={error.message} extra={<Button onClick={refetch}>重试</Button>} />
     );
 
   return (
-    <PageShell
-      title="孩子档案"
-      actions={
-        <Button onClick={openNew}>
-          新增档案
-        </Button>
-      }
-    >
-      <div className="grid grid-cols-1 gap-3">
+    <Space direction="vertical" size="large" style={{ width: '100%' }}>
+      <Row justify="space-between" align="middle">
+        <Typography.Title level={4} style={{ margin: 0 }}>孩子档案</Typography.Title>
+        <Button onClick={openNew}>新增档案</Button>
+      </Row>
+
+      <Space direction="vertical" size="small" style={{ width: '100%' }}>
         {items.map((child) => (
-          <div key={child.id} className="cg-card p-4">
-            <div className="flex items-center justify-between">
-              <div className="font-medium text-cg-text">{child.nickname}</div>
-              <div className="flex gap-2">
-                <Button type="text" size="small" onClick={() => openEdit(child)}>
-                  编辑
-                </Button>
-                <Button danger size="small" onClick={() => handleDelete(child.id)}>
-                  删除
-                </Button>
-              </div>
-            </div>
-            {child.birthday && <p className="text-sm text-cg-text-muted">生日 {child.birthday}</p>}
-          </div>
+          <Card key={child.id} size="small">
+            <Row justify="space-between" align="middle">
+              <Space direction="vertical" size={0}>
+                <Typography.Text strong>{child.nickname}</Typography.Text>
+                {child.birthday && <Typography.Text type="secondary" style={{ fontSize: 12 }}>生日 {child.birthday}</Typography.Text>}
+              </Space>
+              <Space>
+                <Button type="text" size="small" onClick={() => openEdit(child)}>编辑</Button>
+                <Button danger size="small" onClick={() => handleDelete(child.id)}>删除</Button>
+              </Space>
+            </Row>
+          </Card>
         ))}
-      </div>
+      </Space>
 
       <Modal
         open={showModal}
         onCancel={() => setShowModal(false)}
         title={editing ? '编辑档案' : '新增档案'}
       >
-        <form className="flex flex-col gap-4">
-          <FormField label="昵称" htmlFor="child-nickname">
+        <Space direction="vertical" size="middle" style={{ width: '100%' }}>
+          <div>
+            <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>昵称</Typography.Text>
             <Input id="child-nickname" {...nickname.inputProps} />
-          </FormField>
-          <FormField label={editing ? '新 PIN（留空不修改）' : 'PIN'} htmlFor="child-pin">
+          </div>
+          <div>
+            <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>
+              {editing ? '新 PIN（留空不修改）' : 'PIN'}
+            </Typography.Text>
             <Input id="child-pin" type="password" {...pin.inputProps} />
-          </FormField>
-          <FormField label="生日" htmlFor="child-birthday">
+          </div>
+          <div>
+            <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>生日</Typography.Text>
             <Input id="child-birthday" type="date" {...birthday.inputProps} />
-          </FormField>
-          <Button onClick={handleSave} loading={saving} htmlType="button" className="w-full">
+          </div>
+          <Button onClick={handleSave} loading={saving} htmlType="button" style={{ width: '100%' }}>
             保存
           </Button>
-        </form>
+        </Space>
       </Modal>
-    </PageShell>
+    </Space>
   );
 }
 
@@ -757,14 +673,14 @@ export function ParentTemplatesPage() {
       const res = await getClient().put(`/task-templates/${editing.id}`, payload);
       if (res.error) {
         setSaving(false);
-        alert(res.error.message ?? '保存失败');
+        Modal.error({ title: '保存失败', content: res.error.message ?? '保存失败' });
         return;
       }
     } else {
       const res = await getClient().post('/task-templates', payload);
       if (res.error) {
         setSaving(false);
-        alert(res.error.message ?? '保存失败');
+        Modal.error({ title: '保存失败', content: res.error.message ?? '保存失败' });
         return;
       }
     }
@@ -780,97 +696,74 @@ export function ParentTemplatesPage() {
 
   if (!online)
     return (
-      <PageShell title="任务模板">
-        <Result status="warning" title="当前处于离线状态" subTitle="请检查网络连接，恢复后重试" extra={<Button onClick={refetch}>重试</Button>} />
-      </PageShell>
+      <Result status="warning" title="当前处于离线状态" subTitle="请检查网络连接，恢复后重试" extra={<Button onClick={refetch}>重试</Button>} />
     );
   if (loading)
-    return (
-      <PageShell title="任务模板">
-        <Spin className="flex justify-center py-12" />
-      </PageShell>
-    );
+    return <Spin />;
   if (error)
     return (
-      <PageShell title="任务模板">
-        <Result status="error" title="加载失败" subTitle={error.message} extra={<Button onClick={refetch}>重试</Button>} />
-      </PageShell>
+      <Result status="error" title="加载失败" subTitle={error.message} extra={<Button onClick={refetch}>重试</Button>} />
     );
 
   return (
-    <PageShell
-      title="任务模板"
-      actions={
-        <Button onClick={openNew}>
-          新建模板
-        </Button>
-      }
-    >
+    <Space direction="vertical" size="large" style={{ width: '100%' }}>
+      <Row justify="space-between" align="middle">
+        <Typography.Title level={4} style={{ margin: 0 }}>任务模板</Typography.Title>
+        <Button onClick={openNew}>新建模板</Button>
+      </Row>
+
       {/* 任务类型筛选器 */}
       <TaskTypeFilter selected={selectedTypes} onChange={setSelectedTypes} />
 
-      <div className="grid grid-cols-1 gap-3">
+      <Space direction="vertical" size="small" style={{ width: '100%' }}>
         {items.map((t) => (
-          <div key={t.id} className="cg-card p-4">
-            <div className="flex items-start justify-between">
-              <div>
-                <div className="font-medium text-cg-text">{t.name}</div>
-                <p className="text-sm text-cg-text-muted">{t.description}</p>
-                <div className="mt-1 flex flex-wrap gap-2 text-sm">
-                  <span className="rounded-cg-sm bg-cg-surface-raised px-2 py-0.5">
-                    {t.category}
-                  </span>
-                  <span className="rounded-cg-sm bg-cg-surface-raised px-2 py-0.5">
-                    {t.difficulties?.[0]?.rewardPoints ?? '-'} 积分
-                  </span>
+          <Card key={t.id} size="small">
+            <Row justify="space-between" align="top">
+              <Space direction="vertical" size={2}>
+                <Typography.Text strong>{t.name}</Typography.Text>
+                <Typography.Text type="secondary" style={{ fontSize: 12 }}>{t.description}</Typography.Text>
+                <Space size={4} wrap>
+                  <Tag>{t.category}</Tag>
+                  <Tag>{t.difficulties?.[0]?.rewardPoints ?? '-'} 积分</Tag>
                   {t.taskType && (
-                    <span className="rounded-cg-sm bg-cg-surface-raised px-2 py-0.5">
-                      {t.taskType === 'LIMITED'
-                        ? '限时'
-                        : t.taskType === 'REPEAT'
-                          ? '重复'
-                          : '常驻'}
-                    </span>
+                    <Tag>{t.taskType === 'LIMITED' ? '限时' : t.taskType === 'REPEAT' ? '重复' : '常驻'}</Tag>
                   )}
-                  <span
-                    className={`rounded-cg-sm px-2 py-0.5 ${t.enabled ? 'bg-cg-success-bg text-cg-success' : 'bg-cg-surface-raised text-cg-text-muted'}`}
-                    aria-label={t.enabled ? '已启用' : '已停用'}
-                  >
-                    {t.enabled ? '已启用' : '已停用'}
-                  </span>
-                </div>
-              </div>
-              <div className="flex gap-2">
-                <Button type="text" size="small" onClick={() => openEdit(t)}>
-                  编辑
-                </Button>
+                  <Tag color={t.enabled ? 'success' : 'default'}>{t.enabled ? '已启用' : '已停用'}</Tag>
+                </Space>
+              </Space>
+              <Space>
+                <Button type="text" size="small" onClick={() => openEdit(t)}>编辑</Button>
                 <Button size="small" onClick={() => toggleEnabled(t)}>
                   {t.enabled ? '停用' : '启用'}
                 </Button>
-              </div>
-            </div>
-          </div>
+              </Space>
+            </Row>
+          </Card>
         ))}
-      </div>
+      </Space>
 
       <Modal
         open={showModal}
         onCancel={() => setShowModal(false)}
         title={editing ? '编辑模板' : '新建模板'}
       >
-        <form className="flex flex-col gap-4">
-          <FormField label="标题" htmlFor="tpl-title">
+        <Space direction="vertical" size="middle" style={{ width: '100%' }}>
+          <div>
+            <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>标题</Typography.Text>
             <Input id="tpl-title" {...title.inputProps} />
-          </FormField>
-          <FormField label="描述" htmlFor="tpl-desc">
+          </div>
+          <div>
+            <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>描述</Typography.Text>
             <TextArea id="tpl-desc" {...description.inputProps} />
-          </FormField>
-          <FormField label="分类" htmlFor="tpl-category">
+          </div>
+          <div>
+            <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>分类</Typography.Text>
             <Input id="tpl-category" {...category.inputProps} />
-          </FormField>
-          <FormField label="基础积分" htmlFor="tpl-points">
+          </div>
+          <div>
+            <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>基础积分</Typography.Text>
             <Input id="tpl-points" type="number" {...basePoints.inputProps} />
-          </FormField>
+          </div>
 
           {/* 任务类型选择器和配置表单 */}
           <TaskTypeConfigForms
@@ -880,12 +773,12 @@ export function ParentTemplatesPage() {
             onTypeConfigChange={setTypeConfig}
           />
 
-          <Button onClick={handleSave} loading={saving} htmlType="button" className="w-full">
+          <Button onClick={handleSave} loading={saving} htmlType="button" style={{ width: '100%' }}>
             保存
           </Button>
-        </form>
+        </Space>
       </Modal>
-    </PageShell>
+    </Space>
   );
 }
 
@@ -964,22 +857,22 @@ export function ParentTasksPage() {
     const tId = Number(templateId.value);
     const dId = Number(difficultyId.value);
     if (!tId || !dId) {
-      alert('请选择模板和难度');
+      Modal.error({ title: '错误', content: '请选择模板和难度' });
       return;
     }
     if (childIds.length === 0) {
-      alert('请至少选择一个孩子');
+      Modal.error({ title: '错误', content: '请至少选择一个孩子' });
       return;
     }
     const isRepeat = selectedTemplate?.taskType === 'REPEAT';
     const payloadStartDate = startDate.value;
     const payloadEndDate = isRepeat ? payloadStartDate : endDate.value;
     if (!payloadStartDate || !payloadEndDate) {
-      alert('请填写开始日期和结束日期');
+      Modal.error({ title: '错误', content: '请填写开始日期和结束日期' });
       return;
     }
     if (payloadStartDate > payloadEndDate) {
-      alert('开始日期不得晚于结束日期');
+      Modal.error({ title: '错误', content: '开始日期不得晚于结束日期' });
       return;
     }
 
@@ -994,7 +887,7 @@ export function ParentTasksPage() {
     });
     setAssigning(false);
     if (res.error) {
-      alert(res.error.message ?? '分配失败');
+      Modal.error({ title: '分配失败', content: res.error.message ?? '分配失败' });
       return;
     }
     setShowAssign(false);
@@ -1004,133 +897,119 @@ export function ParentTasksPage() {
 
   if (!online)
     return (
-      <PageShell title="任务分配">
-        <Result status="warning" title="当前处于离线状态" subTitle="请检查网络连接，恢复后重试" extra={<Button onClick={refetch}>重试</Button>} />
-      </PageShell>
+      <Result status="warning" title="当前处于离线状态" subTitle="请检查网络连接，恢复后重试" extra={<Button onClick={refetch}>重试</Button>} />
     );
   if (loading)
-    return (
-      <PageShell title="任务分配">
-        <Spin className="flex justify-center py-12" />
-      </PageShell>
-    );
+    return <Spin />;
   if (error)
     return (
-      <PageShell title="任务分配">
-        <Result status="error" title="加载失败" subTitle={error.message} extra={<Button onClick={refetch}>重试</Button>} />
-      </PageShell>
+      <Result status="error" title="加载失败" subTitle={error.message} extra={<Button onClick={refetch}>重试</Button>} />
     );
 
   const assignments = data?.content ?? [];
 
   return (
-    <PageShell
-      title="任务分配"
-      actions={
-        <Button
-         
-          onClick={() => {
-            resetAssignForm();
-            setShowAssign(true);
-          }}
-        >
-          批量分配
-        </Button>
-      }
-    >
+    <Space direction="vertical" size="large" style={{ width: '100%' }}>
+      <Row justify="space-between" align="middle">
+        <Typography.Title level={4} style={{ margin: 0 }}>任务分配</Typography.Title>
+        <Button onClick={() => { resetAssignForm(); setShowAssign(true); }}>批量分配</Button>
+      </Row>
+
       <Card title="日历">
-        <Label htmlFor="task-date">选择日期</Label>
-        <Input id="task-date" type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+        <Space direction="vertical" size="small" style={{ width: '100%' }}>
+          <Typography.Text strong>选择日期</Typography.Text>
+          <Input id="task-date" type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+        </Space>
       </Card>
 
       <Card title="任务列表">
-        <div className="grid grid-cols-1 gap-3">
+        <Space direction="vertical" size="small" style={{ width: '100%' }}>
           {assignments.map((a) => (
-            <div
-              key={a.id}
-              className={`cg-card p-4 ${a.isOverdue ? 'border-l-4 border-l-cg-warning' : ''}`}
-            >
-              <div className="flex items-start justify-between">
-                <div>
-                  <div className="font-medium text-cg-text">{a.templateTitle}</div>
-                  <div className="text-sm text-cg-text-muted">
+            <Card key={a.id} size="small" style={a.isOverdue ? { borderLeft: '4px solid #faad14' } : {}}>
+              <Row justify="space-between" align="top">
+                <Space direction="vertical" size={2}>
+                  <Typography.Text strong>{a.templateTitle}</Typography.Text>
+                  <Typography.Text type="secondary" style={{ fontSize: 12 }}>
                     {a.childNickname} · 截止 {a.deadline}
-                  </div>
+                  </Typography.Text>
                   {a.isOverdue && (
-                    <div className="mt-1 text-sm font-semibold text-cg-warning">已逾期</div>
+                    <Typography.Text style={{ fontSize: 12, fontWeight: 600, color: '#faad14' }}>已逾期</Typography.Text>
                   )}
-                </div>
-                <div className="flex flex-col items-end gap-1">
-                  <StatusBadge status={a.status.toLowerCase()} />
-                  <span className="text-sm text-cg-text-muted">{a.points} 积分</span>
-                </div>
-              </div>
-            </div>
+                </Space>
+                <Space direction="vertical" size={2} align="end">
+                  <Tag>{statusLabel(a.status.toLowerCase())}</Tag>
+                  <Typography.Text type="secondary" style={{ fontSize: 12 }}>{a.points} 积分</Typography.Text>
+                </Space>
+              </Row>
+            </Card>
           ))}
-          {assignments.length === 0 && <p className="text-cg-text-muted">当天暂无任务</p>}
-        </div>
+          {assignments.length === 0 && <Typography.Text type="secondary">当天暂无任务</Typography.Text>}
+        </Space>
       </Card>
 
       <Modal open={showAssign} onCancel={() => setShowAssign(false)} title="批量分配任务">
-        <form className="flex flex-col gap-4">
-          <FormField label="模板" htmlFor="assign-template">
-            <select id="assign-template" {...templateId.inputProps}>
-              <option value="">请选择模板</option>
-              {(templates?.content ?? []).map((t) => (
-                <option key={t.id} value={t.id}>
-                  {t.name}
-                </option>
-              ))}
-            </select>
-          </FormField>
-          <FormField label="难度" htmlFor="assign-difficulty">
-            <select
-              id="assign-difficulty"
-              {...difficultyId.inputProps}
-              disabled={!selectedTemplate}
+        <Space direction="vertical" size="middle" style={{ width: '100%' }}>
+          <div>
+            <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>模板</Typography.Text>
+            <Select
+              id="assign-template"
+              value={templateId.value || undefined}
+              onChange={(v) => templateId.setValue(v)}
+              placeholder="请选择模板"
+              style={{ width: '100%' }}
             >
-              <option value="">请选择难度</option>
-              {enabledDifficulties.map((d) => (
-                <option key={d.id} value={d.id}>
-                  {d.name}（{d.rewardPoints} 积分）
-                </option>
+              {(templates?.content ?? []).map((t) => (
+                <Select.Option key={t.id} value={String(t.id)}>{t.name}</Select.Option>
               ))}
-            </select>
-          </FormField>
-          <FormField label="孩子" htmlFor="assign-child">
-            <select
+            </Select>
+          </div>
+          <div>
+            <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>难度</Typography.Text>
+            <Select
+              id="assign-difficulty"
+              value={difficultyId.value || undefined}
+              onChange={(v) => difficultyId.setValue(v)}
+              disabled={!selectedTemplate}
+              placeholder="请选择难度"
+              style={{ width: '100%' }}
+            >
+              {enabledDifficulties.map((d) => (
+                <Select.Option key={d.id} value={String(d.id)}>{d.name}（{d.rewardPoints} 积分）</Select.Option>
+              ))}
+            </Select>
+          </div>
+          <div>
+            <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>孩子</Typography.Text>
+            <Select
               id="assign-child"
-              multiple
-              size={4}
+              mode="multiple"
               value={childIds.map(String)}
-              onChange={(e) => {
-                const selected = Array.from(e.target.selectedOptions).map((o) => Number(o.value));
-                setChildIds(selected);
-              }}
-              className="w-full rounded-cg-md border border-cg-border bg-cg-surface px-3 py-2 text-cg-text focus:border-cg-focus focus:outline-none focus:ring-2 focus:ring-cg-focus min-h-touch"
+              onChange={(values: string[]) => setChildIds(values.map(Number))}
+              placeholder="请选择孩子"
+              style={{ width: '100%' }}
             >
               {(children?.content ?? []).map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.nickname}
-                </option>
+                <Select.Option key={c.id} value={String(c.id)}>{c.nickname}</Select.Option>
               ))}
-            </select>
-            <p className="text-xs text-cg-text-muted">按住 Ctrl/Cmd 可选择多个孩子</p>
-          </FormField>
-          <FormField label="开始日期" htmlFor="assign-start-date">
+            </Select>
+            <Typography.Text type="secondary" style={{ fontSize: 12 }}>可选择多个孩子</Typography.Text>
+          </div>
+          <div>
+            <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>开始日期</Typography.Text>
             <Input id="assign-start-date" type="date" {...startDate.inputProps} />
-          </FormField>
+          </div>
           {selectedTemplate?.taskType !== 'REPEAT' && (
-            <FormField label="结束日期" htmlFor="assign-end-date">
+            <div>
+              <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>结束日期</Typography.Text>
               <Input id="assign-end-date" type="date" {...endDate.inputProps} />
-            </FormField>
+            </div>
           )}
-          <Button onClick={handleAssign} loading={assigning} htmlType="button" className="w-full">
+          <Button onClick={handleAssign} loading={assigning} htmlType="button" style={{ width: '100%' }}>
             分配
           </Button>
-        </form>
+        </Space>
       </Modal>
-    </PageShell>
+    </Space>
   );
 }
 
@@ -1155,120 +1034,84 @@ export function ParentReviewsPage() {
 
   if (!online)
     return (
-      <PageShell title="任务审核">
-        <Result status="warning" title="当前处于离线状态" subTitle="请检查网络连接，恢复后重试" extra={<Button onClick={refetch}>重试</Button>} />
-      </PageShell>
+      <Result status="warning" title="当前处于离线状态" subTitle="请检查网络连接，恢复后重试" extra={<Button onClick={refetch}>重试</Button>} />
     );
   if (loading)
-    return (
-      <PageShell title="任务审核">
-        <Spin className="flex justify-center py-12" />
-      </PageShell>
-    );
+    return <Spin />;
   if (error)
     return (
-      <PageShell title="任务审核">
-        <Result status="error" title="加载失败" subTitle={error.message} extra={<Button onClick={refetch}>重试</Button>} />
-      </PageShell>
+      <Result status="error" title="加载失败" subTitle={error.message} extra={<Button onClick={refetch}>重试</Button>} />
     );
 
   const pending = data?.content ?? [];
 
   return (
-    <PageShell title="任务审核">
+    <Space direction="vertical" size="large" style={{ width: '100%' }}>
+      <Typography.Title level={4} style={{ margin: 0 }}>任务审核</Typography.Title>
+
       <Card title="待审核">
-        <div className="grid grid-cols-1 gap-3">
+        <Space direction="vertical" size="small" style={{ width: '100%' }}>
           {pending.length === 0 ? (
-            <p className="text-cg-text-muted">暂无待审核任务</p>
+            <Typography.Text type="secondary">暂无待审核任务</Typography.Text>
           ) : (
             pending.map((item) => (
-              <div
-                key={item.attemptId}
-                className={`cg-card p-4 ${item.isOverdue ? 'border-l-4 border-l-cg-warning' : ''}`}
-              >
-                <div className="flex items-start justify-between">
-                  <div>
-                    <div className="font-medium text-cg-text">{item.templateTitle}</div>
-                    <div className="text-sm text-cg-text-muted">
+              <Card key={item.attemptId} size="small" style={item.isOverdue ? { borderLeft: '4px solid #faad14' } : {}}>
+                <Row justify="space-between" align="top">
+                  <Space direction="vertical" size={2}>
+                    <Typography.Text strong>{item.templateTitle}</Typography.Text>
+                    <Typography.Text type="secondary" style={{ fontSize: 12 }}>
                       {item.childNickname} · {item.submittedAt}
-                    </div>
-                    {item.notes && <p className="mt-1 text-sm text-cg-text">{item.notes}</p>}
+                    </Typography.Text>
+                    {item.notes && <Typography.Text style={{ fontSize: 12 }}>{item.notes}</Typography.Text>}
                     {item.isOverdue && (
-                      <div className="mt-1 text-sm font-semibold text-cg-warning">已逾期</div>
+                      <Typography.Text style={{ fontSize: 12, fontWeight: 600, color: '#faad14' }}>已逾期</Typography.Text>
                     )}
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    <Button
-                      size="small"
-                      onClick={() => decide(item.attemptId, true)}
-                      loading={submitting}
-                    >
-                      通过
-                    </Button>
-                    <Button
-                      danger
-                      size="small"
-                      onClick={() => setActive(item)}
-                      loading={submitting}
-                    >
-                      驳回
-                    </Button>
-                  </div>
-                </div>
-              </div>
+                  </Space>
+                  <Space direction="vertical" size={2}>
+                    <Button size="small" onClick={() => decide(item.attemptId, true)} loading={submitting}>通过</Button>
+                    <Button danger size="small" onClick={() => setActive(item)} loading={submitting}>驳回</Button>
+                  </Space>
+                </Row>
+              </Card>
             ))
           )}
-        </div>
+        </Space>
       </Card>
 
       <Card title="审核历史">
-        <div className="grid grid-cols-1 gap-3">
+        <Space direction="vertical" size="small" style={{ width: '100%' }}>
           {(history?.content ?? []).length === 0 ? (
-            <p className="text-cg-text-muted">暂无历史</p>
+            <Typography.Text type="secondary">暂无历史</Typography.Text>
           ) : (
             (history?.content ?? []).map((item) => (
-              <div key={item.attemptId} className="cg-card p-4">
-                <div className="font-medium text-cg-text">{item.templateTitle}</div>
-                <div className="text-sm text-cg-text-muted">
+              <Card key={item.attemptId} size="small">
+                <Typography.Text strong>{item.templateTitle}</Typography.Text>
+                <Typography.Text type="secondary" style={{ display: 'block', fontSize: 12 }}>
                   {item.childNickname} · {item.submittedAt}
-                </div>
-              </div>
+                </Typography.Text>
+              </Card>
             ))
           )}
-        </div>
+        </Space>
       </Card>
 
       <Modal
         open={!!active}
-        onCancel={() => {
-          setActive(null);
-          setReason('');
-        }}
+        onCancel={() => { setActive(null); setReason(''); }}
         title="驳回原因"
+        footer={[
+          <Button key="cancel" onClick={() => { setActive(null); setReason(''); }}>取消</Button>,
+          <Button key="reject" danger onClick={() => active && decide(active.attemptId, false)} loading={submitting} disabled={!reason.trim()}>确认驳回</Button>,
+        ]}
       >
-        <div className="flex flex-col gap-4">
-          <TextArea
-            value={reason}
-            onChange={(e) => setReason(e.target.value)}
-            placeholder="请输入驳回原因"
-            aria-label="驳回原因"
-          />
-          <div className="flex gap-2">
-            <Button onClick={() => setActive(null)}>
-              取消
-            </Button>
-            <Button
-              danger
-              onClick={() => active && decide(active.attemptId, false)}
-              loading={submitting}
-              disabled={!reason.trim()}
-            >
-              确认驳回
-            </Button>
-          </div>
-        </div>
+        <TextArea
+          value={reason}
+          onChange={(e) => setReason(e.target.value)}
+          placeholder="请输入驳回原因"
+          aria-label="驳回原因"
+        />
       </Modal>
-    </PageShell>
+    </Space>
   );
 }
 
@@ -1306,81 +1149,71 @@ export function ParentPointsPage() {
 
   if (!online)
     return (
-      <PageShell title="积分">
-        <Result status="warning" title="当前处于离线状态" subTitle="请检查网络连接，恢复后重试" extra={<Button onClick={refetch}>重试</Button>} />
-      </PageShell>
+      <Result status="warning" title="当前处于离线状态" subTitle="请检查网络连接，恢复后重试" extra={<Button onClick={refetch}>重试</Button>} />
     );
   if (loading)
-    return (
-      <PageShell title="积分">
-        <Spin className="flex justify-center py-12" />
-      </PageShell>
-    );
+    return <Spin />;
   if (error)
     return (
-      <PageShell title="积分">
-        <Result status="error" title="加载失败" subTitle={error.message} extra={<Button onClick={refetch}>重试</Button>} />
-      </PageShell>
+      <Result status="error" title="加载失败" subTitle={error.message} extra={<Button onClick={refetch}>重试</Button>} />
     );
 
   return (
-    <PageShell title="积分">
+    <Space direction="vertical" size="large" style={{ width: '100%' }}>
+      <Typography.Title level={4} style={{ margin: 0 }}>积分</Typography.Title>
+
       <Card title="选择孩子">
-        <select value={selectedChild} onChange={(e) => setSelectedChild(e.target.value)}>
-          <option value="">请选择孩子</option>
+        <Select
+          value={selectedChild || undefined}
+          onChange={(v) => setSelectedChild(v)}
+          placeholder="请选择孩子"
+          style={{ width: '100%' }}
+        >
           {(children?.content ?? []).map((c) => (
-            <option key={c.id} value={c.id}>
-              {c.nickname}
-            </option>
+            <Select.Option key={c.id} value={String(c.id)}>{c.nickname}</Select.Option>
           ))}
-        </select>
+        </Select>
       </Card>
 
       {selectedChild && (
         <>
           <Card title="积分余额">
-            <div className="text-3xl font-bold text-cg-text">{data?.balance ?? 0} 积分</div>
+            <Typography.Title level={2} style={{ margin: 0 }}>{data?.balance ?? 0} 积分</Typography.Title>
           </Card>
           <Card title="积分调整">
-            <div className="flex flex-col gap-3">
-              <FormField label="调整数量（正数奖励、负数扣除）" htmlFor="adjust-amount">
+            <Space direction="vertical" size="middle" style={{ width: '100%' }}>
+              <div>
+                <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>调整数量（正数奖励、负数扣除）</Typography.Text>
                 <Input id="adjust-amount" type="number" {...amount.inputProps} />
-              </FormField>
-              <FormField label="原因" htmlFor="adjust-reason">
+              </div>
+              <div>
+                <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>原因</Typography.Text>
                 <Input id="adjust-reason" {...reason.inputProps} />
-              </FormField>
-              <Button onClick={handleAdjust} loading={adjusting}>
-                确认调整
-              </Button>
-            </div>
+              </div>
+              <Button onClick={handleAdjust} loading={adjusting}>确认调整</Button>
+            </Space>
           </Card>
           <Card title="流水">
-            <div className="grid grid-cols-1 gap-2">
+            <Space direction="vertical" size="small" style={{ width: '100%' }}>
               {(data?.transactions ?? []).map((tx) => (
-                <div
-                  key={tx.id}
-                  className="flex items-center justify-between rounded-cg-md bg-cg-surface-raised p-3"
-                >
-                  <div>
-                    <div className="text-sm text-cg-text">{tx.reason ?? tx.type}</div>
-                    <div className="text-xs text-cg-text-muted">{tx.createdAt}</div>
-                  </div>
-                  <div
-                    className={`font-medium ${tx.amount >= 0 ? 'text-cg-success' : 'text-cg-danger'}`}
-                  >
-                    {tx.amount > 0 ? '+' : ''}
-                    {tx.amount}
-                  </div>
-                </div>
+                <Row key={tx.id} justify="space-between" align="middle">
+                  <Space direction="vertical" size={0}>
+                    <Typography.Text>{tx.reason ?? tx.type}</Typography.Text>
+                    <Typography.Text type="secondary" style={{ fontSize: 12 }}>{tx.createdAt}</Typography.Text>
+                  </Space>
+                  <Typography.Text strong style={{ color: tx.amount >= 0 ? '#52c41a' : '#ff4d4f' }}>
+                    {tx.amount > 0 ? '+' : ''}{tx.amount}
+                  </Typography.Text>
+                </Row>
               ))}
               {(data?.transactions ?? []).length === 0 && (
-                <p className="text-cg-text-muted">暂无流水</p>
+                <Typography.Text type="secondary">暂无流水</Typography.Text>
               )}
-            </div>
+            </Space>
           </Card>
         </>
       )}
-    </PageShell>
+    </Space>
   );
 }
 
@@ -1433,77 +1266,65 @@ export function ParentPrizesPage() {
 
   if (!online)
     return (
-      <PageShell title="奖品">
-        <Result status="warning" title="当前处于离线状态" subTitle="请检查网络连接，恢复后重试" extra={<Button onClick={refetch}>重试</Button>} />
-      </PageShell>
+      <Result status="warning" title="当前处于离线状态" subTitle="请检查网络连接，恢复后重试" extra={<Button onClick={refetch}>重试</Button>} />
     );
   if (loading)
-    return (
-      <PageShell title="奖品">
-        <Spin className="flex justify-center py-12" />
-      </PageShell>
-    );
+    return <Spin />;
   if (error)
     return (
-      <PageShell title="奖品">
-        <Result status="error" title="加载失败" subTitle={error.message} extra={<Button onClick={refetch}>重试</Button>} />
-      </PageShell>
+      <Result status="error" title="加载失败" subTitle={error.message} extra={<Button onClick={refetch}>重试</Button>} />
     );
 
   return (
-    <PageShell
-      title="奖品"
-      actions={
-        <Button onClick={openNew}>
-          新增奖品
-        </Button>
-      }
-    >
-      <div className="grid grid-cols-1 gap-3">
+    <Space direction="vertical" size="large" style={{ width: '100%' }}>
+      <Row justify="space-between" align="middle">
+        <Typography.Title level={4} style={{ margin: 0 }}>奖品</Typography.Title>
+        <Button onClick={openNew}>新增奖品</Button>
+      </Row>
+
+      <Space direction="vertical" size="small" style={{ width: '100%' }}>
         {items.map((p) => (
-          <div key={p.id} className="cg-card p-4">
-            <div className="flex items-start justify-between">
-              <div>
-                <div className="font-medium text-cg-text">{p.name}</div>
-                <p className="text-sm text-cg-text-muted">{p.description}</p>
-                <div className="mt-1 text-sm">
-                  {p.pointsCost} 积分 · 库存 {p.availableStock}
-                </div>
-              </div>
-              <div className="flex gap-2">
-                <Button type="text" size="small" onClick={() => openEdit(p)}>
-                  编辑
-                </Button>
-              </div>
-            </div>
-          </div>
+          <Card key={p.id} size="small">
+            <Row justify="space-between" align="top">
+              <Space direction="vertical" size={2}>
+                <Typography.Text strong>{p.name}</Typography.Text>
+                <Typography.Text type="secondary" style={{ fontSize: 12 }}>{p.description}</Typography.Text>
+                <Typography.Text style={{ fontSize: 12 }}>{p.pointsCost} 积分 · 库存 {p.availableStock}</Typography.Text>
+              </Space>
+              <Button type="text" size="small" onClick={() => openEdit(p)}>编辑</Button>
+            </Row>
+          </Card>
         ))}
-      </div>
+      </Space>
 
       <Modal
         open={showModal}
         onCancel={() => setShowModal(false)}
         title={editing ? '编辑奖品' : '新增奖品'}
       >
-        <form className="flex flex-col gap-4">
-          <FormField label="名称" htmlFor="prize-name">
+        <Space direction="vertical" size="middle" style={{ width: '100%' }}>
+          <div>
+            <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>名称</Typography.Text>
             <Input id="prize-name" {...name.inputProps} />
-          </FormField>
-          <FormField label="描述" htmlFor="prize-desc">
+          </div>
+          <div>
+            <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>描述</Typography.Text>
             <TextArea id="prize-desc" {...description.inputProps} />
-          </FormField>
-          <FormField label="积分价格" htmlFor="prize-cost">
+          </div>
+          <div>
+            <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>积分价格</Typography.Text>
             <Input id="prize-cost" type="number" {...pointsCost.inputProps} />
-          </FormField>
-          <FormField label="库存" htmlFor="prize-stock">
+          </div>
+          <div>
+            <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>库存</Typography.Text>
             <Input id="prize-stock" type="number" {...availableStock.inputProps} />
-          </FormField>
-          <Button onClick={handleSave} loading={saving} htmlType="button" className="w-full">
+          </div>
+          <Button onClick={handleSave} loading={saving} htmlType="button" style={{ width: '100%' }}>
             保存
           </Button>
-        </form>
+        </Space>
       </Modal>
-    </PageShell>
+    </Space>
   );
 }
 
@@ -1517,66 +1338,52 @@ export function ParentBlindBoxesPage() {
 
   if (!online)
     return (
-      <PageShell title="盲盒">
-        <Result status="warning" title="当前处于离线状态" subTitle="请检查网络连接，恢复后重试" extra={<Button onClick={refetch}>重试</Button>} />
-      </PageShell>
+      <Result status="warning" title="当前处于离线状态" subTitle="请检查网络连接，恢复后重试" extra={<Button onClick={refetch}>重试</Button>} />
     );
   if (loading)
-    return (
-      <PageShell title="盲盒">
-        <Spin className="flex justify-center py-12" />
-      </PageShell>
-    );
+    return <Spin />;
   if (error)
     return (
-      <PageShell title="盲盒">
-        <Result status="error" title="加载失败" subTitle={error.message} extra={<Button onClick={refetch}>重试</Button>} />
-      </PageShell>
+      <Result status="error" title="加载失败" subTitle={error.message} extra={<Button onClick={refetch}>重试</Button>} />
     );
 
   return (
-    <PageShell title="盲盒">
-      <div className="grid grid-cols-1 gap-3">
+    <Space direction="vertical" size="large" style={{ width: '100%' }}>
+      <Typography.Title level={4} style={{ margin: 0 }}>盲盒</Typography.Title>
+
+      <Space direction="vertical" size="small" style={{ width: '100%' }}>
         {items.map((box) => (
-          <div
+          <Card
             key={box.id}
-            className={`cg-card p-4 cursor-pointer ${selected?.id === box.id ? 'ring-2 ring-cg-focus' : ''}`}
+            size="small"
+            hoverable
+            style={selected?.id === box.id ? { borderColor: '#1677ff' } : {}}
             onClick={() => setSelected(box)}
-            role="button"
-            tabIndex={0}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') setSelected(box);
-            }}
           >
-            <div className="font-medium text-cg-text">{box.name}</div>
-            <div className="text-sm text-cg-text-muted">
+            <Typography.Text strong>{box.name}</Typography.Text>
+            <Typography.Text type="secondary" style={{ display: 'block', fontSize: 12 }}>
               {box.cost} 积分 · 版本 {box.availabilityVersion.slice(0, 8)}...
-            </div>
-          </div>
+            </Typography.Text>
+          </Card>
         ))}
-      </div>
+      </Space>
 
       {selected && (
         <Card title="概率预览">
-          <div className="grid grid-cols-1 gap-2">
+          <Space direction="vertical" size="small" style={{ width: '100%' }}>
             {(candidates?.candidates ?? []).map((c) => (
-              <div
-                key={c.prizeId}
-                className="flex items-center justify-between rounded-cg-md bg-cg-surface-raised p-3"
-              >
-                <span className="text-cg-text">{c.prizeName}</span>
-                <span className="font-medium text-cg-text">
-                  {(c.probability * 100).toFixed(1)}%
-                </span>
-              </div>
+              <Row key={c.prizeId} justify="space-between" align="middle">
+                <Typography.Text>{c.prizeName}</Typography.Text>
+                <Typography.Text strong>{(c.probability * 100).toFixed(1)}%</Typography.Text>
+              </Row>
             ))}
             {(candidates?.candidates ?? []).length === 0 && (
-              <p className="text-cg-text-muted">暂无候选</p>
+              <Typography.Text type="secondary">暂无候选</Typography.Text>
             )}
-          </div>
+          </Space>
         </Card>
       )}
-    </PageShell>
+    </Space>
   );
 }
 
@@ -1603,74 +1410,59 @@ export function ParentExchangesPage() {
 
   if (!online)
     return (
-      <PageShell title="兑换履约">
-        <Result status="warning" title="当前处于离线状态" subTitle="请检查网络连接，恢复后重试" extra={<Button onClick={refetch}>重试</Button>} />
-      </PageShell>
+      <Result status="warning" title="当前处于离线状态" subTitle="请检查网络连接，恢复后重试" extra={<Button onClick={refetch}>重试</Button>} />
     );
   if (loading)
-    return (
-      <PageShell title="兑换履约">
-        <Spin className="flex justify-center py-12" />
-      </PageShell>
-    );
+    return <Spin />;
   if (error)
     return (
-      <PageShell title="兑换履约">
-        <Result status="error" title="加载失败" subTitle={error.message} extra={<Button onClick={refetch}>重试</Button>} />
-      </PageShell>
+      <Result status="error" title="加载失败" subTitle={error.message} extra={<Button onClick={refetch}>重试</Button>} />
     );
 
   return (
-    <PageShell title="兑换履约">
-      <div className="grid grid-cols-1 gap-3">
-        {items.length === 0 ? (
-          <Empty description="暂无数据" />
-        ) : (
-          items.map((ex) => (
-            <div key={ex.id} className="cg-card p-4">
-              <div className="flex items-start justify-between">
-                <div>
-                  <div className="font-medium text-cg-text">{ex.targetName}</div>
-                  <div className="text-sm text-cg-text-muted">
+    <Space direction="vertical" size="large" style={{ width: '100%' }}>
+      <Typography.Title level={4} style={{ margin: 0 }}>兑换履约</Typography.Title>
+
+      {items.length === 0 ? (
+        <Empty description="暂无数据" />
+      ) : (
+        <Space direction="vertical" size="small" style={{ width: '100%' }}>
+          {items.map((ex) => (
+            <Card key={ex.id} size="small">
+              <Row justify="space-between" align="top">
+                <Space direction="vertical" size={2}>
+                  <Typography.Text strong>{ex.targetName}</Typography.Text>
+                  <Typography.Text type="secondary" style={{ fontSize: 12 }}>
                     {ex.childNickname} · {ex.pointsCost} 积分 · {ex.createdAt}
-                  </div>
-                  <div className="mt-1">
-                    <StatusBadge status={ex.status.toLowerCase()} />
-                  </div>
-                </div>
-                <div className="flex flex-col gap-2">
+                  </Typography.Text>
+                  <Tag>{statusLabel(ex.status.toLowerCase())}</Tag>
+                </Space>
+                <Space direction="vertical" size={2}>
                   {ex.status === 'PENDING_FULFILLMENT' && (
                     <>
-                      <Button size="small" onClick={() => setConfirmId(ex.id)} loading={acting}>
-                        兑现
-                      </Button>
-                      <Button
-                       
-                        size="small"
-                        onClick={() => cancel(ex.id)}
-                        loading={acting}
-                      >
-                        取消
-                      </Button>
+                      <Button size="small" onClick={() => setConfirmId(ex.id)} loading={acting}>兑现</Button>
+                      <Button size="small" onClick={() => cancel(ex.id)} loading={acting}>取消</Button>
                     </>
                   )}
-                </div>
-              </div>
-            </div>
-          ))
-        )}
-      </div>
+                </Space>
+              </Row>
+            </Card>
+          ))}
+        </Space>
+      )}
 
-      <ConfirmModal
-        isOpen={confirmId !== null}
-        onClose={() => setConfirmId(null)}
+      <Modal
+        open={confirmId !== null}
+        onCancel={() => setConfirmId(null)}
         title="确认兑现"
-        message="兑换一旦兑现，积分将从孩子账户扣除。请确认已交付奖品。"
-        confirmText="确认兑现"
-        onConfirm={() => confirmId !== null && fulfill(confirmId)}
-        isConfirming={acting}
-      />
-    </PageShell>
+        footer={[
+          <Button key="cancel" onClick={() => setConfirmId(null)} disabled={acting}>取消</Button>,
+          <Button key="confirm" onClick={() => confirmId !== null && fulfill(confirmId)} loading={acting}>确认兑现</Button>,
+        ]}
+      >
+        <Typography.Text>兑换一旦兑现，积分将从孩子账户扣除。请确认已交付奖品。</Typography.Text>
+      </Modal>
+    </Space>
   );
 }
 

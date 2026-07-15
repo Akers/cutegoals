@@ -1,8 +1,7 @@
-import { useEffect, useState, useCallback } from 'react';
-import { FormField, Input } from '@shared/components';
-// Native HTML select (not antd Select) for controlled form compatibility
-const Select = (props: React.SelectHTMLAttributes<HTMLSelectElement>) => <select {...props} />;
+import { useCallback, useEffect, useState } from 'react';
+import { Checkbox, Input, InputNumber, Radio, Select, Space, Typography } from 'antd';
 import type { TaskTypeValue } from '@shared/api/types';
+import { FormField } from '@shared/components';
 
 /** 类型配置（Record 形式，序列化为 JSON） */
 export type TypeConfigValue = Record<string, unknown>;
@@ -61,14 +60,14 @@ function LimitedConfigForm({
   );
 
   return (
-    <div className="space-y-3">
+    <Space direction="vertical" size="small" style={{ width: '100%' }}>
       <FormField label="开始日期（可选）" htmlFor="limited-start">
         <Input id="limited-start" type="date" value={startDate} onChange={handleStartChange} />
       </FormField>
       <FormField label="结束日期" htmlFor="limited-end">
         <Input id="limited-end" type="date" value={endDate} onChange={handleEndChange} />
       </FormField>
-    </div>
+    </Space>
   );
 }
 
@@ -145,10 +144,10 @@ function RepeatConfigForm({
   }
 
   const handleFrequencyChange = useCallback(
-    (e: React.ChangeEvent<HTMLSelectElement>) => {
-      const v = e.target.value as Frequency;
-      setFrequency(v);
-      onChange(buildConfig(v, null, 'FIRST_DAY', '1', '1'));
+    (v: string) => {
+      const freq = v as Frequency;
+      setFrequency(freq);
+      onChange(buildConfig(freq, null, 'FIRST_DAY', '1', '1'));
     },
     [onChange],
   );
@@ -162,8 +161,7 @@ function RepeatConfigForm({
   );
 
   const handleMonthlyModeChange = useCallback(
-    (e: React.ChangeEvent<HTMLSelectElement>) => {
-      const v = e.target.value;
+    (v: string) => {
       setMonthlyMode(v);
       onChange(buildConfig(frequency, weekday, v, yearMonth, yearDay));
     },
@@ -178,71 +176,64 @@ function RepeatConfigForm({
   }, [frequency, yearMonth, yearDay, weekday, monthlyMode, onChange]);
 
   return (
-    <div className="space-y-3">
+    <Space direction="vertical" size="small" style={{ width: '100%' }}>
       <FormField label="频率" htmlFor="repeat-frequency">
-        <Select id="repeat-frequency" value={frequency} onChange={handleFrequencyChange}>
-          <option value="DAILY">每天</option>
-          <option value="WEEKLY">每周</option>
-          <option value="MONTHLY">每月</option>
-          <option value="YEARLY">每年</option>
+        <Select id="repeat-frequency" value={frequency} onChange={handleFrequencyChange} style={{ width: '100%' }}>
+          <Select.Option value="DAILY">每天</Select.Option>
+          <Select.Option value="WEEKLY">每周</Select.Option>
+          <Select.Option value="MONTHLY">每月</Select.Option>
+          <Select.Option value="YEARLY">每年</Select.Option>
         </Select>
       </FormField>
 
       {frequency === 'WEEKLY' && (
         <fieldset>
-          <legend className="mb-2 text-sm font-medium text-cg-text">选择星期</legend>
-          <div className="flex flex-wrap gap-3">
-            {WEEKDAY_LABELS.map((wd) => (
-              <label key={wd.value} className="flex items-center gap-1 text-sm text-cg-text">
-                <input
-                  type="radio"
-                  name="weekday"
-                  value={wd.value}
-                  checked={weekday === wd.value}
-                  onChange={() => handleWeekdayChange(wd.value)}
-                  className="h-4 w-4 border-cg-border text-cg-focus focus:ring-cg-focus"
-                  aria-label={wd.label}
-                />
-                {wd.label}
-              </label>
-            ))}
-          </div>
+          <Typography.Text strong style={{ display: 'block', marginBottom: 8 }}>选择星期</Typography.Text>
+          <Radio.Group value={weekday} onChange={(e) => handleWeekdayChange(e.target.value)}>
+            <Space wrap>
+              {WEEKDAY_LABELS.map((wd) => (
+                <Radio key={wd.value} value={wd.value}>
+                  {wd.label}
+                </Radio>
+              ))}
+            </Space>
+          </Radio.Group>
         </fieldset>
       )}
 
       {frequency === 'MONTHLY' && (
         <FormField label="模式" htmlFor="repeat-monthly-mode">
-          <Select id="repeat-monthly-mode" value={monthlyMode} onChange={handleMonthlyModeChange}>
-            <option value="FIRST_DAY">月初</option>
-            <option value="LAST_DAY">月末</option>
-            <option value="MID_MONTH">月中</option>
+          <Select id="repeat-monthly-mode" value={monthlyMode} onChange={handleMonthlyModeChange} style={{ width: '100%' }}>
+            <Select.Option value="FIRST_DAY">月初</Select.Option>
+            <Select.Option value="LAST_DAY">月末</Select.Option>
+            <Select.Option value="MID_MONTH">月中</Select.Option>
           </Select>
         </FormField>
       )}
 
       {frequency === 'YEARLY' && (
-        <div className="flex gap-4">
+        <Space>
           <FormField label="月份" htmlFor="repeat-year-month">
-            <Select id="repeat-year-month" value={yearMonth} onChange={(e) => setYearMonth(e.target.value)}>
+            <Select id="repeat-year-month" value={yearMonth} onChange={(v) => setYearMonth(v)} style={{ width: 120 }}>
               {Array.from({ length: 12 }, (_, i) => (
-                <option key={i + 1} value={String(i + 1)}>
+                <Select.Option key={i + 1} value={String(i + 1)}>
                   {i + 1} 月
-                </option>
+                </Select.Option>
               ))}
             </Select>
           </FormField>
           <FormField label="日期" htmlFor="repeat-year-day">
-            <Select id="repeat-year-day" value={yearDay} onChange={(e) => setYearDay(e.target.value)}>
+            <Select id="repeat-year-day" value={yearDay} onChange={(v) => setYearDay(v)} style={{ width: 120 }}>
               {Array.from({ length: 31 }, (_, i) => (
-                <option key={i + 1} value={String(i + 1)}>
+                <Select.Option key={i + 1} value={String(i + 1)}>
                   {i + 1} 日
-                </option>
+                </Select.Option>
               ))}
             </Select>
           </FormField>
-        </div>
+        </Space>
       )}
-    </div>
+    </Space>
   );
 }
 
@@ -267,7 +258,7 @@ function StandingConfigForm({
   }, [config.max_submissions]);
 
   const handleUnlimitedToggle = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
+    (e: { target: { checked: boolean } }) => {
       const v = e.target.checked;
       setUnlimited(v);
       if (v) {
@@ -280,42 +271,34 @@ function StandingConfigForm({
   );
 
   const handleMaxChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const v = e.target.value;
-      setMaxSubmissions(v);
-      const parsed = parseInt(v, 10);
-      if (!isNaN(parsed) && parsed >= 1) {
-        onChange({ max_submissions: parsed });
+    (v: number | null) => {
+      setMaxSubmissions(v != null ? String(v) : '');
+      if (v != null && v >= 1) {
+        onChange({ max_submissions: v });
       }
     },
     [onChange],
   );
 
   return (
-    <div className="space-y-3">
-      <label className="flex items-center gap-2 text-sm text-cg-text">
-        <input
-          type="checkbox"
-          checked={unlimited}
-          onChange={handleUnlimitedToggle}
-          className="h-4 w-4 rounded border-cg-border text-cg-focus focus:ring-cg-focus"
-        />
+    <Space direction="vertical" size="small" style={{ width: '100%' }}>
+      <Checkbox checked={unlimited} onChange={handleUnlimitedToggle}>
         无限提交
-      </label>
+      </Checkbox>
 
       {!unlimited && (
         <FormField label="最大提交次数" htmlFor="standing-max">
-          <Input
+          <InputNumber
             id="standing-max"
-            type="number"
-            min="1"
-            max="10000"
-            value={maxSubmissions}
+            min={1}
+            max={10000}
+            value={maxSubmissions ? Number(maxSubmissions) : undefined}
             onChange={handleMaxChange}
+            style={{ width: '100%' }}
           />
         </FormField>
       )}
-    </div>
+    </Space>
   );
 }
 
@@ -342,15 +325,15 @@ export function TaskTypeConfigForms({
   onTypeConfigChange,
 }: TaskTypeConfigFormsProps) {
   const handleTaskTypeChange = useCallback(
-    (e: React.ChangeEvent<HTMLSelectElement>) => {
-      const v = e.target.value as TaskTypeValue | '';
-      onTaskTypeChange(v);
+    (v: string) => {
+      const value = v as TaskTypeValue | '';
+      onTaskTypeChange(value);
       // 切换类型时重置配置为默认值（空字符串属性在序列化为 JSON 时会保留，故省略）
-      if (v === 'LIMITED') {
+      if (value === 'LIMITED') {
         onTypeConfigChange({ end_date: '' });
-      } else if (v === 'REPEAT') {
+      } else if (value === 'REPEAT') {
         onTypeConfigChange({ frequency: 'DAILY' });
-      } else if (v === 'STANDING') {
+      } else if (value === 'STANDING') {
         onTypeConfigChange({ max_submissions: null });
       } else {
         onTypeConfigChange({});
@@ -360,13 +343,13 @@ export function TaskTypeConfigForms({
   );
 
   return (
-    <div className="space-y-4">
+    <Space direction="vertical" size="small" style={{ width: '100%' }}>
       <FormField label="任务类型" htmlFor="task-type">
-        <Select id="task-type" value={taskType} onChange={handleTaskTypeChange}>
-          <option value="">选择任务类型</option>
-          <option value="LIMITED">限时任务</option>
-          <option value="REPEAT">重复任务</option>
-          <option value="STANDING">常驻任务</option>
+        <Select id="task-type" value={taskType} onChange={handleTaskTypeChange} style={{ width: '100%' }}>
+          <Select.Option value="">选择任务类型</Select.Option>
+          <Select.Option value="LIMITED">限时任务</Select.Option>
+          <Select.Option value="REPEAT">重复任务</Select.Option>
+          <Select.Option value="STANDING">常驻任务</Select.Option>
         </Select>
       </FormField>
 
@@ -381,6 +364,6 @@ export function TaskTypeConfigForms({
       {taskType === 'STANDING' && (
         <StandingConfigForm config={typeConfig} onChange={onTypeConfigChange} />
       )}
-    </div>
+    </Space>
   );
 }
