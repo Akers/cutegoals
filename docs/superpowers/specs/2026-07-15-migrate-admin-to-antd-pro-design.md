@@ -2,6 +2,8 @@
 comet_change: migrate-admin-to-antd-pro
 role: technical-design
 canonical_spec: openspec
+archived-with: 2026-07-15-migrate-admin-to-antd-pro
+status: final
 ---
 
 # Admin 端页面 Ant Design Pro 迁移 — 深度技术设计
@@ -131,3 +133,4 @@ const statusColor: Record<string, string> = {
 7. AdminAuditPage: 原生 table → antd Table
 8. AdminHealthPage: Tailwind → antd 布局组件
 9. 验证：tsc + tests + build
+
