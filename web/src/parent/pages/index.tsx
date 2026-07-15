@@ -903,7 +903,7 @@ export function ParentTasksPage() {
   const { data, loading, error, refetch } = useApi<PageResult<TaskAssignment>>(
     `/task-assignments?page=1&pageSize=100&startDate=${date}&endDate=${date}`,
   );
-  const { data: templates } = useApi<PageResult<TaskTemplate>>('/task-templates');
+  const { data: templates } = useApi<PageResult<TaskTemplate>>('/task-templates?enabled=true');
   const { data: children } = useApi<PageResult<ChildProfile>>('/family/children');
   const [showAssign, setShowAssign] = useState(false);
   const templateId = useFormField();
