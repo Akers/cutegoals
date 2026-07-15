@@ -1,0 +1,6 @@
+{
+  "openspec_proposal": "openspec/changes/migrate-child-to-antd-pro/proposal.md",
+  "openspec_design": "openspec/changes/migrate-child-to-antd-pro/design.md",
+  "openspec_tasks": "openspec/changes/migrate-child-to-antd-pro/tasks.md",
+  "openspec_delta_spec": "openspec/changes/migrate-child-to-antd-pro/specs/child-page-migration/spec.md"
+}

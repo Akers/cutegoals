@@ -1,0 +1,16 @@
+{
+  "change": "migrate-to-antd-pro-infra",
+  "phase": "design",
+  "mode": "compact",
+  "canonical_spec": "openspec",
+  "generated_by": "comet-handoff.sh",
+  "context_hash": "ef88783f44337209d7888b1d002f765b3a481d525393318d0afbc73eab87d203",
+  "files": [
+    { "path": "openspec/changes/migrate-to-antd-pro-infra/proposal.md", "sha256": "4f7cdb26eb896e9508ccb837cab3289fe70368894adad14c7655bb576c32328e" },
+    { "path": "openspec/changes/migrate-to-antd-pro-infra/design.md", "sha256": "81a34d094729d25c8d1c8c27d8f6a8d287869b46e99c4dac11474bf82aec247f" },
+    { "path": "openspec/changes/migrate-to-antd-pro-infra/tasks.md", "sha256": "f05836f3115457adc620fc53a5d343b4b8879b1645ea329e4ed71aa646c45aed" },
+    { "path": "openspec/changes/migrate-to-antd-pro-infra/specs/antd-pro-framework/spec.md", "sha256": "0d6534069d21cc3bff04470484684ffd520b1394b8863c91bb55f721559b5b69" },
+    { "path": "openspec/changes/migrate-to-antd-pro-infra/specs/shared-component-migration/spec.md", "sha256": "c774ba1563dd3310276bc9961f79b59d9ac7f9d33d3db57e4ab58c6dbbdfb14b" },
+    { "path": "openspec/changes/migrate-to-antd-pro-infra/specs/web-app/spec.md", "sha256": "9e3a175f1b96b47e15e3d0fff29e97702f66ff914f68eb63f116c819deb5fa93" }
+  ]
+}
