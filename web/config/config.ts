@@ -1,7 +1,10 @@
 import { defineConfig } from 'umi';
+import routes from './routes';
 
 export default defineConfig({
   npmClient: 'npm',
+  // 使用 Vite 作为打包器（与原有 Vite 生态兼容）
+  vite: {},
   // 路径别名
   alias: {
     '@': require('path').resolve(__dirname, '../src'),
@@ -13,12 +16,8 @@ export default defineConfig({
       changeOrigin: true,
     },
   },
-  // 开发服务器端口（与 Vite 保持一致）
-  devServer: {
-    port: 5173,
-  },
   // 构建输出目录（与 Vite 一致）
   outputPath: 'dist',
-  // 约定路由（先给空数组，Task 4.1 填充）
-  routes: [],
+  // 路由配置
+  routes,
 });
