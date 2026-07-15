@@ -13,3 +13,10 @@ export const adminTheme: ThemeConfig = {
 export const parentTheme: ThemeConfig = {
   token: {},
 };
+
+/**
+ * Child 主题 token（占位，Task 3.3 完善）
+ */
+export const childTheme: ThemeConfig = {
+  token: {},
+};
