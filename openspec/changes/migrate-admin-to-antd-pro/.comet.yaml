@@ -1,6 +1,6 @@
 workflow: full
 language: zh-CN
-phase: verify
+phase: archive
 context_compression: off
 build_mode: executing-plans
 build_pause: null
@@ -13,11 +13,11 @@ auto_transition: true
 base_ref: d7e319c32b7fbfef1dc58a4d7fdbb49c8029f887
 design_doc: docs/superpowers/specs/2026-07-15-migrate-admin-to-antd-pro-design.md
 plan: null
-verify_result: pending
+verify_result: pass
 verification_report: docs/superpowers/reports/2026-07-15-migrate-admin-to-antd-pro-verify.md
 branch_status: handled
 created_at: 2026-07-15
-verified_at: null
+verified_at: 2026-07-15
 archived: false
 direct_override: null
 handoff_context: openspec/changes/migrate-admin-to-antd-pro/.comet/handoff/design-context.json
