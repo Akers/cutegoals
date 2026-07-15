@@ -1,0 +1,14 @@
+{
+  "change": "migrate-parent-to-antd-pro",
+  "phase": "design",
+  "mode": "compact",
+  "canonical_spec": "openspec",
+  "generated_by": "comet-handoff.sh",
+  "context_hash": "8075e03b162e80f2375f0f49afe846b4e3f69e410cd0c574139b4ec1eede5f65",
+  "files": [
+    { "path": "openspec/changes/migrate-parent-to-antd-pro/proposal.md", "sha256": "00990293a632fc2acb52b0ad3e81558243bfb27c0acf1a6f362e81e95df349be" },
+    { "path": "openspec/changes/migrate-parent-to-antd-pro/design.md", "sha256": "bbabcc670d6d0aa7f3d6a15ed07c3a8d7cf6c04e81c95506699c230326a89203" },
+    { "path": "openspec/changes/migrate-parent-to-antd-pro/tasks.md", "sha256": "bf20be4b9e89f68f6e06804d092a7377ce6f6e866aa4381d5a3448540cf522ea" },
+    { "path": "openspec/changes/migrate-parent-to-antd-pro/specs/parent-page-migration/spec.md", "sha256": "d4a11a00fab2edd585e94efd3df3a1807a30941305af9fd6855cbb86070f2cc3" }
+  ]
+}
