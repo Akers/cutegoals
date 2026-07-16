@@ -1,5 +1,6 @@
 {
   "openspec_proposal": "openspec/changes/fix-parent-task-template-and-batch-assignment/proposal.md",
   "openspec_design": "openspec/changes/fix-parent-task-template-and-batch-assignment/design.md",
-  "openspec_tasks": "openspec/changes/fix-parent-task-template-and-batch-assignment/tasks.md"
+  "openspec_tasks": "openspec/changes/fix-parent-task-template-and-batch-assignment/tasks.md",
+  "archive_directory": "openspec/changes/archive/2026-07-16-fix-parent-task-template-and-batch-assignment"
 }

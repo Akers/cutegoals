@@ -1,6 +1,6 @@
 workflow: hotfix
 language: zh-CN
-phase: verify
+phase: archive
 context_compression: off
 build_mode: direct
 build_pause: null
@@ -13,12 +13,12 @@ auto_transition: true
 base_ref: 396a7f25c604dcf7db412ab775ecb361b17f0341
 design_doc: null
 plan: null
-verify_result: pending
+verify_result: pass
 verification_report: docs/superpowers/reports/2026-07-15-fix-parent-task-template-and-batch-assignment-verify.md
 branch_status: handled
 created_at: 2026-07-14
-verified_at: null
-archived: false
+verified_at: 2026-07-16
+archived: true
 direct_override: null
 handoff_context: null
 handoff_hash: null
