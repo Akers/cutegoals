@@ -4,10 +4,17 @@ set -euo pipefail
 
 # CuteGoals 2.0 — 后端开发启动脚本（Linux / macOS）
 # 功能：交互式输入中间件地址、设置环境变量、启动 Spring Boot 并实时输出日志
+# 用法：./scripts/start-dev.sh [--logs|-l] [--use-env|-e]
+#   --logs/-l       实时查看开发日志
+#   --use-env/-e    跳过交互，直接使用 .env.dev 配置启动
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SERVER_DIR="${REPO_ROOT}/server"
 ENV_FILE="${REPO_ROOT}/.env.dev"
+
+# 命令行开关
+USE_ENV=false
+LOG_MODE=false
 
 # 颜色
 COLOR_INFO='\033[0;34m'
@@ -86,6 +93,13 @@ prompt() {
     local default_value="$3"
     local input
 
+    # --use-env 模式：直接使用默认值，跳过交互
+    if [ "${USE_ENV}" == "true" ]; then
+        eval "${var_name}='${default_value}'"
+        info "${message}: ${default_value}（使用 .env.dev）"
+        return
+    fi
+
     if [ -n "${default_value}" ]; then
         echo -e "${COLOR_INFO}${message} [默认: ${default_value}]:${COLOR_RESET}"
     else
@@ -105,6 +119,13 @@ prompt_secret() {
     local message="$2"
     local default_value="$3"
     local input
+
+    # --use-env 模式：直接使用默认值，跳过交互
+    if [ "${USE_ENV}" == "true" ]; then
+        eval "${var_name}='${default_value}'"
+        info "${message}: ******（使用 .env.dev）"
+        return
+    fi
 
     if [ -n "${default_value}" ]; then
         echo -e "${COLOR_INFO}${message} [默认: ${default_value}]:${COLOR_RESET}"
@@ -154,6 +175,15 @@ EOF
 main() {
     print_header
 
+    if [ "${USE_ENV}" == "true" ]; then
+        if [ ! -f "${ENV_FILE}" ]; then
+            err "未找到 ${ENV_FILE}，无法使用 --use-env 模式启动"
+            info "请先正常运行一次 ./scripts/start-dev.sh 以生成 .env.dev 配置"
+            exit 1
+        fi
+        warn "已启用 --use-env 模式，跳过交互，直接使用 ${ENV_FILE} 配置"
+    fi
+
     check_command java "21"
     check_java_version
     check_command mvn "3.9"
@@ -187,9 +217,11 @@ main() {
     prompt PORT "后端服务端口" "${PORT:-8080}"
 
     echo ""
-    read -rp "是否将本次配置保存到 .env.dev 供下次使用？ [Y/n]: " save_choice
-    if [ -z "${save_choice}" ] || [[ "${save_choice}" =~ ^[Yy]$ ]]; then
-        save_config
+    if [ "${USE_ENV}" != "true" ]; then
+        read -rp "是否将本次配置保存到 .env.dev 供下次使用？ [Y/n]: " save_choice
+        if [ -z "${save_choice}" ] || [[ "${save_choice}" =~ ^[Yy]$ ]]; then
+            save_config
+        fi
     fi
 
     echo ""
@@ -212,8 +244,30 @@ main() {
         -Dspring-boot.run.jvmArguments="-Dfile.encoding=UTF-8"
 }
 
-# 支持 --logs 参数查看日志
-if [ "${1:-}" == "--logs" ] || [ "${1:-}" == "-l" ]; then
+# 解析命令行参数
+for arg in "$@"; do
+    case "${arg}" in
+        --logs|-l)
+            LOG_MODE=true
+            ;;
+        --use-env|-e)
+            USE_ENV=true
+            ;;
+        -h|--help)
+            echo "用法：$0 [--logs|-l] [--use-env|-e]"
+            echo "  --logs/-l       实时查看开发日志"
+            echo "  --use-env/-e    跳过交互，直接使用 .env.dev 配置启动"
+            exit 0
+            ;;
+        *)
+            err "未知参数：${arg}"
+            info "用法：$0 [--logs|-l] [--use-env|-e]"
+            exit 1
+            ;;
+    esac
+done
+
+if [ "${LOG_MODE}" == "true" ]; then
     if [ -f "${REPO_ROOT}/logs/cutegoals-dev.log" ]; then
         tail -f "${REPO_ROOT}/logs/cutegoals-dev.log"
     else

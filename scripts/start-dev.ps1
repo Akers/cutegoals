@@ -1,8 +1,12 @@
 # CuteGoals 2.0 — 后端开发启动脚本（Windows PowerShell）
 # 功能：交互式输入中间件地址、设置环境变量、启动 Spring Boot 并实时输出日志
+# 用法：.\scripts\start-dev.ps1 [-Logs] [-UseEnv]
+#   -Logs       实时查看开发日志
+#   -UseEnv     跳过交互，直接使用 .env.dev 配置启动
 
 param(
-    [switch]$Logs
+    [switch]$Logs,
+    [switch]$UseEnv
 )
 
 $ErrorActionPreference = "Stop"
@@ -143,7 +147,18 @@ PORT=$PORT
 }
 
 function Start-Backend {
+    param([switch]$UseEnv)
+
     Print-Header
+
+    if ($UseEnv) {
+        if (-not (Test-Path $ENV_FILE)) {
+            Write-Err "未找到 $ENV_FILE，无法使用 -UseEnv 模式启动"
+            Write-Info "请先正常运行一次 .\scripts\start-dev.ps1 以生成 .env.dev 配置"
+            exit 1
+        }
+        Write-Warn "已启用 -UseEnv 模式，跳过交互，直接使用 $ENV_FILE 配置"
+    }
 
     Test-Command "java" "21"
     Test-JavaVersion
@@ -152,37 +167,59 @@ function Start-Backend {
 
     Load-ExistingConfig
 
-    Write-Host ""
-    Write-Info "请输入 PostgreSQL 连接信息（回车使用默认值）"
-    $PG_HOST = Prompt-Input -Message "PostgreSQL 主机" -DefaultValue ([System.Environment]::GetEnvironmentVariable("PG_HOST", "Process") -or "localhost")
-    $PG_PORT = Prompt-Input -Message "PostgreSQL 端口" -DefaultValue ([System.Environment]::GetEnvironmentVariable("PG_PORT", "Process") -or "35432")
-    $PG_DATABASE = Prompt-Input -Message "PostgreSQL 数据库名" -DefaultValue ([System.Environment]::GetEnvironmentVariable("PG_DATABASE", "Process") -or "cutegoals")
-    $PG_USER = Prompt-Input -Message "PostgreSQL 用户名" -DefaultValue ([System.Environment]::GetEnvironmentVariable("PG_USER", "Process") -or "cutegoals")
-    $PG_PASSWORD = Prompt-Input -Message "PostgreSQL 密码" -DefaultValue ([System.Environment]::GetEnvironmentVariable("PG_PASSWORD", "Process") -or "cutegoals")
-    $PG_SCHEMA = Prompt-Input -Message "PostgreSQL Schema" -DefaultValue ([System.Environment]::GetEnvironmentVariable("PG_SCHEMA", "Process") -or "cutegoals")
+    if ($UseEnv) {
+        # 直接读取已加载的环境变量，跳过交互
+        $PG_HOST = [System.Environment]::GetEnvironmentVariable("PG_HOST", "Process")
+        $PG_PORT = [System.Environment]::GetEnvironmentVariable("PG_PORT", "Process")
+        $PG_DATABASE = [System.Environment]::GetEnvironmentVariable("PG_DATABASE", "Process")
+        $PG_USER = [System.Environment]::GetEnvironmentVariable("PG_USER", "Process")
+        $PG_PASSWORD = [System.Environment]::GetEnvironmentVariable("PG_PASSWORD", "Process")
+        $PG_SCHEMA = [System.Environment]::GetEnvironmentVariable("PG_SCHEMA", "Process")
+        $REDIS_HOST = [System.Environment]::GetEnvironmentVariable("REDIS_HOST", "Process")
+        $REDIS_PORT = [System.Environment]::GetEnvironmentVariable("REDIS_PORT", "Process")
+        $REDIS_PASSWORD = [System.Environment]::GetEnvironmentVariable("REDIS_PASSWORD", "Process")
+        $CUTEGOALS_JWT_SECRET = [System.Environment]::GetEnvironmentVariable("CUTEGOALS_JWT_SECRET", "Process")
+        $PORT = [System.Environment]::GetEnvironmentVariable("PORT", "Process")
+
+        Write-Host ""
+        Write-Info "已加载配置："
+        Write-Info "  PostgreSQL: ${PG_HOST}:${PG_PORT}/${PG_DATABASE} (schema=${PG_SCHEMA})"
+        Write-Info "  Redis: ${REDIS_HOST}:${REDIS_PORT}"
+        Write-Info "  后端端口: ${PORT}"
+    } else {
+        Write-Host ""
+        Write-Info "请输入 PostgreSQL 连接信息（回车使用默认值）"
+        $PG_HOST = Prompt-Input -Message "PostgreSQL 主机" -DefaultValue ([System.Environment]::GetEnvironmentVariable("PG_HOST", "Process") -or "localhost")
+        $PG_PORT = Prompt-Input -Message "PostgreSQL 端口" -DefaultValue ([System.Environment]::GetEnvironmentVariable("PG_PORT", "Process") -or "35432")
+        $PG_DATABASE = Prompt-Input -Message "PostgreSQL 数据库名" -DefaultValue ([System.Environment]::GetEnvironmentVariable("PG_DATABASE", "Process") -or "cutegoals")
+        $PG_USER = Prompt-Input -Message "PostgreSQL 用户名" -DefaultValue ([System.Environment]::GetEnvironmentVariable("PG_USER", "Process") -or "cutegoals")
+        $PG_PASSWORD = Prompt-Input -Message "PostgreSQL 密码" -DefaultValue ([System.Environment]::GetEnvironmentVariable("PG_PASSWORD", "Process") -or "cutegoals")
+        $PG_SCHEMA = Prompt-Input -Message "PostgreSQL Schema" -DefaultValue ([System.Environment]::GetEnvironmentVariable("PG_SCHEMA", "Process") -or "cutegoals")
+
+        Write-Host ""
+        Write-Info "请输入 Redis 连接信息（回车使用默认值）"
+        $REDIS_HOST = Prompt-Input -Message "Redis 主机" -DefaultValue ([System.Environment]::GetEnvironmentVariable("REDIS_HOST", "Process") -or "localhost")
+        $REDIS_PORT = Prompt-Input -Message "Redis 端口" -DefaultValue ([System.Environment]::GetEnvironmentVariable("REDIS_PORT", "Process") -or "6379")
+        $REDIS_PASSWORD = Prompt-Input -Message "Redis 密码" -DefaultValue ([System.Environment]::GetEnvironmentVariable("REDIS_PASSWORD", "Process") -or "")
+
+        Write-Host ""
+        Write-Info "请输入应用配置"
+        $existingJwt = [System.Environment]::GetEnvironmentVariable("CUTEGOALS_JWT_SECRET", "Process")
+        if ([string]::IsNullOrWhiteSpace($existingJwt)) {
+            $existingJwt = Generate-JwtSecret
+            Write-Warn "已自动生成 JWT_SECRET，如要固定可手动修改 .env.dev"
+        }
+        $CUTEGOALS_JWT_SECRET = Prompt-Input -Message "JWT Secret" -DefaultValue $existingJwt
+        $PORT = Prompt-Input -Message "后端服务端口" -DefaultValue ([System.Environment]::GetEnvironmentVariable("PORT", "Process") -or "8080")
+
+        Write-Host ""
+        $saveChoice = Read-Host "是否将本次配置保存到 .env.dev 供下次使用？ [Y/n]"
+        if ([string]::IsNullOrWhiteSpace($saveChoice) -or $saveChoice -match '^[Yy]$') {
+            Save-Config -PG_HOST $PG_HOST -PG_PORT $PG_PORT -PG_DATABASE $PG_DATABASE -PG_USER $PG_USER -PG_PASSWORD $PG_PASSWORD -PG_SCHEMA $PG_SCHEMA -REDIS_HOST $REDIS_HOST -REDIS_PORT $REDIS_PORT -REDIS_PASSWORD $REDIS_PASSWORD -CUTEGOALS_JWT_SECRET $CUTEGOALS_JWT_SECRET -PORT $PORT
+        }
+    }
+
     Test-Postgres -Host $PG_HOST -Port $PG_PORT
-
-    Write-Host ""
-    Write-Info "请输入 Redis 连接信息（回车使用默认值）"
-    $REDIS_HOST = Prompt-Input -Message "Redis 主机" -DefaultValue ([System.Environment]::GetEnvironmentVariable("REDIS_HOST", "Process") -or "localhost")
-    $REDIS_PORT = Prompt-Input -Message "Redis 端口" -DefaultValue ([System.Environment]::GetEnvironmentVariable("REDIS_PORT", "Process") -or "6379")
-    $REDIS_PASSWORD = Prompt-Input -Message "Redis 密码" -DefaultValue ([System.Environment]::GetEnvironmentVariable("REDIS_PASSWORD", "Process") -or "")
-
-    Write-Host ""
-    Write-Info "请输入应用配置"
-    $existingJwt = [System.Environment]::GetEnvironmentVariable("CUTEGOALS_JWT_SECRET", "Process")
-    if ([string]::IsNullOrWhiteSpace($existingJwt)) {
-        $existingJwt = Generate-JwtSecret
-        Write-Warn "已自动生成 JWT_SECRET，如要固定可手动修改 .env.dev"
-    }
-    $CUTEGOALS_JWT_SECRET = Prompt-Input -Message "JWT Secret" -DefaultValue $existingJwt
-    $PORT = Prompt-Input -Message "后端服务端口" -DefaultValue ([System.Environment]::GetEnvironmentVariable("PORT", "Process") -or "8080")
-
-    Write-Host ""
-    $saveChoice = Read-Host "是否将本次配置保存到 .env.dev 供下次使用？ [Y/n]"
-    if ([string]::IsNullOrWhiteSpace($saveChoice) -or $saveChoice -match '^[Yy]$') {
-        Save-Config -PG_HOST $PG_HOST -PG_PORT $PG_PORT -PG_DATABASE $PG_DATABASE -PG_USER $PG_USER -PG_PASSWORD $PG_PASSWORD -PG_SCHEMA $PG_SCHEMA -REDIS_HOST $REDIS_HOST -REDIS_PORT $REDIS_PORT -REDIS_PASSWORD $REDIS_PASSWORD -CUTEGOALS_JWT_SECRET $CUTEGOALS_JWT_SECRET -PORT $PORT
-    }
 
     Write-Host ""
     Write-Info "正在启动 CuteGoals 2.0 后端服务..."
@@ -216,5 +253,5 @@ if ($Logs) {
         exit 1
     }
 } else {
-    Start-Backend
+    Start-Backend -UseEnv:$UseEnv
 }
