@@ -2,14 +2,7 @@ import { useState } from 'react';
 import { Link, history } from 'umi';
 import { getClient } from '@shared/api';
 import { useAuth } from '@shared/auth';
-import { App, Button, Card, Empty, Input, Modal, Result, Spin } from 'antd';
-import {
-  ConfirmModal,
-  FormField,
-  Layout,
-  PageHeader,
-  StatusBadge,
-} from '@shared/components';
+import { App, Button, Card, Col, Empty, Input, Modal, Result, Row, Space, Spin, Tag, Typography } from 'antd';
 const { TextArea } = Input;
 import { useApi, useFormField } from '@shared/hooks/useApi';
 import { useLowPerformance, useOnline, useReducedMotion } from '@shared/theme';
@@ -67,21 +60,15 @@ function generateIdempotencyKey(): string {
   return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
 }
 
-function PageShell({
-  title,
-  children,
-  actions,
-}: {
-  title: string;
-  children: React.ReactNode;
-  actions?: React.ReactNode;
-}) {
-  return (
-    <Layout>
-      <PageHeader title={title} actions={actions} />
-      {children}
-    </Layout>
-  );
+/** Map API status values to Chinese labels */
+function statusLabel(s: string): string {
+  const map: Record<string, string> = {
+    completed: '已完成', approved: '已通过', rejected: '已驳回',
+    cancelled: '已取消', active: '启用', disabled: '停用',
+    pending: '待处理', locked: '已锁定', success: '成功', failed: '失败',
+    submitted: '已提交',
+  };
+  return map[s?.toLowerCase()] ?? s;
 }
 
 function useChildId(): number | undefined {
@@ -104,7 +91,7 @@ function StateHandler({
 }) {
   const online = useOnline();
   if (!online) return <Result status="warning" title="当前处于离线状态" subTitle="请检查网络连接，恢复后重试" extra={onRetry ? <Button onClick={onRetry}>重试</Button> : undefined} />;
-  if (loading) return <Spin className="flex justify-center py-12" />;
+  if (loading) return <div style={{ display: 'flex', justifyContent: 'center', padding: '48px 0' }}><Spin /></div>;
   if (error) return <Result status="error" title="加载失败" subTitle={error.message} extra={onRetry ? <Button onClick={onRetry}>重试</Button> : undefined} />;
   return <>{children}</>;
 }
@@ -128,72 +115,70 @@ export function ChildHomePage() {
   const todayTasks = (assignments?.items ?? []).filter((a) => a.deadline.startsWith(today));
 
   return (
-    <PageShell
-      title="今日任务"
-      actions={
-        <Button onClick={() => history.push('/child/prizes')}>
-          去商城
-        </Button>
-      }
-    >
-      <div className="grid grid-cols-1 gap-4">
-        <Card title="积分余额">
-          <StateHandler loading={balanceLoading} error={balanceError} onRetry={refetchBalance}>
-            <div className="text-3xl font-bold text-cg-text">{balance?.balance ?? 0} 积分</div>
-          </StateHandler>
-        </Card>
+    <Space direction="vertical" size="large" style={{ width: '100%' }}>
+      <Row justify="space-between" align="middle">
+        <Typography.Title level={4} style={{ margin: 0 }}>今日任务</Typography.Title>
+        <Button onClick={() => history.push('/child/prizes')}>去商城</Button>
+      </Row>
 
-        <Card title="今日任务">
-          <StateHandler
-            loading={assignmentsLoading}
-            error={assignmentsError}
-            onRetry={refetchAssignments}
-          >
-            {todayTasks.length === 0 ? (
-              <Empty description="今天没有任务" />
-            ) : (
-              <div className="grid grid-cols-1 gap-3">
-                {todayTasks.map((task) => (
-                  <div
-                    key={task.id}
-                    className={`cg-card p-4 ${task.isOverdue ? 'border-l-4 border-l-cg-warning' : ''}`}
-                  >
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <div className="font-medium text-cg-text">{task.templateTitle}</div>
-                        <div className="text-sm text-cg-text-muted">截止 {task.deadline}</div>
-                        {task.isOverdue && (
-                          <div className="mt-1 text-sm font-semibold text-cg-warning">已逾期</div>
-                        )}
-                      </div>
-                      <div className="flex flex-col items-end gap-1">
-                        <StatusBadge status={task.status.toLowerCase()} />
-                        <span className="text-sm text-cg-text-muted">+{task.points} 积分</span>
-                      </div>
+      <Card title="积分余额">
+        <StateHandler loading={balanceLoading} error={balanceError} onRetry={refetchBalance}>
+          <Typography.Title level={2} style={{ margin: 0 }}>{balance?.balance ?? 0} 积分</Typography.Title>
+        </StateHandler>
+      </Card>
+
+      <Card title="今日任务">
+        <StateHandler
+          loading={assignmentsLoading}
+          error={assignmentsError}
+          onRetry={refetchAssignments}
+        >
+          {todayTasks.length === 0 ? (
+            <Empty description="今天没有任务" />
+          ) : (
+            <Space direction="vertical" size="middle" style={{ width: '100%' }}>
+              {todayTasks.map((task) => (
+                <Card key={task.id} size="small" style={task.isOverdue ? { borderLeft: '4px solid #faad14' } : {}}>
+                  <Row justify="space-between" align="top">
+                    <div>
+                      <Typography.Text strong>{task.templateTitle}</Typography.Text>
+                      <br />
+                      <Typography.Text type="secondary" style={{ fontSize: 12 }}>截止 {task.deadline}</Typography.Text>
+                      {task.isOverdue && (
+                        <div>
+                          <Typography.Text style={{ fontSize: 12, fontWeight: 600, color: '#faad14' }}>已逾期</Typography.Text>
+                        </div>
+                      )}
                     </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </StateHandler>
-        </Card>
+                    <Space direction="vertical" size={2} align="end">
+                      <Tag>{statusLabel(task.status.toLowerCase())}</Tag>
+                      <Typography.Text type="secondary" style={{ fontSize: 12 }}>+{task.points} 积分</Typography.Text>
+                    </Space>
+                  </Row>
+                </Card>
+              ))}
+            </Space>
+          )}
+        </StateHandler>
+      </Card>
 
-        <div className="grid grid-cols-2 gap-3">
-          <Link
-            to="/child/tasks"
-            className="cg-card flex min-h-touch items-center justify-center p-4 text-center font-medium text-cg-text hover:bg-cg-surface-raised"
-          >
-            全部任务
+      <Row gutter={[12, 12]}>
+        <Col span={12}>
+          <Link to="/child/tasks" style={{ display: 'block' }}>
+            <Card hoverable>
+              <Typography.Text strong style={{ display: 'block', textAlign: 'center' }}>全部任务</Typography.Text>
+            </Card>
           </Link>
-          <Link
-            to="/child/exchanges"
-            className="cg-card flex min-h-touch items-center justify-center p-4 text-center font-medium text-cg-text hover:bg-cg-surface-raised"
-          >
-            兑换历史
+        </Col>
+        <Col span={12}>
+          <Link to="/child/exchanges" style={{ display: 'block' }}>
+            <Card hoverable>
+              <Typography.Text strong style={{ display: 'block', textAlign: 'center' }}>兑换历史</Typography.Text>
+            </Card>
           </Link>
-        </div>
-      </div>
-    </PageShell>
+        </Col>
+      </Row>
+    </Space>
   );
 }
 
@@ -237,47 +222,50 @@ export function ChildTasksPage() {
   };
 
   return (
-    <PageShell title="我的任务">
+    <Space direction="vertical" size="large" style={{ width: '100%' }}>
+      <Typography.Title level={4} style={{ margin: 0 }}>我的任务</Typography.Title>
       <StateHandler loading={loading} error={error} onRetry={refetch}>
         {(assignments?.items ?? []).length === 0 ? (
           <Empty description="暂无任务" />
         ) : (
-          <div className="grid grid-cols-1 gap-3">
+          <Space direction="vertical" size="middle" style={{ width: '100%' }}>
             {(assignments?.items ?? []).map((task) => (
-              <div
-                key={task.id}
-                className={`cg-card p-4 ${task.isOverdue ? 'border-l-4 border-l-cg-warning' : ''}`}
-              >
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="font-medium text-cg-text">{task.templateTitle}</div>
-                    <div className="text-sm text-cg-text-muted">截止 {task.deadline}</div>
-                    <div className="mt-1 flex items-center gap-2">
-                      <StatusBadge status={task.status.toLowerCase()} />
-                      <span className="text-sm text-cg-text-muted">+{task.points} 积分</span>
+              <Card key={task.id} size="small" style={task.isOverdue ? { borderLeft: '4px solid #faad14' } : {}}>
+                <Row justify="space-between" align="top">
+                  <div style={{ flex: 1 }}>
+                    <Typography.Text strong>{task.templateTitle}</Typography.Text>
+                    <br />
+                    <Typography.Text type="secondary" style={{ fontSize: 12 }}>截止 {task.deadline}</Typography.Text>
+                    <div style={{ marginTop: 4 }}>
+                      <Space size={8}>
+                        <Tag>{statusLabel(task.status.toLowerCase())}</Tag>
+                        <Typography.Text type="secondary" style={{ fontSize: 12 }}>+{task.points} 积分</Typography.Text>
+                      </Space>
                     </div>
                     {task.rejectionReason && (
-                      <div className="mt-2 rounded-cg-md bg-cg-warning-bg p-2 text-sm text-cg-warning">
+                      <div style={{ marginTop: 8, padding: 8, background: '#fffbe6', borderRadius: 6, fontSize: 12, color: '#ad6800' }}>
                         驳回原因：{task.rejectionReason}
                       </div>
                     )}
                   </div>
-                  <div className="ml-2 flex flex-col gap-2">
-                    {task.status === 'PENDING' && (
-                      <Button size="small" onClick={() => openSubmit(task)} loading={submittingId === task.id}>
-                        提交
-                      </Button>
-                    )}
-                    {task.status === 'REJECTED' && (
-                      <Button size="small" onClick={() => openSubmit(task)} loading={submittingId === task.id}>
-                        重新提交
-                      </Button>
-                    )}
+                  <div style={{ marginLeft: 8 }}>
+                    <Space direction="vertical" size="small">
+                      {task.status === 'PENDING' && (
+                        <Button size="small" onClick={() => openSubmit(task)} loading={submittingId === task.id}>
+                          提交
+                        </Button>
+                      )}
+                      {task.status === 'REJECTED' && (
+                        <Button size="small" onClick={() => openSubmit(task)} loading={submittingId === task.id}>
+                          重新提交
+                        </Button>
+                      )}
+                    </Space>
                   </div>
-                </div>
-              </div>
+                </Row>
+              </Card>
             ))}
-          </div>
+          </Space>
         )}
       </StateHandler>
 
@@ -289,21 +277,22 @@ export function ChildTasksPage() {
         }}
         title={active?.status === 'REJECTED' ? '重新提交任务' : '提交任务'}
       >
-        <div className="flex flex-col gap-4">
-          <p className="text-cg-text">{active?.templateTitle}</p>
-          <FormField label="完成情况说明" htmlFor="submit-notes">
+        <Space direction="vertical" size="middle" style={{ width: '100%' }}>
+          <Typography.Text>{active?.templateTitle}</Typography.Text>
+          <div>
+            <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>完成情况说明</Typography.Text>
             <TextArea
               id="submit-notes"
               placeholder="说说你是怎么完成任务的"
               {...notes.inputProps}
             />
-          </FormField>
+          </div>
           <Button onClick={handleSubmit} loading={submitting} disabled={!notes.value.trim()}>
             {active?.status === 'REJECTED' ? '重新提交' : '提交'}
           </Button>
-        </div>
+        </Space>
       </Modal>
-    </PageShell>
+    </Space>
   );
 }
 
@@ -352,25 +341,30 @@ export function ChildPrizesPage() {
   const canAfford = (prize: Prize) => (balance?.balance ?? 0) >= prize.pointsCost;
 
   return (
-    <PageShell title="积分商城">
-      <div className="mb-4 flex items-center justify-between rounded-cg-md bg-cg-surface-raised p-3">
-        <span className="text-sm text-cg-text-muted">当前积分</span>
-        <span className="text-lg font-bold text-cg-text">{balance?.balance ?? 0}</span>
-      </div>
+    <Space direction="vertical" size="large" style={{ width: '100%' }}>
+      <Typography.Title level={4} style={{ margin: 0 }}>积分商城</Typography.Title>
+      <Card>
+        <Row justify="space-between" align="middle">
+          <Typography.Text type="secondary">当前积分</Typography.Text>
+          <Typography.Title level={4} style={{ margin: 0 }}>{balance?.balance ?? 0}</Typography.Title>
+        </Row>
+      </Card>
       <StateHandler loading={prizesLoading || balanceLoading} error={prizesError ?? balanceError} onRetry={refetchPrizes}>
         {(prizes?.items ?? []).length === 0 ? (
           <Empty description="商城暂无奖品" />
         ) : (
-          <div className="grid grid-cols-1 gap-3">
+          <Space direction="vertical" size="middle" style={{ width: '100%' }}>
             {(prizes?.items ?? []).map((prize) => (
-              <div key={prize.id} className="cg-card p-4">
-                <div className="flex items-start justify-between">
+              <Card key={prize.id} size="small">
+                <Row justify="space-between" align="top">
                   <div>
-                    <div className="font-medium text-cg-text">{prize.name}</div>
-                    <p className="text-sm text-cg-text-muted">{prize.description}</p>
-                    <div className="mt-1 text-sm">
+                    <Typography.Text strong>{prize.name}</Typography.Text>
+                    <br />
+                    <Typography.Text type="secondary" style={{ fontSize: 12 }}>{prize.description}</Typography.Text>
+                    <br />
+                    <Typography.Text type="secondary" style={{ fontSize: 12 }}>
                       {prize.pointsCost} 积分 · 库存 {prize.availableStock}
-                    </div>
+                    </Typography.Text>
                   </div>
                   <Button
                     size="small"
@@ -379,24 +373,29 @@ export function ChildPrizesPage() {
                   >
                     兑换
                   </Button>
-                </div>
-              </div>
+                </Row>
+              </Card>
             ))}
-          </div>
+          </Space>
         )}
       </StateHandler>
 
-      <ConfirmModal
-        isOpen={!!selected}
-        onClose={() => setSelected(null)}
+      <Modal
+        open={!!selected}
+        onCancel={() => setSelected(null)}
         title="确认兑换"
-        message={`确定要用 ${selected?.pointsCost} 积分兑换「${selected?.name}」吗？`}
-        confirmText="确认兑换"
-        confirmVariant="primary"
-        onConfirm={exchange}
-        isConfirming={exchanging}
-      />
-    </PageShell>
+        footer={
+          <Space>
+            <Button onClick={() => setSelected(null)} disabled={exchanging}>取消</Button>
+            <Button type="primary" onClick={exchange} loading={exchanging}>确认兑换</Button>
+          </Space>
+        }
+      >
+        <Typography.Text>
+          确定要用 {selected?.pointsCost} 积分兑换「{selected?.name}」吗？
+        </Typography.Text>
+      </Modal>
+    </Space>
   );
 }
 
@@ -472,38 +471,36 @@ export function ChildBlindBoxesPage() {
   };
 
   return (
-    <PageShell title="惊喜盲盒">
-      <div className="mb-4 flex items-center justify-between rounded-cg-md bg-cg-surface-raised p-3">
-        <span className="text-sm text-cg-text-muted">当前积分</span>
-        <span className="text-lg font-bold text-cg-text">{balance?.balance ?? 0}</span>
-      </div>
+    <Space direction="vertical" size="large" style={{ width: '100%' }}>
+      <Typography.Title level={4} style={{ margin: 0 }}>惊喜盲盒</Typography.Title>
+      <Card>
+        <Row justify="space-between" align="middle">
+          <Typography.Text type="secondary">当前积分</Typography.Text>
+          <Typography.Title level={4} style={{ margin: 0 }}>{balance?.balance ?? 0}</Typography.Title>
+        </Row>
+      </Card>
       <StateHandler loading={boxesLoading || balanceLoading} error={boxesError ?? balanceError} onRetry={refetchBoxes}>
         {(boxes?.items ?? []).length === 0 ? (
           <Empty description="暂无盲盒" />
         ) : (
-          <div className="grid grid-cols-1 gap-3">
+          <Space direction="vertical" size="middle" style={{ width: '100%' }}>
             {(boxes?.items ?? []).map((box) => (
-              <div
+              <Card
                 key={box.id}
-                className={`cg-card p-4 cursor-pointer ${selected?.id === box.id ? 'ring-2 ring-cg-focus' : ''}`}
+                size="small"
+                hoverable
+                style={selected?.id === box.id ? { borderColor: '#1677ff' } : {}}
                 onClick={() => {
                   setSelected(box);
                   setReconfirm(false);
                 }}
-                role="button"
-                tabIndex={0}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    setSelected(box);
-                    setReconfirm(false);
-                  }
-                }}
               >
-                <div className="font-medium text-cg-text">{box.name}</div>
-                <div className="text-sm text-cg-text-muted">{box.cost} 积分</div>
-              </div>
+                <Typography.Text strong>{box.name}</Typography.Text>
+                <br />
+                <Typography.Text type="secondary" style={{ fontSize: 12 }}>{box.cost} 积分</Typography.Text>
+              </Card>
             ))}
-          </div>
+          </Space>
         )}
       </StateHandler>
 
@@ -511,23 +508,29 @@ export function ChildBlindBoxesPage() {
         <Card title="候选概率">
           <StateHandler loading={candidatesLoading} error={candidatesError} onRetry={refetchCandidates}>
             {(candidates ?? []).length === 0 ? (
-              <p className="text-cg-text-muted">暂无候选奖品</p>
+              <Typography.Text type="secondary">暂无候选奖品</Typography.Text>
             ) : (
-              <div className="grid grid-cols-1 gap-2">
+              <Space direction="vertical" size="small" style={{ width: '100%' }}>
                 {(candidates ?? []).map((c) => (
-                  <div key={c.prizeId} className="flex items-center justify-between rounded-cg-md bg-cg-surface-raised p-3">
-                    <span className="text-cg-text">{c.prizeName}</span>
-                    <span className="font-medium text-cg-text">{(c.probability * 100).toFixed(1)}%</span>
-                  </div>
+                  <Card key={c.prizeId} size="small" style={{ background: '#f5f5f5' }}>
+                    <Row justify="space-between" align="middle">
+                      <Typography.Text>{c.prizeName}</Typography.Text>
+                      <Typography.Text strong>{(c.probability * 100).toFixed(1)}%</Typography.Text>
+                    </Row>
+                  </Card>
                 ))}
-              </div>
+              </Space>
             )}
-            <div className="mt-3 text-xs text-cg-text-muted">
-              版本：{selected.availabilityVersion.slice(0, 8)}…
-              {reconfirm && <span className="ml-2 text-cg-warning">奖池已更新，请重新确认</span>}
+            <div style={{ marginTop: 12 }}>
+              <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+                版本：{selected.availabilityVersion.slice(0, 8)}…
+                {reconfirm && <Typography.Text style={{ color: '#faad14', marginLeft: 8 }}>奖池已更新，请重新确认</Typography.Text>}
+              </Typography.Text>
             </div>
             <Button
-              className="mt-4 w-full"
+              type="primary"
+              block
+              style={{ marginTop: 16 }}
               onClick={() => setConfirming(true)}
               disabled={(balance?.balance ?? 0) < selected.cost}
             >
@@ -537,35 +540,35 @@ export function ChildBlindBoxesPage() {
         </Card>
       )}
 
-      <ConfirmModal
-        isOpen={confirming}
-        onClose={() => setConfirming(false)}
+      <Modal
+        open={confirming}
+        onCancel={() => setConfirming(false)}
         title="确认开启盲盒"
-        message={`确定要花费 ${selected?.cost} 积分开启「${selected?.name}」吗？结果由概率随机产生。`}
-        confirmText="确认开启"
-        onConfirm={openBox}
-        isConfirming={opening}
-      />
+        footer={
+          <Space>
+            <Button onClick={() => setConfirming(false)} disabled={opening}>取消</Button>
+            <Button type="primary" onClick={openBox} loading={opening}>确认开启</Button>
+          </Space>
+        }
+      >
+        <Typography.Text>
+          确定要花费 {selected?.cost} 积分开启「{selected?.name}」吗？结果由概率随机产生。
+        </Typography.Text>
+      </Modal>
 
       <Modal
         open={!!result}
         onCancel={closeResult}
         title="盲盒结果"
-        footer={
-          <Button onClick={closeResult} className="w-full">
-            收下奖品
-          </Button>
-        }
+        footer={<Button type="primary" block onClick={closeResult}>收下奖品</Button>}
       >
-        <div className="flex flex-col items-center gap-3 py-4">
-          <div className="text-6xl" aria-hidden="true">
-            🎁
-          </div>
-          <div className="text-xl font-bold text-cg-text">{result?.prizeName}</div>
-          <p className="text-sm text-cg-text-muted">已记录到兑换历史</p>
-        </div>
+        <Space direction="vertical" size="middle" align="center" style={{ width: '100%', padding: '16px 0' }}>
+          <span style={{ fontSize: 64 }} role="img" aria-hidden="true">🎁</span>
+          <Typography.Title level={4} style={{ margin: 0 }}>{result?.prizeName}</Typography.Title>
+          <Typography.Text type="secondary">已记录到兑换历史</Typography.Text>
+        </Space>
       </Modal>
-    </PageShell>
+    </Space>
   );
 }
 
@@ -579,31 +582,33 @@ export function ChildExchangesPage() {
   } = useApi<{ items: Exchange[] }>(childId ? `/exchanges?childId=${childId}` : '');
 
   return (
-    <PageShell title="兑换历史">
+    <Space direction="vertical" size="large" style={{ width: '100%' }}>
+      <Typography.Title level={4} style={{ margin: 0 }}>兑换历史</Typography.Title>
       <StateHandler loading={loading} error={error} onRetry={refetch}>
         {(exchanges?.items ?? []).length === 0 ? (
           <Empty description="还没有兑换记录" />
         ) : (
-          <div className="grid grid-cols-1 gap-3">
+          <Space direction="vertical" size="middle" style={{ width: '100%' }}>
             {(exchanges?.items ?? []).map((ex) => (
-              <div key={ex.id} className="cg-card p-4">
-                <div className="flex items-start justify-between">
+              <Card key={ex.id} size="small">
+                <Row justify="space-between" align="top">
                   <div>
-                    <div className="font-medium text-cg-text">{ex.targetName}</div>
-                    <div className="text-sm text-cg-text-muted">
+                    <Typography.Text strong>{ex.targetName}</Typography.Text>
+                    <br />
+                    <Typography.Text type="secondary" style={{ fontSize: 12 }}>
                       {ex.type === 'BLIND_BOX' ? '盲盒' : '奖品'} · {ex.pointsCost} 积分 · {ex.createdAt}
-                    </div>
-                    <div className="mt-1">
-                      <StatusBadge status={ex.status.toLowerCase()} />
+                    </Typography.Text>
+                    <div style={{ marginTop: 4 }}>
+                      <Tag>{statusLabel(ex.status.toLowerCase())}</Tag>
                     </div>
                   </div>
-                </div>
-              </div>
+                </Row>
+              </Card>
             ))}
-          </div>
+          </Space>
         )}
       </StateHandler>
-    </PageShell>
+    </Space>
   );
 }
 
