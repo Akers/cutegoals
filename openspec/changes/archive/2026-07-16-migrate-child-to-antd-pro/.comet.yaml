@@ -18,7 +18,7 @@ verification_report: docs/superpowers/reports/2026-07-15-migrate-child-to-antd-p
 branch_status: handled
 created_at: 2026-07-15
 verified_at: 2026-07-16
-archived: false
+archived: true
 direct_override: null
 handoff_context: openspec/changes/migrate-child-to-antd-pro/.comet/handoff/design-context.json
 handoff_hash: fd6fd3aa53d4deb7f1ebb5556acfc0355c154f2e8a96e3df298d06fcf75c532a

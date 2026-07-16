@@ -4,5 +4,6 @@
   "openspec_tasks": "openspec/changes/migrate-child-to-antd-pro/tasks.md",
   "openspec_delta_spec": "openspec/changes/migrate-child-to-antd-pro/specs/child-page-migration/spec.md",
   "handoff_context": "openspec/changes/migrate-child-to-antd-pro/.comet/handoff/design-context.json",
-  "handoff_markdown": "openspec/changes/migrate-child-to-antd-pro/.comet/handoff/design-context.md"
+  "handoff_markdown": "openspec/changes/migrate-child-to-antd-pro/.comet/handoff/design-context.md",
+  "archive_directory": "openspec/changes/archive/2026-07-16-migrate-child-to-antd-pro"
 }

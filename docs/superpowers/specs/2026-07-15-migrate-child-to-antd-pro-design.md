@@ -2,6 +2,8 @@
 comet_change: migrate-child-to-antd-pro
 role: technical-design
 canonical_spec: openspec
+archived-with: 2026-07-16-migrate-child-to-antd-pro
+status: final
 ---
 
 # Child 页面 Ant Design Pro 迁移 — 深度技术设计
@@ -46,3 +48,4 @@ canonical_spec: openspec
 
 - Child 页面使用了 `useLowPerformance`/`useReducedMotion` → 保留 hooks 不变
 - 盲盒动画逻辑保留，仅替换 UI 外壳
+
