@@ -1,0 +1,6 @@
+{
+  "id": "classic-archive:fix-parent-login-fullscreen",
+  "stepId": "hotfix.archive.confirm",
+  "type": "checkpoint",
+  "ref": "fix-parent-login-fullscreen"
+}

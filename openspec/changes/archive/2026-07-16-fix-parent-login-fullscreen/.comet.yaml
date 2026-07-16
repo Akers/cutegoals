@@ -1,6 +1,6 @@
 workflow: hotfix
 language: zh-CN
-phase: verify
+phase: archive
 context_compression: off
 build_mode: direct
 build_pause: null
@@ -13,12 +13,12 @@ auto_transition: true
 base_ref: 10607d69438141f63d13fe8371d00b3fe0dafdaa
 design_doc: null
 plan: null
-verify_result: pending
-verification_report: null
-branch_status: pending
+verify_result: pass
+verification_report: docs/superpowers/reports/2026-07-16-fix-parent-login-fullscreen-verify.md
+branch_status: handled
 created_at: 2026-07-16
-verified_at: null
-archived: false
+verified_at: 2026-07-16
+archived: true
 direct_override: null
 handoff_context: null
 handoff_hash: null
