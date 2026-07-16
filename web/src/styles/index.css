@@ -65,6 +65,15 @@
     }
   }
 
+  /* Full-screen centered login screen: 100vh, both-axis centered, safe padding */
+  .cg-login-screen {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  }
+
   /* Card surface using theme tokens */
   .cg-card {
     background-color: var(--cg-surface);

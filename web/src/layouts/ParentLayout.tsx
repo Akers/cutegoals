@@ -22,6 +22,15 @@ export default function ParentLayout() {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // 登录页跳过 ProLayout，避免显示侧边栏菜单，确保全屏居中
+  if (location.pathname === '/parent/login') {
+    return (
+      <ConfigProvider theme={parentTheme} locale={zhCN}>
+        <Outlet />
+      </ConfigProvider>
+    );
+  }
+
   return (
     <ConfigProvider theme={parentTheme} locale={zhCN}>
       <ProLayout

@@ -49,8 +49,8 @@ export function ParentLoginPage() {
   };
 
   return (
-    <div className="cg-page flex min-h-screen flex-col items-center justify-center">
-      <div className="w-full max-w-md cg-card p-6">
+    <div className="cg-login-screen">
+      <div className="cg-card" style={{ width: '100%', maxWidth: '28rem', padding: '1.5rem' }}>
         <PageHeader title="家长登录" subtitle="使用手机号与密码登录" />
         {error && (
           <div className="mb-4 rounded-cg-md bg-cg-warning-bg px-4 py-3 text-sm text-cg-warning" role="alert">
