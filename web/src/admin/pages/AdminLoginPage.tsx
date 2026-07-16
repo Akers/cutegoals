@@ -3,7 +3,8 @@ import { history } from 'umi';
 import { getClient } from '@shared/api';
 import { useAuth, maskPhone } from '@shared/auth';
 import { Button, Input } from 'antd';
-import { FormField, PageHeader } from '@shared/components';
+import { MobileOutlined, LockOutlined } from '@ant-design/icons';
+import { FormField } from '@shared/components';
 import { useFormField } from '@shared/hooks/useApi';
 
 export function AdminLoginPage() {
@@ -48,25 +49,41 @@ export function AdminLoginPage() {
   };
 
   return (
-    <div className="cg-page flex min-h-screen flex-col items-center justify-center">
-      <div className="w-full max-w-md cg-card p-6">
-        <PageHeader title="管理员登录" subtitle="使用手机号与密码登录" />
+    <div className="cg-login-bg cg-login-bg--admin">
+      <div className="cg-login-card">
+        <div className="cg-login-logo" aria-hidden="true">🛡️</div>
+        <h1 className="cg-login-title">管理员登录</h1>
+        <p className="cg-login-subtitle">使用手机号与密码登录</p>
         {error && (
-          <div className="mb-4 rounded-cg-md bg-cg-warning-bg px-4 py-3 text-sm text-cg-warning" role="alert">
+          <div className="cg-login-error" role="alert">
             {error}
           </div>
         )}
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <form onSubmit={handleSubmit} className="cg-login-form">
           <FormField label="手机号" htmlFor="admin-phone">
-            <Input id="admin-phone" type="tel" autoComplete="username" placeholder="11 位手机号" {...phone.inputProps} />
+            <Input
+              id="admin-phone"
+              type="tel"
+              autoComplete="username"
+              placeholder="11 位手机号"
+              prefix={<MobileOutlined />}
+              {...phone.inputProps}
+            />
           </FormField>
           <FormField label="密码" htmlFor="admin-password">
-            <Input id="admin-password" type="password" autoComplete="current-password" placeholder="请输入密码" {...password.inputProps} />
+            <Input
+              id="admin-password"
+              type="password"
+              autoComplete="current-password"
+              placeholder="请输入密码"
+              prefix={<LockOutlined />}
+              {...password.inputProps}
+            />
           </FormField>
-          <Button type="primary" htmlType="submit" loading={loading} className="w-full">
+          <Button type="primary" htmlType="submit" loading={loading} className="cg-login-submit">
             登录
           </Button>
-          <p className="text-center text-sm text-cg-text-muted">
+          <p className="cg-login-footer">
             首次部署请使用初始化向导
           </p>
         </form>

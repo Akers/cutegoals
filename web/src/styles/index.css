@@ -65,13 +65,143 @@
     }
   }
 
-  /* Full-screen centered login screen: 100vh, both-axis centered, safe padding */
-  .cg-login-screen {
+  /* 登录页全屏背景容器（三端共享骨架） */
+  .cg-login-bg {
     min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 1rem;
+    padding: 1.5rem;
+  }
+
+  /* 三端差异化渐变背景 */
+  .cg-login-bg--parent {
+    background: linear-gradient(135deg, #e0f2fe 0%, #fce7f3 100%);
+  }
+
+  .cg-login-bg--child {
+    background: linear-gradient(135deg, #fef3c7 0%, #fed7aa 100%);
+  }
+
+  .cg-login-bg--admin {
+    background: linear-gradient(135deg, #e0e7ff 0%, #f1f5f9 100%);
+  }
+
+  /* 登录卡片（比 .cg-card 更强的视觉权重） */
+  .cg-login-card {
+    width: 100%;
+    max-width: 28rem;
+    background-color: var(--cg-surface);
+    border-radius: var(--cg-radius-lg);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08), 0 4px 6px rgba(0, 0, 0, 0.04);
+    padding: 2rem;
+  }
+
+  /* logo 区 */
+  .cg-login-logo {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1rem;
+    font-size: 3rem;
+    line-height: 1;
+  }
+
+  /* 标题层级 */
+  .cg-login-title {
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--cg-text);
+    margin: 0 0 0.25rem;
+  }
+
+  .cg-login-subtitle {
+    text-align: center;
+    font-size: 0.875rem;
+    color: var(--cg-text-muted);
+    margin: 0 0 1.5rem;
+  }
+
+  /* 登录表单辅助布局 */
+  .cg-login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .cg-login-submit {
+    width: 100%;
+  }
+
+  .cg-login-footer {
+    text-align: center;
+    font-size: 0.875rem;
+    color: var(--cg-text-muted);
+    margin: 0;
+  }
+
+  .cg-login-error {
+    margin-bottom: 1rem;
+    border-radius: var(--cg-radius-md);
+    background-color: var(--cg-warning-bg);
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    color: var(--cg-warning);
+  }
+
+  /* PIN 数字键盘 */
+  .cg-pin-display {
+    margin-bottom: 1.5rem;
+    display: flex;
+    height: 3.5rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--cg-radius-lg);
+    background-color: var(--cg-surface-raised);
+    font-size: 1.5rem;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    letter-spacing: 0.25em;
+    color: var(--cg-text);
+  }
+
+  .cg-pin-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+  }
+
+  .cg-pin-key {
+    min-width: 3rem;
+    min-height: 3rem;
+    border-radius: var(--cg-radius-md);
+    border: 1px solid var(--cg-border);
+    background-color: var(--cg-surface-raised);
+    color: var(--cg-text);
+    font-size: 1.25rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.1s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .cg-pin-key:hover:not(:disabled) {
+    transform: translateY(-1px);
+    background-color: var(--cg-border);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  }
+
+  .cg-pin-key:focus-visible {
+    outline: 0.125rem solid var(--cg-focus);
+    outline-offset: 0.125rem;
+  }
+
+  .cg-pin-key:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .cg-pin-key--text {
+    font-size: 0.875rem;
+    font-weight: 500;
   }
 
   /* Card surface using theme tokens */

@@ -20,6 +20,15 @@ export default function ChildLayout() {
 
   const userDisplay = account?.nickname ?? account?.phone ?? 'Child';
 
+  // 登录页跳过 ProLayout，避免显示侧边栏菜单，确保全屏居中
+  if (location.pathname === '/child/login') {
+    return (
+      <ConfigProvider theme={childTheme} locale={zhCN}>
+        <Outlet />
+      </ConfigProvider>
+    );
+  }
+
   return (
     <ConfigProvider theme={childTheme} locale={zhCN}>
       <ProLayout

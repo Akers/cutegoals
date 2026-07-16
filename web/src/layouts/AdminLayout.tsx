@@ -17,6 +17,15 @@ export default function AdminLayout() {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // 登录页跳过 ProLayout，避免显示侧边栏菜单，确保全屏居中
+  if (location.pathname === '/admin/login') {
+    return (
+      <ConfigProvider theme={adminTheme} locale={zhCN}>
+        <Outlet />
+      </ConfigProvider>
+    );
+  }
+
   return (
     <ConfigProvider theme={adminTheme} locale={zhCN}>
       <ProLayout

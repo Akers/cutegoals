@@ -3,7 +3,6 @@ import { history, useSearchParams } from 'umi';
 import { getClient } from '@shared/api';
 import { useAuth } from '@shared/auth';
 import { Result, Spin } from 'antd';
-import { PageHeader } from '@shared/components';
 import { useOnline } from '@shared/theme';
 
 const LOCK_DURATION_MS = 15 * 60 * 1000;
@@ -109,11 +108,14 @@ export function ChildLoginPage() {
   if (!online) return <Result status="warning" title="离线" subTitle="请连接网络后重试" />;
 
   return (
-    <div className="cg-page flex min-h-screen flex-col items-center justify-center">
-      <div className="w-full max-w-sm cg-card p-6">
-        <PageHeader title="输入 PIN" subtitle="输入你的 4-6 位家庭 PIN" />
+    <div className="cg-login-bg cg-login-bg--child">
+      <div className="cg-login-card">
+        <div className="cg-login-logo" aria-hidden="true">🧸</div>
+        <h1 className="cg-login-title">输入 PIN</h1>
+        <p className="cg-login-subtitle">输入你的 4-6 位家庭 PIN</p>
+
         <div
-          className="mb-6 flex h-14 items-center justify-center rounded-cg-lg bg-cg-surface-raised text-2xl font-mono tracking-widest text-cg-text"
+          className="cg-pin-display"
           aria-label="PIN 输入"
           aria-live="polite"
         >
@@ -121,24 +123,24 @@ export function ChildLoginPage() {
         </div>
 
         {error && (
-          <div className="mb-4 rounded-cg-md bg-cg-warning-bg px-4 py-3 text-sm text-cg-warning" role="alert">
+          <div className="cg-login-error" role="alert">
             {error}
             {isLocked && (
-              <div className="mt-1 font-mono">
+              <div style={{ marginTop: '0.25rem', fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace' }}>
                 剩余 {minutes.toString().padStart(2, '0')}:{seconds.toString().padStart(2, '0')}
               </div>
             )}
           </div>
         )}
 
-        <div className="grid grid-cols-3 gap-3">
+        <div className="cg-pin-grid">
           {['1', '2', '3', '4', '5', '6', '7', '8', '9'].map((digit) => (
             <button
               key={digit}
               type="button"
               onClick={() => appendDigit(digit)}
               disabled={isLocked || loading}
-              className="min-h-touch rounded-cg-md bg-cg-surface-raised text-2xl font-semibold text-cg-text hover:bg-cg-border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cg-focus disabled:opacity-50"
+              className="cg-pin-key"
               aria-label={digit}
             >
               {digit}
@@ -148,7 +150,7 @@ export function ChildLoginPage() {
             type="button"
             onClick={backspace}
             disabled={isLocked || loading || pin.length === 0}
-            className="min-h-touch rounded-cg-md bg-cg-surface-raised text-cg-text hover:bg-cg-border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cg-focus disabled:opacity-50"
+            className="cg-pin-key cg-pin-key--text"
             aria-label="退格"
           >
             ⌫
@@ -157,7 +159,7 @@ export function ChildLoginPage() {
             type="button"
             onClick={() => appendDigit('0')}
             disabled={isLocked || loading}
-            className="min-h-touch rounded-cg-md bg-cg-surface-raised text-2xl font-semibold text-cg-text hover:bg-cg-border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cg-focus disabled:opacity-50"
+            className="cg-pin-key"
             aria-label="0"
           >
             0
@@ -169,7 +171,7 @@ export function ChildLoginPage() {
               history.push('/child/bind');
             }}
             disabled={loading}
-            className="min-h-touch rounded-cg-md bg-cg-surface-raised text-sm text-cg-text hover:bg-cg-border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cg-focus disabled:opacity-50"
+            className="cg-pin-key cg-pin-key--text"
           >
             切换
           </button>
