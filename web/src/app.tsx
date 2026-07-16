@@ -1,3 +1,4 @@
+import '@/styles/index.css';
 import React from 'react';
 import { App } from 'antd';
 import { AuthProvider, useAuth } from '@/shared/auth';
