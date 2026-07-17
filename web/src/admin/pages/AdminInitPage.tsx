@@ -65,7 +65,7 @@ export function AdminInitPage() {
         roles: data.roles,
         familyId: data.familyId,
       });
-      history.replace('/admin');
+      history.replace('/admin/login');
     }
   };
 

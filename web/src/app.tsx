@@ -5,11 +5,15 @@ import { AuthProvider, useAuth } from '@/shared/auth';
 import { RoleProvider } from '@/shared/RoleContext';
 import type { Role } from '@/shared/role';
 
-/** Derive the user's single role from the account's roles list. */
+/** Derive the user's single role from the account's roles list.
+ *  Backend (`AuthConstants`) returns UPPERCASE strings like `INSTANCE_ADMIN`/`PARENT`/`CHILD`.
+ *  Normalize each entry (uppercase + strip optional `ROLE_` prefix) so future variants stay compatible.
+ */
 function deriveRole(roles?: string[]): Role {
   if (!roles || roles.length === 0) return 'child';
-  if (roles.includes('admin')) return 'admin';
-  if (roles.includes('parent')) return 'parent';
+  const normalized = roles.map((r) => r.toUpperCase().replace(/^ROLE_/, ''));
+  if (normalized.includes('INSTANCE_ADMIN')) return 'admin';
+  if (normalized.includes('PARENT')) return 'parent';
   return 'child';
 }
 
