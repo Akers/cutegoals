@@ -1,6 +1,6 @@
 workflow: hotfix
 language: zh-CN
-phase: verify
+phase: archive
 context_compression: off
 build_mode: direct
 build_pause: null
@@ -13,12 +13,12 @@ auto_transition: true
 base_ref: dfb8954f8b4959a56be95bdd1a6f78e7dd1c0b0a
 design_doc: null
 plan: null
-verify_result: pending
+verify_result: pass
 verification_report: docs/superpowers/reports/2026-07-16-fix-global-styles-not-loaded-verify.md
 branch_status: handled
 created_at: 2026-07-16
-verified_at: null
-archived: false
+verified_at: 2026-07-16
+archived: true
 direct_override: null
 handoff_context: null
 handoff_hash: null
