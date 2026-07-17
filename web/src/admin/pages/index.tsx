@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { getClient } from '@shared/api';
-import { Button, Card, Col, Empty, Input, Row, Space, Table, Tag, Typography } from 'antd';
+import { Button, Card, Col, Empty, Input, Row, Space, Table, Tag, Typography, message } from 'antd';
 import { Result, Spin } from '@shared/components';
 import { useOnline } from '@shared/theme';
 import { useApi } from '@shared/hooks/useApi';
@@ -105,20 +105,51 @@ export function AdminOverviewPage() {
   );
 }
 
+/** Backend GET /admin/config contract: one entry per whitelisted config key */
+interface ConfigEntry {
+  key: string;
+  type: string;
+  description: string;
+  masked: boolean;
+  value: string | null;
+  configured: boolean;
+}
+
 export function AdminConfigPage() {
-  const { data, loading, error, refetch } = useApi<Record<string, string>>('/admin/config');
+  const { data, loading, error, refetch } = useApi<ConfigEntry[]>('/admin/config');
   const [saving, setSaving] = useState(false);
   const [values, setValues] = useState<Record<string, string>>({});
+  const [original, setOriginal] = useState<Record<string, string>>({});
   const online = useOnline();
 
   useEffect(() => {
-    if (data) setValues(data);
+    if (data) {
+      const initial = Object.fromEntries(data.map((entry) => [entry.key, entry.value ?? '']));
+      setValues(initial);
+      setOriginal(initial);
+    }
   }, [data]);
 
   const handleSave = async () => {
+    // Submit only changed keys; unchanged masked secrets keep the mask value
+    // and are naturally excluded, so the mask is never written back as a real secret.
+    const payload = Object.fromEntries(
+      Object.keys(values)
+        .filter((k) => values[k] !== original[k])
+        .map((k) => [k, values[k]]),
+    );
+    if (Object.keys(payload).length === 0) {
+      message.info('没有需要保存的变更');
+      return;
+    }
     setSaving(true);
-    await getClient().put('/admin/config', values);
+    const { error: saveError } = await getClient().put('/admin/config', payload);
     setSaving(false);
+    if (saveError) {
+      message.error(saveError.message ?? '保存失败');
+      return;
+    }
+    message.success('保存成功');
     await refetch();
   };
 
@@ -132,13 +163,14 @@ export function AdminConfigPage() {
       <Typography.Title level={3}>系统配置</Typography.Title>
       <Card>
         <Space direction="vertical" size="middle" style={{ width: '100%' }}>
-          {Object.entries(data).map(([key]) => (
-            <Space key={key} direction="vertical" style={{ width: '100%' }}>
-              <Typography.Text strong>{key}</Typography.Text>
+          {data.map((entry) => (
+            <Space key={entry.key} direction="vertical" style={{ width: '100%' }}>
+              <Typography.Text strong>{entry.key}</Typography.Text>
+              <Typography.Text type="secondary">{entry.description}</Typography.Text>
               <Input
-                type={key.toLowerCase().includes('secret') || key.toLowerCase().includes('password') ? 'password' : 'text'}
-                value={values[key] ?? ''}
-                onChange={(e) => setValues((prev) => ({ ...prev, [key]: e.target.value }))}
+                type={entry.masked ? 'password' : 'text'}
+                value={values[entry.key] ?? ''}
+                onChange={(e) => setValues((prev) => ({ ...prev, [entry.key]: e.target.value }))}
               />
             </Space>
           ))}
