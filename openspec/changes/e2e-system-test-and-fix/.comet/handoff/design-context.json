@@ -1,0 +1,14 @@
+{
+  "change": "e2e-system-test-and-fix",
+  "phase": "design",
+  "mode": "compact",
+  "canonical_spec": "openspec",
+  "generated_by": "comet-handoff.sh",
+  "context_hash": "87e48728e83e7fa6cec67b181ee6edd151366d7b8202fd55a3b701fe02622138",
+  "files": [
+    { "path": "openspec/changes/e2e-system-test-and-fix/proposal.md", "sha256": "d02d8c025e44bf86b07b4555d43920ccee5383c698e9e05d0f54d25aa8d13da4" },
+    { "path": "openspec/changes/e2e-system-test-and-fix/design.md", "sha256": "c08c32de165f8f0ba37cfaf7c94497728ece1f2266cd1b199b9a1386cb408b1e" },
+    { "path": "openspec/changes/e2e-system-test-and-fix/tasks.md", "sha256": "9ca120bd5d058a277d6dd11951a340182614904a6f021af915e345bba366a61e" },
+    { "path": "openspec/changes/e2e-system-test-and-fix/specs/system-e2e-test-coverage/spec.md", "sha256": "f54ed57bb73eb90947ebeadb31d4dd7d69180dbbf7f8b0edf88daa8254ecc6a1" }
+  ]
+}

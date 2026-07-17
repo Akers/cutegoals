@@ -1,0 +1,8 @@
+{
+  "openspec_proposal": "openspec/changes/e2e-system-test-and-fix/proposal.md",
+  "openspec_design": "openspec/changes/e2e-system-test-and-fix/design.md",
+  "openspec_tasks": "openspec/changes/e2e-system-test-and-fix/tasks.md",
+  "openspec_delta_spec": "openspec/changes/e2e-system-test-and-fix/specs/system-e2e-test-coverage/spec.md",
+  "handoff_context": "openspec/changes/e2e-system-test-and-fix/.comet/handoff/design-context.json",
+  "handoff_markdown": "openspec/changes/e2e-system-test-and-fix/.comet/handoff/design-context.md"
+}
