@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { history } from 'umi';
 import { getClient } from '@shared/api';
 import type { TaskTypeValue } from '@shared/api/types';
-import { Alert, Button, Card, Empty, Input, Modal, Result, Row, Select, Space, Spin, Table, Tag, Typography } from 'antd';
+import { Alert, Button, Card, Empty, Input, Modal, Result, Row, Select, Space, Spin, Table, Tag, Typography, message } from 'antd';
 const { TextArea } = Input;
 import { useAuth } from '@shared/auth';
 import { useApi, useFormField, useIdempotencyKey } from '@shared/hooks/useApi';
@@ -232,6 +232,7 @@ export function ParentFamilyPage() {
   const { account } = useAuth();
   const [sending, setSending] = useState(false);
   const [childSaving, setChildSaving] = useState(false);
+  const [childSaveError, setChildSaveError] = useState<string | null>(null);
 
   const resetChildForm = () => {
     childNickname.reset();
@@ -241,6 +242,7 @@ export function ParentFamilyPage() {
 
   const openNewChild = () => {
     resetChildForm();
+    setChildSaveError(null);
     setShowChildModal(true);
   };
 
@@ -255,26 +257,22 @@ export function ParentFamilyPage() {
 
   const handleSaveChild = async () => {
     setChildSaving(true);
-    setActionError(null);
-    try {
-      const res = await getClient().post('/family/children', {
-        nickname: childNickname.value,
-        pin: childPin.value || undefined,
-        birthday: childBirthday.value || undefined,
-      });
-      if (res.error) {
-        setActionError(res.error.message ?? '添加孩子失败');
-        return;
-      }
-      // 刷新家庭概览即可同步成员与孩子（单一数据源）。
-      await refetch();
-      setShowChildModal(false);
-      resetChildForm();
-    } catch (err) {
-      setActionError(err instanceof Error ? err.message : '添加孩子失败');
-    } finally {
-      setChildSaving(false);
+    setChildSaveError(null);
+    const res = await getClient().post('/family/children', {
+      nickname: childNickname.value,
+      pin: childPin.value || undefined,
+      birthday: childBirthday.value || undefined,
+    });
+    setChildSaving(false);
+    if (res.error) {
+      setChildSaveError(res.error.message ?? '添加孩子失败');
+      return;
     }
+    // 刷新家庭概览即可同步成员与孩子（单一数据源）。
+    await refetch();
+    setShowChildModal(false);
+    resetChildForm();
+    message.success('保存成功');
   };
 
   const handleRemove = async (member: FamilyMember) => {
@@ -451,8 +449,16 @@ export function ParentFamilyPage() {
         </Space>
       </Modal>
 
-      <Modal open={showChildModal} onCancel={() => setShowChildModal(false)} title="添加孩子">
+      <Modal
+        open={showChildModal}
+        onCancel={() => setShowChildModal(false)}
+        title="添加孩子"
+        okText="保存"
+        onOk={handleSaveChild}
+        confirmLoading={childSaving}
+      >
         <Space direction="vertical" size="middle" style={{ width: '100%' }}>
+          {childSaveError && <Alert message={childSaveError} type="error" showIcon />}
           <div>
             <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>昵称</Typography.Text>
             <Input id="child-nickname" {...childNickname.inputProps} />
@@ -465,9 +471,6 @@ export function ParentFamilyPage() {
             <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>生日</Typography.Text>
             <Input id="child-birthday" type="date" {...childBirthday.inputProps} />
           </div>
-          <Button onClick={handleSaveChild} loading={childSaving} htmlType="button" style={{ width: '100%' }}>
-            保存
-          </Button>
         </Space>
       </Modal>
 
@@ -499,12 +502,14 @@ export function ParentChildrenPage() {
   const birthday = useFormField();
   const online = useOnline();
   const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   const openNew = () => {
     setEditing(null);
     nickname.reset();
     pin.reset();
     birthday.reset();
+    setSaveError(null);
     setShowModal(true);
   };
 
@@ -513,23 +518,28 @@ export function ParentChildrenPage() {
     nickname.setValue(child.nickname);
     pin.reset();
     birthday.setValue(child.birthday ?? '');
+    setSaveError(null);
     setShowModal(true);
   };
 
   const handleSave = async () => {
     setSaving(true);
+    setSaveError(null);
     const payload = {
       nickname: nickname.value,
       pin: pin.value || undefined,
       birthday: birthday.value || undefined,
     };
-    if (editing) {
-      await getClient().put(`/family/children/${editing.id}`, payload);
-    } else {
-      await getClient().post('/family/children', payload);
-    }
+    const res = editing
+      ? await getClient().put(`/family/children/${editing.id}`, payload)
+      : await getClient().post('/family/children', payload);
     setSaving(false);
+    if (res.error) {
+      setSaveError(res.error.message ?? '保存失败');
+      return;
+    }
     setShowModal(false);
+    message.success('保存成功');
     await refetch();
   };
 
@@ -586,8 +596,12 @@ export function ParentChildrenPage() {
         open={showModal}
         onCancel={() => setShowModal(false)}
         title={editing ? '编辑档案' : '新增档案'}
+        okText="保存"
+        onOk={handleSave}
+        confirmLoading={saving}
       >
         <Space direction="vertical" size="middle" style={{ width: '100%' }}>
+          {saveError && <Alert message={saveError} type="error" showIcon />}
           <div>
             <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>昵称</Typography.Text>
             <Input id="child-nickname" {...nickname.inputProps} />
@@ -602,9 +616,6 @@ export function ParentChildrenPage() {
             <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>生日</Typography.Text>
             <Input id="child-birthday" type="date" {...birthday.inputProps} />
           </div>
-          <Button onClick={handleSave} loading={saving} htmlType="button" style={{ width: '100%' }}>
-            保存
-          </Button>
         </Space>
       </Modal>
     </Space>
@@ -623,6 +634,7 @@ export function ParentTemplatesPage() {
   const [selectedTypes, setSelectedTypes] = useState<TaskTypeValue[]>([]);
   const online = useOnline();
   const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   const filterParams = selectedTypes.length > 0 ? { taskType: selectedTypes.join(',') } : undefined;
   const { items, loading, error, refetch, page, pageSize, setPage, total } = usePaginatedData<TaskTemplate>(
@@ -638,6 +650,7 @@ export function ParentTemplatesPage() {
     basePoints.setValue('10');
     setTaskType('');
     setTypeConfig({});
+    setSaveError(null);
     setShowModal(true);
   };
 
@@ -654,11 +667,13 @@ export function ParentTemplatesPage() {
     } catch {
       setTypeConfig({});
     }
+    setSaveError(null);
     setShowModal(true);
   };
 
   const handleSave = async () => {
     setSaving(true);
+    setSaveError(null);
     const payload: Record<string, unknown> = {
       name: title.value,
       description: description.value,
@@ -682,19 +697,20 @@ export function ParentTemplatesPage() {
       const res = await getClient().put(`/task-templates/${editing.id}`, payload);
       if (res.error) {
         setSaving(false);
-        Modal.error({ title: '保存失败', content: res.error.message ?? '保存失败' });
+        setSaveError(res.error.message ?? '保存失败');
         return;
       }
     } else {
       const res = await getClient().post('/task-templates', payload);
       if (res.error) {
         setSaving(false);
-        Modal.error({ title: '保存失败', content: res.error.message ?? '保存失败' });
+        setSaveError(res.error.message ?? '保存失败');
         return;
       }
     }
     setSaving(false);
     setShowModal(false);
+    message.success('保存成功');
     await refetch();
   };
 
@@ -763,8 +779,12 @@ export function ParentTemplatesPage() {
         open={showModal}
         onCancel={() => setShowModal(false)}
         title={editing ? '编辑模板' : '新建模板'}
+        okText="保存"
+        onOk={handleSave}
+        confirmLoading={saving}
       >
         <Space direction="vertical" size="middle" style={{ width: '100%' }}>
+          {saveError && <Alert message={saveError} type="error" showIcon />}
           <div>
             <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>标题</Typography.Text>
             <Input id="tpl-title" {...title.inputProps} />
@@ -789,10 +809,6 @@ export function ParentTemplatesPage() {
             typeConfig={typeConfig}
             onTypeConfigChange={setTypeConfig}
           />
-
-          <Button onClick={handleSave} loading={saving} htmlType="button" style={{ width: '100%' }}>
-            保存
-          </Button>
         </Space>
       </Modal>
     </Space>
@@ -1244,6 +1260,7 @@ export function ParentPrizesPage() {
   const availableStock = useFormField('0');
   const online = useOnline();
   const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   const openNew = () => {
     setEditing(null);
@@ -1251,6 +1268,7 @@ export function ParentPrizesPage() {
     description.reset();
     pointsCost.setValue('0');
     availableStock.setValue('0');
+    setSaveError(null);
     setShowModal(true);
   };
 
@@ -1260,24 +1278,29 @@ export function ParentPrizesPage() {
     description.setValue(p.description);
     pointsCost.setValue(String(p.pointsCost));
     availableStock.setValue(String(p.availableStock));
+    setSaveError(null);
     setShowModal(true);
   };
 
   const handleSave = async () => {
     setSaving(true);
+    setSaveError(null);
     const payload = {
       name: name.value,
       description: description.value,
       pointsCost: Number(pointsCost.value),
       availableStock: Number(availableStock.value),
     };
-    if (editing) {
-      await getClient().put(`/prizes/${editing.id}`, payload);
-    } else {
-      await getClient().post('/prizes', payload);
-    }
+    const res = editing
+      ? await getClient().put(`/prizes/${editing.id}`, payload)
+      : await getClient().post('/prizes', payload);
     setSaving(false);
+    if (res.error) {
+      setSaveError(res.error.message ?? '保存失败');
+      return;
+    }
     setShowModal(false);
+    message.success('保存成功');
     await refetch();
   };
 
@@ -1334,8 +1357,12 @@ export function ParentPrizesPage() {
         open={showModal}
         onCancel={() => setShowModal(false)}
         title={editing ? '编辑奖品' : '新增奖品'}
+        okText="保存"
+        onOk={handleSave}
+        confirmLoading={saving}
       >
         <Space direction="vertical" size="middle" style={{ width: '100%' }}>
+          {saveError && <Alert message={saveError} type="error" showIcon />}
           <div>
             <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>名称</Typography.Text>
             <Input id="prize-name" {...name.inputProps} />
@@ -1352,9 +1379,6 @@ export function ParentPrizesPage() {
             <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>库存</Typography.Text>
             <Input id="prize-stock" type="number" {...availableStock.inputProps} />
           </div>
-          <Button onClick={handleSave} loading={saving} htmlType="button" style={{ width: '100%' }}>
-            保存
-          </Button>
         </Space>
       </Modal>
     </Space>
