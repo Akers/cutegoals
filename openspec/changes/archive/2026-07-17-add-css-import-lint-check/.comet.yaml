@@ -1,6 +1,6 @@
 workflow: tweak
 language: zh-CN
-phase: verify
+phase: archive
 context_compression: off
 build_mode: direct
 build_pause: null
@@ -13,12 +13,12 @@ auto_transition: true
 base_ref: 028fce44e7ac1f1a529ffffe5c125e7e9b1a5bf6
 design_doc: null
 plan: null
-verify_result: pending
+verify_result: pass
 verification_report: docs/superpowers/reports/2026-07-17-add-css-import-lint-check-verify.md
 branch_status: handled
 created_at: 2026-07-17
-verified_at: null
-archived: false
+verified_at: 2026-07-17
+archived: true
 direct_override: null
 handoff_context: null
 handoff_hash: null
