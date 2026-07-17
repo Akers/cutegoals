@@ -104,7 +104,7 @@ export function ChildLoginPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pin]);
 
-  if (!childId) return <Spin className="flex justify-center py-12" />;
+  if (!childId) return <Spin style={{ display: 'flex', justifyContent: 'center', padding: '3rem 0' }} />;
   if (!online) return <Result status="warning" title="离线" subTitle="请连接网络后重试" />;
 
   return (

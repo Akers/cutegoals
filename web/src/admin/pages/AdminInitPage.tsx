@@ -70,15 +70,15 @@ export function AdminInitPage() {
   };
 
   return (
-    <div className="cg-page flex min-h-screen flex-col items-center justify-center">
-      <div className="w-full max-w-md cg-card p-6">
+    <div className="cg-screen">
+      <div className="cg-login-card">
         <PageHeader title="初始化 CuteGoals" subtitle="创建首位管理员账号与家庭" />
         {error && (
           <div className="mb-4 rounded-cg-md bg-cg-warning-bg px-4 py-3 text-sm text-cg-warning" role="alert">
             {error}
           </div>
         )}
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <form onSubmit={handleSubmit} className="cg-login-form">
           <FormField label="初始化令牌" htmlFor="init-token">
             <Input id="init-token" type="text" placeholder="从部署命令获取" {...token.inputProps} />
           </FormField>

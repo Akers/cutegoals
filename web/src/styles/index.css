@@ -74,6 +74,15 @@
     padding: 1.5rem;
   }
 
+  /* 辅助页面全屏居中容器（无渐变背景，中性） */
+  .cg-screen {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+  }
+
   /* 三端差异化渐变背景 */
   .cg-login-bg--parent {
     background: linear-gradient(135deg, #e0f2fe 0%, #fce7f3 100%);

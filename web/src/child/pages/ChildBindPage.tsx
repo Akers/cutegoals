@@ -71,8 +71,8 @@ export function ChildBindPage() {
 
   if (children.length === 0) {
     return (
-      <div className="cg-page flex min-h-screen flex-col items-center justify-center">
-        <div className="w-full max-w-md cg-card p-6 text-center">
+      <div className="cg-screen">
+        <div className="cg-login-card text-center">
           <PageHeader title="设备绑定" subtitle="请让家长授权此设备" />
           <div className="mb-6 rounded-cg-md bg-cg-surface-raised p-4">
             <p className="text-sm text-cg-text-muted">设备标识</p>
@@ -90,8 +90,8 @@ export function ChildBindPage() {
   }
 
   return (
-    <div className="cg-page flex min-h-screen flex-col items-center justify-center">
-      <div className="w-full max-w-md cg-card p-6">
+    <div className="cg-screen">
+      <div className="cg-login-card">
         <PageHeader title="选择档案" subtitle="你是谁？" />
         <div className="grid grid-cols-1 gap-3">
           {children.map((child) => (

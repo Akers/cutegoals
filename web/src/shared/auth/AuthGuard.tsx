@@ -13,7 +13,7 @@ export function AuthGuard({ children, fallback }: AuthGuardProps) {
   const { role } = useRole();
   const location = useLocation();
 
-  if (loading) return <Spin className="flex justify-center py-12" />;
+  if (loading) return <Spin style={{ display: 'flex', justifyContent: 'center', padding: '3rem 0' }} />;
 
   if (!isAuthenticated) {
     const loginPath =
@@ -26,8 +26,8 @@ export function AuthGuard({ children, fallback }: AuthGuardProps) {
 
 export function LogoutConfirm({ onCancel, onConfirm }: { onCancel: () => void; onConfirm: () => void }) {
   return (
-    <div className="cg-page flex min-h-screen flex-col items-center justify-center" role="alertdialog">
-      <div className="w-full max-w-sm cg-card p-6">
+    <div className="cg-screen" role="alertdialog">
+      <div className="cg-login-card">
         <h2 className="mb-2 text-xl font-bold text-cg-text">确认登出？</h2>
         <p className="mb-6 text-cg-text-muted">登出后需要重新登录。</p>
         <div className="flex gap-2">
@@ -51,8 +51,8 @@ export function LogoutConfirm({ onCancel, onConfirm }: { onCancel: () => void; o
 
 export function SessionExpired() {
   return (
-    <div className="cg-page flex min-h-screen flex-col items-center justify-center">
-      <div className="w-full max-w-sm cg-card p-6 text-center">
+    <div className="cg-screen">
+      <div className="cg-login-card text-center">
         <h2 className="mb-2 text-xl font-bold text-cg-text">会话已过期</h2>
         <p className="mb-6 text-cg-text-muted">请重新登录以继续使用。</p>
         <a
