@@ -82,3 +82,19 @@ grep -n "maskPhonePartial" server/instance-management/src/main/java/com/cutegoal
 - 测试：1 个文件（`MaskUtilTest.java` 新增 7 个用例）
 - spec：无改动（无 delta spec）—— `instance-management` capability 「当前实例账号启停」Requirement 验收场景要求「脱敏手机号」，部分掩码仍属脱敏
 - 日志/审计调用方：零影响（`MaskUtil.maskPhone` 全掩码语义不变）
+
+## 运行时验证附录（archive-reopen 后补充）
+
+首次 archive-reopen 触发原因是用户报告"显示还是 `***MASKED***`"。经 `comet` 入口路由进入 verify 阶段后，按 systematic-debugging 进行根因调查：
+
+| 层 | 状态 | 证据 |
+|---|---|---|
+| 源码 `MaskUtil.java` | ✅ 含 `maskPhonePartial` | commit `7e44db3`，源文件 mtime 2026-07-17 12:33:55 |
+| 编译产物 `MaskUtil.class` | ✅ 字节码含 `maskPhonePartial` | `javap -p MaskUtil.class \| grep maskPhone` 同时命中 `maskPhone` 与 `maskPhonePartial`；class mtime 12:40:45 |
+| `AccountManagementService.class` | ✅ 调用 `maskPhonePartial` | class mtime 12:37:00 |
+| 后端 dev server (PID 505303) | ❌ 启动于 09:12:21 早于修复 | `ps -o lstart -p 505303`；classpath 指向 target/classes，但 JVM 已加载旧版本类 |
+| spring-boot-devtools 自动重载 | ❌ 未引入 | `grep -r spring-boot-devtools server/ --include=pom.xml` 无命中 |
+
+**根因**：`mvn spring-boot:run` 启动的 JVM 不会监听 class 文件变化，进程一直运行 09:12 时的旧 `MaskUtil`（只有 `maskPhone` 全掩码）。前端 dev server 有 HMR 自动重载，所以前端代码改动已生效——这正是用户从 `*******ED***`（前端二次脱敏旧逻辑）变为 `***MASKED***`（前端不脱敏但后端仍全掩码）的原因，反向印证前端层修复已生效。
+
+**结论**：代码层修复正确且必要，验证报告原 6 项检查结论保持成立。运行时症状属 dev server 未重启，非代码缺陷。用户确认按原计划归档；归档后由用户重启后端 dev server（在 `pts/2` 终端 Ctrl+C 停止 PID 505303，再 `mvn -pl web -am spring-boot:run -DskipTests -Dspring-boot.run.jvmArguments=-Dfile.encoding=UTF-8`），即可看到 `/admin/accounts` 表格手机号列显示 `136*****407` 格式。
