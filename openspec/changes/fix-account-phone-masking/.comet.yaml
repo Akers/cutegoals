@@ -1,6 +1,6 @@
 workflow: hotfix
 language: zh-CN
-phase: build
+phase: archive
 context_compression: off
 build_mode: direct
 build_pause: null
@@ -13,11 +13,11 @@ auto_transition: true
 base_ref: 39b775d0226d7b5ebd7117050f6a633a1481c7a6
 design_doc: null
 plan: null
-verify_result: pending
-verification_report: null
-branch_status: pending
+verify_result: pass
+verification_report: docs/superpowers/reports/2026-07-17-fix-account-phone-masking-verify.md
+branch_status: handled
 created_at: 2026-07-17
-verified_at: null
+verified_at: 2026-07-17
 archived: false
 direct_override: null
 handoff_context: null
