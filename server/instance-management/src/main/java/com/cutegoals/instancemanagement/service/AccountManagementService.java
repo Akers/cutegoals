@@ -50,7 +50,7 @@ public class AccountManagementService {
             List<String> roles = roleBindingMapper.findRolesByAccountId(account.getId());
             Map<String, Object> item = new LinkedHashMap<>();
             item.put("id", account.getId());
-            item.put("phone", MaskUtil.maskPhone(account.getPhone()));
+            item.put("phone", MaskUtil.maskPhonePartial(account.getPhone()));
             item.put("status", account.getStatus());
             item.put("roles", roles);
             item.put("createdAt", account.getCreatedAt());

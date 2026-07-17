@@ -11,6 +11,12 @@ package com.cutegoals.common.util;
  *   <li>empty string input returns empty string
  *   <li>non-empty input returns {@code ***MASKED***}
  * </ul>
+ *
+ * <p>{@link #maskPhonePartial} is a separate contract for display scenarios
+ * (e.g. account management list) where operators need limited identifiability:
+ * length &gt;= 7 yields {@code 136*****249}-style partial masks, while shorter
+ * inputs fall back to {@link #MASKED}. Logging and audit code SHOULD continue
+ * to use {@link #maskPhone} for defense-in-depth (full mask).
  */
 public final class MaskUtil {
 
@@ -59,6 +65,42 @@ public final class MaskUtil {
      */
     public static String maskPhone(String phone) {
         return mask(phone);
+    }
+
+    /**
+     * Partially masks a phone number for display scenarios where operators need
+     * limited identifiability (e.g. account management list). For an 11-digit
+     * Chinese mobile number this returns {@code 136*****249}.
+     *
+     * <p>Contract:
+     * <ul>
+     *   <li>{@code null} or empty input: returned as-is (consistent with {@link #maskPhone})
+     *   <li>length &lt; 7: returns {@link #MASKED} (avoids leaking too much of short IDs)
+     *   <li>length &gt;= 7: returns {@code prefix(3) + '*' × (len-6) + suffix(3)}
+     * </ul>
+     *
+     * <p><strong>Not for logging.</strong> Logging and audit code should keep
+     * using {@link #maskPhone} for full masking (defense-in-depth).
+     *
+     * @param phone the phone number to partially mask; if null or empty, returned as-is
+     * @return partial mask like {@code 136*****249}, {@link #MASKED} for short input,
+     *         or the input itself for null/empty
+     */
+    public static String maskPhonePartial(String phone) {
+        if (phone == null || phone.isEmpty()) {
+            return phone;
+        }
+        if (phone.length() < 7) {
+            return MASKED;
+        }
+        int starCount = phone.length() - 6;
+        StringBuilder sb = new StringBuilder(phone.length());
+        sb.append(phone, 0, 3);
+        for (int i = 0; i < starCount; i++) {
+            sb.append('*');
+        }
+        sb.append(phone, phone.length() - 3, phone.length());
+        return sb.toString();
     }
 
     /**

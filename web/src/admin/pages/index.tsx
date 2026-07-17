@@ -171,15 +171,13 @@ export function AdminAccountsPage() {
     setActing(null);
   };
 
-  const mask = (phone: string) => phone.slice(0, 3) + '****' + phone.slice(7);
-
   if (!online) return <Result status="warning" title="当前处于离线状态" subTitle="请检查网络连接，恢复后重试" extra={<Button onClick={refetch}>重试</Button>} />;
   if (loading) return <Spin />;
   if (error) return <Result status="error" title="加载失败" subTitle={error.message ?? '未知错误'} extra={<Button onClick={refetch}>重试</Button>} />;
   if (!data || data.content.length === 0) return <Empty description="暂无账号" />;
 
   const accountColumns = [
-    { title: '手机号', dataIndex: 'phone', key: 'phone', render: (p: string) => mask(p) },
+    { title: '手机号', dataIndex: 'phone', key: 'phone' },
     { title: '角色', dataIndex: 'roles', key: 'roles', render: (r: string[]) => r.join(', ') },
     { title: '状态', dataIndex: 'status', key: 'status',
       render: (s: string) => <Tag color={s === 'ACTIVE' ? 'success' : 'error'}>{statusLabel(s)}</Tag> },

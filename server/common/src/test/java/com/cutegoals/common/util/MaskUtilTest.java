@@ -116,4 +116,44 @@ class MaskUtilTest {
             .doesNotContain(phone)
             .isEqualTo(MASKED);
     }
+
+    // --- maskPhonePartial (display-grade partial masking) ---
+
+    @Test
+    void maskPhonePartialReturnsPartialMaskFor11Digits() {
+        // 11-digit Chinese mobile: 3 prefix + 5 stars + 3 suffix
+        assertThat(MaskUtil.maskPhonePartial("13612341249")).isEqualTo("136*****249");
+    }
+
+    @Test
+    void maskPhonePartialReturnsPartialMaskFor7Digits() {
+        // Boundary length 7: 3 prefix + 1 star + 3 suffix
+        assertThat(MaskUtil.maskPhonePartial("1234567")).isEqualTo("123*567");
+    }
+
+    @Test
+    void maskPhonePartialReturnsMaskedFor6Digits() {
+        // Below threshold 7: fall back to full mask to avoid short-ID leakage
+        assertThat(MaskUtil.maskPhonePartial("123456")).isEqualTo(MASKED);
+    }
+
+    @Test
+    void maskPhonePartialReturnsMaskedFor4DigitPin() {
+        // Defensive: a 4-digit PIN-shaped value should not become "1**4"
+        assertThat(MaskUtil.maskPhonePartial("1234")).isEqualTo(MASKED);
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    void maskPhonePartialReturnsInputForNullOrEmpty(String input) {
+        assertThat(MaskUtil.maskPhonePartial(input)).isEqualTo(input);
+    }
+
+    @Test
+    void maskPhonePartialContainsNoFullOriginal() {
+        // Partial mask preserves prefix/suffix but must not contain the full original
+        String phone = "13612341249";
+        assertThat(MaskUtil.maskPhonePartial(phone))
+            .doesNotContain(phone);
+    }
 }
