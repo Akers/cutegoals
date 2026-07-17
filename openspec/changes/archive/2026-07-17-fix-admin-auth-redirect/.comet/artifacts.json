@@ -1,5 +1,6 @@
 {
   "openspec_proposal": "openspec/changes/fix-admin-auth-redirect/proposal.md",
   "openspec_design": "openspec/changes/fix-admin-auth-redirect/design.md",
-  "openspec_tasks": "openspec/changes/fix-admin-auth-redirect/tasks.md"
+  "openspec_tasks": "openspec/changes/fix-admin-auth-redirect/tasks.md",
+  "archive_directory": "openspec/changes/archive/2026-07-17-fix-admin-auth-redirect"
 }
