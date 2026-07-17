@@ -3,17 +3,18 @@ import React from 'react';
 import { App } from 'antd';
 import { AuthProvider, useAuth } from '@/shared/auth';
 import { RoleProvider } from '@/shared/RoleContext';
+import { normalizeRoles } from '@/shared/role';
 import type { Role } from '@/shared/role';
 
-/** Derive the user's single role from the account's roles list.
- *  Backend (`AuthConstants`) returns UPPERCASE strings like `INSTANCE_ADMIN`/`PARENT`/`CHILD`.
- *  Normalize each entry (uppercase + strip optional `ROLE_` prefix) so future variants stay compatible.
+/** Derive the user's primary role (for theme/defaults) from the account's roles list.
+ *  An account may hold multiple roles (e.g. the instance admin also holds PARENT);
+ *  the primary role only drives theming — route authorization checks the full
+ *  role set via `normalizeRoles` (see `wrappers/AuthGuard.tsx`).
  */
 function deriveRole(roles?: string[]): Role {
-  if (!roles || roles.length === 0) return 'child';
-  const normalized = roles.map((r) => r.toUpperCase().replace(/^ROLE_/, ''));
-  if (normalized.includes('INSTANCE_ADMIN')) return 'admin';
-  if (normalized.includes('PARENT')) return 'parent';
+  const normalized = normalizeRoles(roles);
+  if (normalized.includes('admin')) return 'admin';
+  if (normalized.includes('parent')) return 'parent';
   return 'child';
 }
 

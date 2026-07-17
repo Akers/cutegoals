@@ -1,12 +1,11 @@
 import { Outlet, useLocation, Navigate } from 'umi';
 import { useAuth } from '@/shared/auth';
-import { useRole } from '@/shared/role';
+import { normalizeRoles } from '@/shared/role';
 import { Result, Spin } from 'antd';
 import type { Role } from '@/shared/role';
 
 export default function AuthGuard() {
-  const { isAuthenticated, loading } = useAuth();
-  const { role } = useRole();
+  const { isAuthenticated, loading, account } = useAuth();
   const location = useLocation();
 
   // Auth still resolving — show spinner
@@ -46,8 +45,11 @@ export default function AuthGuard() {
     expectedRole = 'parent';
   }
 
-  // Role mismatch → 403
-  if (role !== expectedRole) {
+  // Role check: the account's full role set must contain the expected role.
+  // (The instance admin account legitimately holds both INSTANCE_ADMIN and
+  // PARENT, so collapsing to a single role would wrongly deny /parent.)
+  const roles = normalizeRoles(account?.roles);
+  if (!roles.includes(expectedRole)) {
     return <Result status="403" subTitle="无权访问此页面" />;
   }
 
