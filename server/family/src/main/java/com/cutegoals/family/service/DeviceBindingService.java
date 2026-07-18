@@ -209,8 +209,12 @@ public class DeviceBindingService {
         // Success: clear failure count
         pinFailureTracker.remove(lockKey);
 
-        // Create child session (uses child_id, not negative account_id, to avoid FK violation)
-        String sessionId = sessionService.createChildSession(childId, deviceId);
+        // Create child session
+        // TODO: bug-011 follow-up - switch to createChildSession(childId, deviceId)
+        // once DBA has applied V13 schema (server/common/src/main/resources/db/migration-pending/
+        // V13__add_child_session_support.sql). Currently using legacy -childId path because
+        // the session table has not been upgraded with the child_id column.
+        String sessionId = sessionService.createSession(-childId, deviceId);
 
         auditService.record(AuditEvent.CHILD_LOGIN_SUCCESS, null, "SUCCESS",
                 "Child PIN login successful: childId=" + childId + ", deviceId=" + deviceId);
