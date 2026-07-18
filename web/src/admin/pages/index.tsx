@@ -4,6 +4,7 @@ import { Button, Card, Col, Empty, Input, Row, Space, Table, Tag, Typography, me
 import { Result, Spin } from '@shared/components';
 import { useOnline } from '@shared/theme';
 import { useApi } from '@shared/hooks/useApi';
+import { maskPhone } from '@shared/auth';
 
 /** Map API status/result values to Chinese labels (match StatusBadge conventions) */
 function statusLabel(s: string): string {
@@ -209,7 +210,7 @@ export function AdminAccountsPage() {
   if (!data || data.content.length === 0) return <Empty description="暂无账号" />;
 
   const accountColumns = [
-    { title: '手机号', dataIndex: 'phone', key: 'phone' },
+    { title: '手机号', dataIndex: 'phone', key: 'phone', render: (phone: string) => maskPhone(phone) },
     { title: '角色', dataIndex: 'roles', key: 'roles', render: (r: string[]) => r.join(', ') },
     { title: '状态', dataIndex: 'status', key: 'status',
       render: (s: string) => <Tag color={s === 'ACTIVE' ? 'success' : 'error'}>{statusLabel(s)}</Tag> },

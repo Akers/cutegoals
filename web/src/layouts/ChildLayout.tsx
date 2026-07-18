@@ -10,7 +10,7 @@ import {
   SwapOutlined,
   LogoutOutlined,
 } from '@ant-design/icons';
-import { useAuth } from '@/shared/auth';
+import { useAuth, maskPhone } from '@/shared/auth';
 import { childTheme } from '@/styles/themes';
 
 export default function ChildLayout() {
@@ -18,7 +18,7 @@ export default function ChildLayout() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const userDisplay = account?.nickname ?? account?.phone ?? 'Child';
+  const userDisplay = account?.nickname ?? maskPhone(account?.phone) ?? 'Child';
 
   // 登录页跳过 ProLayout，避免显示侧边栏菜单，确保全屏居中
   if (location.pathname === '/child/login') {

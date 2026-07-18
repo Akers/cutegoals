@@ -2,9 +2,11 @@ package com.cutegoals.family.service;
 
 import com.cutegoals.auth.service.AuditService;
 import com.cutegoals.common.entity.family.ChildProfile;
+import com.cutegoals.common.entity.points.PointsBalance;
 import com.cutegoals.common.exception.BusinessException;
 import com.cutegoals.common.exception.ErrorCode;
 import com.cutegoals.family.mapper.ChildProfileMapper;
+import com.cutegoals.points.mapper.PointsBalanceMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,6 +27,7 @@ import static org.mockito.Mockito.*;
 class ChildProfileServiceTest {
 
     @Mock private ChildProfileMapper childProfileMapper;
+    @Mock private PointsBalanceMapper pointsBalanceMapper;
     @Mock private AuditService auditService;
 
     private BCryptPasswordEncoder passwordEncoder;
@@ -33,7 +36,7 @@ class ChildProfileServiceTest {
     @BeforeEach
     void setUp() {
         passwordEncoder = new BCryptPasswordEncoder(4);
-        childProfileService = new ChildProfileService(childProfileMapper, passwordEncoder, auditService);
+        childProfileService = new ChildProfileService(childProfileMapper, passwordEncoder, auditService, pointsBalanceMapper);
     }
 
     @Test
@@ -49,6 +52,7 @@ class ChildProfileServiceTest {
         assertTrue((Boolean) result.get("hasPin"));
         assertNull(result.get("pinHash"));
         verify(childProfileMapper).insert(any(ChildProfile.class));
+        verify(pointsBalanceMapper).insert(any(PointsBalance.class));
         verify(auditService).record(eq("CHILD_CREATED"), eq(100L), eq("SUCCESS"), anyString());
     }
 
@@ -62,6 +66,7 @@ class ChildProfileServiceTest {
         assertEquals("小红", result.get("nickname"));
         assertFalse((Boolean) result.get("hasPin"));
         verify(childProfileMapper).insert(any(ChildProfile.class));
+        verify(pointsBalanceMapper).insert(any(PointsBalance.class));
     }
 
     @Test

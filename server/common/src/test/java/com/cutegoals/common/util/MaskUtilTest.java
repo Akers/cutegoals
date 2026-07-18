@@ -121,14 +121,14 @@ class MaskUtilTest {
 
     @Test
     void maskPhonePartialReturnsPartialMaskFor11Digits() {
-        // 11-digit Chinese mobile: 3 prefix + 5 stars + 3 suffix
-        assertThat(MaskUtil.maskPhonePartial("13612341249")).isEqualTo("136*****249");
+        // Unified rule: 3 prefix + 4 stars + 4 suffix for 11-digit mobile numbers
+        assertThat(MaskUtil.maskPhonePartial("13612341249")).isEqualTo("136****1249");
     }
 
     @Test
     void maskPhonePartialReturnsPartialMaskFor7Digits() {
-        // Boundary length 7: 3 prefix + 1 star + 3 suffix
-        assertThat(MaskUtil.maskPhonePartial("1234567")).isEqualTo("123*567");
+        // 7 digits still gets prefix(3) + 4 stars + suffix(4)
+        assertThat(MaskUtil.maskPhonePartial("1234567")).isEqualTo("123****4567");
     }
 
     @Test

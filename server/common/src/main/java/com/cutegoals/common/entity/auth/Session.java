@@ -20,6 +20,13 @@ public class Session {
     @TableField("account_id")
     private Long accountId;
 
+    /**
+     * Child profile ID for child sessions (null for account sessions).
+     * Either accountId or childId must be set.
+     */
+    @TableField("child_id")
+    private Long childId;
+
     @TableField("expires_at")
     private LocalDateTime expiresAt;
 

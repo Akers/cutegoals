@@ -64,11 +64,14 @@ describe('Child pages', () => {
             items: [
               {
                 id: 1,
-                templateTitle: '整理房间',
+                childId: 1,
+                templateId: 1,
+                difficultyId: 1,
+                snapshotTemplateName: '整理房间',
+                snapshotDifficultyReward: 10,
                 status: 'PENDING',
                 deadline: `${today}T20:00:00`,
-                points: 10,
-                isOverdue: false,
+                overdue: false,
               },
             ],
           },

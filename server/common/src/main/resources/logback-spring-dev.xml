@@ -44,6 +44,21 @@
         </encoder>
     </appender>
 
+    <!-- Suppress MyBatis SQL parameter logging at DEBUG level to prevent phone number leakage -->
+    <!-- NOTE: org.mybatis / org.apache.ibatis loggers don't cover mapper-class logs;
+         MyBatis-Plus uses the mapper class fully qualified name as logger. -->
+    <logger name="org.mybatis" level="INFO"/>
+    <logger name="org.apache.ibatis" level="INFO"/>
+    <!-- Suppress mapper-level DEBUG logs to hide SQL parameters; service/controller retain DEBUG -->
+    <logger name="com.cutegoals.auth.mapper" level="INFO"/>
+    <logger name="com.cutegoals.family.mapper" level="INFO"/>
+    <logger name="com.cutegoals.task.mapper" level="INFO"/>
+    <logger name="com.cutegoals.points.mapper" level="INFO"/>
+    <logger name="com.cutegoals.prize.mapper" level="INFO"/>
+    <logger name="com.cutegoals.exchange.mapper" level="INFO"/>
+    <logger name="com.cutegoals.instancemanagement.mapper" level="INFO"/>
+    <logger name="com.cutegoals.taskreview.mapper" level="INFO"/>
+
     <!-- Root logger: INFO and above to both console and file -->
     <root level="INFO">
         <appender-ref ref="JSON_CONSOLE"/>

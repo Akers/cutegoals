@@ -9,7 +9,7 @@ import {
   FileTextOutlined,
   HeartOutlined,
 } from '@ant-design/icons';
-import { useAuth } from '@/shared/auth';
+import { useAuth, maskPhone } from '@/shared/auth';
 import { adminTheme } from '@/styles/themes';
 
 export default function AdminLayout() {
@@ -42,7 +42,7 @@ export default function AdminLayout() {
         }}
         avatarProps={{
           src: undefined,
-          title: account?.nickname ?? account?.phone ?? 'Admin',
+          title: account?.nickname ?? maskPhone(account?.phone) ?? 'Admin',
         }}
         actionsRender={(props) => {
           if (props.isMobile) return [];

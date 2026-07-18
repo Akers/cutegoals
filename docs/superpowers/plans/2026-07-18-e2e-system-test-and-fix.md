@@ -1,3 +1,7 @@
+---
+archived-with: 2026-07-18-e2e-system-test-and-fix
+status: final
+---
 # E2E 系统测试与修复 — 实施计划
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
@@ -42,21 +46,21 @@ base-ref: dfd0d6f6eaecfcd6469ad4d78b1674af3b815b34
 
 **验证手段**：`redis-cli -h localhost -p 6379 ping` 返回 PONG
 
-- [ ] **Step 1: 确认 docker-compose 文件存在**
+- [x] **Step 1: 确认 docker-compose 文件存在**
 
 ```bash
 ls -la deploy/docker-compose.yml
 # 预期：文件存在，包含 mit-modelide-core-redis 服务
 ```
 
-- [ ] **Step 2: 启动 Redis 容器**
+- [x] **Step 2: 启动 Redis 容器**
 
 ```bash
 docker-compose -f deploy/docker-compose.yml up -d mit-modelide-core-redis
 # 预期：Container started, :6379 监听
 ```
 
-- [ ] **Step 3: 验证 Redis 可用**
+- [x] **Step 3: 验证 Redis 可用**
 
 ```bash
 redis-cli -h localhost -p 6379 ping
@@ -66,7 +70,7 @@ ss -tlnp | grep 6379
 # 预期：LISTEN 状态
 ```
 
-- [ ] **Step 4: 记录到 test-progress.md**（创建初始文件）
+- [x] **Step 4: 记录到 test-progress.md**（创建初始文件）
 
 ```bash
 mkdir -p openspec/changes/e2e-system-test-and-fix/reports/evidence/network
@@ -91,12 +95,12 @@ cat > openspec/changes/e2e-system-test-and-fix/reports/test-progress.md << 'EOF'
 
 ## 模块汇总
 
-- [ ] A admin
-- [ ] P parent
-- [ ] C child
-- [ ] X cross-module
-- [ ] I invariants
-- [ ] S security
+- [x] A admin
+- [x] P parent
+- [x] C child
+- [x] X cross-module
+- [x] I invariants
+- [x] S security
 EOF
 ```
 
@@ -104,14 +108,14 @@ EOF
 
 **验证手段**：psql 查询 `\dt` 确认 schema cutegoals 中表清单可见
 
-- [ ] **Step 1: 测试连接**
+- [x] **Step 1: 测试连接**
 
 ```bash
 psql -h localhost -p 35432 -U cutegoals -d cutegoals -c "SELECT current_database(), current_schema;"
 # 预期：显示 cutegoals / cutegoals
 ```
 
-- [ ] **Step 2: 记录连接信息**
+- [x] **Step 2: 记录连接信息**
 
 ```bash
 psql -h localhost -p 35432 -U cutegoals -d cutegoals -c "\dt" -o /dev/null
@@ -122,14 +126,14 @@ echo "PostgreSQL :35432 connected successfully" >> reports/test-progress.md
 
 **Design Doc §9**：若 `reset-dev-db.sh` 非零退出，立即停止，问用户是否手动恢复 DB
 
-- [ ] **Step 1: 记录重置前表清单**
+- [x] **Step 1: 记录重置前表清单**
 
 ```bash
 psql -h localhost -p 35432 -U cutegoals -d cutegoals -c "\dt" > /tmp/before-reset-tables.txt
 wc -l /tmp/before-reset-tables.txt
 ```
 
-- [ ] **Step 2: 执行重置脚本**
+- [x] **Step 2: 执行重置脚本**
 
 ```bash
 bash scripts/reset-dev-db.sh
@@ -137,7 +141,7 @@ bash scripts/reset-dev-db.sh
 echo "Reset exit code: $?"
 ```
 
-- [ ] **Step 3: 记录重置后表清单**
+- [x] **Step 3: 记录重置后表清单**
 
 ```bash
 psql -h localhost -p 35432 -U cutegoals -d cutegoals -c "\dt" > /tmp/after-reset-tables.txt
@@ -145,7 +149,7 @@ diff /tmp/before-reset-tables.txt /tmp/after-reset-tables.txt || true
 # 预期：可能存在差异（schema 重建前后）；记录到 reports
 ```
 
-- [ ] **Step 4: 确认 health endpoint 可用**
+- [x] **Step 4: 确认 health endpoint 可用**
 
 ```
 等待后端启动后才能验证，在 Task A-4 完成后补执行 curl /api/health
@@ -155,14 +159,14 @@ diff /tmp/before-reset-tables.txt /tmp/after-reset-tables.txt || true
 
 **Design Doc §9**：若启动失败或 `/api/health` 超时/非 UP，记录 Critical bug-001，跳过后端依赖用例
 
-- [ ] **Step 1: 清理上次构建**
+- [x] **Step 1: 清理上次构建**
 
 ```bash
 cd server && mvn clean -pl web -am -DskipTests -q 2>&1 | tail -5
 # 预期：BUILD SUCCESS
 ```
 
-- [ ] **Step 2: 后台启动后端，日志重定向到 reports/backend.log**
+- [x] **Step 2: 后台启动后端，日志重定向到 reports/backend.log**
 
 ```bash
 cd server && nohup mvn -pl web -am spring-boot:run -DskipTests > ../reports/backend.log 2>&1 &
@@ -170,7 +174,7 @@ echo "Backend PID: $!"
 # 预期：进程启动，持续写入日志
 ```
 
-- [ ] **Step 3: 等待 :8080 就绪（最长 180s）**
+- [x] **Step 3: 等待 :8080 就绪（最长 180s）**
 
 ```bash
 for i in $(seq 1 36); do
@@ -184,7 +188,7 @@ done
 # 若超时：读取 backend.log 尾 50 行定位问题，记录 Critical bug-001
 ```
 
-- [ ] **Step 4: 验证后端日志无 ERROR**
+- [x] **Step 4: 验证后端日志无 ERROR**
 
 ```bash
 grep -c "ERROR" reports/backend.log || echo "No ERROR in backend.log"
@@ -194,7 +198,7 @@ grep "Started Application" reports/backend.log
 
 ### Task A-5: 启动前端（UmiJS :5173）
 
-- [ ] **Step 1: 确认前端技术栈**
+- [x] **Step 1: 确认前端技术栈**
 
 ```bash
 # 从 web/package.json 判断
@@ -203,21 +207,21 @@ grep -E '"umi|"vite|"dev"' web/package.json | head -5
 ls web/src/.umi 2>/dev/null && echo "UmiJS confirmed"
 ```
 
-- [ ] **Step 2: 安装依赖（如 node_modules 不存在或 package-lock.json 有变更）**
+- [x] **Step 2: 安装依赖（如 node_modules 不存在或 package-lock.json 有变更）**
 
 ```bash
 cd web && npm install 2>&1 | tail -3
 # 预期：added N packages 或 up to date
 ```
 
-- [ ] **Step 3: 后台启动前端，日志重定向**
+- [x] **Step 3: 后台启动前端，日志重定向**
 
 ```bash
 cd web && nohup npm run dev > ../reports/frontend.log 2>&1 &
 echo "Frontend PID: $!"
 ```
 
-- [ ] **Step 4: 等待 :5173 就绪（最长 120s）**
+- [x] **Step 4: 等待 :5173 就绪（最长 120s）**
 
 ```bash
 for i in $(seq 1 24); do
@@ -233,7 +237,7 @@ done
 
 ### Task A-6: 验证前端 API 代理正常
 
-- [ ] **Step 1: 从未登录状态请求一个需要认证的 API**
+- [x] **Step 1: 从未登录状态请求一个需要认证的 API**
 
 ```bash
 # 前端 /api 代理 → 后端 :8080：发送任意请求验证代理链
@@ -245,7 +249,7 @@ DIFF=$(diff <(curl -s http://localhost:5173/api/health) <(curl -s http://localho
 if [ -z "$DIFF" ]; then echo "API proxy OK: identical responses"; else echo "API proxy MISMATCH"; fi
 ```
 
-- [ ] **Step 2: 记录验证结果到 test-progress.md**
+- [x] **Step 2: 记录验证结果到 test-progress.md**
 
 ```bash
 echo "- [x] A-6: API proxy verified (5173 → 8080)" >> reports/test-progress.md
@@ -262,14 +266,14 @@ echo "- [x] A-6: API proxy verified (5173 → 8080)" >> reports/test-progress.md
 
 ### Task B-1: 调研数据库表结构
 
-- [ ] **Step 1: 列出所有业务表**
+- [x] **Step 1: 列出所有业务表**
 
 ```bash
 psql -h localhost -p 35432 -U cutegoals -d cutegoals -c "\dt" | grep -vE 'schema_migrations|flyway|DATABASECHANGELOG'
 # 输出保存到 reports/evidence/tables-inventory.txt
 ```
 
-- [ ] **Step 2: 调研关键不变量表（Design Doc §5.1）**
+- [x] **Step 2: 调研关键不变量表（Design Doc §5.1）**
 
 ```bash
 # points 模块
@@ -295,7 +299,7 @@ psql -h localhost -p 35432 -U cutegoals -d cutegoals -c "\d child_profile"
 psql -h localhost -p 35432 -U cutegoals -d cutegoals -c "\d device_authorization"
 ```
 
-- [ ] **Step 3: 记录实际表名与 Design Doc 的偏差（如有）**
+- [x] **Step 3: 记录实际表名与 Design Doc 的偏差（如有）**
 
 ```bash
 # 比较实际表名与 Design Doc §5.1 列出的预期表名
@@ -304,7 +308,7 @@ psql -h localhost -p 35432 -U cutegoals -d cutegoals -c "\d device_authorization
 
 ### Task B-2: 创建 DB 检查与安全 helper 脚本
 
-- [ ] **Step 1: 创建 `reports/helpers/db-checks.sh`**
+- [x] **Step 1: 创建 `reports/helpers/db-checks.sh`**
 
 Design Doc §5.4 定义的封装脚本：
 
@@ -346,7 +350,7 @@ DBEOF
 chmod +x reports/helpers/db-checks.sh
 ```
 
-- [ ] **Step 2: 创建 `reports/helpers/security-check.sh`**
+- [x] **Step 2: 创建 `reports/helpers/security-check.sh`**
 
 Design Doc §6.4 定义的三层安全扫描脚本：
 
@@ -390,7 +394,7 @@ chmod +x reports/helpers/security-check.sh
 **Design Doc 引用**：§4.2 Case ID 命名规则、§5.3 不变量用例、§6.5 安全用例  
 **验收标准**：计划必须覆盖 admin/parent/child 三端全部 UI 可达功能 + 6 条不变量用例 + 6 条安全用例，按模块分组
 
-- [ ] **Step 1: 创建 test-plan.md 整体结构**
+- [x] **Step 1: 创建 test-plan.md 整体结构**
 
 ```bash
 cat > reports/test-plan.md << 'PLANEOF'
@@ -492,7 +496,7 @@ wc -l reports/test-plan.md
 
 ### Task C-0: 准备 agent-browser
 
-- [ ] **Step 1: 加载 agent-browser skill，确认 CLI 可用**
+- [x] **Step 1: 加载 agent-browser skill，确认 CLI 可用**
 
 ```bash
 # 验证 agent-browser 命令可用
@@ -500,7 +504,7 @@ which agent-browser 2>/dev/null || npm list -g agent-browser 2>/dev/null || pip 
 # 若不可用：触发异常处理（Design Doc §9）
 ```
 
-- [ ] **Step 2: 创建三套独立 browser context 目录**
+- [x] **Step 2: 创建三套独立 browser context 目录**
 
 ```bash
 mkdir -p reports/evidence/network
@@ -508,7 +512,7 @@ mkdir -p reports/evidence/storage
 # agent-browser context 隔离：admin/parent/child 使用独立 profile 目录
 ```
 
-- [ ] **Step 3: 从 admin 身份登录，预热 browser context**
+- [x] **Step 3: 从 admin 身份登录，预热 browser context**
 
 ```
 agent-browser 指令：打开 http://localhost:5173/admin
@@ -524,7 +528,7 @@ agent-browser 指令：打开 http://localhost:5173/admin
 **产物**：`reports/round-1-admin.md`  
 **安全点**：本任务完成后触发上下文压缩安全点 1
 
-- [ ] **Step 1: 执行 A-001 admin 登录**
+- [x] **Step 1: 执行 A-001 admin 登录**
 
 ```
 agent-browser admin context：
@@ -537,7 +541,7 @@ agent-browser admin context：
 7. 更新 test-progress.md：A-001 行
 ```
 
-- [ ] **Step 2: 执行 A-002 概览面板**
+- [x] **Step 2: 执行 A-002 概览面板**
 
 ```
 agent-browser admin context：
@@ -547,7 +551,7 @@ agent-browser admin context：
 4. 更新 test-progress.md
 ```
 
-- [ ] **Step 3: 执行 A-003 账号管理**
+- [x] **Step 3: 执行 A-003 账号管理**
 
 ```
 agent-browser admin context：
@@ -558,7 +562,7 @@ agent-browser admin context：
 5. 更新 test-progress.md
 ```
 
-- [ ] **Step 4: 执行 A-004 审计日志**
+- [x] **Step 4: 执行 A-004 审计日志**
 
 ```
 agent-browser admin context：
@@ -569,7 +573,7 @@ agent-browser admin context：
 5. 更新 test-progress.md
 ```
 
-- [ ] **Step 5: 执行 A-005 健康检查**
+- [x] **Step 5: 执行 A-005 健康检查**
 
 ```
 agent-browser admin context：
@@ -579,7 +583,7 @@ agent-browser admin context：
 4. 更新 test-progress.md
 ```
 
-- [ ] **Step 6: 生成 round-1-admin.md**
+- [x] **Step 6: 生成 round-1-admin.md**
 
 ```bash
 cat > reports/round-1-admin.md << 'EOF'
@@ -603,13 +607,13 @@ EOF
 # 从 test-progress.md 同步结果到本文件
 ```
 
-- [ ] **Step 7: 退出 admin context（清除 cookie/localStorage，Design Doc §9.2）**
+- [x] **Step 7: 退出 admin context（清除 cookie/localStorage，Design Doc §9.2）**
 
 ```
 agent-browser 执行登出操作，关闭 admin browser context
 ```
 
-- [ ] **Step 8: ✦ 上下文压缩安全点 1 ✦**
+- [x] **Step 8: ✦ 上下文压缩安全点 1 ✦**
 
 确保 `reports/round-1-admin.md` 与 `reports/test-progress.md` 已落盘，记录当前上下文状态。
 
@@ -618,7 +622,7 @@ agent-browser 执行登出操作，关闭 admin browser context
 **产物**：融入 `reports/round-1-parent.md`（全端汇总）  
 **注意**：Parent 端用例较多，分 6 个子模块（P-001~P-020），每个子模块完成后更新 test-progress.md
 
-- [ ] **Step 1: 执行 P-001 家长登录（parent context）**
+- [x] **Step 1: 执行 P-001 家长登录（parent context）**
 
 ```
 agent-browser parent context（新 context）：
@@ -631,7 +635,7 @@ agent-browser parent context（新 context）：
 7. 更新 test-progress.md
 ```
 
-- [ ] **Step 2: 执行 P-002 家庭信息查看 + P-003 家庭信息编辑**
+- [x] **Step 2: 执行 P-002 家庭信息查看 + P-003 家庭信息编辑**
 
 ```
 agent-browser parent context：
@@ -644,7 +648,7 @@ agent-browser parent context：
 7. 更新 test-progress.md
 ```
 
-- [ ] **Step 3: 执行 P-004 添加孩子档案（cici）**
+- [x] **Step 3: 执行 P-004 添加孩子档案（cici）**
 
 ```
 agent-browser parent context：
@@ -657,7 +661,7 @@ agent-browser parent context：
 7. 更新 test-progress.md
 ```
 
-- [ ] **Step 4: 执行 P-005 添加家长账号 + P-006 设备授权**
+- [x] **Step 4: 执行 P-005 添加家长账号 + P-006 设备授权**
 
 ```
 agent-browser parent context：
@@ -671,7 +675,7 @@ agent-browser parent context：
 
 ### Task C-3: Parent 端测试 — 任务模块
 
-- [ ] **Step 1: 执行 P-007 创建任务模板**
+- [x] **Step 1: 执行 P-007 创建任务模板**
 
 ```
 agent-browser parent context：
@@ -683,7 +687,7 @@ agent-browser parent context：
 6. 更新 test-progress.md
 ```
 
-- [ ] **Step 2: 执行 P-008 任务列表查看**
+- [x] **Step 2: 执行 P-008 任务列表查看**
 
 ```
 agent-browser parent context：
@@ -693,7 +697,7 @@ agent-browser parent context：
 4. 更新 test-progress.md
 ```
 
-- [ ] **Step 3: 执行 P-009 孩子完成情况查看**
+- [x] **Step 3: 执行 P-009 孩子完成情况查看**
 
 ```
 agent-browser parent context：
@@ -705,7 +709,7 @@ agent-browser parent context：
 
 ### Task C-4: Parent 端测试 — 审核模块
 
-- [ ] **Step 1: 执行 P-010 审核通过**
+- [x] **Step 1: 执行 P-010 审核通过**
 
 ```
 准备工作：需先切到 child context 提交一个任务，再切回 parent context
@@ -720,7 +724,7 @@ agent-browser parent context：
 6. 更新 test-progress.md
 ```
 
-- [ ] **Step 2: 执行 P-011 审核驳回**
+- [x] **Step 2: 执行 P-011 审核驳回**
 
 ```
 agent-browser parent context：
@@ -731,7 +735,7 @@ agent-browser parent context：
 4. 更新 test-progress.md
 ```
 
-- [ ] **Step 3: 执行 P-012 审核幂等验证**
+- [x] **Step 3: 执行 P-012 审核幂等验证**
 
 ```
 agent-browser parent context：
@@ -748,7 +752,7 @@ agent-browser parent context：
 
 ### Task C-5: Parent 端测试 — 积分模块
 
-- [ ] **Step 1: 执行 P-013 积分流水查看**
+- [x] **Step 1: 执行 P-013 积分流水查看**
 
 ```
 agent-browser parent context：
@@ -760,7 +764,7 @@ agent-browser parent context：
 5. 更新 test-progress.md
 ```
 
-- [ ] **Step 2: 执行 P-014 积分调整**
+- [x] **Step 2: 执行 P-014 积分调整**
 
 ```
 agent-browser parent context：
@@ -776,7 +780,7 @@ agent-browser parent context：
 
 ### Task C-6: Parent 端测试 — 奖品模块
 
-- [ ] **Step 1: 执行 P-015 创建奖品**
+- [x] **Step 1: 执行 P-015 创建奖品**
 
 ```
 agent-browser parent context：
@@ -787,7 +791,7 @@ agent-browser parent context：
 5. 更新 test-progress.md
 ```
 
-- [ ] **Step 2: 执行 P-016 创建盲盒 + P-017 库存管理**
+- [x] **Step 2: 执行 P-016 创建盲盒 + P-017 库存管理**
 
 ```
 agent-browser parent context：
@@ -803,7 +807,7 @@ agent-browser parent context：
 
 ### Task C-7: Parent 端测试 — 兑换模块
 
-- [ ] **Step 1: 执行 P-018 查看兑换申请 + P-019 核销**
+- [x] **Step 1: 执行 P-018 查看兑换申请 + P-019 核销**
 
 ```
 准备工作：需有孩子提交的兑换申请
@@ -819,7 +823,7 @@ agent-browser parent context：
 7. 更新 test-progress.md
 ```
 
-- [ ] **Step 2: 执行 P-020 核销幂等验证**
+- [x] **Step 2: 执行 P-020 核销幂等验证**
 
 ```
 agent-browser parent context：
@@ -834,13 +838,13 @@ agent-browser parent context：
 5. 更新 test-progress.md
 ```
 
-- [ ] **Step 3: 登出 parent context（清除 cookie）**
+- [x] **Step 3: 登出 parent context（清除 cookie）**
 
 ```
 agent-browser 执行 parent 登出，关闭 parent browser context
 ```
 
-- [ ] **Step 4: ✦ 上下文压缩安全点 2 ✦**
+- [x] **Step 4: ✦ 上下文压缩安全点 2 ✦**
 
 确保 `reports/round-1-parent.md` 已生成或 test-progress.md 中 parent 用例全部有状态。
 
@@ -848,7 +852,7 @@ agent-browser 执行 parent 登出，关闭 parent browser context
 
 **产物**：`reports/round-1-child.md`
 
-- [ ] **Step 1: 执行 C-001 孩子设备授权登录（child context）**
+- [x] **Step 1: 执行 C-001 孩子设备授权登录（child context）**
 
 ```
 agent-browser child context（新 context）：
@@ -861,7 +865,7 @@ agent-browser child context（新 context）：
 7. 更新 test-progress.md
 ```
 
-- [ ] **Step 2: 执行 C-002 今日任务查看 + C-003 提交任务**
+- [x] **Step 2: 执行 C-002 今日任务查看 + C-003 提交任务**
 
 ```
 agent-browser child context：
@@ -873,7 +877,7 @@ agent-browser child context：
 6. 更新 test-progress.md
 ```
 
-- [ ] **Step 3: 执行 C-004 奖品列表查看**
+- [x] **Step 3: 执行 C-004 奖品列表查看**
 
 ```
 agent-browser child context：
@@ -883,7 +887,7 @@ agent-browser child context：
 4. 更新 test-progress.md
 ```
 
-- [ ] **Step 4: 执行 C-005 兑换奖品**
+- [x] **Step 4: 执行 C-005 兑换奖品**
 
 ```
 agent-browser child context：
@@ -896,7 +900,7 @@ agent-browser child context：
 5. 更新 test-progress.md
 ```
 
-- [ ] **Step 5: 执行 C-006 盲盒抽取**
+- [x] **Step 5: 执行 C-006 盲盒抽取**
 
 ```
 agent-browser child context：
@@ -908,7 +912,7 @@ agent-browser child context：
 5. 更新 test-progress.md
 ```
 
-- [ ] **Step 6: 执行 C-007 历史记录**
+- [x] **Step 6: 执行 C-007 历史记录**
 
 ```
 agent-browser child context：
@@ -918,7 +922,7 @@ agent-browser child context：
 4. 更新 test-progress.md
 ```
 
-- [ ] **Step 7: 登出 child context，生成 round-1-child.md**
+- [x] **Step 7: 登出 child context，生成 round-1-child.md**
 
 ```
 agent-browser 执行 child 登出，关闭 child browser context
@@ -946,14 +950,14 @@ cat > reports/round-1-child.md << 'EOF'
 EOF
 ```
 
-- [ ] **Step 8: ✦ 上下文压缩安全点 3 ✦**
+- [x] **Step 8: ✦ 上下文压缩安全点 3 ✦**
 
 ### Task C-9: 跨模块端到端测试
 
 **产物**：`reports/round-1-cross.md`  
 **Design Doc 引用**：§3.1 C4
 
-- [ ] **Step 1: 执行 X-001 全链路验证**
+- [x] **Step 1: 执行 X-001 全链路验证**
 
 ```
 完整链路（可能涉及切换 3 个 browser context）：
@@ -970,7 +974,7 @@ EOF
 8. 更新 test-progress.md
 ```
 
-- [ ] **Step 2: 生成 round-1-cross.md，记录全链路结果**
+- [x] **Step 2: 生成 round-1-cross.md，记录全链路结果**
 
 ```bash
 cat > reports/round-1-cross.md << 'EOF'
@@ -987,7 +991,7 @@ cat > reports/round-1-cross.md << 'EOF'
 EOF
 ```
 
-- [ ] **Step 3: ✦ 上下文压缩安全点 4 ✦**
+- [x] **Step 3: ✦ 上下文压缩安全点 4 ✦**
 
 ### Task C-10: 不变量验证
 
@@ -995,7 +999,7 @@ EOF
 **Design Doc 引用**：§5.3 不变量用例 I-001~I-006、§5.2 统一验证结构  
 **验收标准**：6 条不变量用例全部执行，每例含操作前/后 DB 快照哈希
 
-- [ ] **Step 1: 执行 I-001 积分流水 append-only 验证**
+- [x] **Step 1: 执行 I-001 积分流水 append-only 验证**
 
 ```bash
 # 操作前快照
@@ -1017,7 +1021,7 @@ if [ "$VIOLATIONS" -eq 0 ]; then echo "I-001: APPEND-ONLY OK"; else echo "I-001:
 # 更新 test-progress.md
 ```
 
-- [ ] **Step 2: 执行 I-002 积分余额非负验证**
+- [x] **Step 2: 执行 I-002 积分余额非负验证**
 
 ```
 场景：尝试构造余额为负的操作
@@ -1036,7 +1040,7 @@ if [ "$BALANCE" -ge 0 ]; then echo "I-002: BALANCE NON-NEGATIVE OK"; else echo "
 更新 test-progress.md
 ```
 
-- [ ] **Step 3: 执行 I-003 审核幂等验证**
+- [x] **Step 3: 执行 I-003 审核幂等验证**
 
 ```bash
 # 操作前快照
@@ -1053,7 +1057,7 @@ if [ "$HASH_BEFORE" = "$HASH_AFTER" ]; then echo "I-003: AUDIT IDEMPOTENT OK"; e
 # 更新 test-progress.md
 ```
 
-- [ ] **Step 4: 执行 I-004 兑换快照不可变验证**
+- [x] **Step 4: 执行 I-004 兑换快照不可变验证**
 
 ```bash
 # 操作前快照
@@ -1066,7 +1070,7 @@ HASH_BEFORE=$(./reports/helpers/db-checks.sh snapshot-hash <order_id>)
 # 更新 test-progress.md
 ```
 
-- [ ] **Step 5: 执行 I-005 库存非负验证**
+- [x] **Step 5: 执行 I-005 库存非负验证**
 
 ```
 场景：尝试超额兑换
@@ -1084,7 +1088,7 @@ if [ "$STOCK" -ge 0 ]; then echo "I-005: STOCK NON-NEGATIVE OK"; else echo "I-00
 更新 test-progress.md
 ```
 
-- [ ] **Step 6: 执行 I-006 核销幂等验证**
+- [x] **Step 6: 执行 I-006 核销幂等验证**
 
 ```bash
 # agent-browser 操作：对已核销的订单再次点击核销
@@ -1096,7 +1100,7 @@ psql -c "SELECT status, stock_deducted FROM exchange_order WHERE id='<order_id>'
 # 更新 test-progress.md
 ```
 
-- [ ] **Step 7: 生成 round-1-invariants.md**
+- [x] **Step 7: 生成 round-1-invariants.md**
 
 ```bash
 cat > reports/round-1-invariants.md << 'EOF'
@@ -1118,7 +1122,7 @@ cat > reports/round-1-invariants.md << 'EOF'
 EOF
 ```
 
-- [ ] **Step 8: ✦ 上下文压缩安全点 5 ✦**
+- [x] **Step 8: ✦ 上下文压缩安全点 5 ✦**
 
 ### Task C-11: 不变量违反紧急处理（条件执行）
 
@@ -1128,8 +1132,8 @@ EOF
 - 截图 + 后端日志 + 网络响应全部留证
 - 跳过依赖该不变量的后续用例
 
-- [ ] **Step 1: 检查 C-10 结果，如有不变量违反则执行紧急处理流程**
-- [ ] **Step 2: 将 dump 和证据归档到 `reports/evidence/`**
+- [x] **Step 1: 检查 C-10 结果，如有不变量违反则执行紧急处理流程**
+- [x] **Step 2: 将 dump 和证据归档到 `reports/evidence/`**
 
 ### Task C-12: 安全基线验证
 
@@ -1137,7 +1141,7 @@ EOF
 **Design Doc 引用**：§6.2 三层观测矩阵、§6.5 安全用例 S-001~S-006  
 **验收标准**：6 条安全用例全部覆盖三层观测
 
-- [ ] **Step 1: 执行 S-001 parent 登录响应安全检查**
+- [x] **Step 1: 执行 S-001 parent 登录响应安全检查**
 
 ```
 Layer 1 - API 响应：
@@ -1154,7 +1158,7 @@ Layer 3 - 后端日志：
 ./reports/helpers/security-check.sh logs-since <test-start>
 ```
 
-- [ ] **Step 2: 执行 S-002 admin 登录响应安全检查**
+- [x] **Step 2: 执行 S-002 admin 登录响应安全检查**
 
 ```
 Layer 1：从 A-001 的 API 响应中检查
@@ -1162,7 +1166,7 @@ Layer 2：admin context 的浏览器存储扫描
 Layer 3：后端日志扫描
 ```
 
-- [ ] **Step 3: 执行 S-003 child 设备授权（PIN 输入）安全检查**
+- [x] **Step 3: 执行 S-003 child 设备授权（PIN 输入）安全检查**
 
 ```
 Layer 1：child 登录 API 响应中检查 PIN 明文
@@ -1170,14 +1174,14 @@ Layer 2：child context 的浏览器存储扫描
 Layer 3：后端日志扫描 PIN="180614" 或 "pin=180614"
 ```
 
-- [ ] **Step 4: 执行 S-004 任务审核 API 响应 + S-005 兑换 API 响应**
+- [x] **Step 4: 执行 S-004 任务审核 API 响应 + S-005 兑换 API 响应**
 
 ```
 通过 agent-browser 捕获审核 API 和兑换 API 的网络响应
 检查是否返回敏感字段
 ```
 
-- [ ] **Step 5: 执行 S-006 后端日志全量扫描**
+- [x] **Step 5: 执行 S-006 后端日志全量扫描**
 
 ```bash
 # 全量扫描整个测试期间的 backend.log
@@ -1186,7 +1190,7 @@ Layer 3：后端日志扫描 PIN="180614" 或 "pin=180614"
 # 任何命中 → Critical bug（Design Doc §6.2）
 ```
 
-- [ ] **Step 6: 生成 round-1-security.md**
+- [x] **Step 6: 生成 round-1-security.md**
 
 ```bash
 cat > reports/round-1-security.md << 'EOF'
@@ -1206,7 +1210,7 @@ cat > reports/round-1-security.md << 'EOF'
 EOF
 ```
 
-- [ ] **Step 7: ✦ 上下文压缩安全点 6 ✦**
+- [x] **Step 7: ✦ 上下文压缩安全点 6 ✦**
 
 ---
 
@@ -1218,7 +1222,7 @@ EOF
 
 ### Task D-1: 汇总 `reports/round-1.md`
 
-- [ ] **Step 1: 从各子报告和 test-progress.md 提取全部 bug 清单**
+- [x] **Step 1: 从各子报告和 test-progress.md 提取全部 bug 清单**
 
 ```bash
 # 汇总格式
@@ -1289,15 +1293,15 @@ cat > reports/round-1.md << 'EOF'
 EOF
 ```
 
-- [ ] **Step 2: 从 test-progress.md 的 Bug 状态表读取数据，填入 round-1.md**
+- [x] **Step 2: 从 test-progress.md 的 Bug 状态表读取数据，填入 round-1.md**
 
-- [ ] **Step 3: 确认每行数据已填入，无空字段**
+- [x] **Step 3: 确认每行数据已填入，无空字段**
 
 ### Task D-2: 为所有 Bug 创建单文件
 
 **Design Doc 引用**：§7.2 Bug 单文件模板、§7.3 证据目录结构、§7.4 编号规则
 
-- [ ] **Step 1: 为 round-1.md 中每个 bug 创建 `reports/bug-NNN-<slug>.md`**
+- [x] **Step 1: 为 round-1.md 中每个 bug 创建 `reports/bug-NNN-<slug>.md`**
 
 ```bash
 # 每个 bug 使用 Design Doc §7.2 的模板
@@ -1347,11 +1351,11 @@ BUGEOF
 # Critical/High 缺陷额外附根因初判（spec spec.md Req 4 Scenario）
 ```
 
-- [ ] **Step 2: 更新 test-progress.md 中的 Bug 状态表，每个 bug 一行**
+- [x] **Step 2: 更新 test-progress.md 中的 Bug 状态表，每个 bug 一行**
 
-- [ ] **Step 3: 确认所有证据文件路径在 bug-NNN-*.md 中正确引用**
+- [x] **Step 3: 确认所有证据文件路径在 bug-NNN-*.md 中正确引用**
 
-- [ ] **Step 4: ✦ 上下文压缩安全点 7 ✦（进入修复阶段前）**
+- [x] **Step 4: ✦ 上下文压缩安全点 7 ✦（进入修复阶段前）**
 
 确保 `reports/round-1.md`、所有 `bug-NNN-*.md`、`reports/test-progress.md` 已落盘。这是进入修复阶段前最后的全量压缩点。
 
@@ -1368,8 +1372,8 @@ BUGEOF
 
 **模块依赖**：无（基础模块）
 
-- [ ] **Step 1: 从 round-1.md 过滤 auth 模块的 bug，按 severity 排序**
-- [ ] **Step 2: 对每个 auth bug 执行修复 SOP（Design Doc §8.1）**
+- [x] **Step 1: 从 round-1.md 过滤 auth 模块的 bug，按 severity 排序**
+- [x] **Step 2: 对每个 auth bug 执行修复 SOP（Design Doc §8.1）**
 
 ```bash
 # 每 bug SOP：
@@ -1383,7 +1387,7 @@ BUGEOF
 # f) bug-NNN 单文件完成
 ```
 
-- [ ] **Step 3: 模块阶段回归**
+- [x] **Step 3: 模块阶段回归**
 
 ```bash
 # 该模块全部 bug Status=fixed 后：
@@ -1392,7 +1396,7 @@ BUGEOF
 # c) 写 reports/round-2-auth.md
 ```
 
-- [ ] **Step 4: 批量 commit**
+- [x] **Step 4: 批量 commit**
 
 ```bash
 git add server/...  # auth 模块改动的文件
@@ -1408,91 +1412,91 @@ git commit -m "fix(e2e/round-1/auth): bug-NNN, bug-NNN, ...
 - 模块阶段回归：reports/round-2-auth.md"
 ```
 
-- [ ] **Step 5: ✦ 上下文压缩安全点（auth commit 后）✦**
+- [x] **Step 5: ✦ 上下文压缩安全点（auth commit 后）✦**
 
 ### Task E-2: 修复 family 模块缺陷
 
 **模块依赖**：依赖 auth（用户身份已正确）
 
-- [ ] **Step 1: 从 round-1.md 过滤 family 模块的 bug**
-- [ ] **Step 2: 逐 bug：调研根因→改代码→单 bug 回归（SOP §8.1）**
-- [ ] **Step 3: 模块阶段回归 → 写 round-2-family.md**
-- [ ] **Step 4: 批量 commit**
-- [ ] **Step 5: ✦ 上下文压缩安全点 ✦**
+- [x] **Step 1: 从 round-1.md 过滤 family 模块的 bug**
+- [x] **Step 2: 逐 bug：调研根因→改代码→单 bug 回归（SOP §8.1）**
+- [x] **Step 3: 模块阶段回归 → 写 round-2-family.md**
+- [x] **Step 4: 批量 commit**
+- [x] **Step 5: ✦ 上下文压缩安全点 ✦**
 
 ### Task E-3: 修复 task 模块缺陷
 
 **模块依赖**：依赖 family（家庭和孩子档案就绪）
 
-- [ ] **Step 1: 过滤 task 模块 bug**
-- [ ] **Step 2: 逐 bug 修复（SOP §8.1）**
-- [ ] **Step 3: 模块阶段回归 → 写 round-2-task.md**
-- [ ] **Step 4: 批量 commit**
-- [ ] **Step 5: ✦ 上下文压缩安全点 ✦**
+- [x] **Step 1: 过滤 task 模块 bug**
+- [x] **Step 2: 逐 bug 修复（SOP §8.1）**
+- [x] **Step 3: 模块阶段回归 → 写 round-2-task.md**
+- [x] **Step 4: 批量 commit**
+- [x] **Step 5: ✦ 上下文压缩安全点 ✦**
 
 ### Task E-4: 修复 task-review 模块缺陷
 
 **模块依赖**：依赖 task + points  
 **重点**：审核幂等、事务原子（Design Doc §8 重点标注）
 
-- [ ] **Step 1: 过滤 task-review 模块 bug**
-- [ ] **Step 2: 逐 bug 修复（SOP §8.1），重点验证审核幂等（P-012/I-003）**
-- [ ] **Step 3: 模块阶段回归 → 写 round-2-task-review.md**
-- [ ] **Step 4: 批量 commit**
-- [ ] **Step 5: ✦ 上下文压缩安全点 ✦**
+- [x] **Step 1: 过滤 task-review 模块 bug**
+- [x] **Step 2: 逐 bug 修复（SOP §8.1），重点验证审核幂等（P-012/I-003）**
+- [x] **Step 3: 模块阶段回归 → 写 round-2-task-review.md**
+- [x] **Step 4: 批量 commit**
+- [x] **Step 5: ✦ 上下文压缩安全点 ✦**
 
 ### Task E-5: 修复 points 模块缺陷
 
 **模块依赖**：依赖 task-review（积分产生）  
 **重点**：余额非负、流水不可变（Design Doc §5 核心不变量）
 
-- [ ] **Step 1: 过滤 points 模块 bug**
-- [ ] **Step 2: 逐 bug 修复（SOP §8.1），重点验证 I-001/I-002**
-- [ ] **Step 3: 模块阶段回归 → 写 round-2-points.md**
-- [ ] **Step 4: 批量 commit**
-- [ ] **Step 5: ✦ 上下文压缩安全点 ✦**
+- [x] **Step 1: 过滤 points 模块 bug**
+- [x] **Step 2: 逐 bug 修复（SOP §8.1），重点验证 I-001/I-002**
+- [x] **Step 3: 模块阶段回归 → 写 round-2-points.md**
+- [x] **Step 4: 批量 commit**
+- [x] **Step 5: ✦ 上下文压缩安全点 ✦**
 
 ### Task E-6: 修复 prize 模块缺陷
 
 **模块依赖**：依赖 points（积分购买奖品）
 
-- [ ] **Step 1: 过滤 prize 模块 bug**
-- [ ] **Step 2: 逐 bug 修复（SOP §8.1）**
-- [ ] **Step 3: 模块阶段回归 → 写 round-2-prize.md**
-- [ ] **Step 4: 批量 commit**
-- [ ] **Step 5: ✦ 上下文压缩安全点 ✦**
+- [x] **Step 1: 过滤 prize 模块 bug**
+- [x] **Step 2: 逐 bug 修复（SOP §8.1）**
+- [x] **Step 3: 模块阶段回归 → 写 round-2-prize.md**
+- [x] **Step 4: 批量 commit**
+- [x] **Step 5: ✦ 上下文压缩安全点 ✦**
 
 ### Task E-7: 修复 exchange 模块缺陷
 
 **模块依赖**：依赖 prize + points  
 **重点**：核销幂等、库存扣减原子（Design Doc §5 核心不变量）
 
-- [ ] **Step 1: 过滤 exchange 模块 bug**
-- [ ] **Step 2: 逐 bug 修复（SOP §8.1），重点验证 I-004/I-005/I-006**
-- [ ] **Step 3: 模块阶段回归 → 写 round-2-exchange.md**
-- [ ] **Step 4: 批量 commit**
-- [ ] **Step 5: ✦ 上下文压缩安全点 ✦**
+- [x] **Step 1: 过滤 exchange 模块 bug**
+- [x] **Step 2: 逐 bug 修复（SOP §8.1），重点验证 I-004/I-005/I-006**
+- [x] **Step 3: 模块阶段回归 → 写 round-2-exchange.md**
+- [x] **Step 4: 批量 commit**
+- [x] **Step 5: ✦ 上下文压缩安全点 ✦**
 
 ### Task E-8: 修复 admin 端缺陷
 
 **模块依赖**：独立端（最后修复，避免对其他模块的依赖干扰）
 
-- [ ] **Step 1: 过滤 admin/web 模块的 bug**
-- [ ] **Step 2: 逐 bug 修复（SOP §8.1）**
-- [ ] **Step 3: 模块阶段回归 → 写 round-2-admin.md**
-- [ ] **Step 4: 批量 commit**
-- [ ] **Step 5: ✦ 上下文压缩安全点 ✦**
+- [x] **Step 1: 过滤 admin/web 模块的 bug**
+- [x] **Step 2: 逐 bug 修复（SOP §8.1）**
+- [x] **Step 3: 模块阶段回归 → 写 round-2-admin.md**
+- [x] **Step 4: 批量 commit**
+- [x] **Step 5: ✦ 上下文压缩安全点 ✦**
 
 ### Task E-9: 修复前端 web-frontend 缺陷
 
 **模块依赖**：无后端依赖，Cosmetic 类集中修复  
 **注意**：包括三端 UmiJS 页面的 Cosmetic 级视觉问题
 
-- [ ] **Step 1: 过滤 web-frontend 模块的 bug（含所有 Cosmetic 级）**
-- [ ] **Step 2: 逐 bug 修复（SOP §8.1），重点确认 UI 渲染正确**
-- [ ] **Step 3: 模块阶段回归 → 写 round-2-web-frontend.md**
-- [ ] **Step 4: 批量 commit**
-- [ ] **Step 5: ✦ 上下文压缩安全点 ✦（最后一次修复阶段压缩点）**
+- [x] **Step 1: 过滤 web-frontend 模块的 bug（含所有 Cosmetic 级）**
+- [x] **Step 2: 逐 bug 修复（SOP §8.1），重点确认 UI 渲染正确**
+- [x] **Step 3: 模块阶段回归 → 写 round-2-web-frontend.md**
+- [x] **Step 4: 批量 commit**
+- [x] **Step 5: ✦ 上下文压缩安全点 ✦（最后一次修复阶段压缩点）**
 
 ---
 
@@ -1505,21 +1509,21 @@ git commit -m "fix(e2e/round-1/auth): bug-NNN, bug-NNN, ...
 
 ### Task F-1: 重置数据库并重放完整 test-plan.md
 
-- [ ] **Step 1: 全量重置数据库（Design Doc §9.1 允许最终回归前 reset）**
+- [x] **Step 1: 全量重置数据库（Design Doc §9.1 允许最终回归前 reset）**
 
 ```bash
 bash scripts/reset-dev-db.sh
 # 预期：schema 重建，初始数据可用
 ```
 
-- [ ] **Step 2: 确认环境健康**
+- [x] **Step 2: 确认环境健康**
 
 ```
 curl -s http://localhost:8080/api/health → UP
 curl -s http://localhost:5173 → HTML（UmiJS）
 ```
 
-- [ ] **Step 3: 重放 test-plan.md 全部 45 个用例**
+- [x] **Step 3: 重放 test-plan.md 全部 45 个用例**
 
 ```
 按 test-plan.md 的 Case ID 顺序逐用例执行 agent-browser 操作
@@ -1530,7 +1534,7 @@ curl -s http://localhost:5173 → HTML（UmiJS）
 这些必须在回归中再次验证
 ```
 
-- [ ] **Step 4: 确认所有用例 pass**
+- [x] **Step 4: 确认所有用例 pass**
 
 ```bash
 # 统计
@@ -1541,7 +1545,7 @@ echo "Regression pass count: $PASS_COUNT / 45"
 
 ### Task F-2: 处理回归中发现的新缺陷
 
-- [ ] **Step 1: 如有失败用例 → 记录新 bug（bug-NNN-side 后缀，Design Doc §7.4）**
+- [x] **Step 1: 如有失败用例 → 记录新 bug（bug-NNN-side 后缀，Design Doc §7.4）**
 
 ```
 发现新 bug → 创建 bug-NNN-side-<slug>.md
@@ -1549,11 +1553,11 @@ echo "Regression pass count: $PASS_COUNT / 45"
 → 补充一轮回归 → 写 round-3.md（如有）
 ```
 
-- [ ] **Step 2: 循环直至零缺陷**
+- [x] **Step 2: 循环直至零缺陷**
 
 ### Task F-3: 生成 `reports/final.md`
 
-- [ ] **Step 1: 汇总最终回归结果**
+- [x] **Step 1: 汇总最终回归结果**
 
 ```bash
 cat > reports/final.md << 'EOF'
@@ -1612,7 +1616,7 @@ cat > reports/final.md << 'EOF'
 EOF
 ```
 
-- [ ] **Step 2: 将所有 bug 状态更新为 closed**
+- [x] **Step 2: 将所有 bug 状态更新为 closed**
 
 ```bash
 for f in reports/bug-*.md; do
@@ -1623,7 +1627,7 @@ done
 
 ### Task F-4: 确认所有报告产物齐全
 
-- [ ] **Step 1: 校验 reports/ 目录**
+- [x] **Step 1: 校验 reports/ 目录**
 
 ```bash
 echo "=== 报告产物完整性检查 ==="
@@ -1645,7 +1649,7 @@ evidence_count=$(find reports/evidence -type f 2>/dev/null | wc -l)
 echo "Found $evidence_count evidence files"
 ```
 
-- [ ] **Step 2: 确认 round-1.md 和 final.md 中所有字段填写完整，无空字段**
+- [x] **Step 2: 确认 round-1.md 和 final.md 中所有字段填写完整，无空字段**
 
 ---
 
@@ -1657,7 +1661,7 @@ echo "Found $evidence_count evidence files"
 
 ### Task G-1: 在 design.md 末尾追加测试结果摘要
 
-- [ ] **Step 1: 从 round-1.md 和 final.md 提取统计摘要**
+- [x] **Step 1: 从 round-1.md 和 final.md 提取统计摘要**
 
 ```bash
 # 格式示例
@@ -1692,7 +1696,7 @@ echo "
 
 ### Task G-2: 更新 tasks.md 确认所有任务已完成
 
-- [ ] **Step 1: 在 tasks.md 中将所有 checkbox 标记为完成**
+- [x] **Step 1: 在 tasks.md 中将所有 checkbox 标记为完成**
 
 ```bash
 # 替换所有 [ ] 为 [x]（已在执行过程中逐步标记）
@@ -1702,7 +1706,7 @@ grep -c "\[ \]" openspec/changes/e2e-system-test-and-fix/tasks.md || echo "All t
 
 ### Task G-3: 运行 comet guard 进入 verify 阶段
 
-- [ ] **Step 1: 运行 comet 状态检查**
+- [x] **Step 1: 运行 comet 状态检查**
 
 ```bash
 # 确认设计文档已注册
@@ -1715,8 +1719,8 @@ comet guard e2e-system-test-and-fix verify --apply
 
 ### Task G-4: 按 comet-verify 流程完成验证报告
 
-- [ ] **Step 1: 检查所有产物齐全（同 F-4）**
-- [ ] **Step 2: 验证全部 bug 状态为 closed**
+- [x] **Step 1: 检查所有产物齐全（同 F-4）**
+- [x] **Step 2: 验证全部 bug 状态为 closed**
 
 ```bash
 grep -c "Status: closed" reports/bug-*.md
@@ -1724,7 +1728,7 @@ OPEN_BUGS=$(grep -l "Status: open\|Status: investigating\|Status: in-progress" r
 if [ -n "$OPEN_BUGS" ]; then echo "⚠️ Open bugs exist: $OPEN_BUGS"; else echo "✅ All bugs closed"; fi
 ```
 
-- [ ] **Step 3: 准备归档摘要，准备执行 /comet-verify**
+- [x] **Step 3: 准备归档摘要，准备执行 /comet-verify**
 
 ---
 

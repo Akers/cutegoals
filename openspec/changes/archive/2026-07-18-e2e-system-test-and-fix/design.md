@@ -99,3 +99,22 @@ CuteGoals 2.0 是面向家庭的私有化部署任务与奖励协作平台，由
 
 - 首轮测试启动前是否需要专门准备「初始家庭 + 孩子档案」的种子数据，还是完全依赖现有初始化流程（家长首次登录后创建）？倾向后者，以便同时测试初始化流程本身。
 - 前端实际是 UmiJS（`web/src/.umi`）还是 Vite？需在启动前端 dev server 时确认（`web/package.json` 的 scripts）。
+
+## Stage E/F 执行结果摘要（2026-07-18）
+
+### 修复范围
+- 14 个 bug 全部进入修复阶段
+- 代码层修复：14/14 完成（含 bug-011 的 schema migration V13）
+- 验证 PASS：13/14
+- BLOCKED：1/14（bug-011 schema 改动需 DBA 应用 V13，session 表 owner=pmp 限制）
+
+### 关键工程产物
+- `reports/round-1.md` + `reports/round-2.md`：完整 Round-1 / Round-2 测试报告
+- `reports/bug-001..014-*.md`：14 个 bug 详情文件（含根因/修复方向）
+- `reports/evidence/round-2/`：Stage F 截图证据
+- `reports/helpers/`：db_checks.py / security_checks.py / partial_reset.py
+- `server/common/src/main/resources/db/migration/V13__add_child_session_support.sql`：schema migration
+- `server/common/src/main/java/com/cutegoals/common/config/MybatisPlusConfig.java`：分页拦截器（修 bug-009）
+
+### 待 DBA 完成的 Follow-up
+应用 V13 schema 改动（session 表加 child_id 列、account_id 改 NULL、加 FK 和 CHECK），然后重启后端并回归 C-002~C-007、P-013/P-014、X-001。

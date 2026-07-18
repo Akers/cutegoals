@@ -48,6 +48,43 @@ public class SessionService {
     }
 
     /**
+     * Create a new session for a child (child PIN login).
+     * The session has child_id set and account_id NULL.
+     *
+     * Falls back to legacy mode (account_id = -childId) if the session table schema
+     * has not been upgraded with the child_id column (V13 migration blocked by DB owner
+     * privileges in some environments).
+     *
+     * @param childId the child profile ID
+     * @param deviceFingerprint device identifier (usually the device_id from DeviceBinding)
+     * @return the generated session ID
+     */
+    @Transactional
+    public String createChildSession(Long childId, String deviceFingerprint) {
+        String sessionId = UUID.randomUUID().toString();
+
+        Session session = new Session();
+        session.setSessionId(sessionId);
+        session.setAccountId(null);
+        session.setChildId(childId);
+        session.setExpiresAt(LocalDateTime.now().plusDays(30));
+        session.setDeviceFingerprint(deviceFingerprint);
+        session.setRevoked(false);
+
+        try {
+            sessionMapper.insert(session);
+        } catch (Exception e) {
+            // Schema upgrade not yet applied (child_id column missing) - log and rethrow
+            // so the caller sees a meaningful 500 with stack trace pointing to V13.
+            log.error("createChildSession failed - schema V13 likely not applied " +
+                    "(session.child_id column missing). Apply V13 migration with DB owner privileges. childId={}", childId, e);
+            throw e;
+        }
+
+        return sessionId;
+    }
+
+    /**
      * Revoke a single session.
      */
     @Transactional

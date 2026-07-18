@@ -2,8 +2,9 @@ import { useEffect, useMemo, useState } from 'react';
 import { history } from 'umi';
 import { getClient } from '@shared/api';
 import type { TaskTypeValue } from '@shared/api/types';
-import { Alert, Button, Card, Empty, Input, Modal, Result, Row, Select, Space, Spin, Table, Tag, Typography, message } from 'antd';
+import { Alert, Button, Card, DatePicker, Empty, Input, Modal, Result, Row, Select, Space, Spin, Table, Tag, Typography, message } from 'antd';
 const { TextArea } = Input;
+import dayjs from 'dayjs';
 import { useAuth } from '@shared/auth';
 import { useApi, useFormField, useIdempotencyKey } from '@shared/hooks/useApi';
 import { useOnline } from '@shared/theme';
@@ -30,11 +31,21 @@ interface PageResult<T> {
 }
 
 // Domain types
+interface DeviceBinding {
+  id: number;
+  deviceId: string;
+  status: string;
+  boundBy: number;
+  credential?: string;
+  createdAt: string;
+}
+
 interface Family {
   id: number;
   name: string;
   members: FamilyMember[];
   children: ChildProfile[];
+  devices?: DeviceBinding[];
 }
 
 interface FamilyMember {
@@ -86,12 +97,20 @@ interface TaskTemplate {
 interface TaskAssignment {
   id: number;
   childId: number;
-  childNickname: string;
-  templateTitle: string;
+  templateId: number;
+  difficultyId: number;
   status: string;
   deadline: string;
-  points: number;
-  isOverdue: boolean;
+  snapshotTemplateName: string;
+  snapshotDifficultyName: string;
+  snapshotDifficultyReward: number;
+  snapshotTemplateDescription?: string;
+  snapshotTemplateCategory?: string;
+  snapshotTemplateTaskType?: string;
+  overdue: boolean;
+  version?: number;
+  cancelled?: boolean;
+  cancelledReason?: string;
 }
 
 interface ReviewItem {
@@ -129,13 +148,29 @@ interface BlindBoxCandidate {
 
 interface Exchange {
   id: number;
-  type: 'PRIZE' | 'BLIND_BOX';
-  childNickname: string;
-  targetName: string;
-  pointsCost: number;
-  status: string;
+  childId: number;
+  familyId: number;
+  type: 'DIRECT' | 'BLIND_BOX';
+  status: 'PENDING_FULFILLMENT' | 'FULFILLED' | 'CANCELLED';
+  costPoints: number;
+  idempotencyKey: string;
+  prizeId: number | null;
+  poolId: number | null;
+  resultPrizeId: number | null;
+  fulfilledAt: string | null;
+  fulfilledBy: number | null;
+  cancelledAt: string | null;
+  cancelledBy: number | null;
   createdAt: string;
+  updatedAt: string;
 }
+
+/** 兑换状态 → 中文标签 + Tag 颜色 */
+const EXCHANGE_STATUS_META: Record<string, { label: string; color: string }> = {
+  PENDING_FULFILLMENT: { label: '待核销', color: 'orange' },
+  FULFILLED: { label: '已核销', color: 'green' },
+  CANCELLED: { label: '已取消', color: 'default' },
+};
 
 // Generic helpers
 function usePaginatedData<T>(path: string, filters?: Record<string, string>) {
@@ -233,6 +268,20 @@ export function ParentFamilyPage() {
   const [sending, setSending] = useState(false);
   const [childSaving, setChildSaving] = useState(false);
   const [childSaveError, setChildSaveError] = useState<string | null>(null);
+  const [showEditNameModal, setShowEditNameModal] = useState(false);
+  const familyName = useFormField();
+
+  const handleEditName = async () => {
+    if (!familyName.value.trim()) return;
+    const res = await getClient().put('/family', { name: familyName.value.trim() });
+    if (res.error) {
+      message.error(res.error.message ?? '编辑失败');
+      return;
+    }
+    message.success('家庭名称已更新');
+    setShowEditNameModal(false);
+    await refetch();
+  };
 
   const resetChildForm = () => {
     childNickname.reset();
@@ -352,8 +401,9 @@ export function ParentFamilyPage() {
   return (
     <Space direction="vertical" size="large" style={{ width: '100%' }}>
       <Row justify="space-between" align="middle">
-        <Typography.Title level={4} style={{ margin: 0 }}>家庭</Typography.Title>
+        <Typography.Title level={4} style={{ margin: 0 }}>{data.name}</Typography.Title>
         <Space>
+          <Button onClick={() => { familyName.setValue(data.name); setShowEditNameModal(true); }}>编辑家庭名称</Button>
           <Button onClick={() => setShowInvite(true)}>邀请家长</Button>
           <Button onClick={openNewChild}>添加孩子</Button>
         </Space>
@@ -470,6 +520,21 @@ export function ParentFamilyPage() {
           <div>
             <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>生日</Typography.Text>
             <Input id="child-birthday" type="date" {...childBirthday.inputProps} />
+          </div>
+        </Space>
+      </Modal>
+
+      <Modal
+        open={showEditNameModal}
+        onCancel={() => setShowEditNameModal(false)}
+        title="编辑家庭名称"
+        okText="保存"
+        onOk={handleEditName}
+      >
+        <Space direction="vertical" size="middle" style={{ width: '100%' }}>
+          <div>
+            <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>家庭名称</Typography.Text>
+            <Input id="family-name" {...familyName.inputProps} />
           </div>
         </Space>
       </Modal>
@@ -719,6 +784,11 @@ export function ParentTemplatesPage() {
     await refetch();
   };
 
+  const handleDeleteTemplate = async (id: number) => {
+    await getClient().delete(`/task-templates/${id}`);
+    await refetch();
+  };
+
   if (!online)
     return (
       <Result status="warning" title="当前处于离线状态" subTitle="请检查网络连接，恢复后重试" extra={<Button onClick={refetch}>重试</Button>} />
@@ -769,6 +839,16 @@ export function ParentTemplatesPage() {
                 <Button size="small" onClick={() => toggleEnabled(record)}>
                   {record.enabled ? '停用' : '启用'}
                 </Button>
+                <Button danger size="small" onClick={() => {
+                  Modal.confirm({
+                    title: '确认删除',
+                    content: '删除模板将影响相关任务分配，确认删除？',
+                    okText: '确认删除',
+                    okType: 'danger',
+                    cancelText: '取消',
+                    onOk: () => handleDeleteTemplate(record.id),
+                  });
+                }}>删除</Button>
               </Space>
             ),
           },
@@ -834,6 +914,59 @@ export function ParentTasksPage() {
   const online = useOnline();
   const [assigning, setAssigning] = useState(false);
   const idempotencyKey = useIdempotencyKey();
+
+  // 单任务分配状态
+  const [showSingleAssign, setShowSingleAssign] = useState(false);
+  const singleTemplateId = useFormField();
+  const singleDifficultyId = useFormField();
+  const singleChildId = useFormField();
+  const [singleDeadline, setSingleDeadline] = useState('');
+  const [singleAssigning, setSingleAssigning] = useState(false);
+
+  const selectedSingleTemplate = useMemo(() => {
+    return (templates?.content ?? []).find((t) => String(t.id) === singleTemplateId.value);
+  }, [templates, singleTemplateId.value]);
+
+  const singleEnabledDifficulties = useMemo(() => {
+    return (selectedSingleTemplate?.difficulties ?? []).filter((d) => d.enabled);
+  }, [selectedSingleTemplate]);
+
+  const resetSingleAssignForm = () => {
+    singleTemplateId.reset();
+    singleDifficultyId.reset();
+    singleChildId.reset();
+    setSingleDeadline('');
+  };
+
+  const handleSingleAssign = async () => {
+    const tId = Number(singleTemplateId.value);
+    const dId = Number(singleDifficultyId.value);
+    const cId = Number(singleChildId.value);
+    if (!tId || !dId || !cId) {
+      message.error('请选择模板、难度和孩子');
+      return;
+    }
+    if (!singleDeadline) {
+      message.error('请选择截止日期');
+      return;
+    }
+    setSingleAssigning(true);
+    const res = await getClient().post('/task-assignments', {
+      templateId: tId,
+      childId: cId,
+      difficultyId: dId,
+      deadline: `${singleDeadline}T23:59:59`,
+    });
+    setSingleAssigning(false);
+    if (res.error) {
+      message.error(res.error.message ?? '分配失败');
+      return;
+    }
+    setShowSingleAssign(false);
+    resetSingleAssignForm();
+    message.success('任务已分配');
+    await refetch();
+  };
 
   const selectedTemplate = useMemo(() => {
     return (templates?.content ?? []).find((t) => String(t.id) === templateId.value);
@@ -945,7 +1078,10 @@ export function ParentTasksPage() {
     <Space direction="vertical" size="large" style={{ width: '100%' }}>
       <Row justify="space-between" align="middle">
         <Typography.Title level={4} style={{ margin: 0 }}>任务分配</Typography.Title>
-        <Button onClick={() => { resetAssignForm(); setShowAssign(true); }}>批量分配</Button>
+        <Space>
+          <Button onClick={() => { resetSingleAssignForm(); setShowSingleAssign(true); }}>分配任务</Button>
+          <Button onClick={() => { resetAssignForm(); setShowAssign(true); }}>批量分配</Button>
+        </Space>
       </Row>
 
       <Card title="日历">
@@ -958,20 +1094,20 @@ export function ParentTasksPage() {
       <Card title="任务列表">
         <Space direction="vertical" size="small" style={{ width: '100%' }}>
           {assignments.map((a) => (
-            <Card key={a.id} size="small" style={a.isOverdue ? { borderLeft: '4px solid #faad14' } : {}}>
+            <Card key={a.id} size="small" style={a.overdue ? { borderLeft: '4px solid #faad14' } : {}}>
               <Row justify="space-between" align="top">
                 <Space direction="vertical" size={2}>
-                  <Typography.Text strong>{a.templateTitle}</Typography.Text>
+                  <Typography.Text strong>{a.snapshotTemplateName}</Typography.Text>
                   <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-                    {a.childNickname} · 截止 {a.deadline}
+                    childId: {a.childId} · 截止 {a.deadline}
                   </Typography.Text>
-                  {a.isOverdue && (
+                  {a.overdue && (
                     <Typography.Text style={{ fontSize: 12, fontWeight: 600, color: '#faad14' }}>已逾期</Typography.Text>
                   )}
                 </Space>
                 <Space direction="vertical" size={2} align="end">
                   <Tag>{statusLabel(a.status.toLowerCase())}</Tag>
-                  <Typography.Text type="secondary" style={{ fontSize: 12 }}>{a.points} 积分</Typography.Text>
+                  <Typography.Text type="secondary" style={{ fontSize: 12 }}>{a.snapshotDifficultyReward} 积分</Typography.Text>
                 </Space>
               </Row>
             </Card>
@@ -1038,6 +1174,68 @@ export function ParentTasksPage() {
             </div>
           )}
           <Button onClick={handleAssign} loading={assigning} htmlType="button" style={{ width: '100%' }}>
+            分配
+          </Button>
+        </Space>
+      </Modal>
+
+      {/* 单任务分配弹窗 */}
+      <Modal open={showSingleAssign} onCancel={() => { setShowSingleAssign(false); resetSingleAssignForm(); }} title="分配任务">
+        <Space direction="vertical" size="middle" style={{ width: '100%' }}>
+          <div>
+            <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>模板</Typography.Text>
+            <Select
+              id="single-assign-template"
+              value={singleTemplateId.value || undefined}
+              onChange={(v) => { singleTemplateId.setValue(v); singleDifficultyId.reset(); }}
+              placeholder="请选择模板"
+              style={{ width: '100%' }}
+            >
+              {(templates?.content ?? []).map((t) => (
+                <Select.Option key={t.id} value={String(t.id)}>{t.name}</Select.Option>
+              ))}
+            </Select>
+          </div>
+          <div>
+            <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>难度</Typography.Text>
+            <Select
+              id="single-assign-difficulty"
+              value={singleDifficultyId.value || undefined}
+              onChange={(v) => singleDifficultyId.setValue(v)}
+              disabled={!selectedSingleTemplate}
+              placeholder="请选择难度"
+              style={{ width: '100%' }}
+            >
+              {singleEnabledDifficulties.map((d) => (
+                <Select.Option key={d.id} value={String(d.id)}>{d.name}（{d.rewardPoints} 积分）</Select.Option>
+              ))}
+            </Select>
+          </div>
+          <div>
+            <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>孩子</Typography.Text>
+            <Select
+              id="single-assign-child"
+              value={singleChildId.value || undefined}
+              onChange={(v) => singleChildId.setValue(v)}
+              placeholder="请选择孩子"
+              style={{ width: '100%' }}
+            >
+              {(children?.content ?? []).map((c) => (
+                <Select.Option key={c.id} value={String(c.id)}>{c.nickname}</Select.Option>
+              ))}
+            </Select>
+          </div>
+          <div>
+            <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>截止日期</Typography.Text>
+            <DatePicker
+              id="single-assign-deadline"
+              value={singleDeadline ? dayjs(singleDeadline) : null}
+              onChange={(date) => setSingleDeadline(date ? date.format('YYYY-MM-DD') : '')}
+              format="YYYY-MM-DD"
+              style={{ width: '100%' }}
+            />
+          </div>
+          <Button onClick={handleSingleAssign} loading={singleAssigning} htmlType="button" style={{ width: '100%' }}>
             分配
           </Button>
         </Space>
@@ -1304,6 +1502,23 @@ export function ParentPrizesPage() {
     await refetch();
   };
 
+  const handleDeletePrize = async (id: number) => {
+    await getClient().delete(`/prizes/${id}`);
+    await refetch();
+  };
+
+  const togglePrizeEnabled = async (p: Prize) => {
+    const payload = {
+      name: p.name,
+      description: p.description,
+      pointsCost: p.pointsCost,
+      availableStock: p.availableStock,
+      enabled: !p.enabled,
+    };
+    await getClient().put(`/prizes/${p.id}`, payload);
+    await refetch();
+  };
+
   if (!online)
     return (
       <Result status="warning" title="当前处于离线状态" subTitle="请检查网络连接，恢复后重试" extra={<Button onClick={refetch}>重试</Button>} />
@@ -1347,7 +1562,22 @@ export function ParentPrizesPage() {
             title: '操作',
             key: 'actions',
             render: (_: unknown, record: Prize) => (
-              <Button type="text" size="small" onClick={() => openEdit(record)}>编辑</Button>
+              <Space>
+                <Button type="text" size="small" onClick={() => openEdit(record)}>编辑</Button>
+                <Button size="small" onClick={() => togglePrizeEnabled(record)}>
+                  {record.enabled ? '停用' : '启用'}
+                </Button>
+                <Button danger size="small" onClick={() => {
+                  Modal.confirm({
+                    title: '确认删除',
+                    content: '删除奖品将影响相关兑换记录，确认删除？',
+                    okText: '确认删除',
+                    okType: 'danger',
+                    cancelText: '取消',
+                    onOk: () => handleDeletePrize(record.id),
+                  });
+                }}>删除</Button>
+              </Space>
             ),
           },
         ]}
@@ -1466,6 +1696,7 @@ export function ParentBlindBoxesPage() {
 export function ParentExchangesPage() {
   const { items, loading, error, refetch, page, pageSize, setPage, total } = usePaginatedData<Exchange>('/exchanges');
   const [confirmId, setConfirmId] = useState<number | null>(null);
+  const [cancelRecord, setCancelRecord] = useState<{ id: number; reason: string } | null>(null);
   const online = useOnline();
   const [acting, setActing] = useState(false);
 
@@ -1474,13 +1705,16 @@ export function ParentExchangesPage() {
     await getClient().post(`/exchanges/${id}/fulfill`);
     setActing(false);
     setConfirmId(null);
+    message.success('已核销');
     await refetch();
   };
 
-  const cancel = async (id: number) => {
+  const cancel = async (id: number, reason?: string) => {
     setActing(true);
-    await getClient().post(`/exchanges/${id}/cancel`);
+    await getClient().post(`/exchanges/${id}/cancel`, { reason });
     setActing(false);
+    setCancelRecord(null);
+    message.success('已取消');
     await refetch();
   };
 
@@ -1511,12 +1745,42 @@ export function ParentExchangesPage() {
         }}
         locale={{ emptyText: <Empty description="暂无数据" /> }}
         columns={[
-          { title: '孩子', dataIndex: 'childNickname', key: 'childNickname' },
-          { title: '奖品', dataIndex: 'targetName', key: 'targetName' },
+          {
+            title: '孩子',
+            key: 'child',
+            render: (_: unknown, record: Exchange) => <span>#{record.childId}</span>,
+          },
+          {
+            title: '奖品',
+            key: 'prize',
+            render: (_: unknown, record: Exchange) => {
+              if (record.type === 'DIRECT') return <span>奖品 #{record.prizeId}</span>;
+              return <span>盲盒 #{record.poolId}</span>;
+            },
+          },
+          {
+            title: '积分',
+            dataIndex: 'costPoints',
+            key: 'costPoints',
+          },
+          {
+            title: '类型',
+            key: 'type',
+            render: (_: unknown, record: Exchange) =>
+              record.type === 'DIRECT' ? <Tag>直接兑换</Tag> : <Tag color="purple">盲盒兑换</Tag>,
+          },
           {
             title: '状态',
             key: 'status',
-            render: (_: unknown, record: Exchange) => <Tag>{statusLabel(record.status.toLowerCase())}</Tag>,
+            render: (_: unknown, record: Exchange) => {
+              const meta = EXCHANGE_STATUS_META[record.status];
+              return <Tag color={meta?.color}>{meta?.label ?? record.status}</Tag>;
+            },
+          },
+          {
+            title: '创建时间',
+            key: 'createdAt',
+            render: (_: unknown, record: Exchange) => <span>{dayjs(record.createdAt).format('YYYY-MM-DD HH:mm')}</span>,
           },
           {
             title: '操作',
@@ -1524,10 +1788,12 @@ export function ParentExchangesPage() {
             render: (_: unknown, record: Exchange) =>
               record.status === 'PENDING_FULFILLMENT' ? (
                 <Space>
-                  <Button size="small" onClick={() => setConfirmId(record.id)} loading={acting}>兑现</Button>
-                  <Button size="small" onClick={() => cancel(record.id)} loading={acting}>取消</Button>
+                  <Button size="small" type="primary" onClick={() => setConfirmId(record.id)} loading={acting}>核销</Button>
+                  <Button size="small" onClick={() => setCancelRecord({ id: record.id, reason: '' })} loading={acting}>取消</Button>
                 </Space>
-              ) : null,
+              ) : (
+                <Typography.Text type="secondary">-</Typography.Text>
+              ),
           },
         ]}
       />
@@ -1535,13 +1801,228 @@ export function ParentExchangesPage() {
       <Modal
         open={confirmId !== null}
         onCancel={() => setConfirmId(null)}
-        title="确认兑现"
+        title="确认核销"
         footer={[
           <Button key="cancel" onClick={() => setConfirmId(null)} disabled={acting}>取消</Button>,
-          <Button key="confirm" onClick={() => confirmId !== null && fulfill(confirmId)} loading={acting}>确认兑现</Button>,
+          <Button key="confirm" type="primary" onClick={() => confirmId !== null && fulfill(confirmId)} loading={acting}>确认核销</Button>,
         ]}
       >
-        <Typography.Text>兑换一旦兑现，积分将从孩子账户扣除。请确认已交付奖品。</Typography.Text>
+        <Typography.Text>兑换一旦核销，积分将从孩子账户扣除。请确认已交付奖品。</Typography.Text>
+      </Modal>
+
+      <Modal
+        open={cancelRecord !== null}
+        onCancel={() => setCancelRecord(null)}
+        title="取消兑换"
+        onOk={() => cancelRecord && cancel(cancelRecord.id, cancelRecord.reason)}
+        confirmLoading={acting}
+      >
+        <Space direction="vertical" style={{ width: '100%' }}>
+          <Typography.Text>确定取消该兑换记录吗？</Typography.Text>
+          <TextArea
+            placeholder="取消原因（可选）"
+            rows={3}
+            value={cancelRecord?.reason ?? ''}
+            onChange={(e) => setCancelRecord((prev) => (prev ? { ...prev, reason: e.target.value } : null))}
+          />
+        </Space>
+      </Modal>
+    </Space>
+  );
+}
+
+export function ParentDevicesPage() {
+  const { data: family, loading, error, refetch } = useApi<Family>('/family');
+  const [deviceId, setDeviceId] = useState('');
+  const [binding, setBinding] = useState(false);
+  const [bindCredential, setBindCredential] = useState<string | null>(null);
+  const [unbindId, setUnbindId] = useState<number | null>(null);
+  const [unbinding, setUnbinding] = useState(false);
+  const [manualUnbindId, setManualUnbindId] = useState('');
+  const online = useOnline();
+
+  const handleBind = async () => {
+    if (!deviceId.trim()) return;
+    setBinding(true);
+    const res = await getClient().post<{ credential: string }>('/family/devices/bind', { deviceId: deviceId.trim() });
+    setBinding(false);
+    if (res.error) {
+      message.error(res.error.message ?? '授权失败');
+      return;
+    }
+    if (res.data?.credential) {
+      setBindCredential(res.data.credential);
+    }
+    setDeviceId('');
+    await refetch();
+  };
+
+  const handleUnbind = async () => {
+    if (unbindId === null) return;
+    setUnbinding(true);
+    const res = await getClient().delete(`/family/devices/${unbindId}`);
+    setUnbinding(false);
+    if (res.error) {
+      message.error(res.error.message ?? '解绑失败');
+      return;
+    }
+    message.success('设备已解绑');
+    setUnbindId(null);
+    await refetch();
+  };
+
+  const handleManualUnbind = async () => {
+    if (!manualUnbindId.trim()) return;
+    const id = Number(manualUnbindId.trim());
+    if (Number.isNaN(id)) {
+      message.error('请输入有效的设备绑定 ID');
+      return;
+    }
+    setUnbinding(true);
+    const res = await getClient().delete(`/family/devices/${id}`);
+    setUnbinding(false);
+    if (res.error) {
+      message.error(res.error.message ?? '解绑失败');
+      return;
+    }
+    message.success('设备已解绑');
+    setManualUnbindId('');
+    await refetch();
+  };
+
+  if (!online)
+    return (
+      <Result status="warning" title="当前处于离线状态" subTitle="请检查网络连接，恢复后重试" extra={<Button onClick={refetch}>重试</Button>} />
+    );
+  if (loading)
+    return <Spin />;
+  if (error)
+    return (
+      <Result status="error" title="加载失败" subTitle={error.message} extra={<Button onClick={refetch}>重试</Button>} />
+    );
+  if (!family)
+    return <Empty description="暂无数据" />;
+
+  const devices = family.devices ?? [];
+
+  return (
+    <Space direction="vertical" size="large" style={{ width: '100%' }}>
+      <Typography.Title level={4} style={{ margin: 0 }}>设备管理</Typography.Title>
+
+      {/* 授权新设备 */}
+      <Card title="授权新设备">
+        <Space direction="vertical" size="middle" style={{ width: '100%' }}>
+          <Typography.Text>输入孩子设备上显示的 deviceId 进行授权：</Typography.Text>
+          <Input
+            id="bind-device-id"
+            placeholder="请输入 deviceId"
+            value={deviceId}
+            onChange={(e) => setDeviceId(e.target.value)}
+          />
+          <Button onClick={handleBind} loading={binding} disabled={!deviceId.trim()}>
+            授权
+          </Button>
+        </Space>
+      </Card>
+
+      {/* 凭据展示 */}
+      <Modal
+        open={bindCredential !== null}
+        onCancel={() => setBindCredential(null)}
+        title="设备授权成功"
+        footer={[<Button key="close" onClick={() => setBindCredential(null)}>关闭</Button>]}
+      >
+        <Space direction="vertical" size="middle" style={{ width: '100%' }}>
+          <Alert message="请将此凭据安全传递给孩子的设备" type="success" showIcon />
+          <div>
+            <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>一次性凭据</Typography.Text>
+            <Input.TextArea
+              id="bind-credential"
+              value={bindCredential ?? ''}
+              readOnly
+              rows={3}
+              style={{ background: '#f5f5f5' }}
+            />
+          </div>
+        </Space>
+      </Modal>
+
+      {/* 设备列表 */}
+      {devices.length > 0 && (
+        <Table
+          dataSource={devices}
+          rowKey="id"
+          pagination={false}
+          columns={[
+            {
+              title: '设备 ID',
+              dataIndex: 'deviceId',
+              key: 'deviceId',
+              render: (v: string) =>
+                v.length > 20 ? (
+                  <Typography.Text copyable={{ text: v }}>{v.slice(0, 20)}...</Typography.Text>
+                ) : (
+                  <Typography.Text copyable={{ text: v }}>{v}</Typography.Text>
+                ),
+            },
+            {
+              title: '状态',
+              dataIndex: 'status',
+              key: 'status',
+              render: (v: string) => <Tag>{statusLabel(v)}</Tag>,
+            },
+            {
+              title: '绑定时间',
+              dataIndex: 'createdAt',
+              key: 'createdAt',
+            },
+            {
+              title: '操作',
+              key: 'actions',
+              render: (_: unknown, record: DeviceBinding) => (
+                <Button danger size="small" onClick={() => setUnbindId(record.id)}>
+                  解绑
+                </Button>
+              ),
+            },
+          ]}
+        />
+      )}
+
+      {/* 手动解绑（无设备列表时的后备方案） */}
+      {devices.length === 0 && (
+        <Card title="解绑设备">
+          <Space direction="vertical" size="middle" style={{ width: '100%' }}>
+            <Typography.Text>输入设备绑定 ID 进行解绑：</Typography.Text>
+            <Input
+              id="unbind-device-id"
+              placeholder="请输入设备绑定 ID"
+              value={manualUnbindId}
+              onChange={(e) => setManualUnbindId(e.target.value)}
+            />
+            <Button
+              danger
+              onClick={handleManualUnbind}
+              loading={unbinding}
+              disabled={!manualUnbindId.trim()}
+            >
+              解绑
+            </Button>
+          </Space>
+        </Card>
+      )}
+
+      {/* 解绑确认 */}
+      <Modal
+        open={unbindId !== null}
+        onCancel={() => setUnbindId(null)}
+        title="确认解绑"
+        onOk={handleUnbind}
+        okText="解绑"
+        okType="danger"
+        confirmLoading={unbinding}
+      >
+        <Typography.Text>解绑后该设备将无法使用家庭功能，是否继续？</Typography.Text>
       </Modal>
     </Space>
   );
