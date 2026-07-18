@@ -26,6 +26,7 @@ export default [
       { path: '/parent/points', component: '@/parent/pages/ParentPointsPage', wrappers: ['@/wrappers/AuthGuard'] },
       { path: '/parent/prizes', component: '@/parent/pages/ParentPrizesPage', wrappers: ['@/wrappers/AuthGuard'] },
       { path: '/parent/blind-boxes', component: '@/parent/pages/ParentBlindBoxesPage', wrappers: ['@/wrappers/AuthGuard'] },
+      { path: '/parent/devices', component: '@/parent/pages/ParentDevicesPage', wrappers: ['@/wrappers/AuthGuard'] },
       { path: '/parent/exchanges', component: '@/parent/pages/ParentExchangesPage', wrappers: ['@/wrappers/AuthGuard'] },
     ],
   },

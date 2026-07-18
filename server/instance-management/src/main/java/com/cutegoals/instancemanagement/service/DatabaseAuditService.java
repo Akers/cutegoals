@@ -35,8 +35,8 @@ public class DatabaseAuditService implements AuditService {
 
     /**
      * Record an audit event by inserting into the {@code audit_log} table.
-     * Uses {@link Propagation#MANDATORY} to ensure the caller's transaction
-     * is active, so a failure here will roll back the entire operation.
+     * Uses {@link Propagation#REQUIRES_NEW} to run in an independent transaction,
+     * ensuring the audit record survives even if the caller's transaction rolls back.
      *
      * @param eventType the event type (see {@link com.cutegoals.auth.service.AuditEvent})
      * @param actorId   the acting account ID (null for system/anonymous actions)
@@ -45,7 +45,7 @@ public class DatabaseAuditService implements AuditService {
      * @throws BusinessException with {@link ErrorCode#AUDIT_UNAVAILABLE} if the DB write fails
      */
     @Override
-    @Transactional(propagation = Propagation.MANDATORY)
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void record(String eventType, Long actorId, String result, String summary) {
         AuditLog auditLog = new AuditLog();
         auditLog.setActorId(actorId);

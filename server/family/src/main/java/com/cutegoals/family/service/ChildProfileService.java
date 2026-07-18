@@ -4,9 +4,11 @@ import com.cutegoals.auth.service.AuditEvent;
 import com.cutegoals.auth.service.AuditService;
 import com.cutegoals.common.constant.AuthConstants;
 import com.cutegoals.common.entity.family.ChildProfile;
+import com.cutegoals.common.entity.points.PointsBalance;
 import com.cutegoals.common.exception.BusinessException;
 import com.cutegoals.common.exception.ErrorCode;
 import com.cutegoals.family.mapper.ChildProfileMapper;
+import com.cutegoals.points.mapper.PointsBalanceMapper;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +32,7 @@ public class ChildProfileService {
     private final ChildProfileMapper childProfileMapper;
     private final BCryptPasswordEncoder passwordEncoder;
     private final AuditService auditService;
+    private final PointsBalanceMapper pointsBalanceMapper;
 
     private static final int MAX_NICKNAME_LENGTH = 100;
     private static final int MAX_AVATAR_LENGTH = 500;
@@ -94,10 +97,18 @@ public class ChildProfileService {
         profile.setStatus(AuthConstants.STATUS_ACTIVE);
         childProfileMapper.insert(profile);
 
+        // 同步创建积分账户（balance=0, total_earned=0）
+        PointsBalance balance = new PointsBalance();
+        balance.setChildId(profile.getId());
+        balance.setBalance(0);
+        balance.setTotalEarned(0);
+        pointsBalanceMapper.insert(balance);
+
         auditService.record(AuditEvent.CHILD_CREATED, accountId, "SUCCESS",
                 "Child profile created: id=" + profile.getId() + ", nickname=" + nickname);
 
-        log.info("Child profile created: id={}, familyId={}", profile.getId(), familyId);
+        log.info("Child profile created: id={}, familyId={}, pointsBalanceId={}",
+                profile.getId(), familyId, balance.getId());
 
         return buildChildResponse(profile);
     }

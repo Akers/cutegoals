@@ -22,9 +22,10 @@ public class InMemoryAuditService implements AuditService {
 
     @Override
     public void record(String eventType, Long actorId, String result, String summary) {
+        log.warn("AUDIT IN-MEMORY (data NOT persisted!): event={}, actorId={}, result={}, summary={}",
+                eventType, actorId, result, summary);
         AuditRecord record = new AuditRecord(eventType, actorId, result, summary, System.currentTimeMillis());
         records.add(record);
-        log.info("AUDIT: event={}, actorId={}, result={}, summary={}", eventType, actorId, result, summary);
     }
 
     /**

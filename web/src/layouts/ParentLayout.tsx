@@ -13,8 +13,9 @@ import {
   TrophyOutlined,
   GiftOutlined,
   SwapOutlined,
+  LaptopOutlined,
 } from '@ant-design/icons';
-import { useAuth } from '@/shared/auth';
+import { useAuth, maskPhone } from '@/shared/auth';
 import { parentTheme } from '@/styles/themes';
 
 export default function ParentLayout() {
@@ -47,12 +48,13 @@ export default function ParentLayout() {
             { path: '/parent/points', name: '积分管理', icon: <AccountBookOutlined /> },
             { path: '/parent/prizes', name: '奖品管理', icon: <TrophyOutlined /> },
             { path: '/parent/blind-boxes', name: '惊喜盲盒', icon: <GiftOutlined /> },
+            { path: '/parent/devices', name: '设备管理', icon: <LaptopOutlined /> },
             { path: '/parent/exchanges', name: '兑换履约', icon: <SwapOutlined /> },
           ],
         }}
         avatarProps={{
           src: undefined,
-          title: account?.nickname ?? account?.phone ?? 'Parent',
+          title: account?.nickname ?? maskPhone(account?.phone) ?? 'Parent',
         }}
         actionsRender={(props) => {
           if (props.isMobile) return [];

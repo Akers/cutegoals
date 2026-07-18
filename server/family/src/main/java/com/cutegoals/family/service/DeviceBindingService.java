@@ -209,8 +209,8 @@ public class DeviceBindingService {
         // Success: clear failure count
         pinFailureTracker.remove(lockKey);
 
-        // Create child session
-        String sessionId = sessionService.createSession(-childId, deviceId);
+        // Create child session (uses child_id, not negative account_id, to avoid FK violation)
+        String sessionId = sessionService.createChildSession(childId, deviceId);
 
         auditService.record(AuditEvent.CHILD_LOGIN_SUCCESS, null, "SUCCESS",
                 "Child PIN login successful: childId=" + childId + ", deviceId=" + deviceId);

@@ -485,10 +485,20 @@ public class TaskReviewService {
             // Check ledger idempotency for this business ref
             Optional<PointsLedger> existingLedger = pointsLedgerMapper.findByBusinessRef(childId, businessRef);
             if (existingLedger.isEmpty()) {
-                // Fetch balance with lock
+                // Fetch balance with lock（防御性兜底：积分账户不存在则创建）
                 PointsBalance balance = pointsBalanceMapper.findByChildIdForUpdate(childId)
-                        .orElseThrow(() -> new BusinessException(ErrorCode.POINTS_ACCOUNT_NOT_FOUND,
-                                "Points account not found for child: " + childId));
+                        .orElseGet(() -> {
+                            PointsBalance nb = new PointsBalance();
+                            nb.setChildId(childId);
+                            nb.setBalance(0);
+                            nb.setTotalEarned(0);
+                            pointsBalanceMapper.insert(nb);
+                            log.warn("Lazy-created points balance for childId={}", childId);
+                            // 重新查询以获取 version 等数据库默认值
+                            return pointsBalanceMapper.findByChildIdForUpdate(childId)
+                                    .orElseThrow(() -> new BusinessException(ErrorCode.POINTS_ACCOUNT_NOT_FOUND,
+                                            "Points account not found for child: " + childId));
+                        });
 
                 int newBalance = balance.getBalance() + rewardPoints;
                 int newTotalEarned = balance.getTotalEarned() + rewardPoints;

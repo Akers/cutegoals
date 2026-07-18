@@ -9,13 +9,18 @@ import { useLowPerformance, useOnline, useReducedMotion } from '@shared/theme';
 
 interface ChildAssignment {
   id: number;
-  templateTitle: string;
-  description?: string;
+  childId: number;
+  templateId: number;
+  difficultyId: number;
   status: string;
   deadline: string;
-  points: number;
-  isOverdue: boolean;
+  snapshotTemplateName: string;
+  snapshotDifficultyReward: number;
+  snapshotTemplateDescription?: string;
+  snapshotTemplateTaskType?: string;
+  overdue: boolean;
   rejectionReason?: string;
+  version?: number;
 }
 
 interface Prize {
@@ -138,13 +143,13 @@ export function ChildHomePage() {
           ) : (
             <Space direction="vertical" size="middle" style={{ width: '100%' }}>
               {todayTasks.map((task) => (
-                <Card key={task.id} size="small" style={task.isOverdue ? { borderLeft: '4px solid #faad14' } : {}}>
+                <Card key={task.id} size="small" style={task.overdue ? { borderLeft: '4px solid #faad14' } : {}}>
                   <Row justify="space-between" align="top">
                     <div>
-                      <Typography.Text strong>{task.templateTitle}</Typography.Text>
+                      <Typography.Text strong>{task.snapshotTemplateName}</Typography.Text>
                       <br />
                       <Typography.Text type="secondary" style={{ fontSize: 12 }}>截止 {task.deadline}</Typography.Text>
-                      {task.isOverdue && (
+                      {task.overdue && (
                         <div>
                           <Typography.Text style={{ fontSize: 12, fontWeight: 600, color: '#faad14' }}>已逾期</Typography.Text>
                         </div>
@@ -152,7 +157,7 @@ export function ChildHomePage() {
                     </div>
                     <Space direction="vertical" size={2} align="end">
                       <Tag>{statusLabel(task.status.toLowerCase())}</Tag>
-                      <Typography.Text type="secondary" style={{ fontSize: 12 }}>+{task.points} 积分</Typography.Text>
+                      <Typography.Text type="secondary" style={{ fontSize: 12 }}>+{task.snapshotDifficultyReward} 积分</Typography.Text>
                     </Space>
                   </Row>
                 </Card>
@@ -230,16 +235,16 @@ export function ChildTasksPage() {
         ) : (
           <Space direction="vertical" size="middle" style={{ width: '100%' }}>
             {(assignments?.items ?? []).map((task) => (
-              <Card key={task.id} size="small" style={task.isOverdue ? { borderLeft: '4px solid #faad14' } : {}}>
+              <Card key={task.id} size="small" style={task.overdue ? { borderLeft: '4px solid #faad14' } : {}}>
                 <Row justify="space-between" align="top">
                   <div style={{ flex: 1 }}>
-                    <Typography.Text strong>{task.templateTitle}</Typography.Text>
+                    <Typography.Text strong>{task.snapshotTemplateName}</Typography.Text>
                     <br />
                     <Typography.Text type="secondary" style={{ fontSize: 12 }}>截止 {task.deadline}</Typography.Text>
                     <div style={{ marginTop: 4 }}>
                       <Space size={8}>
                         <Tag>{statusLabel(task.status.toLowerCase())}</Tag>
-                        <Typography.Text type="secondary" style={{ fontSize: 12 }}>+{task.points} 积分</Typography.Text>
+                        <Typography.Text type="secondary" style={{ fontSize: 12 }}>+{task.snapshotDifficultyReward} 积分</Typography.Text>
                       </Space>
                     </div>
                     {task.rejectionReason && (
@@ -278,7 +283,7 @@ export function ChildTasksPage() {
         title={active?.status === 'REJECTED' ? '重新提交任务' : '提交任务'}
       >
         <Space direction="vertical" size="middle" style={{ width: '100%' }}>
-          <Typography.Text>{active?.templateTitle}</Typography.Text>
+          <Typography.Text>{active?.snapshotTemplateName}</Typography.Text>
           <div>
             <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>完成情况说明</Typography.Text>
             <TextArea

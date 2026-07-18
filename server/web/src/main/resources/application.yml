@@ -3,7 +3,7 @@ app:
   timezone: Asia/Shanghai
   production: ${APP_PRODUCTION:false}
   audit:
-    type: ${APP_AUDIT_TYPE:memory}   # "memory" for InMemoryAuditService, "db" for DatabaseAuditService
+    type: ${APP_AUDIT_TYPE:db}   # "db" for DatabaseAuditService (DB persist), "memory" for InMemoryAuditService
   auth:
     jwt:
       secret: ${CUTEGOALS_JWT_SECRET:changeit-changeit-changeit-changeit-changeit}
