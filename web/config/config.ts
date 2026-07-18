@@ -16,7 +16,7 @@ export default defineConfig({
   // 代理：从 vite.config.ts 迁移
   proxy: {
     '/api': {
-      target: process.env.API_PROXY_TARGET ?? 'http://localhost:8981',
+      target: process.env.API_PROXY_TARGET ?? 'http://localhost:8080',
       changeOrigin: true,
     },
   },
