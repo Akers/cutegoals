@@ -40,11 +40,6 @@ logs/
 .env.dev
 
 # SDD / Agent scratch
-.superpowers/
-.agent/
-.agents/
-.codex/
-.codegraph/
 
 # Misc
 *.drawio.bkp
