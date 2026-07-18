@@ -93,13 +93,12 @@ public final class MaskUtil {
         if (phone.length() < 7) {
             return MASKED;
         }
-        int starCount = phone.length() - 6;
+        // Unified rule: prefix(3) + '****' (4 stars) + suffix(4) for 11-digit mobile numbers.
+        // Keeps identifiable tail (last 4) consistent with front-end display and admin bar.
         StringBuilder sb = new StringBuilder(phone.length());
         sb.append(phone, 0, 3);
-        for (int i = 0; i < starCount; i++) {
-            sb.append('*');
-        }
-        sb.append(phone, phone.length() - 3, phone.length());
+        sb.append("****");
+        sb.append(phone, phone.length() - 4, phone.length());
         return sb.toString();
     }
 
