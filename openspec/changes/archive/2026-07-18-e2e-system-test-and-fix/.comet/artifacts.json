@@ -4,5 +4,6 @@
   "openspec_tasks": "openspec/changes/e2e-system-test-and-fix/tasks.md",
   "openspec_delta_spec": "openspec/changes/e2e-system-test-and-fix/specs/system-e2e-test-coverage/spec.md",
   "handoff_context": "openspec/changes/e2e-system-test-and-fix/.comet/handoff/design-context.json",
-  "handoff_markdown": "openspec/changes/e2e-system-test-and-fix/.comet/handoff/design-context.md"
+  "handoff_markdown": "openspec/changes/e2e-system-test-and-fix/.comet/handoff/design-context.md",
+  "archive_directory": "openspec/changes/archive/2026-07-18-e2e-system-test-and-fix"
 }

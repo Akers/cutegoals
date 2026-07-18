@@ -2,6 +2,8 @@
 comet_change: e2e-system-test-and-fix
 role: technical-design
 canonical_spec: openspec
+archived-with: 2026-07-18-e2e-system-test-and-fix
+status: final
 ---
 
 # Design Doc: E2E 系统测试与修复执行架构

@@ -1,3 +1,7 @@
+---
+archived-with: 2026-07-18-e2e-system-test-and-fix
+status: final
+---
 # E2E 系统测试与修复 — 实施计划
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
