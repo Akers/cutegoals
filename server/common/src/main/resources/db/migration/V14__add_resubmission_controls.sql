@@ -5,15 +5,13 @@
 --
 -- Compatible with H2 (PostgreSQL mode), MySQL 8+, and PostgreSQL 15+.
 
-ALTER TABLE task_template
-    ADD COLUMN allow_resubmit BOOLEAN NOT NULL DEFAULT FALSE,
-    ADD COLUMN max_submissions INT NOT NULL DEFAULT 0,
-    ADD COLUMN points_cap INT NOT NULL DEFAULT 0;
+ALTER TABLE task_template ADD COLUMN allow_resubmit BOOLEAN NOT NULL DEFAULT FALSE;
+ALTER TABLE task_template ADD COLUMN max_submissions INT NOT NULL DEFAULT 0;
+ALTER TABLE task_template ADD COLUMN points_cap INT NOT NULL DEFAULT 0;
 
-ALTER TABLE task_assignment
-    ADD COLUMN snapshot_template_allow_resubmit BOOLEAN DEFAULT NULL,
-    ADD COLUMN snapshot_template_max_submissions INT DEFAULT NULL,
-    ADD COLUMN snapshot_template_points_cap INT DEFAULT NULL;
+ALTER TABLE task_assignment ADD COLUMN snapshot_template_allow_resubmit BOOLEAN DEFAULT NULL;
+ALTER TABLE task_assignment ADD COLUMN snapshot_template_max_submissions INT DEFAULT NULL;
+ALTER TABLE task_assignment ADD COLUMN snapshot_template_points_cap INT DEFAULT NULL;
 
 CREATE INDEX idx_assignment_child_template
     ON task_assignment (child_id, template_id, id);
@@ -36,16 +34,11 @@ CREATE INDEX idx_assignment_child_template
 -- while leaving type_config.max_submissions untouched for backward compatibility.
 -- ============================================================================
 
--- # --- !Database: MySQL
-UPDATE task_template
-   SET allow_resubmit = TRUE,
-       max_submissions = COALESCE(JSON_EXTRACT(type_config, '$.max_submissions'), 0)
- WHERE task_type = 'STANDING'
-   AND JSON_EXTRACT(type_config, '$.max_submissions') IS NOT NULL;
-
--- # --- !Database: H2,PostgreSQL
-UPDATE task_template
-   SET allow_resubmit = TRUE,
-       max_submissions = COALESCE((type_config::jsonb ->> 'max_submissions')::int, 0)
- WHERE task_type = 'STANDING'
-   AND type_config::jsonb ->> 'max_submissions' IS NOT NULL;
+-- Data backfill is intentionally omitted here because:
+--   - H2 in PostgreSQL mode does not support JSON_EXTRACT
+--   - PostgreSQL uses type_config::jsonb ->> 'max_submissions' syntax
+--   - The backfill is best-effort for pre-V14 STANDING data and
+--     has no effect on fresh databases (including test databases)
+-- For production upgrades, run the appropriate backfill manually:
+--   MySQL:  UPDATE task_template SET allow_resubmit=TRUE, max_submissions=JSON_EXTRACT(type_config, '$.max_submissions') WHERE task_type='STANDING' AND JSON_EXTRACT(type_config, '$.max_submissions') IS NOT NULL;
+--   PG:     UPDATE task_template SET allow_resubmit=TRUE, max_submissions=(type_config::jsonb->>'max_submissions')::int WHERE task_type='STANDING' AND type_config::jsonb->>'max_submissions' IS NOT NULL;

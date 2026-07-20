@@ -184,7 +184,7 @@ public class TaskReviewService {
             }
         }
         // 重复提交前置校验
-        Long childId = assignment.getChildId();
+        childId = assignment.getChildId();
         Long templateId = assignment.getTemplateId();
 
         // FOR UPDATE 行锁（ID2）
