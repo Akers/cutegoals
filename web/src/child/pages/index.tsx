@@ -21,6 +21,11 @@ interface ChildAssignment {
   overdue: boolean;
   rejectionReason?: string;
   version?: number;
+  canSubmit: boolean;
+  submissionBlockReason: 'MAX_REACHED' | 'POINTS_CAP_REACHED' | null;
+  snapshotTemplateAllowResubmit: boolean | null;
+  snapshotTemplateMaxSubmissions: number | null;
+  snapshotTemplatePointsCap: number | null;
 }
 
 interface Prize {
