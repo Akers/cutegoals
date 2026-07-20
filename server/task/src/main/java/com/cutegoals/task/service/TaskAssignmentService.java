@@ -341,6 +341,11 @@ public class TaskAssignmentService {
         assignment.setSnapshotDifficultyName(difficulty.getName());
         assignment.setSnapshotDifficultyReward(difficulty.getRewardPoints());
 
+        // 重复提交控制快照
+        assignment.setSnapshotTemplateAllowResubmit(template.getAllowResubmit());
+        assignment.setSnapshotTemplateMaxSubmissions(template.getMaxSubmissions());
+        assignment.setSnapshotTemplatePointsCap(template.getPointsCap());
+
         // 避免数据库非空约束或快照不完整导致内部错误
         if (template.getName() == null || template.getCategory() == null
                 || difficulty.getName() == null || difficulty.getRewardPoints() == null) {
