@@ -86,7 +86,7 @@ describe('TaskTypeConfigForms - 任务类型选择器', () => {
     );
     expect(screen.queryByText('开始日期（可选）')).not.toBeInTheDocument();
     expect(screen.queryByText('频率')).not.toBeInTheDocument();
-    expect(screen.queryByText('无限提交')).not.toBeInTheDocument();
+    expect(screen.queryByText('当前类型的重复提交控制')).not.toBeInTheDocument();
   });
 });
 
@@ -329,7 +329,7 @@ describe('REPEAT 配置表单', () => {
 });
 
 describe('STANDING 配置表单', () => {
-  it('渲染无限提交复选框', () => {
+  it('显示配置迁移提示', () => {
     const onTaskTypeChange = vi.fn();
     const onTypeConfigChange = vi.fn();
     render(
@@ -340,11 +340,10 @@ describe('STANDING 配置表单', () => {
         onTypeConfigChange={onTypeConfigChange}
       />,
     );
-    expect(screen.getByText('无限提交')).toBeInTheDocument();
-    expect(screen.getByText('最大提交次数')).toBeInTheDocument();
+    expect(screen.getByText('当前类型的重复提交控制已移至表单顶部「允许重复提交」设置。')).toBeInTheDocument();
   });
 
-  it('勾选"无限提交"时隐藏最大提交次数输入', async () => {
+  it('不渲染已移除的旧字段', () => {
     const onTaskTypeChange = vi.fn();
     const onTypeConfigChange = vi.fn();
     render(
@@ -355,51 +354,8 @@ describe('STANDING 配置表单', () => {
         onTypeConfigChange={onTypeConfigChange}
       />,
     );
-    const checkbox = screen.getByRole('checkbox', { name: /无限提交/ });
-    await userEvent.click(checkbox);
-    expect(onTypeConfigChange).toHaveBeenLastCalledWith(
-      expect.objectContaining({ max_submissions: null }),
-    );
+    expect(screen.queryByText('无限提交')).not.toBeInTheDocument();
     expect(screen.queryByText('最大提交次数')).not.toBeInTheDocument();
-  });
-
-  it('取消勾选"无限提交"时显示最大提交次数输入', async () => {
-    const onTaskTypeChange = vi.fn();
-    const onTypeConfigChange = vi.fn();
-    render(
-      <TaskTypeConfigForms
-        taskType="STANDING"
-        onTaskTypeChange={onTaskTypeChange}
-        typeConfig={{ max_submissions: null }}
-        onTypeConfigChange={onTypeConfigChange}
-      />,
-    );
-    const checkbox = screen.getByRole('checkbox', { name: /无限提交/ });
-    // 取消勾选
-    await userEvent.click(checkbox);
-    expect(onTypeConfigChange).toHaveBeenLastCalledWith(
-      expect.objectContaining({ max_submissions: 1 }),
-    );
-    expect(screen.getByText('最大提交次数')).toBeInTheDocument();
-  });
-
-  it('修改最大提交次数时触发 onChange', async () => {
-    const onTaskTypeChange = vi.fn();
-    const onTypeConfigChange = vi.fn();
-    render(
-      <TaskTypeConfigForms
-        taskType="STANDING"
-        onTaskTypeChange={onTaskTypeChange}
-        typeConfig={{ max_submissions: 1 }}
-        onTypeConfigChange={onTypeConfigChange}
-      />,
-    );
-    const input = screen.getByRole('spinbutton', { name: /最大提交次数/ });
-    await userEvent.clear(input);
-    await userEvent.type(input, '5');
-    expect(onTypeConfigChange).toHaveBeenLastCalledWith(
-      expect.objectContaining({ max_submissions: 5 }),
-    );
   });
 });
 
