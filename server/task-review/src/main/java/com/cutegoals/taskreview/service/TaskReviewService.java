@@ -206,16 +206,6 @@ public class TaskReviewService {
                             : ErrorCode.valueOf("TASK_SUBMISSION_POINTS_CAP_REACHED"),
                     decision.getBlockMessage());
         }
-        // STANDING: check if max submissions reached
-        if ("STANDING".equals(template.getTaskType())) {
-            Integer currentCount = assignment.getSubmissionCount();
-            Integer maxSubmissions = parseMaxSubmissions(template.getTypeConfig());
-            if (maxSubmissions != null && currentCount != null && currentCount >= maxSubmissions) {
-                throw new BusinessException(ErrorCode.TASK_STANDING_LIMIT_REACHED,
-                        "Maximum submissions reached for this STANDING task");
-            }
-        }
-
         // Determine next attempt number
         int maxAttempt = taskAttemptMapper.getMaxAttemptNumber(assignmentId, childId);
         int attemptNumber = maxAttempt + 1;
@@ -485,8 +475,13 @@ public class TaskReviewService {
                 int currentCount = assignment.getSubmissionCount() != null ? assignment.getSubmissionCount() : 0;
                 int newCount = currentCount + 1;
                 assignment.setSubmissionCount(newCount);
-                Integer maxSubmissions = parseMaxSubmissions(template.getTypeConfig());
-                if (maxSubmissions != null && newCount >= maxSubmissions) {
+                // 使用 snapshot 字段替代旧的 type_config 解析
+                Integer maxSubmissions = assignment.getSnapshotTemplateMaxSubmissions();
+                // D9 回退：旧 assignment snapshot 为 NULL 时读 template 当前值
+                if (maxSubmissions == null && template != null) {
+                    maxSubmissions = template.getMaxSubmissions();
+                }
+                if (maxSubmissions != null && maxSubmissions > 0 && newCount >= maxSubmissions) {
                     assignment.setStatus("COMPLETED");
                     standingCompleted = true;
                 }
@@ -905,28 +900,6 @@ public class TaskReviewService {
             return LocalDateTime.parse(val.toString());
         } catch (JsonProcessingException | java.time.format.DateTimeParseException e) {
             log.debug("Failed to parse {} from type_config: {}", field, e.getMessage());
-            return null;
-        }
-    }
-
-    /**
-     * Parse max_submissions from the STANDING type_config JSON.
-     * Returns null if not configured (unlimited submissions).
-     */
-    private Integer parseMaxSubmissions(String typeConfig) {
-        if (typeConfig == null || typeConfig.isBlank()) {
-            return null;
-        }
-        try {
-            @SuppressWarnings("unchecked")
-            Map<String, Object> config = objectMapper.readValue(typeConfig, Map.class);
-            Object val = config.get("max_submissions");
-            if (val == null) {
-                return null;
-            }
-            return ((Number) val).intValue();
-        } catch (JsonProcessingException | ClassCastException e) {
-            log.debug("Failed to parse max_submissions from type_config: {}", e.getMessage());
             return null;
         }
     }
