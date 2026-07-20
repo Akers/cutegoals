@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Checkbox, Input, InputNumber, Radio, Select, Space, Typography } from 'antd';
+import { Input, Radio, Select, Space, Typography } from 'antd';
 import type { TaskTypeValue } from '@shared/api/types';
 import { FormField } from '@shared/components';
 
@@ -245,60 +245,10 @@ function StandingConfigForm({
   config: TypeConfigValue;
   onChange: (cfg: TypeConfigValue) => void;
 }) {
-  const [unlimited, setUnlimited] = useState(config.max_submissions === null);
-  const [maxSubmissions, setMaxSubmissions] = useState(
-    config.max_submissions != null ? String(config.max_submissions) : '1',
-  );
-
-  useEffect(() => {
-    setUnlimited(config.max_submissions === null);
-    if (config.max_submissions != null) {
-      setMaxSubmissions(String(config.max_submissions));
-    }
-  }, [config.max_submissions]);
-
-  const handleUnlimitedToggle = useCallback(
-    (e: { target: { checked: boolean } }) => {
-      const v = e.target.checked;
-      setUnlimited(v);
-      if (v) {
-        onChange({ max_submissions: null });
-      } else {
-        onChange({ max_submissions: Number(maxSubmissions) || 1 });
-      }
-    },
-    [maxSubmissions, onChange],
-  );
-
-  const handleMaxChange = useCallback(
-    (v: number | null) => {
-      setMaxSubmissions(v != null ? String(v) : '');
-      if (v != null && v >= 1) {
-        onChange({ max_submissions: v });
-      }
-    },
-    [onChange],
-  );
-
   return (
-    <Space direction="vertical" size="small" style={{ width: '100%' }}>
-      <Checkbox checked={unlimited} onChange={handleUnlimitedToggle}>
-        无限提交
-      </Checkbox>
-
-      {!unlimited && (
-        <FormField label="最大提交次数" htmlFor="standing-max">
-          <InputNumber
-            id="standing-max"
-            min={1}
-            max={10000}
-            value={maxSubmissions ? Number(maxSubmissions) : undefined}
-            onChange={handleMaxChange}
-            style={{ width: '100%' }}
-          />
-        </FormField>
-      )}
-    </Space>
+    <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+      当前类型的重复提交控制已移至表单顶部「允许重复提交」设置。
+    </Typography.Text>
   );
 }
 
