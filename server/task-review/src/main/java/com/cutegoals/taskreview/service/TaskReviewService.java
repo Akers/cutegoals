@@ -183,6 +183,29 @@ public class TaskReviewService {
                         "This LIMITED task has expired (ended at: " + limitedEnd + ")");
             }
         }
+        // 重复提交前置校验
+        Long childId = assignment.getChildId();
+        Long templateId = assignment.getTemplateId();
+
+        // FOR UPDATE 行锁（ID2）
+        taskReviewMapper.lockAssignmentByChildTemplate(childId, templateId);
+
+        // 聚合统计
+        long approvedCount = taskReviewMapper.countApprovedByTemplateAndChild(childId, templateId);
+        long earnedPoints = pointsLedgerMapper.sumEarnByTemplateAndChild(childId, templateId);
+
+        // 调用共享策略评估器
+        ResubmissionPolicyEvaluator evaluator = new ResubmissionPolicyEvaluator();
+        ResubmissionPolicyEvaluator.ResubmissionDecision decision = evaluator.evaluate(
+                assignment, approvedCount, earnedPoints, template);
+
+        if (!decision.isAllowed()) {
+            throw new BusinessException(
+                    "TASK_SUBMISSION_MAX_REACHED".equals(decision.getBlockCode())
+                            ? ErrorCode.valueOf("TASK_SUBMISSION_MAX_REACHED")
+                            : ErrorCode.valueOf("TASK_SUBMISSION_POINTS_CAP_REACHED"),
+                    decision.getBlockMessage());
+        }
         // STANDING: check if max submissions reached
         if ("STANDING".equals(template.getTaskType())) {
             Integer currentCount = assignment.getSubmissionCount();
