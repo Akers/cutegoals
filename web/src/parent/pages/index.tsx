@@ -92,6 +92,9 @@ interface TaskTemplate {
   recurrenceRule?: { ruleType: string };
   taskType: TaskTypeValue;
   typeConfig: string; // JSON string
+  allowResubmit: boolean;
+  maxSubmissions: number;
+  pointsCap: number;
 }
 
 interface TaskAssignment {
@@ -111,6 +114,11 @@ interface TaskAssignment {
   version?: number;
   cancelled?: boolean;
   cancelledReason?: string;
+  snapshotTemplateAllowResubmit: boolean | null;
+  snapshotTemplateMaxSubmissions: number | null;
+  snapshotTemplatePointsCap: number | null;
+  canSubmit: boolean;
+  submissionBlockReason: 'MAX_REACHED' | 'POINTS_CAP_REACHED' | null;
 }
 
 interface ReviewItem {
