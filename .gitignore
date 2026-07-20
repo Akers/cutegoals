@@ -41,6 +41,9 @@ logs/
 
 # SDD / Agent scratch
 
+# Git worktrees
+.worktrees/
+
 # Misc
 *.drawio.bkp
 *.drawio.dtmp
