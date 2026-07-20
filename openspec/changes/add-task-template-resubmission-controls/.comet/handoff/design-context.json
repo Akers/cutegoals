@@ -1,0 +1,16 @@
+{
+  "change": "add-task-template-resubmission-controls",
+  "phase": "design",
+  "mode": "compact",
+  "canonical_spec": "openspec",
+  "generated_by": "comet-handoff.sh",
+  "context_hash": "f1f7e68fb728233870419b35272d5930043f94a2ec507d962e241146782ca270",
+  "files": [
+    { "path": "openspec/changes/add-task-template-resubmission-controls/proposal.md", "sha256": "612db6ff2387b92a0b645eb92919aaead60e3dd7757c24de41f44bc14f9f853c" },
+    { "path": "openspec/changes/add-task-template-resubmission-controls/design.md", "sha256": "609b3a8f092237a2272ce1550a62299278f0d12c60ffb863044a6bd77bd5606e" },
+    { "path": "openspec/changes/add-task-template-resubmission-controls/tasks.md", "sha256": "e89e0290ca39ba2bfd8bfcf91514ad9b0c236b8f66c8811d8ef86686189abe73" },
+    { "path": "openspec/changes/add-task-template-resubmission-controls/specs/task-assignment/spec.md", "sha256": "fd7a1d70d2afbe52dc3330bc521c729b359b22ef72cd789192e920bb34e2e412" },
+    { "path": "openspec/changes/add-task-template-resubmission-controls/specs/task-review/spec.md", "sha256": "7d613265ff900d7020f056442648caa3f32b74cdb66b87ac9aeed720bb842049" },
+    { "path": "openspec/changes/add-task-template-resubmission-controls/specs/task-template/spec.md", "sha256": "da81dd2ebb49dc65c84547c5209a5fd9d3a42523861fda17836d71dc45fb058a" }
+  ]
+}
