@@ -1,5 +1,5 @@
 {
   "version": 1,
-  "change": "prize-model-configuration",
-  "branch": "feature/20260721/prize-model-configuration"
+  "change": "fix-device-not-authorized-bind-page",
+  "branch": "main"
 }
