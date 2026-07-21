@@ -39,7 +39,13 @@ export function ChildBindPage() {
     const response = await getClient().get<ChildProfile[]>(`/family/devices/children?deviceId=${encodeURIComponent(deviceId)}`);
     setLoading(false);
     if (response.error) {
-      setError(response.error.message ?? '无法查询设备状态');
+      // DEVICE_NOT_AUTHORIZED is expected for unbound devices — show binding instructions
+      if (response.error.error_code === 'DEVICE_NOT_AUTHORIZED') {
+        setError(null);
+        setChildren([]);
+      } else {
+        setError(response.error.message ?? '无法查询设备状态');
+      }
     } else {
       setError(null);
       setChildren(response.data ?? []);

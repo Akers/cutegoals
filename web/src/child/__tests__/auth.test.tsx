@@ -64,6 +64,19 @@ describe('ChildBindPage', () => {
       expect(screen.getByText('小明')).toBeInTheDocument();
     });
   });
+
+  it('shows binding instructions when device is not yet authorized (DEVICE_NOT_AUTHORIZED)', async () => {
+    vi.mocked(fetch).mockResolvedValue(
+      mockResponse({ code: 'DEVICE_NOT_AUTHORIZED', message: 'DEVICE_NOT_AUTHORIZED' }, false, 401),
+    );
+
+    renderChildPage(<ChildBindPage />, '/child/bind');
+
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { name: /设备绑定/ })).toBeInTheDocument();
+    });
+    expect(screen.getByLabelText('设备标识')).toBeInTheDocument();
+  });
 });
 
 describe('ChildLoginPage', () => {
