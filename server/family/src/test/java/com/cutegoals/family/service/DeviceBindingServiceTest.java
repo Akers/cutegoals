@@ -211,14 +211,14 @@ class DeviceBindingServiceTest {
 
         when(deviceBindingMapper.findActiveByDeviceId(deviceId)).thenReturn(Optional.of(binding));
         when(childProfileMapper.findById(childId)).thenReturn(Optional.of(profile));
-        when(sessionService.createSession(-childId, deviceId)).thenReturn("session-abc");
+        when(sessionService.createChildSession(childId, deviceId)).thenReturn("session-abc");
 
         Map<String, Object> result = deviceBindingService.childLogin(deviceId, childId, pin);
 
         assertEquals("session-abc", result.get("sessionId"));
         assertEquals(childId, result.get("childId"));
         assertEquals("小明", result.get("nickname"));
-        verify(sessionService).createSession(-childId, deviceId);
+        verify(sessionService).createChildSession(childId, deviceId);
         verify(auditService).record(eq("CHILD_LOGIN_SUCCESS"), isNull(), eq("SUCCESS"), anyString());
     }
 
@@ -402,10 +402,10 @@ class DeviceBindingServiceTest {
 
         // Now succeed (5th attempt is still allowed - lock happens at 5 failures, not on 5th try)
         // Actually re-setup mocks since childLogin may update internal state
-        when(sessionService.createSession(-childId, deviceId)).thenReturn("session-abc");
+        when(sessionService.createChildSession(childId, deviceId)).thenReturn("session-abc");
 
         Map<String, Object> result = deviceBindingService.childLogin(deviceId, childId, correctPin);
         assertEquals("session-abc", result.get("sessionId"));
-        verify(sessionService).createSession(-childId, deviceId);
+        verify(sessionService).createChildSession(childId, deviceId);
     }
 }
