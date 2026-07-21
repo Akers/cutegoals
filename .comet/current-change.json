@@ -1,5 +1,5 @@
 {
   "version": 1,
-  "change": "fix-parent-task-assignment-deadline",
+  "change": "fix-repeat-task-no-date-required",
   "branch": "main"
 }
