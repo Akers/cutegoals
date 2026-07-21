@@ -1471,15 +1471,27 @@ export function ParentPointsPage() {
 
   const handleAdjust = async () => {
     if (!selectedChild) return;
+    const amt = Number(amount.value);
+    if (!amt || !reason.value.trim()) {
+      message.error('请填写调整数量和原因');
+      return;
+    }
+    const ref = `${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
     setAdjusting(true);
-    await getClient().post('/points/adjustments', {
+    const res = await getClient().post('/points/adjustments', {
       childId: Number(selectedChild),
-      amount: Number(amount.value),
+      amount: amt,
       reason: reason.value,
+      businessRef: ref,
     });
     setAdjusting(false);
+    if (res.error) {
+      message.error(res.error.message ?? '积分调整失败');
+      return;
+    }
     amount.reset();
     reason.reset();
+    message.success('积分已调整');
     await refetch();
   };
 
