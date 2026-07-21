@@ -1196,7 +1196,8 @@ export function ParentTasksPage() {
                   <Typography.Text strong>{a.snapshotTemplateName}</Typography.Text>
                   <Typography.Text type="secondary" style={{ fontSize: 12 }}>
                     {repeatTaskLabel(a.snapshotTemplateTaskType, a.snapshotTemplateTypeConfig)
-                      ?? `childId: ${a.childId} · 截止 ${a.deadline}`}
+                      ? `childId: ${a.childId} · ${repeatTaskLabel(a.snapshotTemplateTaskType, a.snapshotTemplateTypeConfig)}`
+                      : `childId: ${a.childId} · 截止 ${a.deadline}`}
                   </Typography.Text>
                   {a.overdue && (
                     <Typography.Text style={{ fontSize: 12, fontWeight: 600, color: '#faad14' }}>已逾期</Typography.Text>
