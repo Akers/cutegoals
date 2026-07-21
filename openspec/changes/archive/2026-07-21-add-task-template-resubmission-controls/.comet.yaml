@@ -16,13 +16,13 @@ plan: docs/superpowers/plans/2026-07-20-task-template-resubmission-controls.md
 verify_result: pass
 verify_failures: 0
 verification_report: docs/superpowers/reports/2026-07-20-add-task-template-resubmission-controls-verify.md
-branch_status: pending
+branch_status: handled
 created_at: 2026-07-20
 verified_at: 2026-07-21
 archive_confirmation: confirmed
 archived: true
 direct_override: null
-handoff_context: openspec/changes/add-task-template-resubmission-controls/.comet/handoff/design-context.json
+handoff_context: openspec/changes/archive/2026-07-21-add-task-template-resubmission-controls/.comet/handoff/design-context.json
 handoff_hash: f1f7e68fb728233870419b35272d5930043f94a2ec507d962e241146782ca270
 classic_profile: full
 classic_migration: 1
