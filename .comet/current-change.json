@@ -1,5 +1,5 @@
 {
   "version": 1,
-  "change": "fix-device-not-authorized-bind-page",
+  "change": "fix-child-login-session-account-id",
   "branch": "main"
 }
