@@ -1,0 +1,13 @@
+{
+  "change": "prize-model-configuration",
+  "phase": "design",
+  "mode": "compact",
+  "canonical_spec": "openspec",
+  "generated_by": "comet-handoff.sh",
+  "context_hash": "48922df8e7fa19265d363e5857c41bdd82f63ab26fe2f18dbd317d610ce2a342",
+  "files": [
+    { "path": "openspec/changes/prize-model-configuration/proposal.md", "sha256": "fd4ef9a1a134b4254cf8b43dcd0c68ba8b59f5ceba22149234327933b4daf9b7" },
+    { "path": "openspec/changes/prize-model-configuration/design.md", "sha256": "bd18f72247688127af44acba447d7d5723daf099e7f6bd0e23a033bdbea29285" },
+    { "path": "openspec/changes/prize-model-configuration/tasks.md", "sha256": "5bc1029593eb227909ed84555cca9ea0f6536efcef084a9c74b559bd30046e3d" }
+  ]
+}

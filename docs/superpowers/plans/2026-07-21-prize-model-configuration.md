@@ -2,6 +2,7 @@
 change: prize-model-configuration
 design-doc: docs/superpowers/specs/2026-07-21-prize-model-configuration-design.md
 base-ref: 7153c3dcf59ccab4f91ffb251bab1f1ec94de636
+archived-with: 2026-07-21-prize-model-configuration
 ---
 
 # prize-model-configuration 实施计划
