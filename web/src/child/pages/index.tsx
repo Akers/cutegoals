@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, history } from 'umi';
 import { getClient } from '@shared/api';
 import { useAuth } from '@shared/auth';
-import { App, Button, Card, Col, Empty, Input, Modal, Result, Row, Space, Spin, Tag, Typography } from 'antd';
+import { App, Button, Card, Col, Empty, Input, Modal, Result, Row, Space, Spin, Tag, Tooltip, Typography } from 'antd';
 const { TextArea } = Input;
 import { useApi, useFormField } from '@shared/hooks/useApi';
 import { useLowPerformance, useOnline, useReducedMotion } from '@shared/theme';
@@ -21,6 +21,11 @@ interface ChildAssignment {
   overdue: boolean;
   rejectionReason?: string;
   version?: number;
+  canSubmit: boolean;
+  submissionBlockReason: 'MAX_REACHED' | 'POINTS_CAP_REACHED' | null;
+  snapshotTemplateAllowResubmit: boolean | null;
+  snapshotTemplateMaxSubmissions: number | null;
+  snapshotTemplatePointsCap: number | null;
 }
 
 interface Prize {
@@ -187,6 +192,12 @@ export function ChildHomePage() {
   );
 }
 
+function getBlockReasonText(reason: 'MAX_REACHED' | 'POINTS_CAP_REACHED' | null | undefined): string | undefined {
+  if (reason === 'MAX_REACHED') return '已达到最大提交次数';
+  if (reason === 'POINTS_CAP_REACHED') return '已达到积分上限';
+  return undefined;
+}
+
 export function ChildTasksPage() {
   const childId = useChildId();
   const { message } = App.useApp();
@@ -235,7 +246,13 @@ export function ChildTasksPage() {
         ) : (
           <Space direction="vertical" size="middle" style={{ width: '100%' }}>
             {(assignments?.items ?? []).map((task) => (
-              <Card key={task.id} size="small" style={task.overdue ? { borderLeft: '4px solid #faad14' } : {}}>
+              <Card key={task.id} size="small" style={
+                task.overdue
+                  ? { borderLeft: '4px solid #faad14' }
+                  : !task.canSubmit
+                    ? { borderLeft: '4px solid #d9d9d9' }
+                    : {}
+              }>
                 <Row justify="space-between" align="top">
                   <div style={{ flex: 1 }}>
                     <Typography.Text strong>{task.snapshotTemplateName}</Typography.Text>
@@ -256,14 +273,20 @@ export function ChildTasksPage() {
                   <div style={{ marginLeft: 8 }}>
                     <Space direction="vertical" size="small">
                       {task.status === 'PENDING' && (
-                        <Button size="small" onClick={() => openSubmit(task)} loading={submittingId === task.id}>
-                          提交
-                        </Button>
+                        <Tooltip title={!task.canSubmit ? getBlockReasonText(task.submissionBlockReason) : undefined}>
+                          <Button size="small" onClick={() => openSubmit(task)} loading={submittingId === task.id}
+                            disabled={!task.canSubmit}>
+                            提交
+                          </Button>
+                        </Tooltip>
                       )}
                       {task.status === 'REJECTED' && (
-                        <Button size="small" onClick={() => openSubmit(task)} loading={submittingId === task.id}>
-                          重新提交
-                        </Button>
+                        <Tooltip title={!task.canSubmit ? getBlockReasonText(task.submissionBlockReason) : undefined}>
+                          <Button size="small" onClick={() => openSubmit(task)} loading={submittingId === task.id}
+                            disabled={!task.canSubmit}>
+                            重新提交
+                          </Button>
+                        </Tooltip>
                       )}
                     </Space>
                   </div>

@@ -104,6 +104,36 @@ public class TaskTemplateService {
             template.setTypeConfig(typeConfig);
         }
 
+        // 读取重复提交控制字段
+        if (request.containsKey("allow_resubmit")) {
+            Object val = request.get("allow_resubmit");
+            if (val instanceof Boolean) {
+                template.setAllowResubmit((Boolean) val);
+            }
+        }
+        if (request.containsKey("max_submissions")) {
+            Object val = request.get("max_submissions");
+            if (val instanceof Number) {
+                int ms = ((Number) val).intValue();
+                if (ms < 0 || ms > 10000) {
+                    throw new BusinessException(ErrorCode.TASK_TEMPLATE_VALIDATION_FAILED,
+                            "max_submissions must be between 0 and 10000");
+                }
+                template.setMaxSubmissions(ms);
+            }
+        }
+        if (request.containsKey("points_cap")) {
+            Object val = request.get("points_cap");
+            if (val instanceof Number) {
+                int pc = ((Number) val).intValue();
+                if (pc < 0 || pc > 100000000) {
+                    throw new BusinessException(ErrorCode.TASK_TEMPLATE_VALIDATION_FAILED,
+                            "points_cap must be between 0 and 100000000");
+                }
+                template.setPointsCap(pc);
+            }
+        }
+
         taskTemplateMapper.insert(template);
 
         // Create difficulties
@@ -246,6 +276,36 @@ public class TaskTemplateService {
             // Task 2.1/2.2: Validate new typeConfig against existing taskType
             validateTypeConfig(template.getTaskType(), typeConfig);
             template.setTypeConfig(typeConfig);
+        }
+
+        // 读取重复提交控制字段
+        if (request.containsKey("allow_resubmit")) {
+            Object val = request.get("allow_resubmit");
+            if (val instanceof Boolean) {
+                template.setAllowResubmit((Boolean) val);
+            }
+        }
+        if (request.containsKey("max_submissions")) {
+            Object val = request.get("max_submissions");
+            if (val instanceof Number) {
+                int ms = ((Number) val).intValue();
+                if (ms < 0 || ms > 10000) {
+                    throw new BusinessException(ErrorCode.TASK_TEMPLATE_VALIDATION_FAILED,
+                            "max_submissions must be between 0 and 10000");
+                }
+                template.setMaxSubmissions(ms);
+            }
+        }
+        if (request.containsKey("points_cap")) {
+            Object val = request.get("points_cap");
+            if (val instanceof Number) {
+                int pc = ((Number) val).intValue();
+                if (pc < 0 || pc > 100000000) {
+                    throw new BusinessException(ErrorCode.TASK_TEMPLATE_VALIDATION_FAILED,
+                            "points_cap must be between 0 and 100000000");
+                }
+                template.setPointsCap(pc);
+            }
         }
 
         // Optimistic lock via mapper (version-based)
@@ -545,6 +605,9 @@ public class TaskTemplateService {
         result.put("version", template.getVersion());
         result.put("taskType", template.getTaskType());
         result.put("typeConfig", template.getTypeConfig());
+        result.put("allowResubmit", template.getAllowResubmit());
+        result.put("maxSubmissions", template.getMaxSubmissions());
+        result.put("pointsCap", template.getPointsCap());
         result.put("createdAt", template.getCreatedAt());
         result.put("updatedAt", template.getUpdatedAt());
         result.put("difficulties", taskDifficultyMapper.findByTemplateId(template.getId()));
@@ -731,31 +794,7 @@ public class TaskTemplateService {
      * Validate STANDING typeConfig: must contain max_submissions (null or 1-10000 positive integer).
      */
     private void validateStandingConfig(Map<String, Object> config) {
-        if (!config.containsKey("max_submissions")) {
-            throw new BusinessException(ErrorCode.TASK_TEMPLATE_VALIDATION_FAILED,
-                    "STANDING typeConfig requires max_submissions");
-        }
-        Object maxSubObj = config.get("max_submissions");
-        if (maxSubObj != null) {
-            int maxSubmissions;
-            try {
-                maxSubmissions = ((Number) maxSubObj).intValue();
-            } catch (ClassCastException e) {
-                throw new BusinessException(ErrorCode.TASK_TEMPLATE_VALIDATION_FAILED,
-                        "max_submissions must be a number or null");
-            }
-            if (maxSubmissions < 1 || maxSubmissions > 10000) {
-                throw new BusinessException(ErrorCode.TASK_TEMPLATE_VALIDATION_FAILED,
-                        "max_submissions must be between 1 and 10000, or null");
-            }
-            if (maxSubObj instanceof Double || maxSubObj instanceof Float) {
-                double doubleVal = ((Number) maxSubObj).doubleValue();
-                if (doubleVal != Math.floor(doubleVal)) {
-                    throw new BusinessException(ErrorCode.TASK_TEMPLATE_VALIDATION_FAILED,
-                            "max_submissions must be an integer");
-                }
-            }
-        }
+        // 不再校验 typeConfig 中的 max_submissions — 该字段已作为一等字段存在
     }
 
     // Validation helpers

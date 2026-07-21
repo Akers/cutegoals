@@ -341,6 +341,11 @@ public class TaskAssignmentService {
         assignment.setSnapshotDifficultyName(difficulty.getName());
         assignment.setSnapshotDifficultyReward(difficulty.getRewardPoints());
 
+        // 重复提交控制快照
+        assignment.setSnapshotTemplateAllowResubmit(template.getAllowResubmit());
+        assignment.setSnapshotTemplateMaxSubmissions(template.getMaxSubmissions());
+        assignment.setSnapshotTemplatePointsCap(template.getPointsCap());
+
         // 避免数据库非空约束或快照不完整导致内部错误
         if (template.getName() == null || template.getCategory() == null
                 || difficulty.getName() == null || difficulty.getRewardPoints() == null) {
@@ -717,6 +722,11 @@ public class TaskAssignmentService {
         item.put("snapshotDifficultyName", assignment.getSnapshotDifficultyName());
         item.put("snapshotDifficultyReward", assignment.getSnapshotDifficultyReward());
 
+        // 重复提交控制快照
+        item.put("snapshotTemplateAllowResubmit", assignment.getSnapshotTemplateAllowResubmit());
+        item.put("snapshotTemplateMaxSubmissions", assignment.getSnapshotTemplateMaxSubmissions());
+        item.put("snapshotTemplatePointsCap", assignment.getSnapshotTemplatePointsCap());
+
         // Task 11.3: STANDING submission count
         item.put("submissionCount", assignment.getSubmissionCount());
 
@@ -725,6 +735,10 @@ public class TaskAssignmentService {
                 && !Boolean.TRUE.equals(assignment.getCancelled())
                 && !"APPROVED".equals(assignment.getStatus());
         item.put("overdue", isOverdue);
+
+        // 可提交性（占位：后续由 TaskReviewService 实际计算）
+        item.put("canSubmit", true);
+        item.put("submissionBlockReason", null);
 
         return item;
     }

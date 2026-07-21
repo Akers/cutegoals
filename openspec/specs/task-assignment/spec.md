@@ -15,19 +15,23 @@ MVP 每个实例 MUST 仅服务一个家庭。只有该家庭的家长角色 SHA
 - **THEN** 系统拒绝请求并返回错误码 `TASK_ASSIGNMENT_FORBIDDEN`，且不返回该分配的任何字段
 
 ### Requirement: 人工单次分配与数据快照
-家长 SHALL 能够使用当前启用且未删除的模板及其启用难度，为当前家庭内的有效孩子创建单次分配。请求 MUST 包含模板标识、难度标识、孩子标识、截止时间和幂等键；截止时间 MUST 是可解析的时间且不得早于请求被系统接收的时刻。创建时系统 MUST 原子固化模板标识与版本、模板名称、分类、说明、图标、难度标识与名称、奖励积分、目标孩子、截止时间、有效迟交策略和创建来源。分配初始审核状态 MUST 为 `PENDING`。模板、难度或家庭默认值后续变化 MUST NOT 改写该快照。
+家长 SHALL 能够使用当前启用且未删除的模板及其启用难度，为当前家庭内的有效孩子创建单次分配。请求 MUST 包含模板标识、难度标识、孩子标识、截止时间和幂等键；截止时间 MUST 是可解析的时间且不得早于请求被系统接收的时刻。创建时系统 MUST 原子固化模板标识与版本、模板名称、分类、说明、图标、难度标识与名称、奖励积分、目标孩子、截止时间、有效迟交策略、创建来源，以及当时有效的模板重复提交控制属性（`snapshot_template_allow_resubmit`、`snapshot_template_max_submissions`、`snapshot_template_points_cap`）。分配初始审核状态 MUST 为 `PENDING`。模板、难度或家庭默认值后续变化 MUST NOT 改写该快照；包括 `allow_resubmit` / `max_submissions` / `points_cap` 后续修改 MUST NOT 影响既有分配的审核期校验口径。
 
 #### Scenario: 创建单次分配
 - **WHEN** 家长以合法模板、启用难度、家庭内孩子、未来截止时间和新幂等键创建单次分配
-- **THEN** 系统创建一条 `PENDING` 分配，返回分配标识、版本及完整快照
+- **THEN** 系统创建一条 `PENDING` 分配，返回分配标识、版本及包含三个重复提交控制 snapshot 字段的完整快照
 
 #### Scenario: 模板修改不影响既有分配
-- **WHEN** 分配创建后家长修改模板名称或难度奖励积分
-- **THEN** 既有分配继续显示创建时的模板名称与奖励积分，只有之后的新分配使用新值
+- **WHEN** 分配创建后家长修改模板名称、难度奖励积分或 `allow_resubmit` / `max_submissions` / `points_cap`
+- **THEN** 既有分配继续显示创建时的模板名称、奖励积分与重复提交控制快照值，只有之后的新分配使用新值
 
 #### Scenario: 分配输入不合法
 - **WHEN** 请求引用已停用难度、已删除模板、其他家庭孩子、无法解析的截止时间或过去截止时间
 - **THEN** 系统不创建分配，并分别返回稳定错误码 `TASK_ASSIGNMENT_DIFFICULTY_INACTIVE`、`TASK_ASSIGNMENT_TEMPLATE_INACTIVE`、`TASK_ASSIGNMENT_CHILD_NOT_FOUND` 或 `TASK_ASSIGNMENT_INVALID_DEADLINE`
+
+#### Scenario: 重复提交控制 snapshot 写入
+- **WHEN** 家长在 `allow_resubmit=true, max_submissions=3, points_cap=100` 的模板上创建分配
+- **THEN** 系统在该分配的 snapshot 字段固化 `snapshot_template_allow_resubmit=true`、`snapshot_template_max_submissions=3`、`snapshot_template_points_cap=100`，且模板后续修改不影响这些值
 
 ### Requirement: 人工创建请求幂等
 所有人工单次和批量创建请求 MUST 携带长度为 1 至 128 个字符的幂等键。系统 MUST 在家庭和操作类型范围内唯一约束幂等键，并保存请求语义摘要及成功响应。同一幂等键和相同语义请求的重试 MUST 返回首次成功结果且不得新增分配；同一幂等键被用于不同语义请求 MUST 返回稳定错误码 `TASK_ASSIGNMENT_IDEMPOTENCY_CONFLICT`。首次事务失败 MUST 不得占用可成功重试的幂等结果。

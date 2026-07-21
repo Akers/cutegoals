@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Select;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Mapper
@@ -54,4 +55,26 @@ public interface PointsLedgerMapper extends BaseMapper<PointsLedger> {
     @Select("SELECT COALESCE(SUM(CASE WHEN type = 'EARN' THEN amount ELSE 0 END), 0) " +
             "FROM points_ledger WHERE child_id = #{childId}")
     int sumTotalEarned(@Param("childId") Long childId);
+
+    @Select("SELECT COALESCE(SUM(l.amount), 0) " +
+            "FROM points_ledger l " +
+            "JOIN task_attempt t ON l.business_ref = CONCAT('ATTEMPT_', t.id) " +
+            "JOIN task_assignment a ON t.assignment_id = a.id " +
+            "WHERE a.child_id = #{childId} " +
+            "AND a.template_id = #{templateId} " +
+            "AND l.type = 'EARN'")
+    long sumEarnByTemplateAndChild(@Param("childId") Long childId, @Param("templateId") Long templateId);
+
+    @Select("<script>" +
+            "SELECT a.template_id AS templateId, COALESCE(SUM(l.amount), 0) AS earnedPoints " +
+            "FROM points_ledger l " +
+            "JOIN task_attempt t ON l.business_ref = CONCAT('ATTEMPT_', t.id) " +
+            "JOIN task_assignment a ON t.assignment_id = a.id " +
+            "WHERE a.child_id = #{childId} " +
+            "AND l.type = 'EARN' " +
+            "AND a.template_id IN " +
+            "<foreach collection='templateIds' item='id' open='(' separator=',' close=')'>#{id}</foreach> " +
+            "GROUP BY a.template_id " +
+            "</script>")
+    List<Map<String, Object>> sumEarnBatch(@Param("childId") Long childId, @Param("templateIds") List<Long> templateIds);
 }

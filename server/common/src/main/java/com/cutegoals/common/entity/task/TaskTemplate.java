@@ -51,6 +51,15 @@ public class TaskTemplate {
     @TableField(value = "type_config", typeHandler = JsonTypeHandler.class)
     private String typeConfig;
 
+    @TableField("allow_resubmit")
+    private Boolean allowResubmit;
+
+    @TableField("max_submissions")
+    private Integer maxSubmissions;
+
+    @TableField("points_cap")
+    private Integer pointsCap;
+
     @TableField(value = "created_at", fill = FieldFill.INSERT)
     private LocalDateTime createdAt;
 

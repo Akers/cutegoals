@@ -89,3 +89,7 @@
 #### Scenario: 尝试修改任务类型
 - **WHEN** 家长提交请求修改 `task_type`
 - **THEN** 系统返回错误码 `TASK_TEMPLATE_TYPE_IMMUTABLE`,且模板版本不增加
+
+#### Scenario: 并发更新版本冲突
+- **WHEN** 两个家长基于同一旧版本并发修改同一模板,且其中一个修改已先成功
+- **THEN** 系统拒绝另一个过期版本的修改并返回错误码 `TASK_TEMPLATE_VERSION_CONFLICT`,不得静默覆盖已成功的修改

@@ -85,6 +85,15 @@ public class TaskAssignment {
     @TableField("submission_count")
     private Integer submissionCount;
 
+    @TableField("snapshot_template_allow_resubmit")
+    private Boolean snapshotTemplateAllowResubmit;
+
+    @TableField("snapshot_template_max_submissions")
+    private Integer snapshotTemplateMaxSubmissions;
+
+    @TableField("snapshot_template_points_cap")
+    private Integer snapshotTemplatePointsCap;
+
     @TableField(value = "created_at", fill = FieldFill.INSERT)
     private LocalDateTime createdAt;
 

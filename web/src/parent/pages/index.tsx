@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { history } from 'umi';
 import { getClient } from '@shared/api';
 import type { TaskTypeValue } from '@shared/api/types';
-import { Alert, Button, Card, DatePicker, Empty, Input, Modal, Result, Row, Select, Space, Spin, Table, Tag, Typography, message } from 'antd';
+import { Alert, Button, Card, Checkbox, DatePicker, Empty, Input, InputNumber, Modal, Result, Row, Select, Space, Spin, Table, Tag, Typography, message } from 'antd';
 const { TextArea } = Input;
 import dayjs from 'dayjs';
 import { useAuth } from '@shared/auth';
@@ -92,6 +92,9 @@ interface TaskTemplate {
   recurrenceRule?: { ruleType: string };
   taskType: TaskTypeValue;
   typeConfig: string; // JSON string
+  allowResubmit: boolean;
+  maxSubmissions: number;
+  pointsCap: number;
 }
 
 interface TaskAssignment {
@@ -111,6 +114,11 @@ interface TaskAssignment {
   version?: number;
   cancelled?: boolean;
   cancelledReason?: string;
+  snapshotTemplateAllowResubmit: boolean | null;
+  snapshotTemplateMaxSubmissions: number | null;
+  snapshotTemplatePointsCap: number | null;
+  canSubmit: boolean;
+  submissionBlockReason: 'MAX_REACHED' | 'POINTS_CAP_REACHED' | null;
 }
 
 interface ReviewItem {
@@ -700,6 +708,9 @@ export function ParentTemplatesPage() {
   const online = useOnline();
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [allowResubmit, setAllowResubmit] = useState(false);
+  const [maxSubmissions, setMaxSubmissions] = useState(0);
+  const [pointsCap, setPointsCap] = useState(0);
 
   const filterParams = selectedTypes.length > 0 ? { taskType: selectedTypes.join(',') } : undefined;
   const { items, loading, error, refetch, page, pageSize, setPage, total } = usePaginatedData<TaskTemplate>(
@@ -716,6 +727,9 @@ export function ParentTemplatesPage() {
     setTaskType('');
     setTypeConfig({});
     setSaveError(null);
+    setAllowResubmit(false);
+    setMaxSubmissions(0);
+    setPointsCap(0);
     setShowModal(true);
   };
 
@@ -732,6 +746,9 @@ export function ParentTemplatesPage() {
     } catch {
       setTypeConfig({});
     }
+    setAllowResubmit(t.allowResubmit ?? false);
+    setMaxSubmissions(t.maxSubmissions ?? 0);
+    setPointsCap(t.pointsCap ?? 0);
     setSaveError(null);
     setShowModal(true);
   };
@@ -757,6 +774,9 @@ export function ParentTemplatesPage() {
       payload.taskType = taskType;
       payload.typeConfig = JSON.stringify(typeConfig);
     }
+    payload.allow_resubmit = allowResubmit;
+    payload.max_submissions = maxSubmissions;
+    payload.points_cap = pointsCap;
     if (editing) {
       payload.version = editing.version;
       const res = await getClient().put(`/task-templates/${editing.id}`, payload);
@@ -889,6 +909,38 @@ export function ParentTemplatesPage() {
             typeConfig={typeConfig}
             onTypeConfigChange={setTypeConfig}
           />
+
+          <div>
+            <Checkbox
+              checked={allowResubmit}
+              onChange={(e) => setAllowResubmit(e.target.checked)}
+            >
+              允许重复提交
+            </Checkbox>
+          </div>
+
+          {allowResubmit && (
+            <>
+              <div>
+                <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>最大提交次数</Typography.Text>
+                <InputNumber
+                  min={0} max={10000} value={maxSubmissions}
+                  onChange={(v) => setMaxSubmissions(v ?? 0)}
+                  style={{ width: '100%' }}
+                  placeholder="0 = 不限制"
+                />
+              </div>
+              <div>
+                <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>积分上限</Typography.Text>
+                <InputNumber
+                  min={0} max={100000000} value={pointsCap}
+                  onChange={(v) => setPointsCap(v ?? 0)}
+                  style={{ width: '100%' }}
+                  placeholder="0 = 不限制"
+                />
+              </div>
+            </>
+          )}
         </Space>
       </Modal>
     </Space>
