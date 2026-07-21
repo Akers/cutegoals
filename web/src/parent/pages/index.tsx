@@ -973,8 +973,6 @@ export function ParentTasksPage() {
   const singleDifficultyId = useFormField();
   const singleChildId = useFormField();
   const [singleDeadline, setSingleDeadline] = useState('');
-  const [singleStartDate, setSingleStartDate] = useState('');
-  const [singleEndDate, setSingleEndDate] = useState('');
   const [singleAssigning, setSingleAssigning] = useState(false);
 
   const selectedSingleTemplate = useMemo(() => {
@@ -990,8 +988,6 @@ export function ParentTasksPage() {
     singleDifficultyId.reset();
     singleChildId.reset();
     setSingleDeadline('');
-    setSingleStartDate('');
-    setSingleEndDate('');
   };
 
   const handleSingleAssign = async () => {
@@ -1006,27 +1002,12 @@ export function ParentTasksPage() {
     const isRepeat = selectedSingleTemplate?.taskType === 'REPEAT';
 
     if (isRepeat) {
-      // 重复任务：不需要截止日期，走周期性生成
-      if (!singleStartDate || !singleEndDate) {
-        message.error('请填写开始日期和结束日期');
-        return;
-      }
-      const today = new Date().toISOString().split('T')[0];
-      if (singleStartDate < today) {
-        message.error('开始日期不能早于今天');
-        return;
-      }
-      if (singleStartDate > singleEndDate) {
-        message.error('开始日期不得晚于结束日期');
-        return;
-      }
+      // 重复任务：不需要任何日期，直接创建分配
       setSingleAssigning(true);
-      const res = await getClient().post('/task-assignments/generate-recurring', {
+      const res = await getClient().post('/task-assignments', {
         templateId: tId,
         childId: cId,
         difficultyId: dId,
-        startDate: singleStartDate,
-        endDate: singleEndDate,
       });
       setSingleAssigning(false);
       if (res.error) {
@@ -1319,18 +1300,7 @@ export function ParentTasksPage() {
               ))}
             </Select>
           </div>
-          {selectedSingleTemplate?.taskType === 'REPEAT' ? (
-            <>
-              <div>
-                <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>开始日期</Typography.Text>
-                <Input id="single-assign-start-date" type="date" value={singleStartDate} onChange={(e) => setSingleStartDate(e.target.value)} />
-              </div>
-              <div>
-                <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>结束日期</Typography.Text>
-                <Input id="single-assign-end-date" type="date" value={singleEndDate} onChange={(e) => setSingleEndDate(e.target.value)} />
-              </div>
-            </>
-          ) : (
+          {selectedSingleTemplate?.taskType !== 'REPEAT' && (
             <div>
               <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>截止日期</Typography.Text>
               <DatePicker

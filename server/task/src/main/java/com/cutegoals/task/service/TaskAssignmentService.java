@@ -85,11 +85,22 @@ public class TaskAssignmentService {
             throw new BusinessException(ErrorCode.TASK_ASSIGNMENT_CHILD_NOT_FOUND);
         }
 
-        // Validate deadline
-        LocalDateTime deadline = parseDeadline(deadlineStr);
-        if (deadline.isBefore(LocalDateTime.now())) {
-            throw new BusinessException(ErrorCode.TASK_ASSIGNMENT_INVALID_DEADLINE,
-                    "Deadline must be in the future");
+        // Validate deadline — optional for REPEAT templates
+        LocalDateTime deadline;
+        if (deadlineStr == null) {
+            if ("REPEAT".equals(template.getTaskType())) {
+                // REPEAT without explicit deadline: default to end of today
+                deadline = LocalDate.now().atTime(23, 59, 59);
+            } else {
+                throw new BusinessException(ErrorCode.TASK_ASSIGNMENT_INVALID_DEADLINE,
+                        "Deadline is required for non-recurring tasks");
+            }
+        } else {
+            deadline = parseDeadline(deadlineStr);
+            if (deadline.isBefore(LocalDateTime.now())) {
+                throw new BusinessException(ErrorCode.TASK_ASSIGNMENT_INVALID_DEADLINE,
+                        "Deadline must be in the future");
+            }
         }
 
         // Get late policy from family default
