@@ -1455,8 +1455,8 @@ export function ParentPointsPage() {
   const { data: children } = useApi<PageResult<ChildProfile>>('/family/children');
   const [selectedChild, setSelectedChild] = useState('');
   const { data, loading, error, refetch } = useApi<{
-    balance: number;
-    transactions: {
+    currentBalance: number;
+    content: {
       id: number;
       amount: number;
       type: string;
@@ -1526,7 +1526,7 @@ export function ParentPointsPage() {
       {selectedChild && (
         <>
           <Card title="积分余额">
-            <Typography.Title level={2} style={{ margin: 0 }}>{data?.balance ?? 0} 积分</Typography.Title>
+            <Typography.Title level={2} style={{ margin: 0 }}>{data?.currentBalance ?? 0} 积分</Typography.Title>
           </Card>
           <Card title="积分调整">
             <Space direction="vertical" size="middle" style={{ width: '100%' }}>
@@ -1543,18 +1543,18 @@ export function ParentPointsPage() {
           </Card>
           <Card title="流水">
             <Space direction="vertical" size="small" style={{ width: '100%' }}>
-              {(data?.transactions ?? []).map((tx) => (
-                <Row key={tx.id} justify="space-between" align="middle">
-                  <Space direction="vertical" size={0}>
-                    <Typography.Text>{tx.reason ?? tx.type}</Typography.Text>
-                    <Typography.Text type="secondary" style={{ fontSize: 12 }}>{tx.createdAt}</Typography.Text>
-                  </Space>
-                  <Typography.Text strong style={{ color: tx.amount >= 0 ? '#52c41a' : '#ff4d4f' }}>
-                    {tx.amount > 0 ? '+' : ''}{tx.amount}
-                  </Typography.Text>
-                </Row>
-              ))}
-              {(data?.transactions ?? []).length === 0 && (
+              {(data?.content ?? []).map((tx) => (
+                  <Row key={tx.id} justify="space-between" align="middle">
+                    <Space direction="vertical" size={0}>
+                      <Typography.Text>{tx.reason ?? tx.type}</Typography.Text>
+                      <Typography.Text type="secondary" style={{ fontSize: 12 }}>{tx.createdAt}</Typography.Text>
+                    </Space>
+                    <Typography.Text strong style={{ color: tx.amount >= 0 ? '#52c41a' : '#ff4d4f' }}>
+                      {tx.amount > 0 ? '+' : ''}{tx.amount}
+                    </Typography.Text>
+                  </Row>
+                ))}
+                {(data?.content ?? []).length === 0 && (
                 <Typography.Text type="secondary">暂无流水</Typography.Text>
               )}
             </Space>
