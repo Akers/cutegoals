@@ -10,13 +10,13 @@ review_mode: off
 isolation: current
 verify_mode: light
 auto_transition: true
-base_ref: bf26dcc3f03337748c7b963d093ea963de1d9e56
+base_ref: 09f0c8795263b202473b4b930e91bdf78fc56467
 design_doc: null
 plan: null
 verify_result: pass
 verify_failures: 0
-verification_report: docs/superpowers/reports/2026-07-21-fix-repeat-task-no-date-required-verify.md
-branch_status: handled
+verification_report: docs/superpowers/reports/2026-07-21-fix-assign-dialog-button-verify.md
+branch_status: pending
 created_at: 2026-07-21
 verified_at: 2026-07-21
 archive_confirmation: confirmed
@@ -26,4 +26,4 @@ handoff_context: null
 handoff_hash: null
 classic_profile: hotfix
 classic_migration: 1
-run_id: 4a298b5b-65f9-4ec4-b322-679d813d431c
+run_id: 31c65555-1b2a-4c5b-a92a-5e2a3f4f9a55
