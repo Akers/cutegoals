@@ -975,6 +975,13 @@ export function ParentTasksPage() {
   );
   const { data: templates } = useApi<PageResult<TaskTemplate>>('/task-templates?enabled=true');
   const { data: children } = useApi<PageResult<ChildProfile>>('/family/children');
+  const childNameMap = useMemo(() => {
+    const map = new Map<number, string>();
+    for (const c of children?.content ?? []) {
+      map.set(c.id, c.nickname);
+    }
+    return map;
+  }, [children]);
   const [showAssign, setShowAssign] = useState(false);
   const templateId = useFormField();
   const difficultyId = useFormField();
@@ -1195,9 +1202,13 @@ export function ParentTasksPage() {
                 <Space direction="vertical" size={2}>
                   <Typography.Text strong>{a.snapshotTemplateName}</Typography.Text>
                   <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-                    {repeatTaskLabel(a.snapshotTemplateTaskType, a.snapshotTemplateTypeConfig)
-                      ? `childId: ${a.childId} · ${repeatTaskLabel(a.snapshotTemplateTaskType, a.snapshotTemplateTypeConfig)}`
-                      : `childId: ${a.childId} · 截止 ${a.deadline}`}
+                    {(() => {
+                      const childName = childNameMap.get(a.childId) ?? `ID ${a.childId}`;
+                      const label = repeatTaskLabel(a.snapshotTemplateTaskType, a.snapshotTemplateTypeConfig);
+                      return label
+                        ? `孩子：${childName} · ${label}`
+                        : `孩子：${childName} · 截止 ${a.deadline}`;
+                    })()}
                   </Typography.Text>
                   {a.overdue && (
                     <Typography.Text style={{ fontSize: 12, fontWeight: 600, color: '#faad14' }}>已逾期</Typography.Text>
