@@ -1191,7 +1191,7 @@ export function ParentTasksPage() {
         </Space>
       </Card>
 
-      <Modal open={showAssign} onCancel={() => setShowAssign(false)} title="批量分配任务">
+      <Modal open={showAssign} onCancel={() => setShowAssign(false)} title="批量分配任务" onOk={handleAssign} okText="分配" confirmLoading={assigning}>
         <Space direction="vertical" size="middle" style={{ width: '100%' }}>
           <div>
             <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>模板</Typography.Text>
@@ -1248,14 +1248,11 @@ export function ParentTasksPage() {
               <Input id="assign-end-date" type="date" {...endDate.inputProps} />
             </div>
           )}
-          <Button onClick={handleAssign} loading={assigning} htmlType="button" style={{ width: '100%' }}>
-            分配
-          </Button>
         </Space>
       </Modal>
 
       {/* 单任务分配弹窗 */}
-      <Modal open={showSingleAssign} onCancel={() => { setShowSingleAssign(false); resetSingleAssignForm(); }} title="分配任务">
+      <Modal open={showSingleAssign} onCancel={() => { setShowSingleAssign(false); resetSingleAssignForm(); }} title="分配任务" onOk={handleSingleAssign} okText="分配" confirmLoading={singleAssigning}>
         <Space direction="vertical" size="middle" style={{ width: '100%' }}>
           <div>
             <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>模板</Typography.Text>
@@ -1312,9 +1309,6 @@ export function ParentTasksPage() {
               />
             </div>
           )}
-          <Button onClick={handleSingleAssign} loading={singleAssigning} htmlType="button" style={{ width: '100%' }}>
-            分配
-          </Button>
         </Space>
       </Modal>
     </Space>
