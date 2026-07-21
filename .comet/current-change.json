@@ -1,5 +1,5 @@
 {
   "version": 1,
-  "change": "add-task-template-resubmission-controls",
-  "branch": "feature/20260720/add-task-template-resubmission-controls"
+  "change": "fix-parent-task-assignment-deadline",
+  "branch": "main"
 }
