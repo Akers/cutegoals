@@ -973,6 +973,8 @@ export function ParentTasksPage() {
   const singleDifficultyId = useFormField();
   const singleChildId = useFormField();
   const [singleDeadline, setSingleDeadline] = useState('');
+  const [singleStartDate, setSingleStartDate] = useState('');
+  const [singleEndDate, setSingleEndDate] = useState('');
   const [singleAssigning, setSingleAssigning] = useState(false);
 
   const selectedSingleTemplate = useMemo(() => {
@@ -988,6 +990,8 @@ export function ParentTasksPage() {
     singleDifficultyId.reset();
     singleChildId.reset();
     setSingleDeadline('');
+    setSingleStartDate('');
+    setSingleEndDate('');
   };
 
   const handleSingleAssign = async () => {
@@ -998,26 +1002,64 @@ export function ParentTasksPage() {
       message.error('请选择模板、难度和孩子');
       return;
     }
-    if (!singleDeadline) {
-      message.error('请选择截止日期');
-      return;
+
+    const isRepeat = selectedSingleTemplate?.taskType === 'REPEAT';
+
+    if (isRepeat) {
+      // 重复任务：不需要截止日期，走周期性生成
+      if (!singleStartDate || !singleEndDate) {
+        message.error('请填写开始日期和结束日期');
+        return;
+      }
+      const today = new Date().toISOString().split('T')[0];
+      if (singleStartDate < today) {
+        message.error('开始日期不能早于今天');
+        return;
+      }
+      if (singleStartDate > singleEndDate) {
+        message.error('开始日期不得晚于结束日期');
+        return;
+      }
+      setSingleAssigning(true);
+      const res = await getClient().post('/task-assignments/generate-recurring', {
+        templateId: tId,
+        childId: cId,
+        difficultyId: dId,
+        startDate: singleStartDate,
+        endDate: singleEndDate,
+      });
+      setSingleAssigning(false);
+      if (res.error) {
+        message.error(res.error.message ?? '分配失败');
+        return;
+      }
+      setShowSingleAssign(false);
+      resetSingleAssignForm();
+      message.success('重复任务已分配');
+      await refetch();
+    } else {
+      // 非重复任务：需要截止日期
+      if (!singleDeadline) {
+        message.error('请选择截止日期');
+        return;
+      }
+      setSingleAssigning(true);
+      const res = await getClient().post('/task-assignments', {
+        templateId: tId,
+        childId: cId,
+        difficultyId: dId,
+        deadline: `${singleDeadline}T23:59:59`,
+      });
+      setSingleAssigning(false);
+      if (res.error) {
+        message.error(res.error.message ?? '分配失败');
+        return;
+      }
+      setShowSingleAssign(false);
+      resetSingleAssignForm();
+      message.success('任务已分配');
+      await refetch();
     }
-    setSingleAssigning(true);
-    const res = await getClient().post('/task-assignments', {
-      templateId: tId,
-      childId: cId,
-      difficultyId: dId,
-      deadline: `${singleDeadline}T23:59:59`,
-    });
-    setSingleAssigning(false);
-    if (res.error) {
-      message.error(res.error.message ?? '分配失败');
-      return;
-    }
-    setShowSingleAssign(false);
-    resetSingleAssignForm();
-    message.success('任务已分配');
-    await refetch();
   };
 
   const selectedTemplate = useMemo(() => {
@@ -1277,16 +1319,29 @@ export function ParentTasksPage() {
               ))}
             </Select>
           </div>
-          <div>
-            <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>截止日期</Typography.Text>
-            <DatePicker
-              id="single-assign-deadline"
-              value={singleDeadline ? dayjs(singleDeadline) : null}
-              onChange={(date) => setSingleDeadline(date ? date.format('YYYY-MM-DD') : '')}
-              format="YYYY-MM-DD"
-              style={{ width: '100%' }}
-            />
-          </div>
+          {selectedSingleTemplate?.taskType === 'REPEAT' ? (
+            <>
+              <div>
+                <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>开始日期</Typography.Text>
+                <Input id="single-assign-start-date" type="date" value={singleStartDate} onChange={(e) => setSingleStartDate(e.target.value)} />
+              </div>
+              <div>
+                <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>结束日期</Typography.Text>
+                <Input id="single-assign-end-date" type="date" value={singleEndDate} onChange={(e) => setSingleEndDate(e.target.value)} />
+              </div>
+            </>
+          ) : (
+            <div>
+              <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>截止日期</Typography.Text>
+              <DatePicker
+                id="single-assign-deadline"
+                value={singleDeadline ? dayjs(singleDeadline) : null}
+                onChange={(date) => setSingleDeadline(date ? date.format('YYYY-MM-DD') : '')}
+                format="YYYY-MM-DD"
+                style={{ width: '100%' }}
+              />
+            </div>
+          )}
           <Button onClick={handleSingleAssign} loading={singleAssigning} htmlType="button" style={{ width: '100%' }}>
             分配
           </Button>
