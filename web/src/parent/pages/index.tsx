@@ -21,6 +21,27 @@ function statusLabel(s: string): string {
   return map[s?.toLowerCase()] ?? s;
 }
 
+/**
+ * 根据任务类型的快照字段生成显示文本。
+ * REPEAT 任务显示"重复任务，每天/每周/每月"；其他任务返回 null（由调用方显示截止日期）。
+ */
+function repeatTaskLabel(taskType: string | null | undefined, typeConfig: string | null | undefined): string | null {
+  if (taskType === 'REPEAT') {
+    try {
+      const config = typeConfig ? JSON.parse(typeConfig) : {};
+      const freq = config.frequency as string;
+      if (freq === 'DAILY') return '重复任务，每天';
+      if (freq === 'WEEKLY') return '重复任务，每周';
+      if (freq === 'MONTHLY') return '重复任务，每月';
+      if (freq === 'YEARLY') return '重复任务，每年';
+      return '重复任务';
+    } catch {
+      return '重复任务';
+    }
+  }
+  return null;
+}
+
 // 后端分页响应统一契约：{content,page,pageSize,totalElements,totalPages}
 interface PageResult<T> {
   content: T[];
@@ -1174,7 +1195,8 @@ export function ParentTasksPage() {
                 <Space direction="vertical" size={2}>
                   <Typography.Text strong>{a.snapshotTemplateName}</Typography.Text>
                   <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-                    childId: {a.childId} · 截止 {a.deadline}
+                    {repeatTaskLabel(a.snapshotTemplateTaskType, a.snapshotTemplateTypeConfig)
+                      ?? `childId: ${a.childId} · 截止 ${a.deadline}`}
                   </Typography.Text>
                   {a.overdue && (
                     <Typography.Text style={{ fontSize: 12, fontWeight: 600, color: '#faad14' }}>已逾期</Typography.Text>
