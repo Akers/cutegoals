@@ -14,6 +14,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -73,6 +76,36 @@ public class PrizeService {
         prize.setStock(stock);
         prize.setEnabled(enabled);
         prize.setDeleted(false);
+
+        // --- 新增字段解析 ---
+        String prizeType = extractString(request, "prizeType");
+        if (prizeType == null) prizeType = "PHYSICAL";
+        if (!"VIRTUAL".equals(prizeType) && !"PHYSICAL".equals(prizeType)) {
+            throw new BusinessException(ErrorCode.VALIDATION_FAILED,
+                    "prizeType must be VIRTUAL or PHYSICAL");
+        }
+        String prizeCategory = extractString(request, "prizeCategory");
+        String titleImage = extractString(request, "titleImage");
+        String detailImage = extractString(request, "detailImage");
+        LocalDateTime validFrom = null;
+        if (request.containsKey("validFrom")) {
+            validFrom = LocalDateTime.parse(extractString(request, "validFrom"));
+        }
+        LocalDateTime validTo = null;
+        if (request.containsKey("validTo")) {
+            validTo = LocalDateTime.parse(extractString(request, "validTo"));
+        }
+        String typeConfig = extractString(request, "typeConfig");
+        if (typeConfig != null && !typeConfig.isEmpty()) {
+            validateTypeConfig(prizeType, prizeCategory, typeConfig);
+        }
+        prize.setPrizeType(prizeType);
+        prize.setPrizeCategory(prizeCategory);
+        prize.setTitleImage(titleImage);
+        prize.setDetailImage(detailImage);
+        prize.setValidFrom(validFrom);
+        prize.setValidTo(validTo);
+        prize.setTypeConfig(typeConfig);
 
         prizeMapper.insert(prize);
 
@@ -136,6 +169,40 @@ public class PrizeService {
 
         if (request.containsKey("enabled")) {
             prize.setEnabled(Boolean.TRUE.equals(request.get("enabled")));
+        }
+
+        if (request.containsKey("prizeType")) {
+            String pt = extractString(request, "prizeType");
+            if (!"VIRTUAL".equals(pt) && !"PHYSICAL".equals(pt)) {
+                throw new BusinessException(ErrorCode.VALIDATION_FAILED,
+                        "prizeType must be VIRTUAL or PHYSICAL");
+            }
+            prize.setPrizeType(pt);
+        }
+        if (request.containsKey("prizeCategory")) {
+            prize.setPrizeCategory(extractString(request, "prizeCategory"));
+        }
+        if (request.containsKey("titleImage")) {
+            prize.setTitleImage(extractString(request, "titleImage"));
+        }
+        if (request.containsKey("detailImage")) {
+            prize.setDetailImage(extractString(request, "detailImage"));
+        }
+        if (request.containsKey("validFrom")) {
+            prize.setValidFrom(LocalDateTime.parse(extractString(request, "validFrom")));
+        }
+        if (request.containsKey("validTo")) {
+            prize.setValidTo(LocalDateTime.parse(extractString(request, "validTo")));
+        }
+        if (request.containsKey("typeConfig")) {
+            String tc = extractString(request, "typeConfig");
+            if (tc != null && !tc.isEmpty()) {
+                validateTypeConfig(
+                        prize.getPrizeType() != null ? prize.getPrizeType() : extractString(request, "prizeType"),
+                        prize.getPrizeCategory() != null ? prize.getPrizeCategory() : extractString(request, "prizeCategory"),
+                        tc);
+            }
+            prize.setTypeConfig(tc);
         }
 
         prizeMapper.updateById(prize);
@@ -344,5 +411,54 @@ public class PrizeService {
         Object val = map.get(key);
         if (val == null) return null;
         return ((Number) val).intValue();
+    }
+
+    private void validateTypeConfig(String prizeType, String prizeCategory, String typeConfig) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode config = mapper.readTree(typeConfig);
+            if ("PHYSICAL".equals(prizeType)) {
+                if (!config.has("actualValue")) {
+                    throw new BusinessException(ErrorCode.VALIDATION_FAILED,
+                            "PHYSICAL prize requires actualValue in typeConfig");
+                }
+            } else if ("VIRTUAL".equals(prizeType)) {
+                if (prizeCategory == null) {
+                    throw new BusinessException(ErrorCode.VALIDATION_FAILED,
+                            "VIRTUAL prize requires prizeCategory");
+                }
+                switch (prizeCategory) {
+                    case "TV_TIME":
+                    case "COMPUTER_TIME":
+                        if (!config.has("durationType") || !config.has("duration")) {
+                            throw new BusinessException(ErrorCode.VALIDATION_FAILED,
+                                    prizeCategory + " requires durationType and duration");
+                        }
+                        break;
+                    case "PARK_PLAY":
+                    case "GENERAL":
+                        if (!config.has("maxUses")) {
+                            throw new BusinessException(ErrorCode.VALIDATION_FAILED,
+                                    prizeCategory + " requires maxUses");
+                        }
+                        break;
+                    case "TRAVEL":
+                        if (!config.has("destination") || !config.has("travelDays")
+                                || !config.has("travelNights") || !config.has("actualValue")) {
+                            throw new BusinessException(ErrorCode.VALIDATION_FAILED,
+                                    "TRAVEL requires destination, travelDays, travelNights, actualValue");
+                        }
+                        break;
+                    default:
+                        throw new BusinessException(ErrorCode.VALIDATION_FAILED,
+                                "Unknown prizeCategory: " + prizeCategory);
+                }
+            }
+        } catch (BusinessException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new BusinessException(ErrorCode.VALIDATION_FAILED,
+                    "Invalid typeConfig JSON: " + e.getMessage());
+        }
     }
 }

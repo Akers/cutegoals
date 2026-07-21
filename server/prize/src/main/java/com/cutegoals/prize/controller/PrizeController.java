@@ -251,6 +251,13 @@ public class PrizeController {
         data.put("deleted", prize.getDeleted());
         data.put("createdAt", prize.getCreatedAt());
         data.put("updatedAt", prize.getUpdatedAt());
+        data.put("prizeType", prize.getPrizeType());
+        data.put("prizeCategory", prize.getPrizeCategory());
+        data.put("titleImage", prize.getTitleImage());
+        data.put("detailImage", prize.getDetailImage());
+        data.put("validFrom", prize.getValidFrom());
+        data.put("validTo", prize.getValidTo());
+        data.put("typeConfig", prize.getTypeConfig());
         return data;
     }
 }

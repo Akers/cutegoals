@@ -41,6 +41,27 @@ public class Prize {
     @TableField("deleted_at")
     private LocalDateTime deletedAt;
 
+    @TableField("prize_type")
+    private String prizeType;
+
+    @TableField("prize_category")
+    private String prizeCategory;
+
+    @TableField("title_image")
+    private String titleImage;
+
+    @TableField("detail_image")
+    private String detailImage;
+
+    @TableField("valid_from")
+    private LocalDateTime validFrom;
+
+    @TableField("valid_to")
+    private LocalDateTime validTo;
+
+    @TableField("type_config")
+    private String typeConfig;
+
     @TableField(value = "created_at", fill = FieldFill.INSERT)
     private LocalDateTime createdAt;
 
