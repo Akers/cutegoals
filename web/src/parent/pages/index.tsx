@@ -10,6 +10,7 @@ import { useApi, useFormField, useIdempotencyKey } from '@shared/hooks/useApi';
 import { useOnline } from '@shared/theme';
 import { TaskTypeConfigForms, type TypeConfigValue } from '@parent/components/TaskTypeConfigForms';
 import { TaskTypeFilter } from '@parent/components/TaskTypeFilter';
+import { PrizeTypeConfigForms, type PrizeTypeConfig } from '@parent/components/PrizeTypeConfigForms';
 
 /** Map API status values to Chinese labels */
 function statusLabel(s: string): string {
@@ -159,6 +160,13 @@ interface Prize {
   pointsCost: number;
   availableStock: number;
   enabled: boolean;
+  prizeType?: string;
+  prizeCategory?: string;
+  titleImage?: string;
+  detailImage?: string;
+  validFrom?: string;
+  validTo?: string;
+  typeConfig?: string;
 }
 
 interface BlindBox {
@@ -1577,12 +1585,46 @@ export function ParentPrizesPage() {
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
 
+  const prizeTypeValue = useFormField('PHYSICAL');
+  const prizeCategoryValue = useFormField();
+  const titleImage = useFormField();
+  const detailImage = useFormField();
+  const validFrom = useFormField();
+  const validTo = useFormField();
+  const typeConfigValue = useFormField();
+
+  const prizeTypeConfig = useMemo((): PrizeTypeConfig => ({
+    prizeType: (prizeTypeValue.value as 'VIRTUAL' | 'PHYSICAL') || 'PHYSICAL',
+    prizeCategory: (prizeCategoryValue.value as any) || undefined,
+    titleImage: titleImage.value || undefined,
+    detailImage: detailImage.value || undefined,
+    validFrom: validFrom.value || undefined,
+    validTo: validTo.value || undefined,
+    typeConfig: typeConfigValue.value || undefined,
+  }), [prizeTypeValue.value, prizeCategoryValue.value, titleImage.value, detailImage.value, validFrom.value, validTo.value, typeConfigValue.value]);
+
+  const handleUpload = async (file: File): Promise<string> => {
+    const formData = new FormData();
+    formData.append('file', file);
+    const res = await getClient().post<{ url: string }>('/prizes/upload', formData);
+    if (res.error) throw new Error(res.error.message);
+    if (!res.data?.url) throw new Error('上传返回的 URL 为空');
+    return res.data.url;
+  };
+
   const openNew = () => {
     setEditing(null);
     name.reset();
     description.reset();
     pointsCost.setValue('0');
     availableStock.setValue('0');
+    prizeTypeValue.setValue('PHYSICAL');
+    prizeCategoryValue.reset();
+    titleImage.reset();
+    detailImage.reset();
+    validFrom.reset();
+    validTo.reset();
+    typeConfigValue.reset();
     setSaveError(null);
     setShowModal(true);
   };
@@ -1593,6 +1635,13 @@ export function ParentPrizesPage() {
     description.setValue(p.description);
     pointsCost.setValue(String(p.pointsCost));
     availableStock.setValue(String(p.availableStock));
+    prizeTypeValue.setValue(p.prizeType ?? 'PHYSICAL');
+    prizeCategoryValue.setValue(p.prizeCategory ?? '');
+    titleImage.setValue(p.titleImage ?? '');
+    detailImage.setValue(p.detailImage ?? '');
+    validFrom.setValue(p.validFrom ?? '');
+    validTo.setValue(p.validTo ?? '');
+    typeConfigValue.setValue(p.typeConfig ?? '');
     setSaveError(null);
     setShowModal(true);
   };
@@ -1605,6 +1654,13 @@ export function ParentPrizesPage() {
       description: description.value,
       pointsCost: Number(pointsCost.value),
       availableStock: Number(availableStock.value),
+      prizeType: prizeTypeValue.value,
+      prizeCategory: prizeCategoryValue.value || undefined,
+      titleImage: titleImage.value || undefined,
+      detailImage: detailImage.value || undefined,
+      validFrom: validFrom.value || undefined,
+      validTo: validTo.value || undefined,
+      typeConfig: typeConfigValue.value || undefined,
     };
     const res = editing
       ? await getClient().put(`/prizes/${editing.id}`, payload)
@@ -1669,6 +1725,17 @@ export function ParentPrizesPage() {
           { title: '积分', dataIndex: 'pointsCost', key: 'pointsCost' },
           { title: '库存', dataIndex: 'availableStock', key: 'availableStock' },
           {
+            title: '类型',
+            key: 'prizeType',
+            render: (_: unknown, record: Prize) => {
+              if (record.prizeType === 'VIRTUAL') {
+                const labels: Record<string, string> = { TV_TIME: '电视时长卡', COMPUTER_TIME: '电脑时长卡', PARK_PLAY: '公园游玩卡', GENERAL: '通用', TRAVEL: '旅游卡' };
+                return <Tag color="blue">虚拟 · {labels[record.prizeCategory ?? ''] || record.prizeCategory}</Tag>;
+              }
+              return <Tag>实物</Tag>;
+            },
+          },
+          {
             title: '状态',
             key: 'enabled',
             render: (_: unknown, record: Prize) => (
@@ -1707,6 +1774,7 @@ export function ParentPrizesPage() {
         okText="保存"
         onOk={handleSave}
         confirmLoading={saving}
+        width={640}
       >
         <Space direction="vertical" size="middle" style={{ width: '100%' }}>
           {saveError && <Alert message={saveError} type="error" showIcon />}
@@ -1726,6 +1794,19 @@ export function ParentPrizesPage() {
             <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>库存</Typography.Text>
             <Input id="prize-stock" type="number" {...availableStock.inputProps} />
           </div>
+          <PrizeTypeConfigForms
+            value={prizeTypeConfig}
+            onChange={v => {
+              prizeTypeValue.setValue(v.prizeType);
+              prizeCategoryValue.setValue(v.prizeCategory ?? '');
+              titleImage.setValue(v.titleImage ?? '');
+              detailImage.setValue(v.detailImage ?? '');
+              validFrom.setValue(v.validFrom ?? '');
+              validTo.setValue(v.validTo ?? '');
+              typeConfigValue.setValue(v.typeConfig ?? '');
+            }}
+            onUpload={handleUpload}
+          />
         </Space>
       </Modal>
     </Space>
