@@ -4,5 +4,6 @@
   "openspec_tasks": "openspec/changes/add-task-template-resubmission-controls/tasks.md",
   "openspec_delta_spec": "openspec/changes/add-task-template-resubmission-controls/specs/task-assignment/spec.md",
   "handoff_context": "openspec/changes/add-task-template-resubmission-controls/.comet/handoff/design-context.json",
-  "handoff_markdown": "openspec/changes/add-task-template-resubmission-controls/.comet/handoff/design-context.md"
+  "handoff_markdown": "openspec/changes/add-task-template-resubmission-controls/.comet/handoff/design-context.md",
+  "archive_directory": "openspec/changes/archive/2026-07-21-add-task-template-resubmission-controls"
 }

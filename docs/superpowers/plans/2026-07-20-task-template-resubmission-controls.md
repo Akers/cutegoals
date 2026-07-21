@@ -2,6 +2,7 @@
 change: add-task-template-resubmission-controls
 design-doc: docs/superpowers/specs/2026-07-20-task-template-resubmission-controls-design.md
 base-ref: 2d8d2e0da005cb298238d9e01d51da3603b28bb5
+archived-with: 2026-07-21-add-task-template-resubmission-controls
 ---
 
 # add-task-template-resubmission-controls 实施计划

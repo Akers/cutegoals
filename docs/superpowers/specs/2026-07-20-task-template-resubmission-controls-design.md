@@ -2,6 +2,8 @@
 comet_change: add-task-template-resubmission-controls
 role: technical-design
 canonical_spec: openspec
+archived-with: 2026-07-21-add-task-template-resubmission-controls
+status: final
 ---
 
 # Design Doc: 任务模板重复提交控制端到端落地
