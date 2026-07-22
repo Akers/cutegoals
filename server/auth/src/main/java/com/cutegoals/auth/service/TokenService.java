@@ -67,21 +67,42 @@ public class TokenService {
      * Generate an access token (JWT).
      */
     public String generateAccessToken(Long accountId, List<String> roles, String sessionId) {
+        return generateAccessToken(accountId, roles, sessionId, null, null);
+    }
+
+    /**
+     * Generate an access token (JWT) with optional child and family claims.
+     */
+    public String generateAccessToken(Long accountId, List<String> roles, String sessionId, Long childId, Long familyId) {
         Date now = new Date();
         Date expiry = Date.from(
                 LocalDateTime.now().plusMinutes(accessExpiryMinutes)
                         .atZone(ZoneId.systemDefault()).toInstant()
         );
 
-        return Jwts.builder()
-                .subject(String.valueOf(accountId))
+        String subject;
+        if (childId != null) {
+            subject = String.valueOf(childId);
+        } else {
+            subject = String.valueOf(accountId);
+        }
+
+        var builder = Jwts.builder()
+                .subject(subject)
                 .issuer("cute-goals")
                 .issuedAt(now)
                 .expiration(expiry)
                 .claim("roles", roles)
-                .claim("sid", sessionId)
-                .signWith(signingKey)
-                .compact();
+                .claim("sid", sessionId);
+
+        if (childId != null) {
+            builder.claim("cid", childId);
+        }
+        if (familyId != null) {
+            builder.claim("fid", familyId);
+        }
+
+        return builder.signWith(signingKey).compact();
     }
 
     /**
@@ -186,12 +207,32 @@ public class TokenService {
                     .parseSignedClaims(accessToken)
                     .getPayload();
 
-            Long accountId = Long.valueOf(claims.getSubject());
+            String subject = claims.getSubject();
+            Long accountId;
+            Long childId = null;
+            Long familyId = null;
+
+            // Try to extract childId/familyId from claims
+            Number cidRaw = claims.get("cid", Number.class);
+            if (cidRaw != null) {
+                childId = cidRaw.longValue();
+                accountId = childId;  // Use childId as accountId for backward compat
+            } else {
+                accountId = Long.valueOf(subject);
+            }
+
+            Number fidRaw = claims.get("fid", Number.class);
+            if (fidRaw != null) {
+                familyId = fidRaw.longValue();
+            }
+
             @SuppressWarnings("unchecked")
             List<String> roles = (List<String>) claims.get("roles");
             String sessionId = claims.get("sid", String.class);
 
-            return new JwtClaims(accountId, roles, sessionId);
+            return new JwtClaims(accountId, roles, sessionId, childId, familyId);
+        } catch (BusinessException e) {
+            throw e;
         } catch (Exception e) {
             throw new BusinessException(ErrorCode.UNAUTHORIZED);
         }
@@ -234,5 +275,5 @@ public class TokenService {
     /**
      * Parsed JWT claims.
      */
-    public record JwtClaims(Long accountId, List<String> roles, String sessionId) {}
+    public record JwtClaims(Long accountId, List<String> roles, String sessionId, Long childId, Long familyId) {}
 }

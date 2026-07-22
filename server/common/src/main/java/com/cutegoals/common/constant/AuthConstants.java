@@ -47,6 +47,8 @@ public final class AuthConstants {
     public static final String ATTR_ROLES = "currentRoles";
     public static final String ATTR_SESSION_ID = "currentSessionId";
     public static final String ATTR_FAMILY_ID = "currentFamilyId";
+    /** Child ID for child-authenticated requests */
+    public static final String ATTR_CHILD_ID = "currentChildId";
 
     /** Cookie names */
     public static final String COOKIE_ACCESS_TOKEN = "access_token";

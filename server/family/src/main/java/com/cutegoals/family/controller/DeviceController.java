@@ -6,7 +6,10 @@ import com.cutegoals.common.exception.BusinessException;
 import com.cutegoals.common.exception.ErrorCode;
 import com.cutegoals.family.mapper.DeviceBindingMapper;
 import com.cutegoals.family.service.DeviceBindingService;
+import com.cutegoals.auth.service.TokenService;
+import com.cutegoals.auth.config.TokenCookieWriter;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +32,8 @@ public class DeviceController {
 
     private final DeviceBindingService deviceBindingService;
     private final DeviceBindingMapper deviceBindingMapper;
+    private final TokenService tokenService;
+    private final TokenCookieWriter tokenCookieWriter;
 
     /**
      * POST /api/family/devices/bind - Parent authorizes a device.
@@ -90,7 +95,8 @@ public class DeviceController {
      */
     @PostMapping("/api/auth/child/login")
     public ResponseEntity<ApiResponse<Map<String, Object>>> childLogin(
-            @RequestBody Map<String, Object> body) {
+            @RequestBody Map<String, Object> body,
+            HttpServletResponse response) {
         String requestId = generateRequestId();
         MDC.put("requestId", requestId);
 
@@ -111,6 +117,15 @@ public class DeviceController {
         Long childId = childIdRaw instanceof Number n ? n.longValue() : Long.valueOf(childIdRaw.toString());
 
         Map<String, Object> result = deviceBindingService.childLogin(deviceId, childId, pin);
+
+        // Generate JWT and set cookies for session persistence
+        String sessionId = (String) result.get("sessionId");
+        Long familyId = result.get("familyId") instanceof Number n ? n.longValue() : null;
+        String accessToken = tokenService.generateAccessToken(childId, List.of("CHILD"), sessionId, childId, familyId);
+        String refreshToken = tokenService.generateRefreshToken(sessionId);
+        tokenCookieWriter.setTokenCookies(response, accessToken, refreshToken);
+        tokenCookieWriter.setCsrfCookie(response);
+
         return ResponseEntity.ok(ApiResponse.success(result, requestId));
     }
 

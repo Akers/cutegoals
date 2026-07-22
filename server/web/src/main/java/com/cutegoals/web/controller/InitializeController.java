@@ -5,7 +5,7 @@ import com.cutegoals.auth.service.AuthenticationService.LoginResult;
 import com.cutegoals.auth.service.InitializationService;
 import com.cutegoals.common.dto.ApiResponse;
 import com.cutegoals.common.dto.auth.InitializeRequest;
-import com.cutegoals.web.config.TokenCookieWriter;
+import com.cutegoals.auth.config.TokenCookieWriter;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;

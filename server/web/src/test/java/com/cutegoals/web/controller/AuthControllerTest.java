@@ -8,7 +8,7 @@ import com.cutegoals.auth.service.TokenService.JwtClaims;
 import com.cutegoals.common.dto.ApiResponse;
 import com.cutegoals.common.exception.BusinessException;
 import com.cutegoals.common.exception.ErrorCode;
-import com.cutegoals.web.config.TokenCookieWriter;
+import com.cutegoals.auth.config.TokenCookieWriter;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
@@ -61,7 +61,7 @@ class AuthControllerTest {
                 new Cookie("access_token", "valid-jwt-token")
         });
         when(tokenService.parseAccessToken("valid-jwt-token"))
-                .thenReturn(new JwtClaims(42L, List.of("PARENT"), "session-1"));
+                .thenReturn(new JwtClaims(42L, List.of("PARENT"), "session-1", null, null));
 
         ResponseEntity<ApiResponse<Map<String, Object>>> response = controller.me(request);
 

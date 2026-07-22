@@ -13,7 +13,7 @@ import com.cutegoals.common.dto.ApiResponse;
 import com.cutegoals.common.dto.auth.*;
 import com.cutegoals.common.exception.BusinessException;
 import com.cutegoals.common.exception.ErrorCode;
-import com.cutegoals.web.config.TokenCookieWriter;
+import com.cutegoals.auth.config.TokenCookieWriter;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -95,9 +95,16 @@ public class AuthController {
         String oldAccessToken = extractAccessToken(request);
         JwtClaims claims = tokenService.parseAccessToken(oldAccessToken);
 
-        // Generate new access token
-        String newAccessToken = tokenService.generateAccessToken(
-                claims.accountId(), claims.roles(), result.sessionId());
+        // Generate new access token - use extended version for child sessions
+        String newAccessToken;
+        if (claims.childId() != null) {
+            newAccessToken = tokenService.generateAccessToken(
+                    claims.accountId(), claims.roles(), result.sessionId(),
+                    claims.childId(), claims.familyId());
+        } else {
+            newAccessToken = tokenService.generateAccessToken(
+                    claims.accountId(), claims.roles(), result.sessionId());
+        }
 
         // Set new cookies (HttpOnly — JS cannot read them)
         tokenCookieWriter.setTokenCookies(response, newAccessToken, result.newRefreshToken());
@@ -213,6 +220,12 @@ public class AuthController {
         Map<String, Object> data = new HashMap<>();
         data.put("accountId", claims.accountId());
         data.put("roles", claims.roles());
+        if (claims.childId() != null) {
+            data.put("childId", claims.childId());
+        }
+        if (claims.familyId() != null) {
+            data.put("familyId", claims.familyId());
+        }
 
         return ResponseEntity.ok(ApiResponse.success(data, requestId));
     }

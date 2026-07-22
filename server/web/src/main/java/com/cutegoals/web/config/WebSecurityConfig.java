@@ -305,19 +305,32 @@ public class WebSecurityConfig {
 
                     if (accessToken != null) {
                         var claims = tokenService.parseAccessToken(accessToken);
-                        request.setAttribute(AuthConstants.ATTR_ACCOUNT_ID, claims.accountId());
+
+                        if (claims.childId() != null) {
+                            // Child session: use childId, set familyId from claims
+                            request.setAttribute(AuthConstants.ATTR_ACCOUNT_ID, claims.childId());
+                            request.setAttribute(AuthConstants.ATTR_CHILD_ID, claims.childId());
+                        } else {
+                            // Parent session: existing behavior
+                            request.setAttribute(AuthConstants.ATTR_ACCOUNT_ID, claims.accountId());
+                            familyMemberMapper.findByAccountId(claims.accountId())
+                                    .ifPresent(member -> request.setAttribute(AuthConstants.ATTR_FAMILY_ID, member.getFamilyId()));
+                        }
+
                         request.setAttribute(AuthConstants.ATTR_ROLES, claims.roles());
                         request.setAttribute(AuthConstants.ATTR_SESSION_ID, claims.sessionId());
 
-                        familyMemberMapper.findByAccountId(claims.accountId())
-                                .ifPresent(member -> request.setAttribute(AuthConstants.ATTR_FAMILY_ID, member.getFamilyId()));
+                        // Set familyId from claims if available (child sessions)
+                        if (claims.familyId() != null && request.getAttribute(AuthConstants.ATTR_FAMILY_ID) == null) {
+                            request.setAttribute(AuthConstants.ATTR_FAMILY_ID, claims.familyId());
+                        }
 
                         // Set Spring Security authentication so role-based access rules work
                         var authorities = claims.roles().stream()
                                 .map(r -> new SimpleGrantedAuthority("ROLE_" + r))
                                 .collect(Collectors.toList());
                         var authentication = new UsernamePasswordAuthenticationToken(
-                                claims.accountId(), null, authorities);
+                                claims.childId() != null ? claims.childId() : claims.accountId(), null, authorities);
                         SecurityContextHolder.getContext().setAuthentication(authentication);
                     }
 

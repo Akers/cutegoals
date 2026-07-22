@@ -86,7 +86,7 @@ export function AuthProvider({
   useEffect(() => {
     let cancelled = false;
     getClient()
-      .get<{ accountId: number; phone: string; roles: string[]; familyId: number | null }>('/auth/me')
+      .get<{ accountId: number; phone: string; roles: string[]; familyId: number | null; childId: number | null }>('/auth/me')
       .then((response) => {
         if (cancelled) return;
         if (response.data) {
@@ -95,6 +95,7 @@ export function AuthProvider({
             phone: response.data.phone,
             roles: response.data.roles,
             familyId: response.data.familyId ?? undefined,
+            childId: response.data.childId ?? undefined,
           });
         }
         // 401 → do nothing, account stays null

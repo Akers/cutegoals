@@ -1,4 +1,4 @@
-package com.cutegoals.web.config;
+package com.cutegoals.auth.config;
 
 import com.cutegoals.common.constant.AuthConstants;
 import jakarta.servlet.http.HttpServletResponse;
