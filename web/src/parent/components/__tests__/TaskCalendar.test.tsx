@@ -299,9 +299,9 @@ describe('TaskCalendar - 双月日历组件', () => {
       const rows = computeWeekNumbers(2026, 7);
       expect(rows).toHaveLength(6);
       // 2026-07-01 是周三 → startOf('week') = 周日 2026-06-28
-      // ISO week of 2026-06-28 (Sunday) = 26 (ISO week 27 starts Monday 06-29)
+      // week() 基于周日起始，2026-06-28 周日 = 第27周
       expect(rows[0].startDate).toBe('2026-06-28');
-      expect(rows[0].weekNum).toBe(26);
+      expect(rows[0].weekNum).toBe(27);
     });
 
     it('computeWeekNumbers 每月返回 6 行', () => {
@@ -311,8 +311,8 @@ describe('TaskCalendar - 双月日历组件', () => {
 
     it('有任务的周显示提示色背景', () => {
       render(<TaskCalendar {...defaultProps} />);
-      // 第26周包含 2026-07-01（有任务）→ 有背景色
-      const weekRow = within(julyPanel()).getByTestId('week-row-26') as HTMLElement;
+      // 第27周包含 2026-07-01（有任务）→ 有背景色
+      const weekRow = within(julyPanel()).getByTestId('week-row-27') as HTMLElement;
       expect(weekRow.getAttribute('data-has-tasks')).toBe('true');
     });
 
@@ -324,14 +324,14 @@ describe('TaskCalendar - 双月日历组件', () => {
         refetch: vi.fn(),
       });
       render(<TaskCalendar {...defaultProps} />);
-      const weekRow = within(julyPanel()).getByTestId('week-row-26') as HTMLElement;
+      const weekRow = within(julyPanel()).getByTestId('week-row-27') as HTMLElement;
       expect(weekRow.getAttribute('data-has-tasks')).toBe('false');
     });
 
     it('点击周号触发 SELECT_WEEK', async () => {
       const onSelect = vi.fn();
       render(<TaskCalendar {...defaultProps} onSelect={onSelect} />);
-      await userEvent.click(within(julyPanel()).getByTestId('week-row-26'));
+      await userEvent.click(within(julyPanel()).getByTestId('week-row-27'));
       expect(onSelect).toHaveBeenCalledWith<[CalendarAction]>({
         type: 'SELECT_WEEK',
         startDate: '2026-06-28',
@@ -349,7 +349,7 @@ describe('TaskCalendar - 双月日历组件', () => {
           }}
         />,
       );
-      const weekRow = within(julyPanel()).getByTestId('week-row-26') as HTMLElement;
+      const weekRow = within(julyPanel()).getByTestId('week-row-27') as HTMLElement;
       expect(weekRow.getAttribute('data-selected')).toBe('true');
     });
   });
@@ -373,7 +373,7 @@ describe('TaskCalendar - 双月日历组件', () => {
       const onSelect = vi.fn();
       render(<TaskCalendar {...defaultProps} onSelect={onSelect} />);
       await userEvent.click(
-        within(julyPanel()).getByTestId('week-row-26'),
+        within(julyPanel()).getByTestId('week-row-27'),
       );
       expect(onSelect).toHaveBeenCalledWith<[CalendarAction]>({
         type: 'SELECT_WEEK',

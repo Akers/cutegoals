@@ -1048,12 +1048,9 @@ export function ParentTasksPage() {
     viewAllMode: false,
   });
 
-  // 动态构建查询参数（debounce 300ms）
+  // 动态构建查询参数（debounce 300ms），初始值与 buildQuery 保持一致
   const debounceTimer = useRef<ReturnType<typeof setTimeout>>();
-  const [queryPath, setQueryPath] = useState(() => {
-    const n = dayjs();
-    return `/task-assignments?page=1&pageSize=100&startDate=${n.format('YYYY-MM-DD')}&endDate=${n.format('YYYY-MM-DD')}`;
-  });
+  const [queryPath, setQueryPath] = useState(() => buildQuery(calendarState));
 
   useEffect(() => {
     if (debounceTimer.current) clearTimeout(debounceTimer.current);

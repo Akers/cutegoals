@@ -1,10 +1,10 @@
 import React from 'react';
 import dayjs from 'dayjs';
-import isoWeek from 'dayjs/plugin/isoWeek';
+import weekOfYear from 'dayjs/plugin/weekOfYear';
 import { Calendar, Badge, Spin, Alert, Button } from 'antd';
 import { useApi } from '@shared/hooks/useApi';
 
-dayjs.extend(isoWeek);
+dayjs.extend(weekOfYear);
 
 // ── TypeScript 类型定义 ──────────────────────────────────────────
 
@@ -89,7 +89,7 @@ export function computeWeekNumbers(year: number, month: number): WeekRow[] {
   const rows: WeekRow[] = [];
   let current = firstDay.startOf('week'); // Sunday
   for (let i = 0; i < 6; i++) {
-    rows.push({ weekNum: current.isoWeek(), startDate: current.format('YYYY-MM-DD') });
+    rows.push({ weekNum: current.week(), startDate: current.format('YYYY-MM-DD') });
     current = current.add(1, 'week');
   }
   return rows;
