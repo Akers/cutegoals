@@ -1,25 +1,115 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { TaskCalendar } from '../TaskCalendar';
+import dayjs from 'dayjs';
+
+// ── Mock useApi ───────────────────────────────────────────────────
+vi.mock('@shared/hooks/useApi', () => ({
+  useApi: vi.fn(),
+}));
+
+import { useApi } from '@shared/hooks/useApi';
+const mockUseApi = vi.mocked(useApi);
+
+import { TaskCalendar, computeWeekNumbers } from '../TaskCalendar';
 import type { CalendarAction } from '../TaskCalendar';
 
-// Mock antd Calendar to avoid jsdom limitations (ResizeObserver, etc.)
-vi.mock('antd', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('antd')>();
+// ── Mock antd ─────────────────────────────────────────────────────
+// Only mock what we need; avoid importing real antd to prevent
+// rc-picker / CSS-in-JS side effects in jsdom.
+vi.mock('antd', () => {
+  const React = require('react');
+  const dayjs = require('dayjs');
+
   return {
-    ...actual,
+    Button: ({ children, onClick, ...rest }: any) =>
+      React.createElement('button', { onClick, ...rest }, children),
+    Badge: ({ count, children, size, offset, ...rest }: any) => {
+      const elements: any[] = [];
+      if (children) elements.push(children);
+      elements.push(React.createElement('sup', { key: 'count', className: 'ant-scroll-number ant-badge-count' }, count));
+      return React.createElement('span', { className: 'ant-badge', ...rest }, ...elements);
+    },
+    Spin: () => React.createElement('div', { className: 'ant-spin' }),
+    Alert: ({ message, action, type, ...rest }: any) =>
+      React.createElement('div', { className: `ant-alert ant-alert-${type}` },
+        React.createElement('div', { className: 'ant-alert-message' }, message),
+        action ? React.createElement('div', { className: 'ant-alert-action' }, action) : null,
+      ),
     Calendar: vi.fn().mockImplementation(
-      ({ value }: { value?: { format?: (fmt: string) => string } }) => {
-        const month = value?.format?.('YYYY-MM') ?? 'unknown';
-        return <div data-testid={`mock-calendar-${month}`} />;
+      ({ value, dateCellRender, onSelect }: any) => {
+        if (!value) {
+          return <div data-testid="mock-calendar-empty" />;
+        }
+        const year = value.year();
+        const month = value.month(); // 0-based
+        const daysInMonth = value.daysInMonth();
+        const monthStr = `${year}-${String(month + 1).padStart(2, '0')}`;
+        const cells: React.ReactNode[] = [];
+        for (let d = 1; d <= daysInMonth; d++) {
+          const date = dayjs(new Date(year, month, d));
+          const cellContent = dateCellRender?.(date);
+          cells.push(
+            <div
+              key={d}
+              data-testid={`date-cell-${d}`}
+              onClick={() => onSelect?.(date)}
+            >
+              {cellContent ?? <span>{d}</span>}
+            </div>,
+          );
+        }
+        return (
+          <div data-testid={`mock-calendar-${monthStr}`}>{cells}</div>
+        );
       },
     ),
   };
 });
 
+// ── 测试数据 ──────────────────────────────────────────────────────
+const baseMonth = '2026-07';
+
+const mockCalendarData = {
+  year: 2026,
+  month: 7,
+  days: {
+    '2026-07-01': {
+      total: 3, pending: 1, submitted: 1, approved: 0, rejected: 0,
+      cancelled: 0, overdue: 1,
+      taskTypes: { LIMITED: 1, REPEAT: 2, STANDING: 0 },
+    },
+    '2026-07-05': {
+      total: 2, pending: 0, submitted: 0, approved: 0, rejected: 0,
+      cancelled: 0, overdue: 2,
+      taskTypes: { LIMITED: 0, REPEAT: 2, STANDING: 0 },
+    },
+    '2026-07-15': {
+      total: 1, pending: 0, submitted: 0, approved: 0, rejected: 0,
+      cancelled: 0, overdue: 0,
+      taskTypes: { LIMITED: 0, REPEAT: 0, STANDING: 1 },
+    },
+    '2026-07-20': {
+      total: 5, pending: 2, submitted: 1, approved: 1, rejected: 0,
+      cancelled: 0, overdue: 1,
+      taskTypes: { LIMITED: 2, REPEAT: 1, STANDING: 2 },
+    },
+  },
+};
+
+// ── 测试辅助 ──────────────────────────────────────────────────────
+/** 获取七月面板作用域（第一个面板，基准月） */
+function julyPanel() {
+  return screen.getByTestId('calendar-panel-2026-7');
+}
+
+/** 获取八月面板作用域（第二个面板） */
+function augustPanel() {
+  return screen.getByTestId('calendar-panel-2026-8');
+}
+
+// ── 主测试套件 ────────────────────────────────────────────────────
 describe('TaskCalendar - 双月日历组件', () => {
-  const baseMonth = '2026-07';
   const defaultProps = {
     baseMonth,
     selectedRange: null,
@@ -29,7 +119,15 @@ describe('TaskCalendar - 双月日历组件', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    mockUseApi.mockReturnValue({
+      data: mockCalendarData,
+      loading: false,
+      error: undefined,
+      refetch: vi.fn(),
+    });
   });
+
+  // ═══════════════ 原有测试（保持向后兼容）═══════════════
 
   it('渲染导航栏及月份标题', () => {
     render(<TaskCalendar {...defaultProps} />);
@@ -77,5 +175,296 @@ describe('TaskCalendar - 双月日历组件', () => {
   it('第二个面板的 CalendarHeader 显示下月信息', () => {
     render(<TaskCalendar {...defaultProps} />);
     expect(screen.getByText('2026年8月')).toBeInTheDocument();
+  });
+
+  // ═══════════════ 2.2: dateCellRender 颜色标记 ═══════════════
+
+  describe('dateCellRender 颜色标记 (2.2)', () => {
+    it('LIMITED 类型（＞0）显示淡红背景（error-bg）', () => {
+      render(<TaskCalendar {...defaultProps} />);
+      // 2026-07-01: LIMITED=1 → 淡红
+      const cell1 = within(julyPanel()).getByTestId('date-cell-1');
+      const inner = cell1.firstElementChild as HTMLElement;
+      expect(inner.getAttribute('data-bg')).toBe('var(--ant-color-error-bg)');
+    });
+
+    it('仅 REPEAT 类型显示淡蓝背景（info-bg）', () => {
+      render(<TaskCalendar {...defaultProps} />);
+      // 2026-07-05: LIMITED=0, REPEAT=2 → 淡蓝
+      const cell5 = within(julyPanel()).getByTestId('date-cell-5');
+      const inner = cell5.firstElementChild as HTMLElement;
+      expect(inner.getAttribute('data-bg')).toBe('var(--ant-color-info-bg)');
+    });
+
+    it('仅 STANDING 类型显示淡绿背景（success-bg）', () => {
+      render(<TaskCalendar {...defaultProps} />);
+      // 2026-07-15: STANDING=1 → 淡绿
+      const cell15 = within(julyPanel()).getByTestId('date-cell-15');
+      const inner = cell15.firstElementChild as HTMLElement;
+      expect(inner.getAttribute('data-bg')).toBe('var(--ant-color-success-bg)');
+    });
+
+    it('无任务数据日期无背景色', () => {
+      render(<TaskCalendar {...defaultProps} />);
+      // 2026-07-10: 不在 mock 数据中 → 无背景
+      const cell10 = within(julyPanel()).getByTestId('date-cell-10');
+      const inner = cell10.firstElementChild as HTMLElement;
+      expect(inner.getAttribute('data-bg')).toBe('');
+    });
+
+    it('LIMITED 优先于 REPEAT 和 STANDING', () => {
+      // 2026-07-20: LIMITED=2, REPEAT=1, STANDING=2 → LIMITED 优先
+      render(<TaskCalendar {...defaultProps} />);
+      const cell20 = within(julyPanel()).getByTestId('date-cell-20');
+      const inner = cell20.firstElementChild as HTMLElement;
+      expect(inner.getAttribute('data-bg')).toBe('var(--ant-color-error-bg)');
+    });
+
+    it('total > 0 时显示 Badge', () => {
+      render(<TaskCalendar {...defaultProps} />);
+      const cell1 = within(julyPanel()).getByTestId('date-cell-1');
+      expect(cell1.querySelector('.ant-badge')).toBeInTheDocument();
+    });
+
+    it('total = 0 时不显示 Badge', () => {
+      mockUseApi.mockReturnValue({
+        data: {
+          ...mockCalendarData,
+          days: {
+            ...mockCalendarData.days,
+            '2026-07-01': {
+              total: 0,
+              pending: 0,
+              submitted: 0,
+              approved: 0,
+              rejected: 0,
+              cancelled: 0,
+              overdue: 0,
+              taskTypes: { LIMITED: 0, REPEAT: 0, STANDING: 0 },
+            },
+          },
+        },
+        loading: false,
+        error: undefined,
+        refetch: vi.fn(),
+      });
+      render(<TaskCalendar {...defaultProps} />);
+      const cell1 = within(julyPanel()).getByTestId('date-cell-1');
+      expect(cell1.querySelector('.ant-badge')).not.toBeInTheDocument();
+    });
+
+    it('选中日期显示高亮边框', () => {
+      render(
+        <TaskCalendar
+          {...defaultProps}
+          selectedRange={{
+            type: 'day',
+            startDate: '2026-07-01',
+            endDate: '2026-07-01',
+          }}
+        />,
+      );
+      const cell1 = within(julyPanel()).getByTestId('date-cell-1');
+      const inner = cell1.firstElementChild as HTMLElement;
+      expect(inner.getAttribute('data-selected')).toBe('true');
+    });
+
+    it('未选中日期无高亮边框', () => {
+      render(
+        <TaskCalendar
+          {...defaultProps}
+          selectedRange={{
+            type: 'day',
+            startDate: '2026-07-05',
+            endDate: '2026-07-05',
+          }}
+        />,
+      );
+      const cell1 = within(julyPanel()).getByTestId('date-cell-1');
+      const inner = cell1.firstElementChild as HTMLElement;
+      expect(inner.getAttribute('data-selected')).toBe('false');
+    });
+  });
+
+  // ═══════════════ 2.3: WeekNumberColumn ═══════════════
+
+  describe('WeekNumberColumn (2.3)', () => {
+    it('渲染 6 行周号', () => {
+      render(<TaskCalendar {...defaultProps} />);
+      const weekRows = within(julyPanel()).getAllByText(/^第\d+周$/);
+      expect(weekRows).toHaveLength(6);
+    });
+
+    it('computeWeekNumbers 返回正确结构', () => {
+      const rows = computeWeekNumbers(2026, 7);
+      expect(rows).toHaveLength(6);
+      // 2026-07-01 是周三 → startOf('week') = 周日 2026-06-28
+      // ISO week of 2026-06-28 (Sunday) = 26 (ISO week 27 starts Monday 06-29)
+      expect(rows[0].startDate).toBe('2026-06-28');
+      expect(rows[0].weekNum).toBe(26);
+    });
+
+    it('computeWeekNumbers 每月返回 6 行', () => {
+      const rows = computeWeekNumbers(2027, 1);
+      expect(rows).toHaveLength(6);
+    });
+
+    it('有任务的周显示提示色背景', () => {
+      render(<TaskCalendar {...defaultProps} />);
+      // 第26周包含 2026-07-01（有任务）→ 有背景色
+      const weekRow = within(julyPanel()).getByTestId('week-row-26') as HTMLElement;
+      expect(weekRow.getAttribute('data-has-tasks')).toBe('true');
+    });
+
+    it('无任务的周无背景色', () => {
+      mockUseApi.mockReturnValue({
+        data: { year: 2026, month: 7, days: {} },
+        loading: false,
+        error: undefined,
+        refetch: vi.fn(),
+      });
+      render(<TaskCalendar {...defaultProps} />);
+      const weekRow = within(julyPanel()).getByTestId('week-row-26') as HTMLElement;
+      expect(weekRow.getAttribute('data-has-tasks')).toBe('false');
+    });
+
+    it('点击周号触发 SELECT_WEEK', async () => {
+      const onSelect = vi.fn();
+      render(<TaskCalendar {...defaultProps} onSelect={onSelect} />);
+      await userEvent.click(within(julyPanel()).getByTestId('week-row-26'));
+      expect(onSelect).toHaveBeenCalledWith<[CalendarAction]>({
+        type: 'SELECT_WEEK',
+        startDate: '2026-06-28',
+      });
+    });
+
+    it('选中周显示高亮边框', () => {
+      render(
+        <TaskCalendar
+          {...defaultProps}
+          selectedRange={{
+            type: 'week',
+            startDate: '2026-06-28',
+            endDate: '2026-07-04',
+          }}
+        />,
+      );
+      const weekRow = within(julyPanel()).getByTestId('week-row-26') as HTMLElement;
+      expect(weekRow.getAttribute('data-selected')).toBe('true');
+    });
+  });
+
+  // ═══════════════ 2.4: 三级点击交互 ═══════════════
+
+  describe('三级点击交互 (2.4)', () => {
+    it('点击日期触发 SELECT_DATE', async () => {
+      const onSelect = vi.fn();
+      render(<TaskCalendar {...defaultProps} onSelect={onSelect} />);
+      await userEvent.click(
+        within(julyPanel()).getByTestId('date-cell-1'),
+      );
+      expect(onSelect).toHaveBeenCalledWith<[CalendarAction]>({
+        type: 'SELECT_DATE',
+        date: '2026-07-01',
+      });
+    });
+
+    it('点击周号触发 SELECT_WEEK', async () => {
+      const onSelect = vi.fn();
+      render(<TaskCalendar {...defaultProps} onSelect={onSelect} />);
+      await userEvent.click(
+        within(julyPanel()).getByTestId('week-row-26'),
+      );
+      expect(onSelect).toHaveBeenCalledWith<[CalendarAction]>({
+        type: 'SELECT_WEEK',
+        startDate: '2026-06-28',
+      });
+    });
+
+    it('月份标题触发 SELECT_MONTH', async () => {
+      const onSelect = vi.fn();
+      render(<TaskCalendar {...defaultProps} onSelect={onSelect} />);
+      await userEvent.click(screen.getByText('2026年7月'));
+      expect(onSelect).toHaveBeenCalledWith<[CalendarAction]>({
+        type: 'SELECT_MONTH',
+        year: 2026,
+        month: 7,
+      });
+    });
+  });
+
+  // ═══════════════ 2.5: useApi 数据获取 ═══════════════
+
+  describe('useApi 数据获取 (2.5)', () => {
+    it('loading 状态显示 Spin', () => {
+      mockUseApi.mockReturnValue({
+        data: undefined,
+        loading: true,
+        error: undefined,
+        refetch: vi.fn(),
+      });
+      render(<TaskCalendar {...defaultProps} />);
+      expect(document.querySelector('.ant-spin')).toBeInTheDocument();
+    });
+
+    it('error 状态显示 Alert 和重试按钮', () => {
+      mockUseApi.mockReturnValue({
+        data: undefined,
+        loading: false,
+        error: { error_code: 'NETWORK_ERROR', message: '加载失败' },
+        refetch: vi.fn(),
+      });
+      render(<TaskCalendar {...defaultProps} />);
+      const july = julyPanel();
+      expect(within(july).getByText('加载失败')).toBeInTheDocument();
+      expect(within(july).getByText('重试')).toBeInTheDocument();
+    });
+
+    it('点击重试触发 refetch', async () => {
+      const refetch = vi.fn();
+      mockUseApi.mockReturnValue({
+        data: undefined,
+        loading: false,
+        error: { error_code: 'NETWORK_ERROR', message: '加载失败' },
+        refetch,
+      });
+      render(<TaskCalendar {...defaultProps} />);
+      await userEvent.click(
+        within(julyPanel()).getByText('重试'),
+      );
+      expect(refetch).toHaveBeenCalled();
+    });
+
+    it('单面板错误不影响另一面板', () => {
+      mockUseApi.mockImplementation((path: string) => {
+        if (path.includes('month=7')) {
+          return {
+            data: undefined,
+            loading: false,
+            error: { error_code: 'NETWORK_ERROR', message: '加载失败' },
+            refetch: vi.fn(),
+          };
+        }
+        return {
+          data: mockCalendarData,
+          loading: false,
+          error: undefined,
+          refetch: vi.fn(),
+        };
+      });
+      render(<TaskCalendar {...defaultProps} />);
+      // 七月面板显示错误
+      expect(
+        within(julyPanel()).getByText('加载失败'),
+      ).toBeInTheDocument();
+      // 八月面板正常渲染日历
+      expect(screen.getByTestId('mock-calendar-2026-08')).toBeInTheDocument();
+    });
+
+    it('正常数据渲染日历', () => {
+      render(<TaskCalendar {...defaultProps} />);
+      expect(screen.getByTestId('mock-calendar-2026-07')).toBeInTheDocument();
+      expect(screen.getByTestId('mock-calendar-2026-08')).toBeInTheDocument();
+    });
   });
 });

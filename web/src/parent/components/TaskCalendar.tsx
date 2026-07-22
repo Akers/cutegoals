@@ -1,6 +1,10 @@
 import React from 'react';
 import dayjs from 'dayjs';
-import { Calendar, Button } from 'antd';
+import isoWeek from 'dayjs/plugin/isoWeek';
+import { Calendar, Badge, Spin, Alert, Button } from 'antd';
+import { useApi } from '@shared/hooks/useApi';
+
+dayjs.extend(isoWeek);
 
 // ── TypeScript 类型定义 ──────────────────────────────────────────
 
@@ -41,6 +45,13 @@ export interface TaskCalendarProps {
 
 // ── CalendarHeader 子组件 ───────────────────────────────────────
 
+export interface CalendarHeaderProps {
+  year: number;
+  month: number;
+  selectedRange: CalendarSelection | null;
+  onSelect: (a: CalendarAction) => void;
+}
+
 function CalendarHeader({
   year,
   month,
@@ -62,6 +73,216 @@ function CalendarHeader({
       }}
     >
       {year}年{month}月
+    </div>
+  );
+}
+
+// ── 周号计算与 WeekNumberColumn ─────────────────────────────────
+
+export interface WeekRow {
+  weekNum: number;
+  startDate: string; // 'YYYY-MM-DD'
+}
+
+export function computeWeekNumbers(year: number, month: number): WeekRow[] {
+  const firstDay = dayjs(`${year}-${String(month).padStart(2, '0')}-01`).startOf('month');
+  const rows: WeekRow[] = [];
+  let current = firstDay.startOf('week'); // Sunday
+  for (let i = 0; i < 6; i++) {
+    rows.push({ weekNum: current.isoWeek(), startDate: current.format('YYYY-MM-DD') });
+    current = current.add(1, 'week');
+  }
+  return rows;
+}
+
+export interface WeekNumberColumnProps {
+  year: number;
+  month: number;
+  calendarData: CalendarData | undefined;
+  selectedRange: CalendarSelection | null;
+  onSelect: (action: CalendarAction) => void;
+}
+
+export function WeekNumberColumn({
+  year,
+  month,
+  calendarData,
+  selectedRange,
+  onSelect,
+}: WeekNumberColumnProps) {
+  const rows = computeWeekNumbers(year, month);
+
+  return (
+    <div data-testid={`week-column-${year}-${month}`} style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+      {rows.map((row) => {
+        // 检查该周是否有任务
+        const weekStart = dayjs(row.startDate);
+        const weekEnd = weekStart.add(6, 'day');
+        const hasTasks = calendarData?.days
+          ? Object.entries(calendarData.days).some(([date, data]) => {
+              const d = dayjs(date);
+              return (
+                d.isAfter(weekStart.subtract(1, 'day')) &&
+                d.isBefore(weekEnd.add(1, 'day')) &&
+                data.total > 0
+              );
+            })
+          : false;
+
+        // 检查是否在 selectedRange 中
+        const weekStartDate = row.startDate;
+        const weekEndDate = weekStart.add(6, 'day').format('YYYY-MM-DD');
+        const isSelected =
+          selectedRange &&
+          selectedRange.startDate <= weekEndDate &&
+          selectedRange.endDate >= weekStartDate;
+
+        return (
+          <div
+            key={row.startDate}
+            data-testid={`week-row-${row.weekNum}`}
+            data-has-tasks={hasTasks ? 'true' : 'false'}
+            data-selected={isSelected ? 'true' : 'false'}
+            onClick={() => onSelect({ type: 'SELECT_WEEK', startDate: row.startDate })}
+            style={{
+              padding: '4px 8px',
+              cursor: 'pointer',
+              fontSize: 12,
+              textAlign: 'center',
+              lineHeight: '28px',
+              minHeight: 36,
+              backgroundColor: hasTasks ? 'var(--ant-color-info-bg)' : undefined,
+              borderBottom: '1px solid #f0f0f0',
+              boxShadow: isSelected
+                ? 'inset 0 0 0 2px var(--ant-color-primary)'
+                : undefined,
+              userSelect: 'none',
+            }}
+          >
+            第{row.weekNum}周
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+// ── CalendarPanel 子组件（独立数据获取）───────────────────────────
+
+export interface CalendarPanelProps {
+  year: number;
+  month: number;
+  selectedRange: CalendarSelection | null;
+  onSelect: (action: CalendarAction) => void;
+}
+
+export function CalendarPanel({
+  year,
+  month,
+  selectedRange,
+  onSelect,
+}: CalendarPanelProps) {
+  const apiPath = `/task-assignments/calendar?year=${year}&month=${month}`;
+  const { data: calendarData, loading, error, refetch } = useApi<CalendarData>(apiPath);
+  const monthDate = dayjs(`${year}-${String(month).padStart(2, '0')}-01`);
+
+  // ── 加载态 ──
+  if (loading) {
+    return (
+      <div data-testid={`calendar-panel-${year}-${month}`} style={{ textAlign: 'center', padding: '40px 0' }}>
+        <Spin />
+      </div>
+    );
+  }
+
+  // ── 错误态 ──
+  if (error) {
+    return (
+      <div data-testid={`calendar-panel-${year}-${month}`}>
+        <Alert
+          type="error"
+          message="加载失败"
+          action={
+            <a onClick={refetch} style={{ cursor: 'pointer' }}>
+              重试
+            </a>
+          }
+        />
+      </div>
+    );
+  }
+
+  // ── dateCellRender ──
+  const renderDateCell = (date: dayjs.Dayjs) => {
+    const dateKey = date.format('YYYY-MM-DD');
+    const dayData = calendarData?.days?.[dateKey];
+    const total = dayData?.total ?? 0;
+
+    // 优先级：LIMITED > REPEAT > STANDING
+    let bgColor: string | undefined;
+    if (dayData?.taskTypes.LIMITED > 0) {
+      bgColor = 'var(--ant-color-error-bg)'; // 淡红
+    } else if (dayData?.taskTypes.REPEAT > 0) {
+      bgColor = 'var(--ant-color-info-bg)'; // 淡蓝
+    } else if (dayData?.taskTypes.STANDING > 0) {
+      bgColor = 'var(--ant-color-success-bg)'; // 淡绿
+    }
+
+    // 选中高亮
+    const dateStr = date.format('YYYY-MM-DD');
+    const isSelected =
+      selectedRange &&
+      dateStr >= selectedRange.startDate &&
+      dateStr <= selectedRange.endDate;
+
+    return (
+      <div
+        data-bg={bgColor ?? ''}
+        data-selected={isSelected ? 'true' : 'false'}
+        style={{
+          backgroundColor: bgColor,
+          borderRadius: 4,
+          padding: '2px 4px',
+          minHeight: 30,
+          position: 'relative',
+          boxShadow: isSelected
+            ? 'inset 0 0 0 2px var(--ant-color-primary)'
+            : undefined,
+        }}
+      >
+        <div>{date.date()}</div>
+        {total > 0 && <Badge count={total} size="small" offset={[-2, 2]} />}
+      </div>
+    );
+  };
+
+  return (
+    <div data-testid={`calendar-panel-${year}-${month}`} style={{ display: 'flex' }}>
+      {/* 左侧周号列 */}
+      <WeekNumberColumn
+        year={year}
+        month={month}
+        calendarData={calendarData}
+        selectedRange={selectedRange}
+        onSelect={onSelect}
+      />
+      {/* 右侧日历主体 */}
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <CalendarHeader
+          year={year}
+          month={month}
+          onSelect={onSelect}
+        />
+        <Calendar
+          value={monthDate}
+          fullscreen={false}
+          headerRender={() => null}
+          dateCellRender={renderDateCell}
+          onSelect={(date) =>
+            onSelect({ type: 'SELECT_DATE', date: date.format('YYYY-MM-DD') })
+          }
+        />
+      </div>
     </div>
   );
 }
@@ -116,34 +337,20 @@ export function TaskCalendar({
         }}
       >
         {/* 第一个月份面板 */}
-        <div className="calendar-panel">
-          <CalendarHeader
-            year={year}
-            month={month}
-            onSelect={onSelect}
-          />
-          <Calendar
-            value={currentMonth}
-            fullscreen={false}
-            headerRender={() => null}
-            dateCellRender={(date) => <div>{date.date()}</div>}
-          />
-        </div>
+        <CalendarPanel
+          year={year}
+          month={month}
+          selectedRange={selectedRange}
+          onSelect={onSelect}
+        />
 
         {/* 第二个月份面板 */}
-        <div className="calendar-panel">
-          <CalendarHeader
-            year={nextMonth.year()}
-            month={nextMonth.month() + 1}
-            onSelect={onSelect}
-          />
-          <Calendar
-            value={nextMonth}
-            fullscreen={false}
-            headerRender={() => null}
-            dateCellRender={(date) => <div>{date.date()}</div>}
-          />
-        </div>
+        <CalendarPanel
+          year={nextMonth.year()}
+          month={nextMonth.month() + 1}
+          selectedRange={selectedRange}
+          onSelect={onSelect}
+        />
       </div>
     </div>
   );
