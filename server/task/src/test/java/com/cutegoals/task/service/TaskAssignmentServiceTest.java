@@ -835,6 +835,35 @@ class TaskAssignmentServiceTest {
         assertEquals(3, content4.size());
     }
 
+    @Test
+    void shouldAllowQueryWithoutDateRange() {
+        // Verify that queryAssignments does NOT add date filtering when
+        // startDate/endDate parameters are not passed — the "view all" mode.
+        TaskAssignment limited = createSampleAssignment();
+        limited.setId(1L);
+        limited.setSnapshotTemplateTaskType("LIMITED");
+        TaskAssignment repeat = createSampleAssignment();
+        repeat.setId(2L);
+        repeat.setSnapshotTemplateTaskType("REPEAT");
+
+        Page<TaskAssignment> pageAll = new Page<>(1, 20, 2);
+        pageAll.setRecords(List.of(limited, repeat));
+
+        when(taskAssignmentMapper.selectPage(any(Page.class), any(LambdaQueryWrapper.class)))
+                .thenReturn(pageAll);
+
+        // No startDate or endDate in params, only taskType
+        Map<String, Object> params = new LinkedHashMap<>();
+        params.put("taskType", "LIMITED,REPEAT");
+
+        Map<String, Object> result = taskAssignmentService.queryAssignments(params, familyId, null);
+        List<Map<String, Object>> content = (List<Map<String, Object>>) result.get("content");
+        assertEquals(2, content.size());
+        // Verify no date-related key in params to confirm optional behavior
+        assertFalse(params.containsKey("startDate"));
+        assertFalse(params.containsKey("endDate"));
+    }
+
     // ========== Helpers ==========
 
     private TaskTemplate createSampleTemplate() {

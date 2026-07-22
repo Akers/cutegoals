@@ -1,5 +1,5 @@
 {
   "version": 1,
-  "change": "fix-recurring-task-deadline",
-  "branch": "main"
+  "change": "parent-dual-month-task-calendar",
+  "branch": "feature/20260722/parent-dual-month-task-calendar"
 }

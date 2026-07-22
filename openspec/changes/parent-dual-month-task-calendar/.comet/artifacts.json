@@ -1,0 +1,8 @@
+{
+  "openspec_proposal": "openspec/changes/parent-dual-month-task-calendar/proposal.md",
+  "openspec_design": "openspec/changes/parent-dual-month-task-calendar/design.md",
+  "openspec_tasks": "openspec/changes/parent-dual-month-task-calendar/tasks.md",
+  "openspec_delta_spec": "openspec/changes/parent-dual-month-task-calendar/specs/parent-pages-contract/spec.md",
+  "handoff_context": "openspec/changes/parent-dual-month-task-calendar/.comet/handoff/design-context.json",
+  "handoff_markdown": "openspec/changes/parent-dual-month-task-calendar/.comet/handoff/design-context.md"
+}

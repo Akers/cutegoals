@@ -1,0 +1,16 @@
+{
+  "change": "parent-dual-month-task-calendar",
+  "phase": "design",
+  "mode": "compact",
+  "canonical_spec": "openspec",
+  "generated_by": "comet-handoff.sh",
+  "context_hash": "472c80a6596aecb9d4ae7c5e6680f30f07af93c161d7e1b9c71147981e871198",
+  "files": [
+    { "path": "openspec/changes/parent-dual-month-task-calendar/proposal.md", "sha256": "6bf22e1553ce7adef078a77bc59399ca35019904d943b08b68bd5b61c541d512" },
+    { "path": "openspec/changes/parent-dual-month-task-calendar/design.md", "sha256": "e03fcaf98c92f8b861008c033b78c659cee0c2f23037c91ad960973c57b7c913" },
+    { "path": "openspec/changes/parent-dual-month-task-calendar/tasks.md", "sha256": "c1ff7e2e12b5211b4777cf9a2af43821236621692d1a8cea1a6afbb9f7df84ac" },
+    { "path": "openspec/changes/parent-dual-month-task-calendar/specs/parent-pages-contract/spec.md", "sha256": "7abc002d2c0ae6e53df2e65572d2612bae9999a4d497b38d1d5a1a87d8c76f2d" },
+    { "path": "openspec/changes/parent-dual-month-task-calendar/specs/parent-task-calendar/spec.md", "sha256": "ce0ff54145d87a15c7f77bb9446dea7ac57285d4dd03fa612694a0ada00e3397" },
+    { "path": "openspec/changes/parent-dual-month-task-calendar/specs/task-assignment/spec.md", "sha256": "6242a1c972beb93b3aaaea05d68a5e092e1e2de7e281022f4d7809048a06c2db" }
+  ]
+}
