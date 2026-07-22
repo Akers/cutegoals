@@ -8,6 +8,7 @@ import com.cutegoals.common.entity.task.*;
 import com.cutegoals.common.exception.BusinessException;
 import com.cutegoals.common.exception.ErrorCode;
 import com.cutegoals.task.mapper.*;
+import com.cutegoals.task.service.TaskTemplateFrequencyService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,6 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -34,6 +36,7 @@ class TaskAssignmentServiceTest {
     @Mock private FamilyMapper familyMapper;
     @Mock private TaskTemplateService taskTemplateService;
     @Mock private AuditService auditService;
+    @Mock private TaskTemplateFrequencyService taskTemplateFrequencyService;
 
     private TaskAssignmentService taskAssignmentService;
 
@@ -48,7 +51,7 @@ class TaskAssignmentServiceTest {
         taskAssignmentService = new TaskAssignmentService(
                 taskTemplateMapper, taskDifficultyMapper, taskRecurrenceRuleMapper,
                 taskAssignmentMapper, taskAssignmentSnapshotMapper, taskChildMapper,
-                familyMapper, taskTemplateService, auditService);
+                familyMapper, taskTemplateService, taskTemplateFrequencyService, auditService);
     }
 
     // ========== Task 3.5: Single Task Assignment ==========
@@ -627,6 +630,82 @@ class TaskAssignmentServiceTest {
         assertEquals("{\"end_date\":\"2026-12-31\"}", captured[0].getSnapshotTemplateTypeConfig());
         assertEquals("Original Difficulty", captured[0].getSnapshotDifficultyName());
         assertEquals(Integer.valueOf(10), captured[0].getSnapshotDifficultyReward());
+    }
+
+    // ========== REPEAT deadline ==========
+
+    @Test
+    void shouldUseFrequencyBasedDeadlineForRepeatDailyTask() {
+        Map<String, Object> request = new LinkedHashMap<>();
+        request.put("templateId", templateId);
+        request.put("difficultyId", difficultyId);
+        request.put("childId", childId);
+
+        TaskTemplate template = createSampleTemplate();
+        template.setTaskType("REPEAT");
+        template.setTypeConfig("{\"frequency\":\"DAILY\"}");
+        TaskDifficulty difficulty = createSampleDifficulty();
+        ChildProfile child = createSampleChild();
+
+        when(taskTemplateService.getActiveTemplate(templateId, familyId)).thenReturn(template);
+        when(taskTemplateService.getEnabledDifficulty(difficultyId, templateId)).thenReturn(difficulty);
+        when(taskChildMapper.findById(childId)).thenReturn(Optional.of(child));
+        when(taskTemplateFrequencyService.nextTriggerDate(eq(template.getTypeConfig()), any(LocalDate.class)))
+                .thenReturn(Optional.of(LocalDate.now()));
+
+        final TaskAssignment[] captured = new TaskAssignment[1];
+        doAnswer(invocation -> {
+            TaskAssignment a = invocation.getArgument(0);
+            a.setId(1L);
+            captured[0] = a;
+            return 1;
+        }).when(taskAssignmentMapper).insert(any(TaskAssignment.class));
+        doReturn(1).when(taskAssignmentSnapshotMapper).insert(any(TaskAssignmentSnapshot.class));
+
+        taskAssignmentService.createAssignment(request, familyId, accountId);
+
+        assertNotNull(captured[0]);
+        assertEquals(
+                LocalDate.now().atTime(23, 59, 59),
+                captured[0].getDeadline());
+    }
+
+    @Test
+    void shouldUseFrequencyBasedDeadlineForRepeatWeeklyTask() {
+        Map<String, Object> request = new LinkedHashMap<>();
+        request.put("templateId", templateId);
+        request.put("difficultyId", difficultyId);
+        request.put("childId", childId);
+
+        TaskTemplate template = createSampleTemplate();
+        template.setTaskType("REPEAT");
+        template.setTypeConfig("{\"frequency\":\"WEEKLY\",\"trigger_day\":{\"weekday\":1}}");
+        TaskDifficulty difficulty = createSampleDifficulty();
+        ChildProfile child = createSampleChild();
+
+        LocalDate nextMonday = LocalDate.now().plus(7, ChronoUnit.DAYS);
+
+        when(taskTemplateService.getActiveTemplate(templateId, familyId)).thenReturn(template);
+        when(taskTemplateService.getEnabledDifficulty(difficultyId, templateId)).thenReturn(difficulty);
+        when(taskChildMapper.findById(childId)).thenReturn(Optional.of(child));
+        when(taskTemplateFrequencyService.nextTriggerDate(eq(template.getTypeConfig()), any(LocalDate.class)))
+                .thenReturn(Optional.of(nextMonday));
+
+        final TaskAssignment[] captured = new TaskAssignment[1];
+        doAnswer(invocation -> {
+            TaskAssignment a = invocation.getArgument(0);
+            a.setId(1L);
+            captured[0] = a;
+            return 1;
+        }).when(taskAssignmentMapper).insert(any(TaskAssignment.class));
+        doReturn(1).when(taskAssignmentSnapshotMapper).insert(any(TaskAssignmentSnapshot.class));
+
+        taskAssignmentService.createAssignment(request, familyId, accountId);
+
+        assertNotNull(captured[0]);
+        assertEquals(
+                nextMonday.atTime(23, 59, 59),
+                captured[0].getDeadline());
     }
 
     // ========== Helpers ==========

@@ -42,6 +42,7 @@ public class TaskAssignmentService {
     private final TaskChildMapper taskChildMapper;
     private final FamilyMapper familyMapper;
     private final TaskTemplateService taskTemplateService;
+    private final TaskTemplateFrequencyService taskTemplateFrequencyService;
     private final AuditService auditService;
 
     private static final int DEFAULT_PAGE_SIZE = 20;
@@ -89,8 +90,17 @@ public class TaskAssignmentService {
         LocalDateTime deadline;
         if (deadlineStr == null) {
             if ("REPEAT".equals(template.getTaskType())) {
-                // REPEAT without explicit deadline: default to end of today
-                deadline = LocalDate.now().atTime(23, 59, 59);
+                // REPEAT without explicit deadline: compute next trigger date from frequency
+                Optional<LocalDate> firstTrigger = taskTemplateFrequencyService.nextTriggerDate(
+                        template.getTypeConfig(), LocalDate.now().minusDays(1));
+                if (firstTrigger.isPresent()) {
+                    deadline = firstTrigger.get().atTime(23, 59, 59);
+                } else {
+                    // Fallback: typeConfig is invalid or has no frequency config
+                    log.warn("REPEAT template {} has no valid frequency config, defaulting to today EOD",
+                            template.getId());
+                    deadline = LocalDate.now().atTime(23, 59, 59);
+                }
             } else {
                 throw new BusinessException(ErrorCode.TASK_ASSIGNMENT_INVALID_DEADLINE,
                         "Deadline is required for non-recurring tasks");

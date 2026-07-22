@@ -1,5 +1,5 @@
 {
   "version": 1,
-  "change": "robust-child-profile-lookup",
+  "change": "fix-recurring-task-deadline",
   "branch": "main"
 }
