@@ -537,10 +537,10 @@ Phase 1 (后端: Service + Controller)
 
 ## 实施检查清单
 
-- [ ] Phase 1: 后端 API 扩展完成，`mvn test` 通过
-- [ ] Phase 2: TaskCalendar 组件创建完成，`pnpm test` 通过，`tsc` 零错误
-- [ ] Phase 3: ParentTasksPage 集成完成，旧 date input 已移除，全部交互可工作
-- [ ] Phase 4: 后端 2 条 + 前端 3 条测试通过
-- [ ] E2E 测试通过
-- [ ] 手动验证：桌面端并排 + 移动端堆叠 + 跨月周号 + 2 月短月 + API 失败
-- [ ] `pnpm build` 生产构建成功
+- [x] Phase 1: 后端 API 扩展完成，`mvn test` 通过
+- [x] Phase 2: TaskCalendar 组件创建完成，`pnpm test` 通过，`tsc` 零错误
+- [x] Phase 3: ParentTasksPage 集成完成，旧 date input 已移除，全部交互可工作
+- [x] Phase 4: 后端 2 条 + 前端 3 条测试通过
+- [x] E2E 测试通过
+- [x] 手动验证：桌面端并排 + 移动端堆叠 + 跨月周号 + 2 月短月 + API 失败
+- [x] `pnpm build` 生产构建成功
