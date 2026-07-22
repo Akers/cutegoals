@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useReducer, useRef, useCallback } from 'react';
 import { history } from 'umi';
 import { getClient } from '@shared/api';
 import type { TaskTypeValue } from '@shared/api/types';
@@ -10,6 +10,8 @@ import { useApi, useFormField, useIdempotencyKey } from '@shared/hooks/useApi';
 import { useOnline } from '@shared/theme';
 import { TaskTypeConfigForms, type TypeConfigValue } from '@parent/components/TaskTypeConfigForms';
 import { TaskTypeFilter } from '@parent/components/TaskTypeFilter';
+import { TaskCalendar } from '@parent/components/TaskCalendar';
+import type { CalendarSelection, CalendarAction } from '@parent/components/TaskCalendar';
 import { PrizeTypeConfigForms, type PrizeTypeConfig } from '@parent/components/PrizeTypeConfigForms';
 
 /** Map API status values to Chinese labels */
@@ -976,11 +978,94 @@ export function ParentTemplatesPage() {
   );
 }
 
+// ── CalendarPage state management (reducer) ────────────────────────
+// Types and reducer are exported for unit testing.
+
+export interface CalendarPageState {
+  baseMonth: string;
+  selectedRange: CalendarSelection | null;
+  taskTypeFilters: TaskTypeValue[];
+  viewAllMode: boolean;
+}
+
+export type CalendarAction2 =
+  | { type: 'SELECT_DATE'; date: string }
+  | { type: 'SELECT_WEEK'; startDate: string }
+  | { type: 'SELECT_MONTH'; year: number; month: number }
+  | { type: 'SET_FILTERS'; payload: TaskTypeValue[] }
+  | { type: 'VIEW_ALL' }
+  | { type: 'NAV_MONTH'; payload: -1 | 1 };
+
+export function calendarReducer(state: CalendarPageState, action: CalendarAction2): CalendarPageState {
+  switch (action.type) {
+    case 'SELECT_DATE':
+      return { ...state, selectedRange: { type: 'day', startDate: action.date, endDate: action.date }, viewAllMode: false };
+    case 'SELECT_WEEK': {
+      const start = dayjs(action.startDate);
+      return { ...state, selectedRange: { type: 'week', startDate: action.startDate, endDate: start.add(6, 'day').format('YYYY-MM-DD') }, viewAllMode: false };
+    }
+    case 'SELECT_MONTH': {
+      const m = dayjs(`${action.year}-${String(action.month).padStart(2, '0')}-01`);
+      return { ...state, selectedRange: { type: 'month', startDate: m.format('YYYY-MM-DD'), endDate: m.endOf('month').format('YYYY-MM-DD') }, viewAllMode: false };
+    }
+    case 'SET_FILTERS':
+      return { ...state, taskTypeFilters: action.payload };
+    case 'VIEW_ALL':
+      return { ...state, viewAllMode: true, selectedRange: null };
+    case 'NAV_MONTH': {
+      const m = dayjs(state.baseMonth + '-01');
+      return { ...state, baseMonth: m.add(action.payload, 'month').format('YYYY-MM') };
+    }
+    default:
+      return state;
+  }
+}
+
+function buildQuery(state: CalendarPageState): string {
+  const params = new URLSearchParams();
+  params.set('page', '1');
+  params.set('pageSize', '20');
+
+  if (state.taskTypeFilters.length > 0 && state.taskTypeFilters.length < 3) {
+    params.set('taskType', state.taskTypeFilters.join(','));
+  }
+
+  if (!state.viewAllMode && state.selectedRange) {
+    params.set('startDate', state.selectedRange.startDate);
+    params.set('endDate', state.selectedRange.endDate);
+  }
+
+  return `/task-assignments?${params.toString()}`;
+}
+
 export function ParentTasksPage() {
-  const [date, setDate] = useState(() => new Date().toISOString().split('T')[0]);
-  const { data, loading, error, refetch } = useApi<PageResult<TaskAssignment>>(
-    `/task-assignments?page=1&pageSize=100&startDate=${date}&endDate=${date}`,
-  );
+  // ── 日历状态管理 ──
+  const now = dayjs();
+  const [calendarState, dispatch] = useReducer(calendarReducer, {
+    baseMonth: now.format('YYYY-MM'),
+    selectedRange: null,
+    taskTypeFilters: ['LIMITED', 'REPEAT', 'STANDING'],
+    viewAllMode: false,
+  });
+
+  // 动态构建查询参数（debounce 300ms）
+  const debounceTimer = useRef<ReturnType<typeof setTimeout>>();
+  const [queryPath, setQueryPath] = useState(() => {
+    const n = dayjs();
+    return `/task-assignments?page=1&pageSize=100&startDate=${n.format('YYYY-MM-DD')}&endDate=${n.format('YYYY-MM-DD')}`;
+  });
+
+  useEffect(() => {
+    if (debounceTimer.current) clearTimeout(debounceTimer.current);
+    debounceTimer.current = setTimeout(() => {
+      setQueryPath(buildQuery(calendarState));
+    }, 300);
+    return () => {
+      if (debounceTimer.current) clearTimeout(debounceTimer.current);
+    };
+  }, [calendarState]);
+
+  const { data, loading, error, refetch } = useApi<PageResult<TaskAssignment>>(queryPath);
   const { data: templates } = useApi<PageResult<TaskTemplate>>('/task-templates?enabled=true');
   const { data: children } = useApi<PageResult<ChildProfile>>('/family/children');
   const childNameMap = useMemo(() => {
@@ -1196,9 +1281,30 @@ export function ParentTasksPage() {
       </Row>
 
       <Card title="日历">
+        <TaskCalendar
+          baseMonth={calendarState.baseMonth}
+          selectedRange={calendarState.selectedRange}
+          onSelect={(action) => {
+            type ActionMap = Record<string, CalendarAction2['type']>;
+            const typeMap: ActionMap = { SELECT_DATE: 'SELECT_DATE', SELECT_WEEK: 'SELECT_WEEK', SELECT_MONTH: 'SELECT_MONTH' };
+            dispatch({ type: typeMap[action.type], ...action } as CalendarAction2);
+          }}
+          onNavigate={(dir) => dispatch({ type: 'NAV_MONTH', payload: dir })}
+        />
+      </Card>
+
+      <Card>
         <Space direction="vertical" size="small" style={{ width: '100%' }}>
-          <Typography.Text strong>选择日期</Typography.Text>
-          <Input id="task-date" type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+          <TaskTypeFilter
+            selected={calendarState.taskTypeFilters}
+            onChange={(types) => dispatch({ type: 'SET_FILTERS', payload: types })}
+          />
+          <Button
+            type={calendarState.viewAllMode ? 'primary' : 'default'}
+            onClick={() => dispatch({ type: 'VIEW_ALL' })}
+          >
+            {calendarState.viewAllMode ? '查看全部（已激活）' : '查看全部'}
+          </Button>
         </Space>
       </Card>
 
