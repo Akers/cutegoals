@@ -1,3 +1,8 @@
+// 模拟生产入口（src/app.tsx）的全局 dayjs 插件注册，让单元测试与生产
+// 运行时行为一致。必须早于任何使用 dayjs 实例方法（.week()/.weekday() 等）
+// 的被测代码执行。
+import '../shared/dayjs';
+
 import '@testing-library/jest-dom';
 import { vi } from 'vitest';
 
@@ -22,7 +27,6 @@ let mockPathname = '/';
 let mockSearch = '';
 let mockHash = '';
 
-
 vi.mock('umi', () => {
   const react = require('react');
 
@@ -33,9 +37,15 @@ vi.mock('umi', () => {
     go: vi.fn(),
     listen: vi.fn(() => vi.fn()),
     location: {
-      get pathname() { return mockPathname; },
-      get search() { return mockSearch; },
-      get hash() { return mockHash; },
+      get pathname() {
+        return mockPathname;
+      },
+      get search() {
+        return mockSearch;
+      },
+      get hash() {
+        return mockHash;
+      },
       state: null,
     },
   };

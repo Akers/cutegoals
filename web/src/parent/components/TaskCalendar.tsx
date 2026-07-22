@@ -1,10 +1,10 @@
 import React from 'react';
 import dayjs from 'dayjs';
-import weekOfYear from 'dayjs/plugin/weekOfYear';
 import { Calendar, Badge, Spin, Alert, Button } from 'antd';
 import { useApi } from '@shared/hooks/useApi';
 
-dayjs.extend(weekOfYear);
+// 注：dayjs 的 weekOfYear / weekday 等插件已在 `src/shared/dayjs.ts` 全局注册，
+// 由 `src/app.tsx` 顶部 side-effect import 触发，无需在此组件内重复 extend。
 
 // ── TypeScript 类型定义 ──────────────────────────────────────────
 
@@ -37,7 +37,7 @@ interface CalendarData {
 }
 
 export interface TaskCalendarProps {
-  baseMonth: string;                // 'YYYY-MM'
+  baseMonth: string; // 'YYYY-MM'
   selectedRange: CalendarSelection | null;
   onSelect: (action: CalendarAction) => void;
   onNavigate: (direction: -1 | 1) => void;
@@ -113,7 +113,10 @@ export function WeekNumberColumn({
   const rows = computeWeekNumbers(year, month);
 
   return (
-    <div data-testid={`week-column-${year}-${month}`} style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+    <div
+      data-testid={`week-column-${year}-${month}`}
+      style={{ display: 'flex', flexDirection: 'column', gap: 0 }}
+    >
       {rows.map((row) => {
         // 检查该周是否有任务
         const weekStart = dayjs(row.startDate);
@@ -153,9 +156,7 @@ export function WeekNumberColumn({
               minHeight: 36,
               backgroundColor: hasTasks ? 'var(--ant-color-info-bg)' : undefined,
               borderBottom: '1px solid #f0f0f0',
-              boxShadow: isSelected
-                ? 'inset 0 0 0 2px var(--ant-color-primary)'
-                : undefined,
+              boxShadow: isSelected ? 'inset 0 0 0 2px var(--ant-color-primary)' : undefined,
               userSelect: 'none',
             }}
           >
@@ -176,12 +177,7 @@ export interface CalendarPanelProps {
   onSelect: (action: CalendarAction) => void;
 }
 
-export function CalendarPanel({
-  year,
-  month,
-  selectedRange,
-  onSelect,
-}: CalendarPanelProps) {
+export function CalendarPanel({ year, month, selectedRange, onSelect }: CalendarPanelProps) {
   const apiPath = `/task-assignments/calendar?year=${year}&month=${month}`;
   const { data: calendarData, loading, error, refetch } = useApi<CalendarData>(apiPath);
   const monthDate = dayjs(`${year}-${String(month).padStart(2, '0')}-01`);
@@ -189,7 +185,10 @@ export function CalendarPanel({
   // ── 加载态 ──
   if (loading) {
     return (
-      <div data-testid={`calendar-panel-${year}-${month}`} style={{ textAlign: 'center', padding: '40px 0' }}>
+      <div
+        data-testid={`calendar-panel-${year}-${month}`}
+        style={{ textAlign: 'center', padding: '40px 0' }}
+      >
         <Spin />
       </div>
     );
@@ -231,9 +230,7 @@ export function CalendarPanel({
     // 选中高亮
     const dateStr = date.format('YYYY-MM-DD');
     const isSelected =
-      selectedRange &&
-      dateStr >= selectedRange.startDate &&
-      dateStr <= selectedRange.endDate;
+      selectedRange && dateStr >= selectedRange.startDate && dateStr <= selectedRange.endDate;
 
     return (
       <div
@@ -245,9 +242,7 @@ export function CalendarPanel({
           padding: '2px 4px',
           minHeight: 30,
           position: 'relative',
-          boxShadow: isSelected
-            ? 'inset 0 0 0 2px var(--ant-color-primary)'
-            : undefined,
+          boxShadow: isSelected ? 'inset 0 0 0 2px var(--ant-color-primary)' : undefined,
         }}
       >
         <div>{date.date()}</div>
@@ -268,19 +263,13 @@ export function CalendarPanel({
       />
       {/* 右侧日历主体 */}
       <div style={{ flex: 1, minWidth: 0 }}>
-        <CalendarHeader
-          year={year}
-          month={month}
-          onSelect={onSelect}
-        />
+        <CalendarHeader year={year} month={month} onSelect={onSelect} />
         <Calendar
           value={monthDate}
           fullscreen={false}
           headerRender={() => null}
           dateCellRender={renderDateCell}
-          onSelect={(date) =>
-            onSelect({ type: 'SELECT_DATE', date: date.format('YYYY-MM-DD') })
-          }
+          onSelect={(date) => onSelect({ type: 'SELECT_DATE', date: date.format('YYYY-MM-DD') })}
         />
       </div>
     </div>

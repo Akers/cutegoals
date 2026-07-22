@@ -1,3 +1,7 @@
+// 全局 dayjs 插件注册。必须早于 antd DatePicker / Calendar 渲染，
+// 否则 rc-picker 内部调用 `.weekday(...)` 会抛出 "weekday is not a function"。
+import '@/shared/dayjs';
+
 import '@/styles/index.css';
 import React from 'react';
 import { App } from 'antd';
@@ -34,9 +38,9 @@ function RoleAwareApp({ children }: { children: React.ReactNode }) {
  *   AuthProvider → RoleAwareApp (RoleProvider) → antd App
  */
 export function rootContainer(container: React.ReactNode) {
-  return React.createElement(AuthProvider, null,
-    React.createElement(RoleAwareApp, null,
-      React.createElement(App, null, container),
-    ),
+  return React.createElement(
+    AuthProvider,
+    null,
+    React.createElement(RoleAwareApp, null, React.createElement(App, null, container)),
   );
 }
