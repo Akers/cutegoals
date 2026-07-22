@@ -511,6 +511,11 @@ public class TaskAssignmentService {
             dayData.put("rejected", 0);
             dayData.put("cancelled", 0);
             dayData.put("overdue", 0);
+            Map<String, Integer> taskTypes = new LinkedHashMap<>();
+            taskTypes.put("LIMITED", 0);
+            taskTypes.put("REPEAT", 0);
+            taskTypes.put("STANDING", 0);
+            dayData.put("taskTypes", taskTypes);
             calendarData.put(date, dayData);
         }
 
@@ -520,6 +525,14 @@ public class TaskAssignmentService {
             if (dayData == null) continue;
 
             dayData.merge("total", 1, (a, b) -> ((int) a) + 1);
+
+            // Aggregate by task type
+            String taskType = assignment.getSnapshotTemplateTaskType();
+            if (taskType != null) {
+                @SuppressWarnings("unchecked")
+                Map<String, Integer> types = (Map<String, Integer>) dayData.get("taskTypes");
+                types.merge(taskType, 1, Integer::sum);
+            }
 
             if (Boolean.TRUE.equals(assignment.getCancelled())) {
                 dayData.merge("cancelled", 1, (a, b) -> ((int) a) + 1);

@@ -632,6 +632,64 @@ class TaskAssignmentServiceTest {
         assertEquals(Integer.valueOf(10), captured[0].getSnapshotDifficultyReward());
     }
 
+    // ========== Calendar Query ==========
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void shouldReturnTaskTypesInCalendar() {
+        Map<String, Object> params = new LinkedHashMap<>();
+        params.put("year", "2026");
+        params.put("month", "7");
+
+        LocalDate today = LocalDate.of(2026, 7, 15);
+
+        // Assignments with different task types on the same day
+        TaskAssignment a1 = createSampleAssignment();
+        a1.setDeadline(today.atStartOfDay());
+        a1.setSnapshotTemplateTaskType("LIMITED");
+        a1.setStatus("PENDING");
+
+        TaskAssignment a2 = createSampleAssignment();
+        a2.setId(2L);
+        a2.setDeadline(today.atStartOfDay());
+        a2.setSnapshotTemplateTaskType("REPEAT");
+        a2.setStatus("SUBMITTED");
+
+        TaskAssignment a3 = createSampleAssignment();
+        a3.setId(3L);
+        a3.setDeadline(today.atStartOfDay());
+        a3.setSnapshotTemplateTaskType("STANDING");
+        a3.setStatus("APPROVED");
+
+        TaskAssignment a4 = createSampleAssignment();
+        a4.setId(4L);
+        a4.setDeadline(today.atStartOfDay());
+        a4.setSnapshotTemplateTaskType("LIMITED");
+        a4.setStatus("PENDING");
+
+        when(taskAssignmentMapper.selectList(any())).thenReturn(List.of(a1, a2, a3, a4));
+
+        Map<String, Object> result = taskAssignmentService.getCalendar(params, familyId, null);
+
+        Map<LocalDate, Map<String, Object>> days = (Map<LocalDate, Map<String, Object>>) result.get("days");
+        Map<String, Object> dayData = days.get(today);
+
+        Map<String, Integer> taskTypes = (Map<String, Integer>) dayData.get("taskTypes");
+        assertNotNull(taskTypes, "taskTypes should not be null");
+        assertEquals(2, taskTypes.get("LIMITED").intValue());
+        assertEquals(1, taskTypes.get("REPEAT").intValue());
+        assertEquals(1, taskTypes.get("STANDING").intValue());
+
+        // Verify days without tasks have all zeros
+        LocalDate firstDay = LocalDate.of(2026, 7, 1);
+        Map<String, Object> firstDayData = days.get(firstDay);
+        Map<String, Integer> firstDayTaskTypes = (Map<String, Integer>) firstDayData.get("taskTypes");
+        assertNotNull(firstDayTaskTypes, "taskTypes should not be null for empty days");
+        assertEquals(0, firstDayTaskTypes.get("LIMITED").intValue());
+        assertEquals(0, firstDayTaskTypes.get("REPEAT").intValue());
+        assertEquals(0, firstDayTaskTypes.get("STANDING").intValue());
+    }
+
     // ========== REPEAT deadline ==========
 
     @Test
