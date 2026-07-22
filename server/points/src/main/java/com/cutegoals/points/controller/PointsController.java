@@ -171,10 +171,8 @@ public class PointsController {
         // Child session: childId IS the profile ID, validate directly
         Long childId = (Long) httpRequest.getAttribute(AuthConstants.ATTR_CHILD_ID);
         if (childId != null) {
-            ChildProfile profile = taskChildMapper.selectById(childId);
-            if (profile == null || !"ACTIVE".equals(profile.getStatus())) {
-                throw new BusinessException(ErrorCode.POINTS_FORBIDDEN, "Child profile not found or inactive");
-            }
+            ChildProfile profile = taskChildMapper.findActiveById(childId)
+                    .orElseThrow(() -> new BusinessException(ErrorCode.POINTS_FORBIDDEN, "Child profile not found or inactive"));
             return childId;
         }
         // Parent session: resolve via family_member

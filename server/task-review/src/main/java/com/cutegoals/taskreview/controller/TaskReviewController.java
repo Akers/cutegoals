@@ -178,54 +178,50 @@ public class TaskReviewController {
             // Child session: childId IS the profile ID, validate directly
             Long childSessionId = (Long) httpRequest.getAttribute(AuthConstants.ATTR_CHILD_ID);
             if (childSessionId != null) {
-                ChildProfile profile = taskChildMapper.selectById(childSessionId);
-                if (profile == null || !"ACTIVE".equals(profile.getStatus())) {
-                    throw new BusinessException(ErrorCode.TASK_REVIEW_FORBIDDEN, "Child profile not found or inactive");
-                }
-                sessionChildId = childSessionId;
-            } else {
-                Long accountId = getAccountId(httpRequest);
-                sessionChildId = taskChildMapper.findByAccountId(accountId)
-                        .map(ChildProfile::getId)
-                        .orElseThrow(() -> new BusinessException(ErrorCode.TASK_REVIEW_FORBIDDEN, "No child profile found for session"));
-            }
-            if (!sessionChildId.equals(childId)) {
-                throw new BusinessException(ErrorCode.TASK_REVIEW_FORBIDDEN, "Child identity mismatch");
-            }
-            viewerChildId = sessionChildId;
+            ChildProfile profile = taskChildMapper.findActiveById(childSessionId)
+                    .orElseThrow(() -> new BusinessException(ErrorCode.TASK_REVIEW_FORBIDDEN, "Child profile not found or inactive"));
+            sessionChildId = childSessionId;
         } else {
-            taskReviewService.verifyParentRole(roles);
+            Long accountId = getAccountId(httpRequest);
+            sessionChildId = taskChildMapper.findByAccountId(accountId)
+                    .map(ChildProfile::getId)
+                    .orElseThrow(() -> new BusinessException(ErrorCode.TASK_REVIEW_FORBIDDEN, "No child profile found for session"));
         }
-
-        Map<String, Object> data = taskReviewService.queryReviewHistory(params, familyId, viewerChildId);
-        return ResponseEntity.ok(ApiResponse.success(data, requestId));
+        if (!sessionChildId.equals(childId)) {
+            throw new BusinessException(ErrorCode.TASK_REVIEW_FORBIDDEN, "Child identity mismatch");
+        }
+        viewerChildId = sessionChildId;
+    } else {
+        taskReviewService.verifyParentRole(roles);
     }
 
-    // ========== GET /api/task-review/child/{childId}/history — Child's own history ==========
+    Map<String, Object> data = taskReviewService.queryReviewHistory(params, familyId, viewerChildId);
+    return ResponseEntity.ok(ApiResponse.success(data, requestId));
+}
 
-    @GetMapping("/child/{childId}/history")
-    public ResponseEntity<ApiResponse<Map<String, Object>>> queryChildHistory(
-            @PathVariable Long childId,
-            @RequestParam(required = false) Integer page,
-            @RequestParam(required = false) Integer pageSize,
-            HttpServletRequest httpRequest) {
-        String requestId = generateRequestId();
-        MDC.put("requestId", requestId);
+// ========== GET /api/task-review/child/{childId}/history — Child's own history ==========
 
-        List<String> roles = getRoles(httpRequest);
-        taskReviewService.verifyChildRole(roles);
+@GetMapping("/child/{childId}/history")
+public ResponseEntity<ApiResponse<Map<String, Object>>> queryChildHistory(
+        @PathVariable Long childId,
+        @RequestParam(required = false) Integer page,
+        @RequestParam(required = false) Integer pageSize,
+        HttpServletRequest httpRequest) {
+    String requestId = generateRequestId();
+    MDC.put("requestId", requestId);
 
-        Long familyId = taskReviewService.getSingleFamilyId();
+    List<String> roles = getRoles(httpRequest);
+    taskReviewService.verifyChildRole(roles);
 
-        // Validate childId belongs to this family (child in a family can only see own family's data)
-        // Child session: childId IS the profile ID, validate directly
-        Long childSessionId = (Long) httpRequest.getAttribute(AuthConstants.ATTR_CHILD_ID);
-        Long sessionChildId;
-        if (childSessionId != null) {
-            ChildProfile profile = taskChildMapper.selectById(childSessionId);
-            if (profile == null || !"ACTIVE".equals(profile.getStatus())) {
-                throw new BusinessException(ErrorCode.TASK_REVIEW_FORBIDDEN, "Child profile not found or inactive");
-            }
+    Long familyId = taskReviewService.getSingleFamilyId();
+
+    // Validate childId belongs to this family (child in a family can only see own family's data)
+    // Child session: childId IS the profile ID, validate directly
+    Long childSessionId = (Long) httpRequest.getAttribute(AuthConstants.ATTR_CHILD_ID);
+    Long sessionChildId;
+    if (childSessionId != null) {
+        ChildProfile profile = taskChildMapper.findActiveById(childSessionId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.TASK_REVIEW_FORBIDDEN, "Child profile not found or inactive"));
             sessionChildId = childSessionId;
         } else {
             Long accountId = getAccountId(httpRequest);

@@ -1,5 +1,5 @@
 {
   "version": 1,
-  "change": "fix-child-profile-family-member-missing",
+  "change": "robust-child-profile-lookup",
   "branch": "main"
 }
