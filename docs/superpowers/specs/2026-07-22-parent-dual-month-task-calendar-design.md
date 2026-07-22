@@ -2,6 +2,8 @@
 comet_change: parent-dual-month-task-calendar
 role: technical-design
 canonical_spec: openspec
+archived-with: 2026-07-22-parent-dual-month-task-calendar
+status: final
 ---
 
 # 家长端双月任务日历 — 深度技术设计

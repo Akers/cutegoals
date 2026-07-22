@@ -2,6 +2,7 @@
 change: parent-dual-month-task-calendar
 design-doc: docs/superpowers/specs/2026-07-22-parent-dual-month-task-calendar-design.md
 base-ref: 4d7d7510afc62a10ff69196b904c34dad0be56dc
+archived-with: 2026-07-22-parent-dual-month-task-calendar
 ---
 
 # parent-dual-month-task-calendar 实施计划
