@@ -106,6 +106,7 @@ public class TaskAssignmentController {
             @RequestParam(required = false) String status,
             @RequestParam(required = false) String startDate,
             @RequestParam(required = false) String endDate,
+            @RequestParam(required = false) String taskType,
             @RequestParam(required = false) String cancelled,
             HttpServletRequest httpRequest) {
         String requestId = generateRequestId();
@@ -134,6 +135,7 @@ public class TaskAssignmentController {
         if (status != null) params.put("status", status);
         if (startDate != null) params.put("startDate", startDate);
         if (endDate != null) params.put("endDate", endDate);
+        if (taskType != null) params.put("taskType", taskType);
         if (cancelled != null) params.put("cancelled", cancelled);
 
         Map<String, Object> data = taskAssignmentService.queryAssignments(params, familyId, viewerChildId);

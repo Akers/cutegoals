@@ -9,6 +9,8 @@ import com.cutegoals.common.exception.BusinessException;
 import com.cutegoals.common.exception.ErrorCode;
 import com.cutegoals.task.mapper.*;
 import com.cutegoals.task.service.TaskTemplateFrequencyService;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -764,6 +766,73 @@ class TaskAssignmentServiceTest {
         assertEquals(
                 nextMonday.atTime(23, 59, 59),
                 captured[0].getDeadline());
+    }
+
+    // ========== queryAssignments — taskType filter ==========
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void shouldFilterByTaskType() {
+        TaskAssignment limited = createSampleAssignment();
+        limited.setId(1L);
+        limited.setSnapshotTemplateTaskType("LIMITED");
+
+        TaskAssignment repeat = createSampleAssignment();
+        repeat.setId(2L);
+        repeat.setSnapshotTemplateTaskType("REPEAT");
+
+        TaskAssignment standing = createSampleAssignment();
+        standing.setId(3L);
+        standing.setSnapshotTemplateTaskType("STANDING");
+
+        Page<TaskAssignment> pageLimited = new Page<>(1, 20, 1);
+        pageLimited.setRecords(List.of(limited));
+
+        Page<TaskAssignment> pageBoth = new Page<>(1, 20, 2);
+        pageBoth.setRecords(List.of(limited, repeat));
+
+        Page<TaskAssignment> pageAll = new Page<>(1, 20, 3);
+        pageAll.setRecords(List.of(limited, repeat, standing));
+
+        when(taskAssignmentMapper.selectPage(any(Page.class), any(LambdaQueryWrapper.class)))
+                .thenReturn(pageLimited)
+                .thenReturn(pageBoth)
+                .thenReturn(pageAll)
+                .thenReturn(pageAll);
+
+        // Test 1: filter by single taskType
+        Map<String, Object> params1 = new LinkedHashMap<>();
+        params1.put("taskType", "LIMITED");
+
+        Map<String, Object> result1 = taskAssignmentService.queryAssignments(params1, familyId, null);
+        List<Map<String, Object>> content1 = (List<Map<String, Object>>) result1.get("content");
+        assertEquals(1, content1.size());
+        assertEquals("LIMITED", content1.get(0).get("snapshotTemplateTaskType"));
+
+        // Test 2: filter by multiple taskType values with whitespace tolerance
+        Map<String, Object> params2 = new LinkedHashMap<>();
+        params2.put("taskType", "LIMITED, REPEAT"); // intentionally has space after comma
+
+        Map<String, Object> result2 = taskAssignmentService.queryAssignments(params2, familyId, null);
+        List<Map<String, Object>> content2 = (List<Map<String, Object>>) result2.get("content");
+        assertEquals(2, content2.size());
+
+        // Test 3: no taskType param returns all (backward compatible)
+        Map<String, Object> params3 = new LinkedHashMap<>();
+        params3.put("page", 1);
+        params3.put("pageSize", 20);
+
+        Map<String, Object> result3 = taskAssignmentService.queryAssignments(params3, familyId, null);
+        List<Map<String, Object>> content3 = (List<Map<String, Object>>) result3.get("content");
+        assertEquals(3, content3.size());
+
+        // Test 4: empty/blank taskType should not filter
+        Map<String, Object> params4 = new LinkedHashMap<>();
+        params4.put("taskType", "");
+
+        Map<String, Object> result4 = taskAssignmentService.queryAssignments(params4, familyId, null);
+        List<Map<String, Object>> content4 = (List<Map<String, Object>>) result4.get("content");
+        assertEquals(3, content4.size());
     }
 
     // ========== Helpers ==========

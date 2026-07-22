@@ -427,6 +427,15 @@ public class TaskAssignmentService {
             wrapper.eq(TaskAssignment::getCancelled, Boolean.valueOf((String) params.get("cancelled")));
         }
 
+        // Filter by task type
+        if (params.containsKey("taskType")) {
+            String taskType = (String) params.get("taskType");
+            if (taskType != null && !taskType.isBlank()) {
+                String[] types = taskType.trim().split("\\s*,\\s*");
+                wrapper.in(TaskAssignment::getSnapshotTemplateTaskType, Arrays.asList(types));
+            }
+        }
+
         // Filter by overdue (derived, computed after query)
         // overdue filter is applied in-memory after fetching
 
