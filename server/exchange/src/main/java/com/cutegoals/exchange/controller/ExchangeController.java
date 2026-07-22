@@ -227,6 +227,16 @@ public class ExchangeController {
      * Prevents privilege escalation by ensuring child users cannot impersonate other children.
      */
     private Long resolveChildIdFromSession(HttpServletRequest httpRequest) {
+        // Child session: childId IS the profile ID, validate directly
+        Long childId = (Long) httpRequest.getAttribute(AuthConstants.ATTR_CHILD_ID);
+        if (childId != null) {
+            ChildProfile profile = taskChildMapper.selectById(childId);
+            if (profile == null || !"ACTIVE".equals(profile.getStatus())) {
+                throw new BusinessException(ErrorCode.FORBIDDEN, "Child profile not found or inactive");
+            }
+            return childId;
+        }
+        // Parent session: resolve via family_member
         Long accountId = getAccountId(httpRequest);
         return taskChildMapper.findByAccountId(accountId)
                 .map(ChildProfile::getId)

@@ -1,5 +1,5 @@
 {
   "version": 1,
-  "change": "fix-child-login-session",
+  "change": "fix-child-profile-family-member-missing",
   "branch": "main"
 }
