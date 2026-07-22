@@ -21,6 +21,7 @@ spring:
     locations: classpath:db/migration
     # Skip transaction wrapping for H2 compatibility
     baseline-on-migrate: true
+    out-of-order: true
 
   sql:
     init:
