@@ -280,7 +280,10 @@ export function CalendarPanel({ year, month, selectedRange, onSelect }: Calendar
             data-testid={`task-badge-${dateKey}`}
             style={{
               position: 'absolute',
-              top: 0,
+              zIndex: 1,
+              /* 偏移到日期数字（24×24）左上角：date-content 位于 date-value 下方，
+                 用负 top 把角标从 date-content 区拉到 date-value 层。 */
+              top: -24,
               left: 0,
               backgroundColor: 'var(--ant-color-error)',
               color: '#fff',

@@ -314,7 +314,7 @@ describe('TaskCalendar - 双月日历组件', () => {
       expect(badge).toBeInTheDocument();
       // 绝对定位脱离 normal flow，不参与 line box 高度计算
       expect(badge.style.position).toBe('absolute');
-      expect(badge.style.top).toBe('0px');
+      expect(badge.style.top).toBe('-24px');
       expect(badge.style.left).toBe('0px');
       expect(badge.style.fontSize).toBe('10px');
     });
