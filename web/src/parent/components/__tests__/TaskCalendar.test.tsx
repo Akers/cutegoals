@@ -403,6 +403,42 @@ describe('TaskCalendar - 双月日历组件', () => {
       const weekRow = within(julyPanel()).getByTestId('week-row-27') as HTMLElement;
       expect(weekRow.getAttribute('data-selected')).toBe('true');
     });
+
+    // ── 周号列与 antd Calendar 几何对齐（像素级结构断言） ──
+    // 以下数值来自 explorer 在真实 Chromium 中对 antd 5.29.3
+    // <Calendar fullscreen={false} headerRender={() => null} /> 的实测：
+    //   .ant-picker-calendar = 273 px
+    //   .ant-picker-panel border-top = 1 px
+    //   .ant-picker-body padding = 8 0
+    //   .ant-picker-content table height = 256 px（token miniContentHeight）
+    //   thead = 18 px（token weekHeight = controlHeightSM * 0.75）
+    //   tbody 6 行总高 = 256 - 18 = 238 px，单行 ≈ 39.67 px
+    // 要让周号列行 0 与 antd 行 0 对齐：spacer 必须等于
+    //   panel border-top (1) + body padding-top (8) + thead (18) = 27 px。
+    // 6 个周号行总高必须等于 antd tbody 总高 238 px，
+    // 且不能设 minHeight（否则 flex:1 均分会被 minHeight 兜底扭曲）。
+    // 底部必须预留 8 px 对应 antd body padding-bottom。
+
+    it('spacer 高度精确匹配 antd Calendar 表头几何（27 px = border 1 + body padding-top 8 + thead 18）', () => {
+      render(<TaskCalendar {...defaultProps} />);
+      const spacer = screen.getByTestId('week-column-weekday-spacer-2026-7');
+      expect(spacer.style.height).toBe('27px');
+    });
+
+    it('周号行不设 minHeight（让 flex:1 严格均分 antd tbody 238 px）', () => {
+      render(<TaskCalendar {...defaultProps} />);
+      const weekRow = screen.getByTestId('week-row-27') as HTMLElement;
+      expect(weekRow.style.minHeight).toBe('');
+      expect(weekRow.style.flex).toBe('1');
+    });
+
+    it('周号列底部预留 8 px 对齐 antd body padding-bottom', () => {
+      render(<TaskCalendar {...defaultProps} />);
+      const col = screen.getByTestId('week-column-2026-7');
+      const children = Array.from(col.children);
+      const lastChild = children[children.length - 1] as HTMLElement;
+      expect(lastChild.style.height).toBe('8px');
+    });
   });
 
   // ═══════════════ 2.4: 三级点击交互 ═══════════════

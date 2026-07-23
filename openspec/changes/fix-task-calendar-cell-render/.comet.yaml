@@ -13,9 +13,9 @@ auto_transition: true
 base_ref: 9646504b49fd76c70865e99d9bae4a613e353bfb
 design_doc: null
 plan: null
-verify_result: pending
-verify_failures: 0
-verification_report: null
+verify_result: fail
+verify_failures: 1
+verification_report: docs/superpowers/reports/2026-07-23-fix-task-calendar-cell-render-verify.md
 branch_status: pending
 created_at: 2026-07-23
 verified_at: null

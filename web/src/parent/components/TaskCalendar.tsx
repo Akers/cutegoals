@@ -117,14 +117,18 @@ export function WeekNumberColumn({
       data-testid={`week-column-${year}-${month}`}
       style={{ display: 'flex', flexDirection: 'column', gap: 0 }}
     >
-      {/* 占位行：与右侧 antd Calendar 内部星期表头（Mo/Tu/...）等高，
-          使周号列的第一行与日历的第一周日期行垂直对齐。
-          高度常量来自 antd 5.29 fullscreen={false} 模式星期表头渲染规格；
-          微小误差由下方 6 行的 flex:1 消化。 */}
+      {/* 占位行：与右侧 antd Calendar 表头几何精确对齐。
+          数值来自 explorer 在真实 Chromium 中对 antd 5.29.3
+          <Calendar fullscreen={false} headerRender={() => null} /> 的实测：
+            .ant-picker-panel border-top = 1 px
+            .ant-picker-body padding-top = 8 px
+            .ant-picker-content thead（Mo/Tu/...） = 18 px
+                                           （token weekHeight = controlHeightSM * 0.75 = 24 * 0.75）
+          合计 1 + 8 + 18 = 27 px，使周号列第一行与 antd 第一个日期行顶部对齐。 */}
       <div
         data-testid={`week-column-weekday-spacer-${year}-${month}`}
         style={{
-          height: 40,
+          height: 27,
           borderBottom: '1px solid #f0f0f0',
           flexShrink: 0,
         }}
@@ -168,7 +172,6 @@ export function WeekNumberColumn({
               cursor: 'pointer',
               fontSize: 12,
               textAlign: 'center',
-              minHeight: 36,
               backgroundColor: hasTasks ? 'var(--ant-color-info-bg)' : undefined,
               borderBottom: '1px solid #f0f0f0',
               boxShadow: isSelected ? 'inset 0 0 0 2px var(--ant-color-primary)' : undefined,
@@ -179,6 +182,13 @@ export function WeekNumberColumn({
           </div>
         );
       })}
+      {/* 底部占位：对齐 antd .ant-picker-body padding-bottom = 8 px，
+          使 6 个 flex:1 周号行均分得到 (273 - 27 - 8) / 6 = 39.67 px，
+          与 antd tbody 单行 39.67 px 严格一致（见 explorer 取证）。 */}
+      <div
+        data-testid={`week-column-bottom-padding-${year}-${month}`}
+        style={{ height: 8, flexShrink: 0 }}
+      />
     </div>
   );
 }

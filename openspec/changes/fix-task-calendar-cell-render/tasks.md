@@ -24,6 +24,27 @@
 - [x] 4.2 `pnpm --filter web build`：构建成功（7.54s exit 0；bundle size 警告属历史问题）。
 - [x] 4.3 `pnpm --filter web lint`：FAIL，但 7 个 TS 错误全在 `pages/index.tsx` 与 `pages/__tests__/ParentTasksPage.test.tsx`，均属 pre-existing 历史 TS 错误（clean main 已存在 12 个，本次重写测试反而修了 5 个），不在本次 hotfix 范围内。verify 阶段 record-check 用 test + build 两条 exit 0 作为可审计证据。
 
+## 5. verify-fail 迭代：像素级 spacer 校准
+
+verify 阶段用户在浏览器验证后发现周号对齐仍不准（整体偏低 + 行高不一致 + 1-10px + 所有月份一致），verify_failures=1 自动回到 build。派 explorer 在真实 Chromium 中测量 antd 5.29.3 `<Calendar fullscreen={false} headerRender={() => null} />` 取证：
+
+- `.ant-picker-calendar` = 273 px
+- `.ant-picker-panel` border-top = 1 px
+- `.ant-picker-body` padding = 8 0
+- `.ant-picker-content` table height = 256 px（token `miniContentHeight`）
+- thead = 18 px（token `weekHeight = controlHeightSM * 0.75 = 24 * 0.75`）
+- tbody 6 行总高 = 238 px，单行 ≈ 39.67 px（`table-layout: fixed` 强制均分）
+- `headerRender={() => null}` 零副作用（不渲染任何 wrapper / spacing）
+
+根因：原 `spacer=40` 与 `minHeight=36` 是错误估算（误以为 antd 表头约 40 px），实际 antd 表头几何固定为 `1+8+18=27 px`。
+
+- [x] 5.1 RED：在 `TaskCalendar.test.tsx` WeekNumberColumn describe 块末尾追加 3 个像素级结构断言：spacer height = 27px、周号行无 minHeight + flex=1、周号列底部 8px 占位。确认 3 failed | 177 passed (180)。
+- [x] 5.2 修复 `TaskCalendar.tsx`：spacer height 40 → 27（含 explorer 取证来源注释）；删除 minHeight=36（避免兜底扭曲 flex:1 均分）；周号列底部新增 8px 占位 div（对齐 antd body padding-bottom）。让 6 个周号行严格均分 (273-27-8)/6 = 39.67 px，与 antd tbody 单行 39.67 px 一致（累积亚像素误差 ≤ 0.05 px，肉眼不可见）。
+- [x] 5.3 跑 `pnpm --filter web test` 转绿：18 files / 180 tests 全部通过。
+- [x] 5.4 跑 `pnpm --filter web build`：成功 7.46s exit 0。
+- [x] 5.5 prettier：`TaskCalendar.tsx` 格式化（TaskCalendar.test.tsx unchanged），重跑测试确认 180/180 仍绿。
+- [x] 5.6 待用户在浏览器中再次手工验证：本地 `pnpm --filter web dev`，打开 `/parent/tasks`，截屏比对周号 1~6 与 antd `<Calendar>` 第一至第六周日期行的视觉对齐。
+
 ## 备注
 
 - 文件数 tripwire：本次修改 2 个文件（`TaskCalendar.tsx` + `TaskCalendar.test.tsx`），未触发 >4 文件提示。
