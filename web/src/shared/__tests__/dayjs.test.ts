@@ -28,4 +28,18 @@ describe('shared/dayjs global plugins', () => {
     expect(parsed.isValid()).toBe(true);
     expect(parsed.format('YYYY-MM-DD')).toBe('2026-07-22');
   });
+
+  it('localeData 插件可用（antd DatePicker / rc-picker 内部依赖）', () => {
+    // rc-picker getWeekDay / getShortWeekDays / getShortMonths 调用链
+    expect(() => dayjs().localeData()).not.toThrow();
+    const ld = dayjs('2026-07-22').localeData();
+    expect(typeof ld.firstDayOfWeek()).toBe('number');
+    expect(ld.weekdaysMin()).toHaveLength(7);
+    expect(ld.monthsShort()).toHaveLength(12);
+  });
+
+  it('weekYear 插件可用（rc-picker YYYY-wo 解析依赖）', () => {
+    expect(() => dayjs('2026-01-15').weekYear()).not.toThrow();
+    expect(typeof dayjs('2026-01-15').weekYear()).toBe('number');
+  });
 });

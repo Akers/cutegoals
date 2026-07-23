@@ -1,5 +1,5 @@
 {
   "version": 1,
-  "change": "fix-dayjs-weekday-plugin",
+  "change": "fix-dayjs-localedata-plugin",
   "branch": "main"
 }
