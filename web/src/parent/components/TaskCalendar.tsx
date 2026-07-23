@@ -117,6 +117,18 @@ export function WeekNumberColumn({
       data-testid={`week-column-${year}-${month}`}
       style={{ display: 'flex', flexDirection: 'column', gap: 0 }}
     >
+      {/* 占位行：与右侧 antd Calendar 内部星期表头（Mo/Tu/...）等高，
+          使周号列的第一行与日历的第一周日期行垂直对齐。
+          高度常量来自 antd 5.29 fullscreen={false} 模式星期表头渲染规格；
+          微小误差由下方 6 行的 flex:1 消化。 */}
+      <div
+        data-testid={`week-column-weekday-spacer-${year}-${month}`}
+        style={{
+          height: 40,
+          borderBottom: '1px solid #f0f0f0',
+          flexShrink: 0,
+        }}
+      />
       {rows.map((row) => {
         // 检查该周是否有任务
         const weekStart = dayjs(row.startDate);
@@ -148,11 +160,14 @@ export function WeekNumberColumn({
             data-selected={isSelected ? 'true' : 'false'}
             onClick={() => onSelect({ type: 'SELECT_WEEK', startDate: row.startDate })}
             style={{
-              padding: '4px 8px',
+              flex: 1,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '0 8px',
               cursor: 'pointer',
               fontSize: 12,
               textAlign: 'center',
-              lineHeight: '28px',
               minHeight: 36,
               backgroundColor: hasTasks ? 'var(--ant-color-info-bg)' : undefined,
               borderBottom: '1px solid #f0f0f0',
@@ -245,32 +260,41 @@ export function CalendarPanel({ year, month, selectedRange, onSelect }: Calendar
           boxShadow: isSelected ? 'inset 0 0 0 2px var(--ant-color-primary)' : undefined,
         }}
       >
-        <div>{date.date()}</div>
+        {/* 不再渲染独立天数数字：antd Calendar 默认会在 cell 中输出日期数字，
+            dateCellRender 的语义是「追加内容」，再渲染一次会造成同一 cell 出现两个数字。 */}
         {total > 0 && <Badge count={total} size="small" offset={[-2, 2]} />}
       </div>
     );
   };
 
   return (
-    <div data-testid={`calendar-panel-${year}-${month}`} style={{ display: 'flex' }}>
-      {/* 左侧周号列 */}
-      <WeekNumberColumn
-        year={year}
-        month={month}
-        calendarData={calendarData}
-        selectedRange={selectedRange}
-        onSelect={onSelect}
-      />
-      {/* 右侧日历主体 */}
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <CalendarHeader year={year} month={month} onSelect={onSelect} />
-        <Calendar
-          value={monthDate}
-          fullscreen={false}
-          headerRender={() => null}
-          dateCellRender={renderDateCell}
-          onSelect={(date) => onSelect({ type: 'SELECT_DATE', date: date.format('YYYY-MM-DD') })}
+    <div
+      data-testid={`calendar-panel-${year}-${month}`}
+      style={{ display: 'flex', flexDirection: 'column' }}
+    >
+      {/* 月份标题：跨越面板全宽，避免周号列从月份标题位置开始排布导致整体错位 */}
+      <CalendarHeader year={year} month={month} onSelect={onSelect} />
+      {/* 周号列 + 日历主体并排；align-items: stretch 让两侧同高，
+          周号列内部 6 行 flex:1 均分剩余高度，逐行对齐日历 6 个日期行 */}
+      <div style={{ display: 'flex', alignItems: 'stretch' }}>
+        {/* 左侧周号列 */}
+        <WeekNumberColumn
+          year={year}
+          month={month}
+          calendarData={calendarData}
+          selectedRange={selectedRange}
+          onSelect={onSelect}
         />
+        {/* 右侧日历主体 */}
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <Calendar
+            value={monthDate}
+            fullscreen={false}
+            headerRender={() => null}
+            dateCellRender={renderDateCell}
+            onSelect={(date) => onSelect({ type: 'SELECT_DATE', date: date.format('YYYY-MM-DD') })}
+          />
+        </div>
       </div>
     </div>
   );

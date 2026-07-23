@@ -27,43 +27,48 @@ vi.mock('antd', () => {
     Badge: ({ count, children, size, offset, ...rest }: any) => {
       const elements: any[] = [];
       if (children) elements.push(children);
-      elements.push(React.createElement('sup', { key: 'count', className: 'ant-scroll-number ant-badge-count' }, count));
+      elements.push(
+        React.createElement(
+          'sup',
+          { key: 'count', className: 'ant-scroll-number ant-badge-count' },
+          count,
+        ),
+      );
       return React.createElement('span', { className: 'ant-badge', ...rest }, ...elements);
     },
     Spin: () => React.createElement('div', { className: 'ant-spin' }),
     Alert: ({ message, action, type, ...rest }: any) =>
-      React.createElement('div', { className: `ant-alert ant-alert-${type}` },
+      React.createElement(
+        'div',
+        { className: `ant-alert ant-alert-${type}` },
         React.createElement('div', { className: 'ant-alert-message' }, message),
         action ? React.createElement('div', { className: 'ant-alert-action' }, action) : null,
       ),
-    Calendar: vi.fn().mockImplementation(
-      ({ value, dateCellRender, onSelect }: any) => {
-        if (!value) {
-          return <div data-testid="mock-calendar-empty" />;
-        }
-        const year = value.year();
-        const month = value.month(); // 0-based
-        const daysInMonth = value.daysInMonth();
-        const monthStr = `${year}-${String(month + 1).padStart(2, '0')}`;
-        const cells: React.ReactNode[] = [];
-        for (let d = 1; d <= daysInMonth; d++) {
-          const date = dayjs(new Date(year, month, d));
-          const cellContent = dateCellRender?.(date);
-          cells.push(
-            <div
-              key={d}
-              data-testid={`date-cell-${d}`}
-              onClick={() => onSelect?.(date)}
-            >
-              {cellContent ?? <span>{d}</span>}
-            </div>,
-          );
-        }
-        return (
-          <div data-testid={`mock-calendar-${monthStr}`}>{cells}</div>
+    Calendar: vi.fn().mockImplementation(({ value, dateCellRender, onSelect }: any) => {
+      if (!value) {
+        return <div data-testid="mock-calendar-empty" />;
+      }
+      const year = value.year();
+      const month = value.month(); // 0-based
+      const daysInMonth = value.daysInMonth();
+      const monthStr = `${year}-${String(month + 1).padStart(2, '0')}`;
+      const cells: React.ReactNode[] = [];
+      for (let d = 1; d <= daysInMonth; d++) {
+        const date = dayjs(new Date(year, month, d));
+        const cellContent = dateCellRender?.(date);
+        cells.push(
+          <div key={d} data-testid={`date-cell-${d}`} onClick={() => onSelect?.(date)}>
+            {/* 模拟真实 antd Calendar 行为：cell 中先渲染默认天数数字，
+                  再附加 dateCellRender 返回的自定义内容。
+                  见 web/src/parent/components/TaskCalendar.tsx 与
+                  antd 5 dateCellRender 的「追加」语义。 */}
+            <span data-testid="antd-default-date">{d}</span>
+            {cellContent}
+          </div>,
         );
-      },
-    ),
+      }
+      return <div data-testid={`mock-calendar-${monthStr}`}>{cells}</div>;
+    }),
   };
 });
 
@@ -75,23 +80,43 @@ const mockCalendarData = {
   month: 7,
   days: {
     '2026-07-01': {
-      total: 3, pending: 1, submitted: 1, approved: 0, rejected: 0,
-      cancelled: 0, overdue: 1,
+      total: 3,
+      pending: 1,
+      submitted: 1,
+      approved: 0,
+      rejected: 0,
+      cancelled: 0,
+      overdue: 1,
       taskTypes: { LIMITED: 1, REPEAT: 2, STANDING: 0 },
     },
     '2026-07-05': {
-      total: 2, pending: 0, submitted: 0, approved: 0, rejected: 0,
-      cancelled: 0, overdue: 2,
+      total: 2,
+      pending: 0,
+      submitted: 0,
+      approved: 0,
+      rejected: 0,
+      cancelled: 0,
+      overdue: 2,
       taskTypes: { LIMITED: 0, REPEAT: 2, STANDING: 0 },
     },
     '2026-07-15': {
-      total: 1, pending: 0, submitted: 0, approved: 0, rejected: 0,
-      cancelled: 0, overdue: 0,
+      total: 1,
+      pending: 0,
+      submitted: 0,
+      approved: 0,
+      rejected: 0,
+      cancelled: 0,
+      overdue: 0,
       taskTypes: { LIMITED: 0, REPEAT: 0, STANDING: 1 },
     },
     '2026-07-20': {
-      total: 5, pending: 2, submitted: 1, approved: 1, rejected: 0,
-      cancelled: 0, overdue: 1,
+      total: 5,
+      pending: 2,
+      submitted: 1,
+      approved: 1,
+      rejected: 0,
+      cancelled: 0,
+      overdue: 1,
       taskTypes: { LIMITED: 2, REPEAT: 1, STANDING: 2 },
     },
   },
@@ -177,6 +202,32 @@ describe('TaskCalendar - 双月日历组件', () => {
     expect(screen.getByText('2026年8月')).toBeInTheDocument();
   });
 
+  // ═══════════════ 回归：cell 不应重复渲染天数数字 ═══════════════
+
+  describe('cell 不应重复渲染天数数字 (回归)', () => {
+    it('cell 内存在 antd 默认天数数字', () => {
+      render(<TaskCalendar {...defaultProps} />);
+      // antd 默认数字应由 Calendar 自身渲染（mock 中以 testid 标记）
+      const defaults = within(julyPanel()).getAllByTestId('antd-default-date');
+      expect(defaults).toHaveLength(31); // 七月 31 天
+      expect(defaults[0]).toHaveTextContent('1');
+      expect(defaults[9]).toHaveTextContent('10');
+    });
+
+    it('自定义 dateCellRender 不应再输出独立的天数数字', () => {
+      render(<TaskCalendar {...defaultProps} />);
+      const cell1 = within(julyPanel()).getByTestId('date-cell-1');
+      const customContent = cell1.querySelector('[data-bg]');
+      expect(customContent).not.toBeNull();
+      // 当前代码若仍渲染 <div>{date.date()}</div>，此处会捕获到 1 个匹配
+      const directNumericDivs = Array.from(customContent!.children).filter(
+        (el: Element) =>
+          el.tagName === 'DIV' && el.children.length === 0 && /^\d+$/.test(el.textContent ?? ''),
+      );
+      expect(directNumericDivs).toHaveLength(0);
+    });
+  });
+
   // ═══════════════ 2.2: dateCellRender 颜色标记 ═══════════════
 
   describe('dateCellRender 颜色标记 (2.2)', () => {
@@ -184,7 +235,7 @@ describe('TaskCalendar - 双月日历组件', () => {
       render(<TaskCalendar {...defaultProps} />);
       // 2026-07-01: LIMITED=1 → 淡红
       const cell1 = within(julyPanel()).getByTestId('date-cell-1');
-      const inner = cell1.firstElementChild as HTMLElement;
+      const inner = cell1.querySelector('[data-bg]') as HTMLElement;
       expect(inner.getAttribute('data-bg')).toBe('var(--ant-color-error-bg)');
     });
 
@@ -192,7 +243,7 @@ describe('TaskCalendar - 双月日历组件', () => {
       render(<TaskCalendar {...defaultProps} />);
       // 2026-07-05: LIMITED=0, REPEAT=2 → 淡蓝
       const cell5 = within(julyPanel()).getByTestId('date-cell-5');
-      const inner = cell5.firstElementChild as HTMLElement;
+      const inner = cell5.querySelector('[data-bg]') as HTMLElement;
       expect(inner.getAttribute('data-bg')).toBe('var(--ant-color-info-bg)');
     });
 
@@ -200,7 +251,7 @@ describe('TaskCalendar - 双月日历组件', () => {
       render(<TaskCalendar {...defaultProps} />);
       // 2026-07-15: STANDING=1 → 淡绿
       const cell15 = within(julyPanel()).getByTestId('date-cell-15');
-      const inner = cell15.firstElementChild as HTMLElement;
+      const inner = cell15.querySelector('[data-bg]') as HTMLElement;
       expect(inner.getAttribute('data-bg')).toBe('var(--ant-color-success-bg)');
     });
 
@@ -208,7 +259,7 @@ describe('TaskCalendar - 双月日历组件', () => {
       render(<TaskCalendar {...defaultProps} />);
       // 2026-07-10: 不在 mock 数据中 → 无背景
       const cell10 = within(julyPanel()).getByTestId('date-cell-10');
-      const inner = cell10.firstElementChild as HTMLElement;
+      const inner = cell10.querySelector('[data-bg]') as HTMLElement;
       expect(inner.getAttribute('data-bg')).toBe('');
     });
 
@@ -216,7 +267,7 @@ describe('TaskCalendar - 双月日历组件', () => {
       // 2026-07-20: LIMITED=2, REPEAT=1, STANDING=2 → LIMITED 优先
       render(<TaskCalendar {...defaultProps} />);
       const cell20 = within(julyPanel()).getByTestId('date-cell-20');
-      const inner = cell20.firstElementChild as HTMLElement;
+      const inner = cell20.querySelector('[data-bg]') as HTMLElement;
       expect(inner.getAttribute('data-bg')).toBe('var(--ant-color-error-bg)');
     });
 
@@ -265,7 +316,7 @@ describe('TaskCalendar - 双月日历组件', () => {
         />,
       );
       const cell1 = within(julyPanel()).getByTestId('date-cell-1');
-      const inner = cell1.firstElementChild as HTMLElement;
+      const inner = cell1.querySelector('[data-bg]') as HTMLElement;
       expect(inner.getAttribute('data-selected')).toBe('true');
     });
 
@@ -281,7 +332,7 @@ describe('TaskCalendar - 双月日历组件', () => {
         />,
       );
       const cell1 = within(julyPanel()).getByTestId('date-cell-1');
-      const inner = cell1.firstElementChild as HTMLElement;
+      const inner = cell1.querySelector('[data-bg]') as HTMLElement;
       expect(inner.getAttribute('data-selected')).toBe('false');
     });
   });
@@ -360,9 +411,7 @@ describe('TaskCalendar - 双月日历组件', () => {
     it('点击日期触发 SELECT_DATE', async () => {
       const onSelect = vi.fn();
       render(<TaskCalendar {...defaultProps} onSelect={onSelect} />);
-      await userEvent.click(
-        within(julyPanel()).getByTestId('date-cell-1'),
-      );
+      await userEvent.click(within(julyPanel()).getByTestId('date-cell-1'));
       expect(onSelect).toHaveBeenCalledWith<[CalendarAction]>({
         type: 'SELECT_DATE',
         date: '2026-07-01',
@@ -372,9 +421,7 @@ describe('TaskCalendar - 双月日历组件', () => {
     it('点击周号触发 SELECT_WEEK', async () => {
       const onSelect = vi.fn();
       render(<TaskCalendar {...defaultProps} onSelect={onSelect} />);
-      await userEvent.click(
-        within(julyPanel()).getByTestId('week-row-27'),
-      );
+      await userEvent.click(within(julyPanel()).getByTestId('week-row-27'));
       expect(onSelect).toHaveBeenCalledWith<[CalendarAction]>({
         type: 'SELECT_WEEK',
         startDate: '2026-06-28',
@@ -429,9 +476,7 @@ describe('TaskCalendar - 双月日历组件', () => {
         refetch,
       });
       render(<TaskCalendar {...defaultProps} />);
-      await userEvent.click(
-        within(julyPanel()).getByText('重试'),
-      );
+      await userEvent.click(within(julyPanel()).getByText('重试'));
       expect(refetch).toHaveBeenCalled();
     });
 
@@ -454,9 +499,7 @@ describe('TaskCalendar - 双月日历组件', () => {
       });
       render(<TaskCalendar {...defaultProps} />);
       // 七月面板显示错误
-      expect(
-        within(julyPanel()).getByText('加载失败'),
-      ).toBeInTheDocument();
+      expect(within(julyPanel()).getByText('加载失败')).toBeInTheDocument();
       // 八月面板正常渲染日历
       expect(screen.getByTestId('mock-calendar-2026-08')).toBeInTheDocument();
     });

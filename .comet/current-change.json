@@ -1,5 +1,5 @@
 {
   "version": 1,
-  "change": "fix-dayjs-localedata-plugin",
+  "change": "fix-task-calendar-cell-render",
   "branch": "main"
 }
