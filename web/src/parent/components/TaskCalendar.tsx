@@ -1,6 +1,6 @@
 import React from 'react';
 import dayjs from 'dayjs';
-import { Calendar, Badge, Spin, Alert, Button } from 'antd';
+import { Calendar, Spin, Alert, Button } from 'antd';
 import { useApi } from '@shared/hooks/useApi';
 
 // 注：dayjs 的 weekOfYear / weekday 等插件已在 `src/shared/dayjs.ts` 全局注册，
@@ -272,7 +272,31 @@ export function CalendarPanel({ year, month, selectedRange, onSelect }: Calendar
       >
         {/* 不再渲染独立天数数字：antd Calendar 默认会在 cell 中输出日期数字，
             dateCellRender 的语义是「追加内容」，再渲染一次会造成同一 cell 出现两个数字。 */}
-        {total > 0 && <Badge count={total} size="small" offset={[-2, 2]} />}
+        {/* 任务数角标：使用绝对定位脱离正常 flow，不撑高 table 行高。
+            antd `<Badge>` 的 inline-block wrapper 会撑高含任务数的 cell
+            （真实 Chromium 实测撑高 +25px），改用自定义绝对定位角标替代。 */}
+        {total > 0 && (
+          <span
+            data-testid={`task-badge-${dateKey}`}
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              backgroundColor: 'var(--ant-color-error)',
+              color: '#fff',
+              borderRadius: 8,
+              minWidth: 16,
+              height: 16,
+              padding: '0 4px',
+              fontSize: 10,
+              lineHeight: '16px',
+              textAlign: 'center',
+              fontWeight: 600,
+            }}
+          >
+            {total}
+          </span>
+        )}
       </div>
     );
   };

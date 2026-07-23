@@ -271,10 +271,13 @@ describe('TaskCalendar - 双月日历组件', () => {
       expect(inner.getAttribute('data-bg')).toBe('var(--ant-color-error-bg)');
     });
 
-    it('total > 0 时显示 Badge', () => {
+    it('total > 0 时显示任务数角标', () => {
       render(<TaskCalendar {...defaultProps} />);
+      // 2026-07-01: total=3
       const cell1 = within(julyPanel()).getByTestId('date-cell-1');
-      expect(cell1.querySelector('.ant-badge')).toBeInTheDocument();
+      const badge = cell1.querySelector('[data-testid^="task-badge-"]');
+      expect(badge).toBeInTheDocument();
+      expect(badge).toHaveTextContent('3');
     });
 
     it('total = 0 时不显示 Badge', () => {
@@ -301,7 +304,19 @@ describe('TaskCalendar - 双月日历组件', () => {
       });
       render(<TaskCalendar {...defaultProps} />);
       const cell1 = within(julyPanel()).getByTestId('date-cell-1');
-      expect(cell1.querySelector('.ant-badge')).not.toBeInTheDocument();
+      expect(cell1.querySelector('[data-testid^="task-badge-"]')).not.toBeInTheDocument();
+    });
+
+    it('任务数角标使用绝对定位（不撑高 cell 行高）', () => {
+      render(<TaskCalendar {...defaultProps} />);
+      const cell1 = within(julyPanel()).getByTestId('date-cell-1');
+      const badge = cell1.querySelector('[data-testid="task-badge-2026-07-01"]') as HTMLElement;
+      expect(badge).toBeInTheDocument();
+      // 绝对定位脱离 normal flow，不参与 line box 高度计算
+      expect(badge.style.position).toBe('absolute');
+      expect(badge.style.top).toBe('0px');
+      expect(badge.style.left).toBe('0px');
+      expect(badge.style.fontSize).toBe('10px');
     });
 
     it('选中日期显示高亮边框', () => {
