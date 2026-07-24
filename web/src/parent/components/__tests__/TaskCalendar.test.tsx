@@ -67,7 +67,7 @@ vi.mock('antd', () => {
           </div>,
         );
       }
-      // data-value 仅在 value 有值时写入（value=undefined 时属性缺失，便于断言 antd 是否内置高亮）
+      // data-value 仅在 value 有值时写入
       // data-default-value 仅在 defaultValue 有值时写入
       return (
         <div
@@ -614,32 +614,23 @@ describe('TaskCalendar - 双月日历组件', () => {
       expect(inner.getAttribute('data-selected')).toBe('true');
     });
 
-    it('非当前月面板:antd <Calendar> value 回退到 monthDate (保持既有行为)', () => {
-      render(
-        <TaskCalendar
-          {...defaultProps}
-          baseMonth="2026-07"
-          selectedRange={{
-            type: 'day',
-            startDate: '2026-07-24',
-            endDate: '2026-07-24',
-          }}
-        />,
-      );
-      const augCalendar = screen.getByTestId('mock-calendar-2026-08');
-      // 非当前月面板更新自 fix-calendar-non-current-no-highlight：
-      // value=undefined（属性缺失）+ defaultValue=monthDate 承担显示月份
-      expect(augCalendar).not.toHaveAttribute('data-value');
-      expect(augCalendar.getAttribute('data-default-value')).toBe('2026-08-01');
-    });
+    // 删除上次 hotfix（fix-calendar-non-current-no-highlight）的 1.3 旧断言
+    // 「value 回退到 monthDate 保持既有行为」与 1.4 新增 describe
+    // 「非当前月面板 value 属性缺失」：
+    //   v2 回退到 value={monthDate}（统一驱动显示月份），由 scoped CSS 抑制
+    //   非当前月 antd 内置高亮（不在 props 通路处理）。这两条断言不再适用 v2 行为。
   });
 
-  // ═══════════════ 非当前月面板不内置高亮（回归）═══════════════
-  // 紧接 fix-calendar-non-current-no-highlight：当 today(2026-07-24) 不在
-  // 八月面板时，antd <Calendar> 不应内置高亮任何 cell（即 value=undefined），
-  // 由 defaultValue={monthDate} 单独承担显示月份的语义。
-  describe('非当前月面板不内置高亮 (回归, fix-calendar-non-current-no-highlight)', () => {
-    it('当前月面板:value=今日 + defaultValue=本月 (双层显示语义)', () => {
+  // ═══════════════ v2 视觉抑制 wrapper className（回归）═══════════════
+  // 紧接 fix-calendar-non-current-no-highlight-v2：上次 hotfix 失败因为
+  // mock 不验证 antd 实际选中行为（useMergedState 在 value=undefined 时回退
+  // defaultValue，导致 cell 仍被 antd 标 selected）。v2 改方案为 scoped CSS，
+  // 生产代码在 CalendarPanel 外层 div（已有 data-testid=`calendar-panel-${year}-${month}`）
+  // 加 task-calendar-current-month / task-calendar-non-current-month className，
+  // 供 CSS 选择器分流。本测试断言该外层 div className 正确分流。
+  // (jsdom 不计算 CSS,视觉层由用户在浏览器复核。)
+  describe('v2 视觉抑制 wrapper className (回归, fix-calendar-non-current-no-highlight-v2)', () => {
+    it('当前月面板:CalendarPanel wrapper 包含 task-calendar-current-month', () => {
       render(
         <TaskCalendar
           {...defaultProps}
@@ -651,12 +642,11 @@ describe('TaskCalendar - 双月日历组件', () => {
           }}
         />,
       );
-      const julyCalendar = screen.getByTestId('mock-calendar-2026-07');
-      expect(julyCalendar.getAttribute('data-value')).toBe('2026-07-24');
-      expect(julyCalendar.getAttribute('data-default-value')).toBe('2026-07-01');
+      const julyPanel = screen.getByTestId('calendar-panel-2026-7');
+      expect(julyPanel.className).toContain('task-calendar-current-month');
     });
 
-    it('非当前月面板:value 属性缺失（不内置高亮）+ defaultValue=本月', () => {
+    it('非当前月面板:CalendarPanel wrapper 包含 task-calendar-non-current-month (CSS 抑制命中)', () => {
       render(
         <TaskCalendar
           {...defaultProps}
@@ -668,9 +658,8 @@ describe('TaskCalendar - 双月日历组件', () => {
           }}
         />,
       );
-      const augCalendar = screen.getByTestId('mock-calendar-2026-08');
-      expect(augCalendar).not.toHaveAttribute('data-value');
-      expect(augCalendar.getAttribute('data-default-value')).toBe('2026-08-01');
+      const augPanel = screen.getByTestId('calendar-panel-2026-8');
+      expect(augPanel.className).toContain('task-calendar-non-current-month');
     });
   });
 });
