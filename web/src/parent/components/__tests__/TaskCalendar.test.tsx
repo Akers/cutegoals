@@ -65,7 +65,13 @@ vi.mock('antd', () => {
           </div>,
         );
       }
-      return <div data-testid={`mock-calendar-${monthStr}`}>{cells}</div>;
+      // data-value 暴露传入 antd 的 dayjs value 的日期部分，便于测试断言
+      // 当前月面板应等于今日日期，非当前月面板应回退到 monthDate / selectedRange.startDate。
+      return (
+        <div data-testid={`mock-calendar-${monthStr}`} data-value={value.format('YYYY-MM-DD')}>
+          {cells}
+        </div>
+      );
     }),
   };
 });
@@ -557,6 +563,66 @@ describe('TaskCalendar - 双月日历组件', () => {
       render(<TaskCalendar {...defaultProps} />);
       expect(screen.getByTestId('mock-calendar-2026-07')).toBeInTheDocument();
       expect(screen.getByTestId('mock-calendar-2026-08')).toBeInTheDocument();
+    });
+  });
+
+  // ═══════════════ 默认选中今日（回归）═══════════════
+  // 修复日历进入页面时高亮 1 号而不高亮今日的 bug：
+  // 当前月面板传给 antd <Calendar> 的 value 应等于今日（2026-07-24），
+  // 自定义 boxShadow 也应落在今日 cell。
+  // 不使用 vi.useFakeTimers：测试沙箱的真实 today 已经是 2026-07-24，
+  // 与 baseMonth='2026-07' + 期望 today='2026-07-24' 一致，
+  // 可避免 fake-timers 与 React 副作用在 jsdom 中的耦合问题。
+  describe('默认选中今日 (回归, fix-calendar-default-current-date)', () => {
+    it('当前月面板:antd <Calendar> value 等于今日 (2026-07-24),而不是 monthDate (2026-07-01)', () => {
+      render(
+        <TaskCalendar
+          {...defaultProps}
+          baseMonth="2026-07"
+          selectedRange={{
+            type: 'day',
+            startDate: '2026-07-24',
+            endDate: '2026-07-24',
+          }}
+        />,
+      );
+      const julyCalendar = screen.getByTestId('mock-calendar-2026-07');
+      expect(julyCalendar.getAttribute('data-value')).toBe('2026-07-24');
+    });
+
+    it('当前月面板:今日 cell 的 data-selected 为 true (custom boxShadow 命中)', () => {
+      render(
+        <TaskCalendar
+          {...defaultProps}
+          baseMonth="2026-07"
+          selectedRange={{
+            type: 'day',
+            startDate: '2026-07-24',
+            endDate: '2026-07-24',
+          }}
+        />,
+      );
+      const todayCell = within(julyPanel()).getByTestId('date-cell-24');
+      const inner = todayCell.querySelector('[data-bg]') as HTMLElement;
+      expect(inner).not.toBeNull();
+      expect(inner.getAttribute('data-selected')).toBe('true');
+    });
+
+    it('非当前月面板:antd <Calendar> value 回退到 monthDate (保持既有行为)', () => {
+      render(
+        <TaskCalendar
+          {...defaultProps}
+          baseMonth="2026-07"
+          selectedRange={{
+            type: 'day',
+            startDate: '2026-07-24',
+            endDate: '2026-07-24',
+          }}
+        />,
+      );
+      const augCalendar = screen.getByTestId('mock-calendar-2026-08');
+      // 八月面板里今天不在,沿用 monthDate='2026-08-01' 作为 value
+      expect(augCalendar.getAttribute('data-value')).toBe('2026-08-01');
     });
   });
 });

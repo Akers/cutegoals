@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import dayjs from 'dayjs';
 
@@ -37,11 +37,15 @@ vi.mock('@parent/components/PrizeTypeConfigForms', () => ({
 vi.mock('@parent/components/TaskCalendar', () => ({
   TaskCalendar: ({ baseMonth, selectedRange, onSelect, onNavigate }: any) => {
     const React = require('react');
-    return React.createElement('div', {
-      'data-testid': 'mock-task-calendar',
-      'data-base-month': baseMonth,
-      'data-selected': selectedRange ? `${selectedRange.startDate}_${selectedRange.endDate}` : '',
-    }, 'TaskCalendar');
+    return React.createElement(
+      'div',
+      {
+        'data-testid': 'mock-task-calendar',
+        'data-base-month': baseMonth,
+        'data-selected': selectedRange ? `${selectedRange.startDate}_${selectedRange.endDate}` : '',
+      },
+      'TaskCalendar',
+    );
   },
   __esModule: true,
 }));
@@ -153,7 +157,11 @@ describe('calendarReducer - pure function', () => {
 
     it('不修改其他状态', () => {
       const next = calendarReducer(
-        { ...baseState, viewAllMode: true, selectedRange: { type: 'day', startDate: '2026-07-01', endDate: '2026-07-01' } },
+        {
+          ...baseState,
+          viewAllMode: true,
+          selectedRange: { type: 'day', startDate: '2026-07-01', endDate: '2026-07-01' },
+        },
         { type: 'SET_FILTERS', payload: ['REPEAT'] },
       );
       expect(next.taskTypeFilters).toEqual(['REPEAT']);
@@ -174,10 +182,7 @@ describe('calendarReducer - pure function', () => {
     });
 
     it('重复 VIEW_ALL 保持 viewAllMode=true', () => {
-      const next = calendarReducer(
-        { ...baseState, viewAllMode: true },
-        { type: 'VIEW_ALL' },
-      );
+      const next = calendarReducer({ ...baseState, viewAllMode: true }, { type: 'VIEW_ALL' });
       expect(next.viewAllMode).toBe(true);
     });
   });
@@ -356,5 +361,30 @@ describe('ParentTasksPage - component rendering', () => {
     render(<ParentTasksPage />);
     expect(screen.getByText('数学练习')).toBeInTheDocument();
     expect(screen.getByText('待处理')).toBeInTheDocument();
+  });
+
+  // ═══════════════ 默认选中今日（回归）═══════════════
+  // 修复日历进入页面时高亮 1 号而不高亮今日的 bug：ParentTasksPage 的
+  // calendarReducer 初值 selectedRange 应当等于今日，而不是 null。
+  describe('默认选中今日 (回归, fix-calendar-default-current-date)', () => {
+    beforeEach(() => {
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date('2026-07-24T12:00:00'));
+    });
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    it('日历 mock 在初次渲染时 data-selected 等于今日 (2026-07-24_2026-07-24)', () => {
+      render(<ParentTasksPage />);
+      const mockCalendar = screen.getByTestId('mock-task-calendar');
+      expect(mockCalendar.getAttribute('data-selected')).toBe('2026-07-24_2026-07-24');
+    });
+
+    it('日历 mock 在初次渲染时 data-base-month 等于本月 (2026-07)', () => {
+      render(<ParentTasksPage />);
+      const mockCalendar = screen.getByTestId('mock-task-calendar');
+      expect(mockCalendar.getAttribute('data-base-month')).toBe('2026-07');
+    });
   });
 });
