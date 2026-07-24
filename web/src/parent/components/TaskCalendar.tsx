@@ -280,7 +280,7 @@ export function CalendarPanel({ year, month, selectedRange, onSelect }: Calendar
               position: 'absolute',
               zIndex: 1,
               top: -26,
-              left: 10,
+              left: 20,
               backgroundColor: '#ff4d4f',
               color: '#fff',
               borderRadius: 5,
