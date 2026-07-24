@@ -59,9 +59,7 @@ vi.mock('antd', () => {
         cells.push(
           <div key={d} data-testid={`date-cell-${d}`} onClick={() => onSelect?.(date)}>
             {/* 模拟真实 antd Calendar 行为：cell 中先渲染默认天数数字，
-                  再附加 dateCellRender 返回的自定义内容。
-                  见 web/src/parent/components/TaskCalendar.tsx 与
-                  antd 5 dateCellRender 的「追加」语义。 */}
+                  再附加 dateCellRender 返回的自定义内容。 */}
             <span data-testid="antd-default-date">{d}</span>
             {cellContent}
           </div>,
@@ -314,9 +312,9 @@ describe('TaskCalendar - 双月日历组件', () => {
       expect(badge).toBeInTheDocument();
       // 绝对定位脱离 normal flow，不参与 line box 高度计算
       expect(badge.style.position).toBe('absolute');
-      expect(badge.style.top).toBe('-24px');
+      expect(badge.style.top).toBe('-28px');
       expect(badge.style.left).toBe('0px');
-      expect(badge.style.fontSize).toBe('10px');
+      expect(badge.style.fontSize).toBe('11px');
     });
 
     it('选中日期显示高亮边框', () => {

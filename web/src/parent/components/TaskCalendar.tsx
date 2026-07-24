@@ -272,29 +272,28 @@ export function CalendarPanel({ year, month, selectedRange, onSelect }: Calendar
       >
         {/* 不再渲染独立天数数字：antd Calendar 默认会在 cell 中输出日期数字，
             dateCellRender 的语义是「追加内容」，再渲染一次会造成同一 cell 出现两个数字。 */}
-        {/* 任务数角标：使用绝对定位脱离正常 flow，不撑高 table 行高。
-            antd `<Badge>` 的 inline-block wrapper 会撑高含任务数的 cell
-            （真实 Chromium 实测撑高 +25px），改用自定义绝对定位角标替代。 */}
+        {/* 任务数角标：absolute + 负 top 偏移到日期数字层，脱离 flow 不撑高行。 */}
         {total > 0 && (
           <span
             data-testid={`task-badge-${dateKey}`}
             style={{
               position: 'absolute',
-              zIndex: 1,
-              /* 偏移到日期数字（24×24）左上角：date-content 位于 date-value 下方，
-                 用负 top 把角标从 date-content 区拉到 date-value 层。 */
-              top: -24,
+              zIndex: 1000,
+              top: -28,
               left: 0,
-              backgroundColor: 'var(--ant-color-error)',
+              backgroundColor: '#ff4d4f',
               color: '#fff',
               borderRadius: 8,
-              minWidth: 16,
-              height: 16,
-              padding: '0 4px',
-              fontSize: 10,
-              lineHeight: '16px',
+              minWidth: 18,
+              height: 18,
+              padding: '0 5px',
+              fontSize: 11,
+              lineHeight: '18px',
               textAlign: 'center',
-              fontWeight: 600,
+              fontWeight: 700,
+              border: '1px solid rgba(255,255,255,0.8)',
+              pointerEvents: 'none',
+              userSelect: 'none',
             }}
           >
             {total}
