@@ -662,4 +662,132 @@ describe('TaskCalendar - 双月日历组件', () => {
       expect(augPanel.className).toContain('task-calendar-non-current-month');
     });
   });
+
+  // ═══════════════ 周/日高亮改用半透明浅蓝背景矩形 (fix-calendar-week-row-highlight-bg) ═══════════════
+  // 用户报告：当前选中一周时，周号行与该周内所有日期都会被高亮（用 boxShadow 边框）。
+  // 期望：周号行用「半透明浅蓝背景矩形」；选中周时周内日期 cell 不跟随高亮；
+  //      选中某一天时仅该日期高亮，其他日期全部不高亮。
+  describe('周/日高亮改用半透明浅蓝背景矩形 (fix-calendar-week-row-highlight-bg)', () => {
+    it('选中周时:周号行 backgroundColor 是半透明浅蓝 (rgba(22,119,255,0.18)),不使用 boxShadow', () => {
+      render(
+        <TaskCalendar
+          {...defaultProps}
+          selectedRange={{
+            type: 'week',
+            startDate: '2026-06-28',
+            endDate: '2026-07-04',
+          }}
+        />,
+      );
+      const weekRow = within(julyPanel()).getByTestId('week-row-27') as HTMLElement;
+      const bg = weekRow.style.backgroundColor;
+      expect(bg).toBe('rgba(22, 119, 255, 0.18)');
+      // 不使用 boxShadow 作为高亮标记
+      expect(weekRow.style.boxShadow).toBe('');
+    });
+
+    it('选中周时:该周内所有日期 cell 的 data-selected 均为 false (不联动日期)', () => {
+      render(
+        <TaskCalendar
+          {...defaultProps}
+          selectedRange={{
+            type: 'week',
+            startDate: '2026-06-28',
+            endDate: '2026-07-04',
+          }}
+        />,
+      );
+      // 第 27 周 startDate=2026-06-28, endDate=2026-07-04,在 7 月面板内覆盖 7/1-7/4
+      // 面板里有 31 天,这些 7/1-7/4 应全为 false
+      for (const d of [1, 2, 3, 4]) {
+        const cell = within(julyPanel()).getByTestId(`date-cell-${d}`);
+        const inner = cell.querySelector('[data-bg]') as HTMLElement;
+        expect(inner.getAttribute('data-selected')).toBe('false');
+      }
+    });
+
+    it('选中周时:周内日期 cell 仍保留任务类型背景色 (LIMITED 仍是 error-bg)', () => {
+      render(
+        <TaskCalendar
+          {...defaultProps}
+          selectedRange={{
+            type: 'week',
+            startDate: '2026-06-28',
+            endDate: '2026-07-04',
+          }}
+        />,
+      );
+      // 2026-07-01 在周内,任务类型 LIMITED=1,应保持 error-bg
+      const cell1 = within(julyPanel()).getByTestId('date-cell-1');
+      const inner = cell1.querySelector('[data-bg]') as HTMLElement;
+      expect(inner.getAttribute('data-bg')).toBe('var(--ant-color-error-bg)');
+    });
+
+    it('选中一天时:该日期 cell backgroundColor 是半透明浅蓝,而且 data-selected=true', () => {
+      render(
+        <TaskCalendar
+          {...defaultProps}
+          selectedRange={{
+            type: 'day',
+            startDate: '2026-07-01',
+            endDate: '2026-07-01',
+          }}
+        />,
+      );
+      const cell1 = within(julyPanel()).getByTestId('date-cell-1');
+      const inner = cell1.querySelector('[data-bg]') as HTMLElement;
+      expect(inner.getAttribute('data-selected')).toBe('true');
+      const bg = inner.style.backgroundColor;
+      expect(bg).toContain('rgba(22, 119, 255');
+    });
+
+    it('选中一天时:其他日期 cell 的 data-selected 均为 false (取消其他天的高亮)', () => {
+      render(
+        <TaskCalendar
+          {...defaultProps}
+          selectedRange={{
+            type: 'day',
+            startDate: '2026-07-01',
+            endDate: '2026-07-01',
+          }}
+        />,
+      );
+      // 选中 1 号,其他日期全部不高亮
+      for (const d of [2, 5, 10, 15, 20, 24, 30]) {
+        const cell = within(julyPanel()).getByTestId(`date-cell-${d}`);
+        const inner = cell.querySelector('[data-bg]') as HTMLElement;
+        expect(inner.getAttribute('data-selected')).toBe('false');
+      }
+    });
+
+    it('选中一天时:所有周号行 data-selected 均为 false (周不高亮)', () => {
+      render(
+        <TaskCalendar
+          {...defaultProps}
+          selectedRange={{
+            type: 'day',
+            startDate: '2026-07-01',
+            endDate: '2026-07-01',
+          }}
+        />,
+      );
+      for (const wn of [27, 28, 29, 30, 31, 32]) {
+        const weekRow = within(julyPanel()).getByTestId(`week-row-${wn}`) as HTMLElement;
+        expect(weekRow.getAttribute('data-selected')).toBe('false');
+      }
+    });
+
+    it('无 selection 时:所有日期 cell 与所有周号行均无高亮 backgroundColor', () => {
+      render(<TaskCalendar {...defaultProps} selectedRange={null} />);
+      for (const d of [1, 5, 15, 24]) {
+        const cell = within(julyPanel()).getByTestId(`date-cell-${d}`);
+        const inner = cell.querySelector('[data-bg]') as HTMLElement;
+        expect(inner.getAttribute('data-selected')).toBe('false');
+      }
+      for (const wn of [27, 28, 29, 30, 31, 32]) {
+        const weekRow = within(julyPanel()).getByTestId(`week-row-${wn}`) as HTMLElement;
+        expect(weekRow.getAttribute('data-selected')).toBe('false');
+      }
+    });
+  });
 });

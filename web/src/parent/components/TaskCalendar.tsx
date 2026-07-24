@@ -153,6 +153,7 @@ export function WeekNumberColumn({
         const weekEndDate = weekStart.add(6, 'day').format('YYYY-MM-DD');
         const isSelected =
           selectedRange &&
+          selectedRange.type === 'week' &&
           selectedRange.startDate <= weekEndDate &&
           selectedRange.endDate >= weekStartDate;
 
@@ -172,9 +173,13 @@ export function WeekNumberColumn({
               cursor: 'pointer',
               fontSize: 12,
               textAlign: 'center',
-              backgroundColor: hasTasks ? 'var(--ant-color-info-bg)' : undefined,
+              backgroundColor: isSelected
+                ? 'rgba(22, 119, 255, 0.18)'
+                : hasTasks
+                  ? 'var(--ant-color-info-bg)'
+                  : undefined,
               borderBottom: '1px solid #f0f0f0',
-              boxShadow: isSelected ? 'inset 0 0 0 2px var(--ant-color-primary)' : undefined,
+              border: isSelected ? '1px solid rgba(22, 119, 255, 0.5)' : undefined,
               userSelect: 'none',
             }}
           >
@@ -259,22 +264,27 @@ export function CalendarPanel({ year, month, selectedRange, onSelect }: Calendar
       bgColor = 'var(--ant-color-success-bg)'; // 淡绿
     }
 
-    // 选中高亮
+    // 选中高亮：仅 selectedRange.type === 'day' 时,日期 cell 标记为选中;
+    // 周选中时,周内日期 cell 不跟随高亮(产品要求:周选中只高亮周号行,日期 cell 全部 data-selected='false')。
     const dateStr = date.format('YYYY-MM-DD');
-    const isSelected =
-      selectedRange && dateStr >= selectedRange.startDate && dateStr <= selectedRange.endDate;
+    const isSelected = !!(
+      selectedRange &&
+      selectedRange.type === 'day' &&
+      dateStr === selectedRange.startDate &&
+      dateStr === selectedRange.endDate
+    );
 
     return (
       <div
         data-bg={bgColor ?? ''}
         data-selected={isSelected ? 'true' : 'false'}
         style={{
-          backgroundColor: bgColor,
+          backgroundColor: isSelected ? 'rgba(22, 119, 255, 0.12)' : bgColor,
           borderRadius: 4,
           padding: '2px 4px',
           minHeight: 30,
           position: 'relative',
-          boxShadow: isSelected ? 'inset 0 0 0 2px var(--ant-color-primary)' : undefined,
+          boxShadow: isSelected ? 'inset 0 0 0 2px rgba(22, 119, 255, 0.5)' : undefined,
         }}
       >
         {/* 不再渲染独立天数数字：antd Calendar 默认会在 cell 中输出日期数字，
