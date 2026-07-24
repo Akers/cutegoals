@@ -19,7 +19,7 @@
   - `cd web && npm run build` exit 0
   - 验证证据：测试输出 + lint 输出 + build 输出
 
-- [ ] 4. 提交
+- [x] 4. 提交
   - `git add web/src/parent/components/TaskCalendar.tsx web/src/parent/components/__tests__/TaskCalendar.test.tsx`
   - `git commit -m "fix: 日历周/日高亮改用半透明浅蓝背景矩形 + 周选中不联动日期"`
-  - 验证证据：`git log -1 --stat` 输出
+  - 验证证据：`git log -1 --stat` 提交 b73e47f 包含 TaskCalendar.tsx + .test.tsx + tasks.md
