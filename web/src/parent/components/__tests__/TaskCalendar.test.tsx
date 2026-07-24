@@ -44,13 +44,15 @@ vi.mock('antd', () => {
         React.createElement('div', { className: 'ant-alert-message' }, message),
         action ? React.createElement('div', { className: 'ant-alert-action' }, action) : null,
       ),
-    Calendar: vi.fn().mockImplementation(({ value, dateCellRender, onSelect }: any) => {
-      if (!value) {
+    Calendar: vi.fn().mockImplementation(({ value, defaultValue, dateCellRender, onSelect }: any) => {
+      if (!value && !defaultValue) {
         return <div data-testid="mock-calendar-empty" />;
       }
-      const year = value.year();
-      const month = value.month(); // 0-based
-      const daysInMonth = value.daysInMonth();
+      // 用 defaultValue（fallback 到 value）推导显示月份
+      const anchor = value ?? defaultValue;
+      const year = anchor.year();
+      const month = anchor.month(); // 0-based
+      const daysInMonth = anchor.daysInMonth();
       const monthStr = `${year}-${String(month + 1).padStart(2, '0')}`;
       const cells: React.ReactNode[] = [];
       for (let d = 1; d <= daysInMonth; d++) {
@@ -65,10 +67,14 @@ vi.mock('antd', () => {
           </div>,
         );
       }
-      // data-value 暴露传入 antd 的 dayjs value 的日期部分，便于测试断言
-      // 当前月面板应等于今日日期，非当前月面板应回退到 monthDate / selectedRange.startDate。
+      // data-value 仅在 value 有值时写入（value=undefined 时属性缺失，便于断言 antd 是否内置高亮）
+      // data-default-value 仅在 defaultValue 有值时写入
       return (
-        <div data-testid={`mock-calendar-${monthStr}`} data-value={value.format('YYYY-MM-DD')}>
+        <div
+          data-testid={`mock-calendar-${monthStr}`}
+          {...(value ? { 'data-value': value.format('YYYY-MM-DD') } : {})}
+          {...(defaultValue ? { 'data-default-value': defaultValue.format('YYYY-MM-DD') } : {})}
+        >
           {cells}
         </div>
       );
@@ -621,8 +627,50 @@ describe('TaskCalendar - 双月日历组件', () => {
         />,
       );
       const augCalendar = screen.getByTestId('mock-calendar-2026-08');
-      // 八月面板里今天不在,沿用 monthDate='2026-08-01' 作为 value
-      expect(augCalendar.getAttribute('data-value')).toBe('2026-08-01');
+      // 非当前月面板更新自 fix-calendar-non-current-no-highlight：
+      // value=undefined（属性缺失）+ defaultValue=monthDate 承担显示月份
+      expect(augCalendar).not.toHaveAttribute('data-value');
+      expect(augCalendar.getAttribute('data-default-value')).toBe('2026-08-01');
+    });
+  });
+
+  // ═══════════════ 非当前月面板不内置高亮（回归）═══════════════
+  // 紧接 fix-calendar-non-current-no-highlight：当 today(2026-07-24) 不在
+  // 八月面板时，antd <Calendar> 不应内置高亮任何 cell（即 value=undefined），
+  // 由 defaultValue={monthDate} 单独承担显示月份的语义。
+  describe('非当前月面板不内置高亮 (回归, fix-calendar-non-current-no-highlight)', () => {
+    it('当前月面板:value=今日 + defaultValue=本月 (双层显示语义)', () => {
+      render(
+        <TaskCalendar
+          {...defaultProps}
+          baseMonth="2026-07"
+          selectedRange={{
+            type: 'day',
+            startDate: '2026-07-24',
+            endDate: '2026-07-24',
+          }}
+        />,
+      );
+      const julyCalendar = screen.getByTestId('mock-calendar-2026-07');
+      expect(julyCalendar.getAttribute('data-value')).toBe('2026-07-24');
+      expect(julyCalendar.getAttribute('data-default-value')).toBe('2026-07-01');
+    });
+
+    it('非当前月面板:value 属性缺失（不内置高亮）+ defaultValue=本月', () => {
+      render(
+        <TaskCalendar
+          {...defaultProps}
+          baseMonth="2026-07"
+          selectedRange={{
+            type: 'day',
+            startDate: '2026-07-24',
+            endDate: '2026-07-24',
+          }}
+        />,
+      );
+      const augCalendar = screen.getByTestId('mock-calendar-2026-08');
+      expect(augCalendar).not.toHaveAttribute('data-value');
+      expect(augCalendar.getAttribute('data-default-value')).toBe('2026-08-01');
     });
   });
 });
