@@ -207,6 +207,14 @@ export function CalendarPanel({ year, month, selectedRange, onSelect }: Calendar
   const { data: calendarData, loading, error, refetch } = useApi<CalendarData>(apiPath);
   const monthDate = dayjs(`${year}-${String(month).padStart(2, '0')}-01`);
 
+  // 修复 fix-calendar-default-current-date：当前月面板把 antd <Calendar> 的 value
+  // 改为今日，让 antd 内置高亮落到今天；非当前月面板维持 monthDate 作为 value，
+  // 既保证 antd 仍显示正确的月份（不跳到 today 所在的月），也保留其内部对每月 1 号的高亮
+  // （这一行为不在本 bug 修复范围内）。
+  const today = dayjs();
+  const isCurrentMonth = today.year() === year && today.month() + 1 === month;
+  const calendarValue = isCurrentMonth ? today : monthDate;
+
   // ── 加载态 ──
   if (loading) {
     return (
@@ -323,7 +331,7 @@ export function CalendarPanel({ year, month, selectedRange, onSelect }: Calendar
         {/* 右侧日历主体 */}
         <div style={{ flex: 1, minWidth: 0 }}>
           <Calendar
-            value={monthDate}
+            value={calendarValue}
             fullscreen={false}
             headerRender={() => null}
             dateCellRender={renderDateCell}

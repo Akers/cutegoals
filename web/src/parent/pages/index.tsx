@@ -1041,9 +1041,11 @@ function buildQuery(state: CalendarPageState): string {
 export function ParentTasksPage() {
   // ── 日历状态管理 ──
   const now = dayjs();
+  const todayStr = now.format('YYYY-MM-DD');
   const [calendarState, dispatch] = useReducer(calendarReducer, {
     baseMonth: now.format('YYYY-MM'),
-    selectedRange: null,
+    // 默认选中今日，让日历进入页面时 antd 内置高亮 + 自定义 boxShadow 双层都落在今天。
+    selectedRange: { type: 'day', startDate: todayStr, endDate: todayStr },
     taskTypeFilters: ['LIMITED', 'REPEAT', 'STANDING'],
     viewAllMode: false,
   });
