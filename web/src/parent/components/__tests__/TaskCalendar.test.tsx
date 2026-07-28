@@ -723,7 +723,9 @@ describe('TaskCalendar - 双月日历组件', () => {
       expect(inner.getAttribute('data-bg')).toBe('var(--ant-color-error-bg)');
     });
 
-    it('选中一天时:该日期 cell backgroundColor 是半透明浅蓝,而且 data-selected=true', () => {
+    it('选中一天时:该日期 cell 与默认当前日视觉一致 (深 teal + 白字 + 浅蓝外环),而且 data-selected=true', () => {
+      // tweak-calendar-selected-day-today-style:selected day 视觉与 antd 内置
+      // today 高亮对齐 —— 深 teal 实心背景 + 白字 + 外层浅蓝焦点环。
       render(
         <TaskCalendar
           {...defaultProps}
@@ -737,8 +739,39 @@ describe('TaskCalendar - 双月日历组件', () => {
       const cell1 = within(julyPanel()).getByTestId('date-cell-1');
       const inner = cell1.querySelector('[data-bg]') as HTMLElement;
       expect(inner.getAttribute('data-selected')).toBe('true');
-      const bg = inner.style.backgroundColor;
-      expect(bg).toContain('rgba(22, 119, 255');
+      // 背景：深 teal 实心（与 antd parent colorPrimary 同源 = #0d9488）。
+      // jsdom 把 hex 规范化为 rgb，所以断言用 rgb 形式。
+      expect(inner.style.backgroundColor).toBe('rgb(13, 148, 136)');
+      // 文字：白色
+      expect(inner.style.color).toBe('rgb(255, 255, 255)');
+      // 焦点环：外层浅蓝 spread（不再是 inset 边框）。
+      // jsdom 不规范化 boxShadow 中的 hex（保留 '#93c5fd' 形式），
+      // 也不自动给 0 加 px 单位，所以原始字符串为 '0 0 0 2px #93c5fd'。
+      expect(inner.style.boxShadow).toContain('#93c5fd');
+      expect(inner.style.boxShadow).not.toContain('inset');
+      expect(inner.style.boxShadow.startsWith('0 0 0 2px')).toBe(true);
+    });
+
+    it('selected 与 today 重合 (用户点击今天):视觉仍生效 (深 teal + 白字)', () => {
+      // tweak-calendar-selected-day-today-style 决策 3:selected=today 时,
+      // 自定义 selected style 不被 antd today 内置高亮抑制,两层视觉叠
+      // 加后用户仍能识别为选中态。
+      render(
+        <TaskCalendar
+          {...defaultProps}
+          baseMonth="2026-07"
+          selectedRange={{
+            type: 'day',
+            startDate: '2026-07-24',
+            endDate: '2026-07-24',
+          }}
+        />,
+      );
+      const todayCell = within(julyPanel()).getByTestId('date-cell-24');
+      const inner = todayCell.querySelector('[data-bg]') as HTMLElement;
+      expect(inner.getAttribute('data-selected')).toBe('true');
+      expect(inner.style.backgroundColor).toBe('rgb(13, 148, 136)');
+      expect(inner.style.color).toBe('rgb(255, 255, 255)');
     });
 
     it('选中一天时:其他日期 cell 的 data-selected 均为 false (取消其他天的高亮)', () => {

@@ -265,7 +265,9 @@ export function CalendarPanel({ year, month, selectedRange, onSelect }: Calendar
     }
 
     // 选中高亮：仅 selectedRange.type === 'day' 时,日期 cell 标记为选中;
-    // 周选中时,周内日期 cell 不跟随高亮(产品要求:周选中只高亮周号行,日期 cell 全部 data-selected='false')。
+    // 视觉与 antd 内置 today 高亮对齐 (深 teal 实心 + 白字 + 浅蓝外环)。
+    // 周选中时,周内日期 cell 不跟随高亮(产品要求:周选中只高亮周号行,
+    // 日期 cell 全部 data-selected='false')。
     const dateStr = date.format('YYYY-MM-DD');
     const isSelected = !!(
       selectedRange &&
@@ -279,12 +281,16 @@ export function CalendarPanel({ year, month, selectedRange, onSelect }: Calendar
         data-bg={bgColor ?? ''}
         data-selected={isSelected ? 'true' : 'false'}
         style={{
-          backgroundColor: isSelected ? 'rgba(22, 119, 255, 0.12)' : bgColor,
+          // tweak-calendar-selected-day-today-style:selected 与 today 视觉一致,
+          // 颜色 #0d9488 与 antd parent 色板 colorPrimary 同源 (themes.ts)。
+          backgroundColor: isSelected ? '#0d9488' : bgColor,
+          color: isSelected ? '#ffffff' : undefined,
           borderRadius: 4,
           padding: '2px 4px',
           minHeight: 30,
           position: 'relative',
-          boxShadow: isSelected ? 'inset 0 0 0 2px rgba(22, 119, 255, 0.5)' : undefined,
+          // 外层浅蓝焦点环 (spread 而非 inset),与 today 内置 box-shadow 视觉一致。
+          boxShadow: isSelected ? '0 0 0 2px #93c5fd' : undefined,
         }}
       >
         {/* 不再渲染独立天数数字：antd Calendar 默认会在 cell 中输出日期数字，
