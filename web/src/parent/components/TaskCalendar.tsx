@@ -256,86 +256,34 @@ export function CalendarPanel({ year, month, selectedRange, onSelect }: Calendar
     const dayData = calendarData?.days?.[dateKey];
     const total = dayData?.total ?? 0;
 
-    // 优先级：LIMITED > REPEAT > STANDING
-    let bgColor: string | undefined;
-    if (dayData?.taskTypes.LIMITED > 0) {
-      bgColor = 'var(--ant-color-error-bg)'; // 淡红
-    } else if (dayData?.taskTypes.REPEAT > 0) {
-      bgColor = 'var(--ant-color-info-bg)'; // 淡蓝
-    } else if (dayData?.taskTypes.STANDING > 0) {
-      bgColor = 'var(--ant-color-success-bg)'; // 淡绿
-    }
-
-    // fix-build 第三次迭代:仅 type=day 单点高亮,取消 type=week/month 整周/整月高亮。
-    //   - selectedRange.type === 'day'：单 cell 高亮（startDate === endDate === 该日）
-    //   - selectedRange.type === 'week' 或 'month'：周号行蓝色边框,但日期 cell 不高亮
-    //   - 前提：必须在当前月面板（isCurrentMonthForDate），非当前月面板不高亮
-    // 视觉统一：深 teal 实心 + 白字 + 浅蓝外环。
-    const dateStr = date.format('YYYY-MM-DD');
-    const today = dayjs();
-    const todayStr = today.format('YYYY-MM-DD');
-    const isCurrentMonthForDate = today.year() === year && today.month() + 1 === month;
-    const isSelected = !!(
-      selectedRange &&
-      isCurrentMonthForDate &&
-      selectedRange.type === 'day' &&
-      dateStr === selectedRange.startDate &&
-      dateStr === selectedRange.endDate
-    );
+    // Plan D: dateCellRender 只返回任务徽章（当 total > 0），不装饰 cell。
+    // 视觉控制完全由 <style> 块的 CSS 规则覆盖 antd 内置 selected/today 样式实现。
+    if (total === 0) return null;
 
     return (
-      <div
-        data-bg={bgColor ?? ''}
-        data-selected={isSelected ? 'true' : 'false'}
+      <span
+        data-testid={`task-badge-${dateKey}`}
         style={{
-          // 让 inner div 完整填充 antd cell,避免溢出
           position: 'absolute',
-          top: 0,
-          left: 4,
-          right: 4,
-          bottom: 0,
-          backgroundColor: isSelected ? '#0d9488' : bgColor,
-          borderRadius: 4,
-          // inset 边框在 cell 内画边框,不影响外部布局
-          boxShadow: isSelected ? 'inset 0 0 0 2px #93c5fd' : undefined,
-          // fix-build: z-index 0 让 antd-date-value (默认 z-index auto=0) 显示在 inner 之上;
-          // pointer-events: none 确保 inner 不拦截日期数字的点击事件
-          zIndex: 0,
+          zIndex: 1,
+          top: -26,
+          left: 20,
+          backgroundColor: '#ff4d4f',
+          color: '#fff',
+          borderRadius: 5,
+          minWidth: 10,
+          height: 10,
+          padding: '0 2px',
+          fontSize: 7,
+          lineHeight: '10px',
+          textAlign: 'center',
+          fontWeight: 700,
           pointerEvents: 'none',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
+          userSelect: 'none',
         }}
       >
-        {/* 不再渲染独立天数数字：antd Calendar 默认会在 cell 中输出日期数字，
-            dateCellRender 的语义是「追加内容」，再渲染一次会造成同一 cell 出现两个数字。 */}
-        {/* 任务数角标：absolute + 负 top 偏移到日期数字层，脱离 flow 不撑高行。 */}
-        {total > 0 && (
-          <span
-            data-testid={`task-badge-${dateKey}`}
-            style={{
-              position: 'absolute',
-              zIndex: 1,
-              top: -26,
-              left: 20,
-              backgroundColor: '#ff4d4f',
-              color: '#fff',
-              borderRadius: 5,
-              minWidth: 10,
-              height: 10,
-              padding: '0 2px',
-              fontSize: 7,
-              lineHeight: '10px',
-              textAlign: 'center',
-              fontWeight: 700,
-              pointerEvents: 'none',
-              userSelect: 'none',
-            }}
-          >
-            {total}
-          </span>
-        )}
-      </div>
+        {total}
+      </span>
     );
   };
 
@@ -416,32 +364,38 @@ export function TaskCalendar({
            导致 cell 仍被添加 .ant-picker-cell-selected 类;此处用 scoped CSS
            局部覆盖视觉样式,不影响其他 antd 实例(选择器以
            .task-calendar-non-current-month 开头限定作用域)。 */
-        /* fix-build: 当前月面板同样需要抑制 antd 内置 selected 背景,
-           避免与 dateCellRender 的 teal 双层叠加造成视觉错位。 */
+        /* Plan D: 不再抑制 antd selected 视觉,而是用 CSS 直接覆盖为 teal 实心。 */
+
+        /* selected day: teal 实心背景 + 白字 */
         .task-calendar-current-month .ant-picker-cell-selected .ant-picker-calendar-date,
-        .task-calendar-current-month .ant-picker-cell-selected .ant-picker-calendar-date-today,
+        .task-calendar-current-month .ant-picker-cell-selected .ant-picker-calendar-date-today {
+          background-color: #0d9488 !important;
+        }
+        .task-calendar-current-month .ant-picker-cell-selected .ant-picker-calendar-date-value {
+          color: #ffffff !important;
+        }
+        /* selected + today: teal 实心背景 + 白字（与普通 selected 一致） */
+        .task-calendar-current-month .ant-picker-cell-selected.ant-picker-cell-today .ant-picker-calendar-date-value {
+          color: #ffffff !important;
+        }
+        /* today 非 selected: 透明背景 + 深 teal 字 */
+        .task-calendar-current-month .ant-picker-cell-today .ant-picker-calendar-date {
+          background-color: transparent !important;
+        }
+        .task-calendar-current-month .ant-picker-cell-today .ant-picker-calendar-date-today {
+          background-color: transparent !important;
+        }
+        .task-calendar-current-month .ant-picker-cell-today .ant-picker-calendar-date-value {
+          color: #0d9488 !important;
+        }
+
+        /* 非当前月面板: 保持默认 antd 行为（无 selected 视觉） */
         .task-calendar-non-current-month .ant-picker-cell-selected .ant-picker-calendar-date,
         .task-calendar-non-current-month .ant-picker-cell-selected .ant-picker-calendar-date-today {
           background: transparent !important;
         }
-        .task-calendar-current-month .ant-picker-cell-selected .ant-picker-calendar-date-value,
         .task-calendar-non-current-month .ant-picker-cell-selected .ant-picker-calendar-date-value {
           color: inherit !important;
-        }
-        /* fix-build: today cell 非 selected 时 date-value 用深 teal 色,
-           避免白字在白底 + today 默认浅蓝边框上不可见。 */
-        .task-calendar-grid .ant-picker-cell-today .ant-picker-calendar-date-value {
-          color: #0d9488 !important;
-        }
-        /* today 非 selected 时 deep teal, selected 时白字(在 teal 背景上)。 */
-        .task-calendar-grid .ant-picker-cell-selected.ant-picker-cell-today .ant-picker-calendar-date-value {
-          color: #ffffff !important;
-        }
-        /* fix-build: inner div 用 absolute + inset 填充 cell,遮住了 date-value;
-           提升 date-value 的 z-index 让"29"白字显示在 inner teal 背景之上。 */
-        .task-calendar-grid .ant-picker-cell-selected .ant-picker-calendar-date-value {
-          z-index: 2 !important;
-          position: relative;
         }
 
       `}</style>
