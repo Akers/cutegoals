@@ -324,7 +324,13 @@ export function CalendarPanel({ year, month, selectedRange, onSelect }: Calendar
           }
         >
           <Calendar
-            value={isCurrentMonth ? today : monthDate}
+            value={(() => {
+              if (!selectedRange) return isCurrentMonth ? today : monthDate;
+              if (selectedRange.type === 'day') {
+                return dayjs(selectedRange.startDate);
+              }
+              return isCurrentMonth ? today : monthDate;
+            })()}
             fullscreen={false}
             headerRender={() => null}
             dateCellRender={renderDateCell}
@@ -377,6 +383,15 @@ export function TaskCalendar({
         /* selected + today: teal 实心背景 + 白字（与普通 selected 一致） */
         .task-calendar-current-month .ant-picker-cell-selected.ant-picker-cell-today .ant-picker-calendar-date-value {
           color: #ffffff !important;
+        }
+        /* today 非 selected 时浅蓝边框 + 深 teal 字色 */
+        .task-calendar-current-month .ant-picker-cell-today:not(.ant-picker-cell-selected) .ant-picker-calendar-date {
+          border: 1px solid #1677ff !important;
+          border-radius: 4px;
+        }
+        .task-calendar-non-current-month .ant-picker-cell-today:not(.ant-picker-cell-selected) .ant-picker-calendar-date {
+          border: 1px solid #1677ff !important;
+          border-radius: 4px;
         }
         /* today 字色 teal (在 antd 浅蓝边框内可见); today 透明背景已由 antd 内置提供 */
         .task-calendar-current-month .ant-picker-cell-today .ant-picker-calendar-date-value {
