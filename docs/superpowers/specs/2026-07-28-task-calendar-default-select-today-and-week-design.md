@@ -2,6 +2,8 @@
 comet_change: tweak-calendar-selected-day-today-style
 role: technical-design
 canonical_spec: openspec
+archived-with: 2026-07-29-tweak-calendar-selected-day-today-style
+status: final
 ---
 
 # Design: 任务日历默认选中今日与本周

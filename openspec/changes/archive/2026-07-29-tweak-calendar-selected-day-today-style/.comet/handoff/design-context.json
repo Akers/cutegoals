@@ -1,0 +1,14 @@
+{
+  "change": "tweak-calendar-selected-day-today-style",
+  "phase": "design",
+  "mode": "compact",
+  "canonical_spec": "openspec",
+  "generated_by": "comet-handoff.sh",
+  "context_hash": "59bfacd243cbc00049b403830dd3fcc7270852ccf8a008c0cd254ba8728256c4",
+  "files": [
+    { "path": "openspec/changes/tweak-calendar-selected-day-today-style/proposal.md", "sha256": "f8c3951fe4677aaf34dffc53709215777252eaf0151611594bcc2ff814061244" },
+    { "path": "openspec/changes/tweak-calendar-selected-day-today-style/design.md", "sha256": "d898ef930b757e5f2dbd5e2cdc8af7ddcdcdb7ed6119a68a11f4add68938897b" },
+    { "path": "openspec/changes/tweak-calendar-selected-day-today-style/tasks.md", "sha256": "fa5b0710e54da2b00149552d3081d98fddefb2e19a2ddf011cc57a2115c15733" },
+    { "path": "openspec/changes/tweak-calendar-selected-day-today-style/specs/parent-task-calendar/spec.md", "sha256": "36b05a64b217329c5f6ba3d4b23a1e3319a2647bb7e2f79891ef91b4c9f0ade8" }
+  ]
+}

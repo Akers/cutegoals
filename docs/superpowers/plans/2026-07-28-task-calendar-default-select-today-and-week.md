@@ -2,6 +2,7 @@
 change: tweak-calendar-selected-day-today-style
 design-doc: docs/superpowers/specs/2026-07-28-task-calendar-default-select-today-and-week-design.md
 base-ref: 263361cd61a6d6d182730c8c0ba5713da34344f7
+archived-with: 2026-07-29-tweak-calendar-selected-day-today-style
 ---
 
 # Implementation Plan: 任务日历默认选中今日与本周
