@@ -378,13 +378,7 @@ export function TaskCalendar({
         .task-calendar-current-month .ant-picker-cell-selected.ant-picker-cell-today .ant-picker-calendar-date-value {
           color: #ffffff !important;
         }
-        /* today 非 selected: 透明背景 + 深 teal 字 */
-        .task-calendar-current-month .ant-picker-cell-today .ant-picker-calendar-date {
-          background-color: transparent !important;
-        }
-        .task-calendar-current-month .ant-picker-cell-today .ant-picker-calendar-date-today {
-          background-color: transparent !important;
-        }
+        /* today 字色 teal (在 antd 浅蓝边框内可见); today 透明背景已由 antd 内置提供 */
         .task-calendar-current-month .ant-picker-cell-today .ant-picker-calendar-date-value {
           color: #0d9488 !important;
         }
