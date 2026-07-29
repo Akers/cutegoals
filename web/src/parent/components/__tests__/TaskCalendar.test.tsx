@@ -896,5 +896,55 @@ describe('TaskCalendar - 双月日历组件', () => {
       expect(weekRow.getAttribute('data-selected')).toBe('true');
       expect(weekRow.style.backgroundColor).toBe('rgba(22, 119, 255, 0.18)');
     });
+
+    // Scenario 3: 用户点击非本周周号,today 仍高亮(today 不在选中周内)
+    it('selectedRange=week(非本周) 时 today cell 仍高亮 (today 独立判定)', () => {
+      render(
+        <TaskCalendar
+          {...defaultProps}
+          baseMonth="2026-07"
+          // 选中 week=7/12~7/18 (第29周),today=7/24 不在该周内(在第30周)
+          selectedRange={{
+            type: 'week',
+            startDate: '2026-07-12',
+            endDate: '2026-07-18',
+          }}
+        />,
+      );
+      // week-row-29 (第29周) 应高亮
+      const weekRow29 = within(julyPanel()).getByTestId('week-row-29') as HTMLElement;
+      expect(weekRow29.getAttribute('data-selected')).toBe('true');
+      // today (2026-07-24) cell 应仍高亮(今天独立判定)
+      const todayCell = within(julyPanel()).getByTestId('date-cell-24');
+      const todayInner = todayCell.querySelector('[data-bg]') as HTMLElement;
+      expect(todayInner.getAttribute('data-selected')).toBe('true');
+      expect(todayInner.style.backgroundColor).toBe('rgb(13, 148, 136)');
+      expect(todayInner.style.color).toBe('rgb(255, 255, 255)');
+    });
+
+    // Scenario 4: 非当前月面板 today 不显示高亮
+    it('非当前月面板 (baseMonth != today 所在月) 中 today cell 不显示高亮', () => {
+      render(
+        <TaskCalendar
+          {...defaultProps}
+          baseMonth="2026-08" // 下个月,today=7/24 不在 8 月面板
+          // 任意 selectedRange
+          selectedRange={{
+            type: 'week',
+            startDate: '2026-08-02', // Sunday 周首 (8/2~8/8)
+            endDate: '2026-08-08',
+          }}
+        />,
+      );
+      // 八月面板不应有 today cell (8月没有 24 号,但 mock 只渲染当月日期)
+      // 通过验证八月面板没有 data-selected='true' 的日期 cell
+      // 因为 selectedRange=week 时周内日期不高亮,且 today 不在 8 月
+      const augustCalendar = screen.getByTestId('mock-calendar-2026-08');
+      const cells = augustCalendar.querySelectorAll('[data-selected="true"]');
+      // 预期:周号行有 data-selected='true',但日期 cell 没有
+      // 这里只能粗略断言:日期 cell 不存在 data-selected='true'
+      // 实际上 week-row 才会高亮,date-cell 在 type=week 时不高亮
+      expect(cells.length).toBe(0);
+    });
   });
 });
