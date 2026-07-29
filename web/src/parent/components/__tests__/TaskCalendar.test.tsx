@@ -44,41 +44,43 @@ vi.mock('antd', () => {
         React.createElement('div', { className: 'ant-alert-message' }, message),
         action ? React.createElement('div', { className: 'ant-alert-action' }, action) : null,
       ),
-    Calendar: vi.fn().mockImplementation(({ value, defaultValue, dateCellRender, onSelect }: any) => {
-      if (!value && !defaultValue) {
-        return <div data-testid="mock-calendar-empty" />;
-      }
-      // 用 defaultValue（fallback 到 value）推导显示月份
-      const anchor = value ?? defaultValue;
-      const year = anchor.year();
-      const month = anchor.month(); // 0-based
-      const daysInMonth = anchor.daysInMonth();
-      const monthStr = `${year}-${String(month + 1).padStart(2, '0')}`;
-      const cells: React.ReactNode[] = [];
-      for (let d = 1; d <= daysInMonth; d++) {
-        const date = dayjs(new Date(year, month, d));
-        const cellContent = dateCellRender?.(date);
-        cells.push(
-          <div key={d} data-testid={`date-cell-${d}`} onClick={() => onSelect?.(date)}>
-            {/* 模拟真实 antd Calendar 行为：cell 中先渲染默认天数数字，
+    Calendar: vi
+      .fn()
+      .mockImplementation(({ value, defaultValue, dateCellRender, onSelect }: any) => {
+        if (!value && !defaultValue) {
+          return <div data-testid="mock-calendar-empty" />;
+        }
+        // 用 defaultValue（fallback 到 value）推导显示月份
+        const anchor = value ?? defaultValue;
+        const year = anchor.year();
+        const month = anchor.month(); // 0-based
+        const daysInMonth = anchor.daysInMonth();
+        const monthStr = `${year}-${String(month + 1).padStart(2, '0')}`;
+        const cells: React.ReactNode[] = [];
+        for (let d = 1; d <= daysInMonth; d++) {
+          const date = dayjs(new Date(year, month, d));
+          const cellContent = dateCellRender?.(date);
+          cells.push(
+            <div key={d} data-testid={`date-cell-${d}`} onClick={() => onSelect?.(date)}>
+              {/* 模拟真实 antd Calendar 行为：cell 中先渲染默认天数数字，
                   再附加 dateCellRender 返回的自定义内容。 */}
-            <span data-testid="antd-default-date">{d}</span>
-            {cellContent}
-          </div>,
+              <span data-testid="antd-default-date">{d}</span>
+              {cellContent}
+            </div>,
+          );
+        }
+        // data-value 仅在 value 有值时写入
+        // data-default-value 仅在 defaultValue 有值时写入
+        return (
+          <div
+            data-testid={`mock-calendar-${monthStr}`}
+            {...(value ? { 'data-value': value.format('YYYY-MM-DD') } : {})}
+            {...(defaultValue ? { 'data-default-value': defaultValue.format('YYYY-MM-DD') } : {})}
+          >
+            {cells}
+          </div>
         );
-      }
-      // data-value 仅在 value 有值时写入
-      // data-default-value 仅在 defaultValue 有值时写入
-      return (
-        <div
-          data-testid={`mock-calendar-${monthStr}`}
-          {...(value ? { 'data-value': value.format('YYYY-MM-DD') } : {})}
-          {...(defaultValue ? { 'data-default-value': defaultValue.format('YYYY-MM-DD') } : {})}
-        >
-          {cells}
-        </div>
-      );
-    }),
+      }),
   };
 });
 
@@ -821,6 +823,78 @@ describe('TaskCalendar - 双月日历组件', () => {
         const weekRow = within(julyPanel()).getByTestId(`week-row-${wn}`) as HTMLElement;
         expect(weekRow.getAttribute('data-selected')).toBe('false');
       }
+    });
+  });
+
+  describe('默认选中本周: today 固定高亮 (tweak-build)', () => {
+    // today = 2026-07-24, fake timers 保证稳定性
+    beforeEach(() => {
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date('2026-07-24T12:00:00'));
+    });
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    it('(a) selectedRange=week(本周) 时 today cell 仍高亮 (深 teal + 白字 + 浅蓝外环)', () => {
+      // 本周 2026-07-19 (Sun) → 2026-07-25 (Sat)
+      render(
+        <TaskCalendar
+          {...defaultProps}
+          baseMonth="2026-07"
+          selectedRange={{
+            type: 'week',
+            startDate: '2026-07-19',
+            endDate: '2026-07-25',
+          }}
+        />,
+      );
+      const todayCell = within(julyPanel()).getByTestId('date-cell-24');
+      const inner = todayCell.querySelector('[data-bg]') as HTMLElement;
+      // today 独立高亮判定，与 selectedRange.type 无关
+      expect(inner.getAttribute('data-selected')).toBe('true');
+      expect(inner.style.backgroundColor).toBe('rgb(13, 148, 136)');
+      expect(inner.style.color).toBe('rgb(255, 255, 255)');
+      expect(inner.style.boxShadow).toContain('#93c5fd');
+      expect(inner.style.boxShadow.startsWith('0 0 0 2px')).toBe(true);
+    });
+
+    it('(b) selectedRange=day 时点击非 today 日期，today 仍高亮', () => {
+      // 用户选中 7 月 15 日，today(24日) 仍保持高亮
+      render(
+        <TaskCalendar
+          {...defaultProps}
+          baseMonth="2026-07"
+          selectedRange={{
+            type: 'day',
+            startDate: '2026-07-15',
+            endDate: '2026-07-15',
+          }}
+        />,
+      );
+      const todayCell = within(julyPanel()).getByTestId('date-cell-24');
+      const inner = todayCell.querySelector('[data-bg]') as HTMLElement;
+      expect(inner.getAttribute('data-selected')).toBe('true');
+      expect(inner.style.backgroundColor).toBe('rgb(13, 148, 136)');
+      expect(inner.style.color).toBe('rgb(255, 255, 255)');
+    });
+
+    it('selectedRange=week(本周) 时当前周号行 (week-row-30) 高亮', () => {
+      // 本周 week-number = 30 (2026-07-19 Sun → 2026-07-25 Sat)
+      render(
+        <TaskCalendar
+          {...defaultProps}
+          baseMonth="2026-07"
+          selectedRange={{
+            type: 'week',
+            startDate: '2026-07-19',
+            endDate: '2026-07-25',
+          }}
+        />,
+      );
+      const weekRow = within(julyPanel()).getByTestId('week-row-30') as HTMLElement;
+      expect(weekRow.getAttribute('data-selected')).toBe('true');
+      expect(weekRow.style.backgroundColor).toBe('rgba(22, 119, 255, 0.18)');
     });
   });
 });

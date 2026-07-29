@@ -264,16 +264,22 @@ export function CalendarPanel({ year, month, selectedRange, onSelect }: Calendar
       bgColor = 'var(--ant-color-success-bg)'; // 淡绿
     }
 
-    // 选中高亮：仅 selectedRange.type === 'day' 时,日期 cell 标记为选中;
-    // 视觉与 antd 内置 today 高亮对齐 (深 teal 实心 + 白字 + 浅蓝外环)。
-    // 周选中时,周内日期 cell 不跟随高亮(产品要求:周选中只高亮周号行,
-    // 日期 cell 全部 data-selected='false')。
+    // 选中高亮 (tweak-build)：两个独立条件满足其一即高亮：
+    //   1. selectedRange.type === 'day' 且日期匹配（用户选中的单天）
+    //   2. 该日期是 today 且位于当前面板月份（today 固定高亮，与 selectedRange.type 无关）
+    // 视觉统一：深 teal 实心 + 白字 + 浅蓝外环，与 antd 内置 today 高亮对齐。
+    // 周选中时：周内日期 cell 不跟随高亮(产品要求:周选中只高亮周号行,
+    // 日期 cell 全部 data-selected='false')，但 today 除外（today 永远高亮）。
     const dateStr = date.format('YYYY-MM-DD');
+    const today = dayjs();
+    const todayStr = today.format('YYYY-MM-DD');
+    const isCurrentMonthForDate = today.year() === year && today.month() + 1 === month;
     const isSelected = !!(
-      selectedRange &&
-      selectedRange.type === 'day' &&
-      dateStr === selectedRange.startDate &&
-      dateStr === selectedRange.endDate
+      (selectedRange &&
+        selectedRange.type === 'day' &&
+        dateStr === selectedRange.startDate &&
+        dateStr === selectedRange.endDate) ||
+      (isCurrentMonthForDate && dateStr === todayStr)
     );
 
     return (

@@ -2,7 +2,26 @@ import { useEffect, useMemo, useState, useReducer, useRef, useCallback } from 'r
 import { history } from 'umi';
 import { getClient } from '@shared/api';
 import type { TaskTypeValue } from '@shared/api/types';
-import { Alert, Button, Card, Checkbox, DatePicker, Empty, Input, InputNumber, Modal, Result, Row, Select, Space, Spin, Table, Tag, Typography, message } from 'antd';
+import {
+  Alert,
+  Button,
+  Card,
+  Checkbox,
+  DatePicker,
+  Empty,
+  Input,
+  InputNumber,
+  Modal,
+  Result,
+  Row,
+  Select,
+  Space,
+  Spin,
+  Table,
+  Tag,
+  Typography,
+  message,
+} from 'antd';
 const { TextArea } = Input;
 import dayjs from 'dayjs';
 import { useAuth } from '@shared/auth';
@@ -12,14 +31,24 @@ import { TaskTypeConfigForms, type TypeConfigValue } from '@parent/components/Ta
 import { TaskTypeFilter } from '@parent/components/TaskTypeFilter';
 import { TaskCalendar } from '@parent/components/TaskCalendar';
 import type { CalendarSelection, CalendarAction } from '@parent/components/TaskCalendar';
-import { PrizeTypeConfigForms, type PrizeTypeConfig } from '@parent/components/PrizeTypeConfigForms';
+import {
+  PrizeTypeConfigForms,
+  type PrizeTypeConfig,
+} from '@parent/components/PrizeTypeConfigForms';
 
 /** Map API status values to Chinese labels */
 function statusLabel(s: string): string {
   const map: Record<string, string> = {
-    completed: '已完成', approved: '已通过', rejected: '已驳回',
-    cancelled: '已取消', active: '启用', disabled: '停用',
-    pending: '待处理', locked: '已锁定', success: '成功', failed: '失败',
+    completed: '已完成',
+    approved: '已通过',
+    rejected: '已驳回',
+    cancelled: '已取消',
+    active: '启用',
+    disabled: '停用',
+    pending: '待处理',
+    locked: '已锁定',
+    success: '成功',
+    failed: '失败',
   };
   return map[s?.toLowerCase()] ?? s;
 }
@@ -28,7 +57,10 @@ function statusLabel(s: string): string {
  * 根据任务类型的快照字段生成显示文本。
  * REPEAT 任务显示"重复任务，每天/每周/每月"；其他任务返回 null（由调用方显示截止日期）。
  */
-function repeatTaskLabel(taskType: string | null | undefined, typeConfig: string | null | undefined): string | null {
+function repeatTaskLabel(
+  taskType: string | null | undefined,
+  typeConfig: string | null | undefined,
+): string | null {
   if (taskType === 'REPEAT') {
     try {
       const config = typeConfig ? JSON.parse(typeConfig) : {};
@@ -249,21 +281,31 @@ export function ParentHomePage() {
 
   if (!online)
     return (
-      <Result status="warning" title="当前处于离线状态" subTitle="请检查网络连接，恢复后重试" extra={<Button onClick={refetch}>重试</Button>} />
+      <Result
+        status="warning"
+        title="当前处于离线状态"
+        subTitle="请检查网络连接，恢复后重试"
+        extra={<Button onClick={refetch}>重试</Button>}
+      />
     );
-  if (loading)
-    return <Spin />;
+  if (loading) return <Spin />;
   if (error)
     return (
-      <Result status="error" title="加载失败" subTitle={error.message} extra={<Button onClick={refetch}>重试</Button>} />
+      <Result
+        status="error"
+        title="加载失败"
+        subTitle={error.message}
+        extra={<Button onClick={refetch}>重试</Button>}
+      />
     );
-  if (!data)
-    return <Empty description="暂无数据" />;
+  if (!data) return <Empty description="暂无数据" />;
 
   return (
     <Space direction="vertical" size="large" style={{ width: '100%' }}>
       <Row justify="space-between" align="middle">
-        <Typography.Title level={4} style={{ margin: 0 }}>家庭</Typography.Title>
+        <Typography.Title level={4} style={{ margin: 0 }}>
+          家庭
+        </Typography.Title>
         <Space>
           <Button onClick={() => history.push('/parent/family')}>管理家庭</Button>
           <Button onClick={() => history.push('/parent/templates')}>任务模板</Button>
@@ -411,16 +453,24 @@ export function ParentFamilyPage() {
 
   if (!online)
     return (
-      <Result status="warning" title="当前处于离线状态" subTitle="请检查网络连接，恢复后重试" extra={<Button onClick={refetch}>重试</Button>} />
+      <Result
+        status="warning"
+        title="当前处于离线状态"
+        subTitle="请检查网络连接，恢复后重试"
+        extra={<Button onClick={refetch}>重试</Button>}
+      />
     );
-  if (loading)
-    return <Spin />;
+  if (loading) return <Spin />;
   if (error)
     return (
-      <Result status="error" title="加载失败" subTitle={error.message} extra={<Button onClick={refetch}>重试</Button>} />
+      <Result
+        status="error"
+        title="加载失败"
+        subTitle={error.message}
+        extra={<Button onClick={refetch}>重试</Button>}
+      />
     );
-  if (!data)
-    return <Empty description="暂无数据" />;
+  if (!data) return <Empty description="暂无数据" />;
 
   const confirmTitle =
     confirm?.type === 'leave'
@@ -440,9 +490,18 @@ export function ParentFamilyPage() {
   return (
     <Space direction="vertical" size="large" style={{ width: '100%' }}>
       <Row justify="space-between" align="middle">
-        <Typography.Title level={4} style={{ margin: 0 }}>{data.name}</Typography.Title>
+        <Typography.Title level={4} style={{ margin: 0 }}>
+          {data.name}
+        </Typography.Title>
         <Space>
-          <Button onClick={() => { familyName.setValue(data.name); setShowEditNameModal(true); }}>编辑家庭名称</Button>
+          <Button
+            onClick={() => {
+              familyName.setValue(data.name);
+              setShowEditNameModal(true);
+            }}
+          >
+            编辑家庭名称
+          </Button>
           <Button onClick={() => setShowInvite(true)}>邀请家长</Button>
           <Button onClick={openNewChild}>添加孩子</Button>
         </Space>
@@ -460,18 +519,30 @@ export function ParentFamilyPage() {
                     {member.nickname ?? maskPhone(member.phone ?? '')}
                   </Typography.Text>
                   {member.phone && (
-                    <Typography.Text type="secondary" style={{ fontSize: 12 }}>{maskPhone(member.phone)}</Typography.Text>
+                    <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+                      {maskPhone(member.phone)}
+                    </Typography.Text>
                   )}
                 </Space>
                 <Space>
                   <Tag>{statusLabel(member.role === 'PARENT' ? 'approved' : 'pending')}</Tag>
                   {isSelf && (
-                    <Button danger size="small" onClick={() => setConfirm({ type: 'leave' })} loading={actionLoading}>
+                    <Button
+                      danger
+                      size="small"
+                      onClick={() => setConfirm({ type: 'leave' })}
+                      loading={actionLoading}
+                    >
                       退出家庭
                     </Button>
                   )}
                   {canRemove && (
-                    <Button danger size="small" onClick={() => setConfirm({ type: 'remove', member })} loading={actionLoading}>
+                    <Button
+                      danger
+                      size="small"
+                      onClick={() => setConfirm({ type: 'remove', member })}
+                      loading={actionLoading}
+                    >
                       移除
                     </Button>
                   )}
@@ -484,7 +555,9 @@ export function ParentFamilyPage() {
 
       <Card title="孩子">
         {(data.children ?? []).length === 0 ? (
-          <Typography.Text type="secondary">暂无孩子，点击上方「添加孩子」创建档案。</Typography.Text>
+          <Typography.Text type="secondary">
+            暂无孩子，点击上方「添加孩子」创建档案。
+          </Typography.Text>
         ) : (
           <Space direction="vertical" size="small" style={{ width: '100%' }}>
             {(data.children ?? []).map((child) => (
@@ -492,10 +565,17 @@ export function ParentFamilyPage() {
                 <Space direction="vertical" size={0}>
                   <Typography.Text strong>{child.nickname}</Typography.Text>
                   {child.birthday && (
-                    <Typography.Text type="secondary" style={{ fontSize: 12 }}>生日 {child.birthday}</Typography.Text>
+                    <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+                      生日 {child.birthday}
+                    </Typography.Text>
                   )}
                 </Space>
-                <Button danger size="small" onClick={() => setConfirm({ type: 'removeChild', child })} loading={actionLoading}>
+                <Button
+                  danger
+                  size="small"
+                  onClick={() => setConfirm({ type: 'removeChild', child })}
+                  loading={actionLoading}
+                >
                   移除
                 </Button>
               </Row>
@@ -513,7 +593,9 @@ export function ParentFamilyPage() {
               <Row key={inv.id} justify="space-between" align="middle">
                 <Space direction="vertical" size={0}>
                   <Typography.Text strong>{maskPhone(inv.inviteePhone)}</Typography.Text>
-                  <Typography.Text type="secondary" style={{ fontSize: 12 }}>{inv.createdAt}</Typography.Text>
+                  <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+                    {inv.createdAt}
+                  </Typography.Text>
                 </Space>
                 <Tag>{statusLabel(inv.status.toLowerCase())}</Tag>
               </Row>
@@ -529,10 +611,17 @@ export function ParentFamilyPage() {
       <Modal open={showInvite} onCancel={() => setShowInvite(false)} title="邀请家长">
         <Space direction="vertical" size="middle" style={{ width: '100%' }}>
           <div>
-            <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>被邀请人手机号</Typography.Text>
+            <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>
+              被邀请人手机号
+            </Typography.Text>
             <Input id="invite-phone" type="tel" placeholder="11 位手机号" {...phone.inputProps} />
           </div>
-          <Button onClick={handleInvite} loading={sending} htmlType="button" style={{ width: '100%' }}>
+          <Button
+            onClick={handleInvite}
+            loading={sending}
+            htmlType="button"
+            style={{ width: '100%' }}
+          >
             发送邀请
           </Button>
         </Space>
@@ -549,15 +638,21 @@ export function ParentFamilyPage() {
         <Space direction="vertical" size="middle" style={{ width: '100%' }}>
           {childSaveError && <Alert message={childSaveError} type="error" showIcon />}
           <div>
-            <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>昵称</Typography.Text>
+            <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>
+              昵称
+            </Typography.Text>
             <Input id="child-nickname" {...childNickname.inputProps} />
           </div>
           <div>
-            <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>PIN</Typography.Text>
+            <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>
+              PIN
+            </Typography.Text>
             <Input id="child-pin" type="password" {...childPin.inputProps} />
           </div>
           <div>
-            <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>生日</Typography.Text>
+            <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>
+              生日
+            </Typography.Text>
             <Input id="child-birthday" type="date" {...childBirthday.inputProps} />
           </div>
         </Space>
@@ -572,7 +667,9 @@ export function ParentFamilyPage() {
       >
         <Space direction="vertical" size="middle" style={{ width: '100%' }}>
           <div>
-            <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>家庭名称</Typography.Text>
+            <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>
+              家庭名称
+            </Typography.Text>
             <Input id="family-name" {...familyName.inputProps} />
           </div>
         </Space>
@@ -583,12 +680,22 @@ export function ParentFamilyPage() {
         onCancel={() => setConfirm(null)}
         title={confirmTitle}
         footer={[
-          <Button key="cancel" onClick={() => setConfirm(null)} disabled={actionLoading}>取消</Button>,
-          <Button key="confirm" danger onClick={() => {
-            if (confirm?.type === 'leave') handleLeave();
-            else if (confirm?.type === 'remove' && confirm.member) handleRemove(confirm.member);
-            else if (confirm?.type === 'removeChild' && confirm.child) handleRemoveChild(confirm.child);
-          }} loading={actionLoading}>{confirmButtonText}</Button>,
+          <Button key="cancel" onClick={() => setConfirm(null)} disabled={actionLoading}>
+            取消
+          </Button>,
+          <Button
+            key="confirm"
+            danger
+            onClick={() => {
+              if (confirm?.type === 'leave') handleLeave();
+              else if (confirm?.type === 'remove' && confirm.member) handleRemove(confirm.member);
+              else if (confirm?.type === 'removeChild' && confirm.child)
+                handleRemoveChild(confirm.child);
+            }}
+            loading={actionLoading}
+          >
+            {confirmButtonText}
+          </Button>,
         ]}
       >
         <Typography.Text>{confirmMessage}</Typography.Text>
@@ -598,7 +705,8 @@ export function ParentFamilyPage() {
 }
 
 export function ParentChildrenPage() {
-  const { items, loading, error, refetch, page, pageSize, setPage, total } = usePaginatedData<ChildProfile>('/family/children');
+  const { items, loading, error, refetch, page, pageSize, setPage, total } =
+    usePaginatedData<ChildProfile>('/family/children');
   const [showModal, setShowModal] = useState(false);
   const [editing, setEditing] = useState<ChildProfile | null>(null);
   const nickname = useFormField();
@@ -654,19 +762,30 @@ export function ParentChildrenPage() {
 
   if (!online)
     return (
-      <Result status="warning" title="当前处于离线状态" subTitle="请检查网络连接，恢复后重试" extra={<Button onClick={refetch}>重试</Button>} />
+      <Result
+        status="warning"
+        title="当前处于离线状态"
+        subTitle="请检查网络连接，恢复后重试"
+        extra={<Button onClick={refetch}>重试</Button>}
+      />
     );
-  if (loading)
-    return <Spin />;
+  if (loading) return <Spin />;
   if (error)
     return (
-      <Result status="error" title="加载失败" subTitle={error.message} extra={<Button onClick={refetch}>重试</Button>} />
+      <Result
+        status="error"
+        title="加载失败"
+        subTitle={error.message}
+        extra={<Button onClick={refetch}>重试</Button>}
+      />
     );
 
   return (
     <Space direction="vertical" size="large" style={{ width: '100%' }}>
       <Row justify="space-between" align="middle">
-        <Typography.Title level={4} style={{ margin: 0 }}>孩子档案</Typography.Title>
+        <Typography.Title level={4} style={{ margin: 0 }}>
+          孩子档案
+        </Typography.Title>
         <Button onClick={openNew}>新增档案</Button>
       </Row>
 
@@ -682,14 +801,23 @@ export function ParentChildrenPage() {
         }}
         columns={[
           { title: '名称', dataIndex: 'nickname', key: 'nickname' },
-          { title: '年龄', dataIndex: 'birthday', key: 'birthday', render: (v: string | undefined) => v ?? '-' },
+          {
+            title: '年龄',
+            dataIndex: 'birthday',
+            key: 'birthday',
+            render: (v: string | undefined) => v ?? '-',
+          },
           {
             title: '操作',
             key: 'actions',
             render: (_: unknown, record: ChildProfile) => (
               <Space>
-                <Button type="text" size="small" onClick={() => openEdit(record)}>编辑</Button>
-                <Button danger size="small" onClick={() => handleDelete(record.id)}>删除</Button>
+                <Button type="text" size="small" onClick={() => openEdit(record)}>
+                  编辑
+                </Button>
+                <Button danger size="small" onClick={() => handleDelete(record.id)}>
+                  删除
+                </Button>
               </Space>
             ),
           },
@@ -707,7 +835,9 @@ export function ParentChildrenPage() {
         <Space direction="vertical" size="middle" style={{ width: '100%' }}>
           {saveError && <Alert message={saveError} type="error" showIcon />}
           <div>
-            <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>昵称</Typography.Text>
+            <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>
+              昵称
+            </Typography.Text>
             <Input id="child-nickname" {...nickname.inputProps} />
           </div>
           <div>
@@ -717,7 +847,9 @@ export function ParentChildrenPage() {
             <Input id="child-pin" type="password" {...pin.inputProps} />
           </div>
           <div>
-            <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>生日</Typography.Text>
+            <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>
+              生日
+            </Typography.Text>
             <Input id="child-birthday" type="date" {...birthday.inputProps} />
           </div>
         </Space>
@@ -744,10 +876,8 @@ export function ParentTemplatesPage() {
   const [pointsCap, setPointsCap] = useState(0);
 
   const filterParams = selectedTypes.length > 0 ? { taskType: selectedTypes.join(',') } : undefined;
-  const { items, loading, error, refetch, page, pageSize, setPage, total } = usePaginatedData<TaskTemplate>(
-    '/task-templates',
-    filterParams,
-  );
+  const { items, loading, error, refetch, page, pageSize, setPage, total } =
+    usePaginatedData<TaskTemplate>('/task-templates', filterParams);
 
   const openNew = () => {
     setEditing(null);
@@ -842,19 +972,30 @@ export function ParentTemplatesPage() {
 
   if (!online)
     return (
-      <Result status="warning" title="当前处于离线状态" subTitle="请检查网络连接，恢复后重试" extra={<Button onClick={refetch}>重试</Button>} />
+      <Result
+        status="warning"
+        title="当前处于离线状态"
+        subTitle="请检查网络连接，恢复后重试"
+        extra={<Button onClick={refetch}>重试</Button>}
+      />
     );
-  if (loading)
-    return <Spin />;
+  if (loading) return <Spin />;
   if (error)
     return (
-      <Result status="error" title="加载失败" subTitle={error.message} extra={<Button onClick={refetch}>重试</Button>} />
+      <Result
+        status="error"
+        title="加载失败"
+        subTitle={error.message}
+        extra={<Button onClick={refetch}>重试</Button>}
+      />
     );
 
   return (
     <Space direction="vertical" size="large" style={{ width: '100%' }}>
       <Row justify="space-between" align="middle">
-        <Typography.Title level={4} style={{ margin: 0 }}>任务模板</Typography.Title>
+        <Typography.Title level={4} style={{ margin: 0 }}>
+          任务模板
+        </Typography.Title>
         <Button onClick={openNew}>新建模板</Button>
       </Row>
 
@@ -878,7 +1019,9 @@ export function ParentTemplatesPage() {
             title: '状态',
             key: 'enabled',
             render: (_: unknown, record: TaskTemplate) => (
-              <Tag color={record.enabled ? 'success' : 'default'}>{record.enabled ? '已启用' : '已停用'}</Tag>
+              <Tag color={record.enabled ? 'success' : 'default'}>
+                {record.enabled ? '已启用' : '已停用'}
+              </Tag>
             ),
           },
           {
@@ -886,20 +1029,28 @@ export function ParentTemplatesPage() {
             key: 'actions',
             render: (_: unknown, record: TaskTemplate) => (
               <Space>
-                <Button type="text" size="small" onClick={() => openEdit(record)}>编辑</Button>
+                <Button type="text" size="small" onClick={() => openEdit(record)}>
+                  编辑
+                </Button>
                 <Button size="small" onClick={() => toggleEnabled(record)}>
                   {record.enabled ? '停用' : '启用'}
                 </Button>
-                <Button danger size="small" onClick={() => {
-                  Modal.confirm({
-                    title: '确认删除',
-                    content: '删除模板将影响相关任务分配，确认删除？',
-                    okText: '确认删除',
-                    okType: 'danger',
-                    cancelText: '取消',
-                    onOk: () => handleDeleteTemplate(record.id),
-                  });
-                }}>删除</Button>
+                <Button
+                  danger
+                  size="small"
+                  onClick={() => {
+                    Modal.confirm({
+                      title: '确认删除',
+                      content: '删除模板将影响相关任务分配，确认删除？',
+                      okText: '确认删除',
+                      okType: 'danger',
+                      cancelText: '取消',
+                      onOk: () => handleDeleteTemplate(record.id),
+                    });
+                  }}
+                >
+                  删除
+                </Button>
               </Space>
             ),
           },
@@ -917,19 +1068,27 @@ export function ParentTemplatesPage() {
         <Space direction="vertical" size="middle" style={{ width: '100%' }}>
           {saveError && <Alert message={saveError} type="error" showIcon />}
           <div>
-            <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>标题</Typography.Text>
+            <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>
+              标题
+            </Typography.Text>
             <Input id="tpl-title" {...title.inputProps} />
           </div>
           <div>
-            <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>描述</Typography.Text>
+            <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>
+              描述
+            </Typography.Text>
             <TextArea id="tpl-desc" {...description.inputProps} />
           </div>
           <div>
-            <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>分类</Typography.Text>
+            <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>
+              分类
+            </Typography.Text>
             <Input id="tpl-category" {...category.inputProps} />
           </div>
           <div>
-            <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>基础积分</Typography.Text>
+            <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>
+              基础积分
+            </Typography.Text>
             <Input id="tpl-points" type="number" {...basePoints.inputProps} />
           </div>
 
@@ -942,10 +1101,7 @@ export function ParentTemplatesPage() {
           />
 
           <div>
-            <Checkbox
-              checked={allowResubmit}
-              onChange={(e) => setAllowResubmit(e.target.checked)}
-            >
+            <Checkbox checked={allowResubmit} onChange={(e) => setAllowResubmit(e.target.checked)}>
               允许重复提交
             </Checkbox>
           </div>
@@ -953,18 +1109,26 @@ export function ParentTemplatesPage() {
           {allowResubmit && (
             <>
               <div>
-                <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>最大提交次数</Typography.Text>
+                <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>
+                  最大提交次数
+                </Typography.Text>
                 <InputNumber
-                  min={0} max={10000} value={maxSubmissions}
+                  min={0}
+                  max={10000}
+                  value={maxSubmissions}
                   onChange={(v) => setMaxSubmissions(v ?? 0)}
                   style={{ width: '100%' }}
                   placeholder="0 = 不限制"
                 />
               </div>
               <div>
-                <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>积分上限</Typography.Text>
+                <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>
+                  积分上限
+                </Typography.Text>
                 <InputNumber
-                  min={0} max={100000000} value={pointsCap}
+                  min={0}
+                  max={100000000}
+                  value={pointsCap}
                   onChange={(v) => setPointsCap(v ?? 0)}
                   style={{ width: '100%' }}
                   placeholder="0 = 不限制"
@@ -996,17 +1160,40 @@ export type CalendarAction2 =
   | { type: 'VIEW_ALL' }
   | { type: 'NAV_MONTH'; payload: -1 | 1 };
 
-export function calendarReducer(state: CalendarPageState, action: CalendarAction2): CalendarPageState {
+export function calendarReducer(
+  state: CalendarPageState,
+  action: CalendarAction2,
+): CalendarPageState {
   switch (action.type) {
     case 'SELECT_DATE':
-      return { ...state, selectedRange: { type: 'day', startDate: action.date, endDate: action.date }, viewAllMode: false };
+      return {
+        ...state,
+        selectedRange: { type: 'day', startDate: action.date, endDate: action.date },
+        viewAllMode: false,
+      };
     case 'SELECT_WEEK': {
       const start = dayjs(action.startDate);
-      return { ...state, selectedRange: { type: 'week', startDate: action.startDate, endDate: start.add(6, 'day').format('YYYY-MM-DD') }, viewAllMode: false };
+      return {
+        ...state,
+        selectedRange: {
+          type: 'week',
+          startDate: action.startDate,
+          endDate: start.add(6, 'day').format('YYYY-MM-DD'),
+        },
+        viewAllMode: false,
+      };
     }
     case 'SELECT_MONTH': {
       const m = dayjs(`${action.year}-${String(action.month).padStart(2, '0')}-01`);
-      return { ...state, selectedRange: { type: 'month', startDate: m.format('YYYY-MM-DD'), endDate: m.endOf('month').format('YYYY-MM-DD') }, viewAllMode: false };
+      return {
+        ...state,
+        selectedRange: {
+          type: 'month',
+          startDate: m.format('YYYY-MM-DD'),
+          endDate: m.endOf('month').format('YYYY-MM-DD'),
+        },
+        viewAllMode: false,
+      };
     }
     case 'SET_FILTERS':
       return { ...state, taskTypeFilters: action.payload };
@@ -1044,8 +1231,12 @@ export function ParentTasksPage() {
   const todayStr = now.format('YYYY-MM-DD');
   const [calendarState, dispatch] = useReducer(calendarReducer, {
     baseMonth: now.format('YYYY-MM'),
-    // 默认选中今日，让日历进入页面时 antd 内置高亮 + 自定义 boxShadow 双层都落在今天。
-    selectedRange: { type: 'day', startDate: todayStr, endDate: todayStr },
+    // 默认选中本周 (tweak-build): type=week + 本周范围，todayStr 保留用于 dateCellRender 独立判定。
+    selectedRange: {
+      type: 'week',
+      startDate: now.startOf('week').format('YYYY-MM-DD'),
+      endDate: now.endOf('week').format('YYYY-MM-DD'),
+    },
     taskTypeFilters: ['LIMITED', 'REPEAT', 'STANDING'],
     viewAllMode: false,
   });
@@ -1258,13 +1449,22 @@ export function ParentTasksPage() {
 
   if (!online)
     return (
-      <Result status="warning" title="当前处于离线状态" subTitle="请检查网络连接，恢复后重试" extra={<Button onClick={refetch}>重试</Button>} />
+      <Result
+        status="warning"
+        title="当前处于离线状态"
+        subTitle="请检查网络连接，恢复后重试"
+        extra={<Button onClick={refetch}>重试</Button>}
+      />
     );
-  if (loading)
-    return <Spin />;
+  if (loading) return <Spin />;
   if (error)
     return (
-      <Result status="error" title="加载失败" subTitle={error.message} extra={<Button onClick={refetch}>重试</Button>} />
+      <Result
+        status="error"
+        title="加载失败"
+        subTitle={error.message}
+        extra={<Button onClick={refetch}>重试</Button>}
+      />
     );
 
   const assignments = data?.content ?? [];
@@ -1272,10 +1472,26 @@ export function ParentTasksPage() {
   return (
     <Space direction="vertical" size="large" style={{ width: '100%' }}>
       <Row justify="space-between" align="middle">
-        <Typography.Title level={4} style={{ margin: 0 }}>任务分配</Typography.Title>
+        <Typography.Title level={4} style={{ margin: 0 }}>
+          任务分配
+        </Typography.Title>
         <Space>
-          <Button onClick={() => { resetSingleAssignForm(); setShowSingleAssign(true); }}>分配任务</Button>
-          <Button onClick={() => { resetAssignForm(); setShowAssign(true); }}>批量分配</Button>
+          <Button
+            onClick={() => {
+              resetSingleAssignForm();
+              setShowSingleAssign(true);
+            }}
+          >
+            分配任务
+          </Button>
+          <Button
+            onClick={() => {
+              resetAssignForm();
+              setShowAssign(true);
+            }}
+          >
+            批量分配
+          </Button>
         </Space>
       </Row>
 
@@ -1285,7 +1501,11 @@ export function ParentTasksPage() {
           selectedRange={calendarState.selectedRange}
           onSelect={(action) => {
             type ActionMap = Record<string, CalendarAction2['type']>;
-            const typeMap: ActionMap = { SELECT_DATE: 'SELECT_DATE', SELECT_WEEK: 'SELECT_WEEK', SELECT_MONTH: 'SELECT_MONTH' };
+            const typeMap: ActionMap = {
+              SELECT_DATE: 'SELECT_DATE',
+              SELECT_WEEK: 'SELECT_WEEK',
+              SELECT_MONTH: 'SELECT_MONTH',
+            };
             dispatch({ type: typeMap[action.type], ...action } as CalendarAction2);
           }}
           onNavigate={(dir) => dispatch({ type: 'NAV_MONTH', payload: dir })}
@@ -1310,38 +1530,60 @@ export function ParentTasksPage() {
       <Card title="任务列表">
         <Space direction="vertical" size="small" style={{ width: '100%' }}>
           {assignments.map((a) => (
-            <Card key={a.id} size="small" style={a.overdue ? { borderLeft: '4px solid #faad14' } : {}}>
+            <Card
+              key={a.id}
+              size="small"
+              style={a.overdue ? { borderLeft: '4px solid #faad14' } : {}}
+            >
               <Row justify="space-between" align="top">
                 <Space direction="vertical" size={2}>
                   <Typography.Text strong>{a.snapshotTemplateName}</Typography.Text>
                   <Typography.Text type="secondary" style={{ fontSize: 12 }}>
                     {(() => {
                       const childName = childNameMap.get(a.childId) ?? `ID ${a.childId}`;
-                      const label = repeatTaskLabel(a.snapshotTemplateTaskType, a.snapshotTemplateTypeConfig);
+                      const label = repeatTaskLabel(
+                        a.snapshotTemplateTaskType,
+                        a.snapshotTemplateTypeConfig,
+                      );
                       return label
                         ? `孩子：${childName} · ${label}`
                         : `孩子：${childName} · 截止 ${a.deadline}`;
                     })()}
                   </Typography.Text>
                   {a.overdue && (
-                    <Typography.Text style={{ fontSize: 12, fontWeight: 600, color: '#faad14' }}>已逾期</Typography.Text>
+                    <Typography.Text style={{ fontSize: 12, fontWeight: 600, color: '#faad14' }}>
+                      已逾期
+                    </Typography.Text>
                   )}
                 </Space>
                 <Space direction="vertical" size={2} align="end">
                   <Tag>{statusLabel(a.status.toLowerCase())}</Tag>
-                  <Typography.Text type="secondary" style={{ fontSize: 12 }}>{a.snapshotDifficultyReward} 积分</Typography.Text>
+                  <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+                    {a.snapshotDifficultyReward} 积分
+                  </Typography.Text>
                 </Space>
               </Row>
             </Card>
           ))}
-          {assignments.length === 0 && <Typography.Text type="secondary">当天暂无任务</Typography.Text>}
+          {assignments.length === 0 && (
+            <Typography.Text type="secondary">当天暂无任务</Typography.Text>
+          )}
         </Space>
       </Card>
 
-      <Modal open={showAssign} onCancel={() => setShowAssign(false)} title="批量分配任务" onOk={handleAssign} okText="分配" confirmLoading={assigning}>
+      <Modal
+        open={showAssign}
+        onCancel={() => setShowAssign(false)}
+        title="批量分配任务"
+        onOk={handleAssign}
+        okText="分配"
+        confirmLoading={assigning}
+      >
         <Space direction="vertical" size="middle" style={{ width: '100%' }}>
           <div>
-            <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>模板</Typography.Text>
+            <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>
+              模板
+            </Typography.Text>
             <Select
               id="assign-template"
               value={templateId.value || undefined}
@@ -1350,12 +1592,16 @@ export function ParentTasksPage() {
               style={{ width: '100%' }}
             >
               {(templates?.content ?? []).map((t) => (
-                <Select.Option key={t.id} value={String(t.id)}>{t.name}</Select.Option>
+                <Select.Option key={t.id} value={String(t.id)}>
+                  {t.name}
+                </Select.Option>
               ))}
             </Select>
           </div>
           <div>
-            <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>难度</Typography.Text>
+            <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>
+              难度
+            </Typography.Text>
             <Select
               id="assign-difficulty"
               value={difficultyId.value || undefined}
@@ -1365,12 +1611,16 @@ export function ParentTasksPage() {
               style={{ width: '100%' }}
             >
               {enabledDifficulties.map((d) => (
-                <Select.Option key={d.id} value={String(d.id)}>{d.name}（{d.rewardPoints} 积分）</Select.Option>
+                <Select.Option key={d.id} value={String(d.id)}>
+                  {d.name}（{d.rewardPoints} 积分）
+                </Select.Option>
               ))}
             </Select>
           </div>
           <div>
-            <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>孩子</Typography.Text>
+            <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>
+              孩子
+            </Typography.Text>
             <Select
               id="assign-child"
               mode="multiple"
@@ -1380,18 +1630,26 @@ export function ParentTasksPage() {
               style={{ width: '100%' }}
             >
               {(children?.content ?? []).map((c) => (
-                <Select.Option key={c.id} value={String(c.id)}>{c.nickname}</Select.Option>
+                <Select.Option key={c.id} value={String(c.id)}>
+                  {c.nickname}
+                </Select.Option>
               ))}
             </Select>
-            <Typography.Text type="secondary" style={{ fontSize: 12 }}>可选择多个孩子</Typography.Text>
+            <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+              可选择多个孩子
+            </Typography.Text>
           </div>
           <div>
-            <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>开始日期</Typography.Text>
+            <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>
+              开始日期
+            </Typography.Text>
             <Input id="assign-start-date" type="date" {...startDate.inputProps} />
           </div>
           {selectedTemplate?.taskType !== 'REPEAT' && (
             <div>
-              <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>结束日期</Typography.Text>
+              <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>
+                结束日期
+              </Typography.Text>
               <Input id="assign-end-date" type="date" {...endDate.inputProps} />
             </div>
           )}
@@ -1399,24 +1657,43 @@ export function ParentTasksPage() {
       </Modal>
 
       {/* 单任务分配弹窗 */}
-      <Modal open={showSingleAssign} onCancel={() => { setShowSingleAssign(false); resetSingleAssignForm(); }} title="分配任务" onOk={handleSingleAssign} okText="分配" confirmLoading={singleAssigning}>
+      <Modal
+        open={showSingleAssign}
+        onCancel={() => {
+          setShowSingleAssign(false);
+          resetSingleAssignForm();
+        }}
+        title="分配任务"
+        onOk={handleSingleAssign}
+        okText="分配"
+        confirmLoading={singleAssigning}
+      >
         <Space direction="vertical" size="middle" style={{ width: '100%' }}>
           <div>
-            <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>模板</Typography.Text>
+            <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>
+              模板
+            </Typography.Text>
             <Select
               id="single-assign-template"
               value={singleTemplateId.value || undefined}
-              onChange={(v) => { singleTemplateId.setValue(v); singleDifficultyId.reset(); }}
+              onChange={(v) => {
+                singleTemplateId.setValue(v);
+                singleDifficultyId.reset();
+              }}
               placeholder="请选择模板"
               style={{ width: '100%' }}
             >
               {(templates?.content ?? []).map((t) => (
-                <Select.Option key={t.id} value={String(t.id)}>{t.name}</Select.Option>
+                <Select.Option key={t.id} value={String(t.id)}>
+                  {t.name}
+                </Select.Option>
               ))}
             </Select>
           </div>
           <div>
-            <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>难度</Typography.Text>
+            <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>
+              难度
+            </Typography.Text>
             <Select
               id="single-assign-difficulty"
               value={singleDifficultyId.value || undefined}
@@ -1426,12 +1703,16 @@ export function ParentTasksPage() {
               style={{ width: '100%' }}
             >
               {singleEnabledDifficulties.map((d) => (
-                <Select.Option key={d.id} value={String(d.id)}>{d.name}（{d.rewardPoints} 积分）</Select.Option>
+                <Select.Option key={d.id} value={String(d.id)}>
+                  {d.name}（{d.rewardPoints} 积分）
+                </Select.Option>
               ))}
             </Select>
           </div>
           <div>
-            <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>孩子</Typography.Text>
+            <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>
+              孩子
+            </Typography.Text>
             <Select
               id="single-assign-child"
               value={singleChildId.value || undefined}
@@ -1440,13 +1721,17 @@ export function ParentTasksPage() {
               style={{ width: '100%' }}
             >
               {(children?.content ?? []).map((c) => (
-                <Select.Option key={c.id} value={String(c.id)}>{c.nickname}</Select.Option>
+                <Select.Option key={c.id} value={String(c.id)}>
+                  {c.nickname}
+                </Select.Option>
               ))}
             </Select>
           </div>
           {selectedSingleTemplate?.taskType !== 'REPEAT' && (
             <div>
-              <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>截止日期</Typography.Text>
+              <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>
+                截止日期
+              </Typography.Text>
               <DatePicker
                 id="single-assign-deadline"
                 value={singleDeadline ? dayjs(singleDeadline) : null}
@@ -1483,20 +1768,31 @@ export function ParentReviewsPage() {
 
   if (!online)
     return (
-      <Result status="warning" title="当前处于离线状态" subTitle="请检查网络连接，恢复后重试" extra={<Button onClick={refetch}>重试</Button>} />
+      <Result
+        status="warning"
+        title="当前处于离线状态"
+        subTitle="请检查网络连接，恢复后重试"
+        extra={<Button onClick={refetch}>重试</Button>}
+      />
     );
-  if (loading)
-    return <Spin />;
+  if (loading) return <Spin />;
   if (error)
     return (
-      <Result status="error" title="加载失败" subTitle={error.message} extra={<Button onClick={refetch}>重试</Button>} />
+      <Result
+        status="error"
+        title="加载失败"
+        subTitle={error.message}
+        extra={<Button onClick={refetch}>重试</Button>}
+      />
     );
 
   const pending = data?.content ?? [];
 
   return (
     <Space direction="vertical" size="large" style={{ width: '100%' }}>
-      <Typography.Title level={4} style={{ margin: 0 }}>任务审核</Typography.Title>
+      <Typography.Title level={4} style={{ margin: 0 }}>
+        任务审核
+      </Typography.Title>
 
       <Card title="待审核">
         <Space direction="vertical" size="small" style={{ width: '100%' }}>
@@ -1504,21 +1800,42 @@ export function ParentReviewsPage() {
             <Typography.Text type="secondary">暂无待审核任务</Typography.Text>
           ) : (
             pending.map((item) => (
-              <Card key={item.attemptId} size="small" style={item.isOverdue ? { borderLeft: '4px solid #faad14' } : {}}>
+              <Card
+                key={item.attemptId}
+                size="small"
+                style={item.isOverdue ? { borderLeft: '4px solid #faad14' } : {}}
+              >
                 <Row justify="space-between" align="top">
                   <Space direction="vertical" size={2}>
                     <Typography.Text strong>{item.templateTitle}</Typography.Text>
                     <Typography.Text type="secondary" style={{ fontSize: 12 }}>
                       {item.childNickname} · {item.submittedAt}
                     </Typography.Text>
-                    {item.notes && <Typography.Text style={{ fontSize: 12 }}>{item.notes}</Typography.Text>}
+                    {item.notes && (
+                      <Typography.Text style={{ fontSize: 12 }}>{item.notes}</Typography.Text>
+                    )}
                     {item.isOverdue && (
-                      <Typography.Text style={{ fontSize: 12, fontWeight: 600, color: '#faad14' }}>已逾期</Typography.Text>
+                      <Typography.Text style={{ fontSize: 12, fontWeight: 600, color: '#faad14' }}>
+                        已逾期
+                      </Typography.Text>
                     )}
                   </Space>
                   <Space direction="vertical" size={2}>
-                    <Button size="small" onClick={() => decide(item.attemptId, true)} loading={submitting}>通过</Button>
-                    <Button danger size="small" onClick={() => setActive(item)} loading={submitting}>驳回</Button>
+                    <Button
+                      size="small"
+                      onClick={() => decide(item.attemptId, true)}
+                      loading={submitting}
+                    >
+                      通过
+                    </Button>
+                    <Button
+                      danger
+                      size="small"
+                      onClick={() => setActive(item)}
+                      loading={submitting}
+                    >
+                      驳回
+                    </Button>
                   </Space>
                 </Row>
               </Card>
@@ -1546,11 +1863,30 @@ export function ParentReviewsPage() {
 
       <Modal
         open={!!active}
-        onCancel={() => { setActive(null); setReason(''); }}
+        onCancel={() => {
+          setActive(null);
+          setReason('');
+        }}
         title="驳回原因"
         footer={[
-          <Button key="cancel" onClick={() => { setActive(null); setReason(''); }}>取消</Button>,
-          <Button key="reject" danger onClick={() => active && decide(active.attemptId, false)} loading={submitting} disabled={!reason.trim()}>确认驳回</Button>,
+          <Button
+            key="cancel"
+            onClick={() => {
+              setActive(null);
+              setReason('');
+            }}
+          >
+            取消
+          </Button>,
+          <Button
+            key="reject"
+            danger
+            onClick={() => active && decide(active.attemptId, false)}
+            loading={submitting}
+            disabled={!reason.trim()}
+          >
+            确认驳回
+          </Button>,
         ]}
       >
         <TextArea
@@ -1610,18 +1946,29 @@ export function ParentPointsPage() {
 
   if (!online)
     return (
-      <Result status="warning" title="当前处于离线状态" subTitle="请检查网络连接，恢复后重试" extra={<Button onClick={refetch}>重试</Button>} />
+      <Result
+        status="warning"
+        title="当前处于离线状态"
+        subTitle="请检查网络连接，恢复后重试"
+        extra={<Button onClick={refetch}>重试</Button>}
+      />
     );
-  if (loading)
-    return <Spin />;
+  if (loading) return <Spin />;
   if (error)
     return (
-      <Result status="error" title="加载失败" subTitle={error.message} extra={<Button onClick={refetch}>重试</Button>} />
+      <Result
+        status="error"
+        title="加载失败"
+        subTitle={error.message}
+        extra={<Button onClick={refetch}>重试</Button>}
+      />
     );
 
   return (
     <Space direction="vertical" size="large" style={{ width: '100%' }}>
-      <Typography.Title level={4} style={{ margin: 0 }}>积分</Typography.Title>
+      <Typography.Title level={4} style={{ margin: 0 }}>
+        积分
+      </Typography.Title>
 
       <Card title="选择孩子">
         <Select
@@ -1631,7 +1978,9 @@ export function ParentPointsPage() {
           style={{ width: '100%' }}
         >
           {(children?.content ?? []).map((c) => (
-            <Select.Option key={c.id} value={String(c.id)}>{c.nickname}</Select.Option>
+            <Select.Option key={c.id} value={String(c.id)}>
+              {c.nickname}
+            </Select.Option>
           ))}
         </Select>
       </Card>
@@ -1639,35 +1988,46 @@ export function ParentPointsPage() {
       {selectedChild && (
         <>
           <Card title="积分余额">
-            <Typography.Title level={2} style={{ margin: 0 }}>{data?.currentBalance ?? 0} 积分</Typography.Title>
+            <Typography.Title level={2} style={{ margin: 0 }}>
+              {data?.currentBalance ?? 0} 积分
+            </Typography.Title>
           </Card>
           <Card title="积分调整">
             <Space direction="vertical" size="middle" style={{ width: '100%' }}>
               <div>
-                <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>调整数量（正数奖励、负数扣除）</Typography.Text>
+                <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>
+                  调整数量（正数奖励、负数扣除）
+                </Typography.Text>
                 <Input id="adjust-amount" type="number" {...amount.inputProps} />
               </div>
               <div>
-                <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>原因</Typography.Text>
+                <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>
+                  原因
+                </Typography.Text>
                 <Input id="adjust-reason" {...reason.inputProps} />
               </div>
-              <Button onClick={handleAdjust} loading={adjusting}>确认调整</Button>
+              <Button onClick={handleAdjust} loading={adjusting}>
+                确认调整
+              </Button>
             </Space>
           </Card>
           <Card title="流水">
             <Space direction="vertical" size="small" style={{ width: '100%' }}>
               {(data?.content ?? []).map((tx) => (
-                  <Row key={tx.id} justify="space-between" align="middle">
-                    <Space direction="vertical" size={0}>
-                      <Typography.Text>{tx.reason ?? tx.type}</Typography.Text>
-                      <Typography.Text type="secondary" style={{ fontSize: 12 }}>{tx.createdAt}</Typography.Text>
-                    </Space>
-                    <Typography.Text strong style={{ color: tx.amount >= 0 ? '#52c41a' : '#ff4d4f' }}>
-                      {tx.amount > 0 ? '+' : ''}{tx.amount}
+                <Row key={tx.id} justify="space-between" align="middle">
+                  <Space direction="vertical" size={0}>
+                    <Typography.Text>{tx.reason ?? tx.type}</Typography.Text>
+                    <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+                      {tx.createdAt}
                     </Typography.Text>
-                  </Row>
-                ))}
-                {(data?.content ?? []).length === 0 && (
+                  </Space>
+                  <Typography.Text strong style={{ color: tx.amount >= 0 ? '#52c41a' : '#ff4d4f' }}>
+                    {tx.amount > 0 ? '+' : ''}
+                    {tx.amount}
+                  </Typography.Text>
+                </Row>
+              ))}
+              {(data?.content ?? []).length === 0 && (
                 <Typography.Text type="secondary">暂无流水</Typography.Text>
               )}
             </Space>
@@ -1679,7 +2039,8 @@ export function ParentPointsPage() {
 }
 
 export function ParentPrizesPage() {
-  const { items, loading, error, refetch, page, pageSize, setPage, total } = usePaginatedData<Prize>('/prizes');
+  const { items, loading, error, refetch, page, pageSize, setPage, total } =
+    usePaginatedData<Prize>('/prizes');
   const [showModal, setShowModal] = useState(false);
   const [editing, setEditing] = useState<Prize | null>(null);
   const name = useFormField();
@@ -1698,15 +2059,26 @@ export function ParentPrizesPage() {
   const validTo = useFormField();
   const typeConfigValue = useFormField();
 
-  const prizeTypeConfig = useMemo((): PrizeTypeConfig => ({
-    prizeType: (prizeTypeValue.value as 'VIRTUAL' | 'PHYSICAL') || 'PHYSICAL',
-    prizeCategory: (prizeCategoryValue.value as any) || undefined,
-    titleImage: titleImage.value || undefined,
-    detailImage: detailImage.value || undefined,
-    validFrom: validFrom.value || undefined,
-    validTo: validTo.value || undefined,
-    typeConfig: typeConfigValue.value || undefined,
-  }), [prizeTypeValue.value, prizeCategoryValue.value, titleImage.value, detailImage.value, validFrom.value, validTo.value, typeConfigValue.value]);
+  const prizeTypeConfig = useMemo(
+    (): PrizeTypeConfig => ({
+      prizeType: (prizeTypeValue.value as 'VIRTUAL' | 'PHYSICAL') || 'PHYSICAL',
+      prizeCategory: (prizeCategoryValue.value as any) || undefined,
+      titleImage: titleImage.value || undefined,
+      detailImage: detailImage.value || undefined,
+      validFrom: validFrom.value || undefined,
+      validTo: validTo.value || undefined,
+      typeConfig: typeConfigValue.value || undefined,
+    }),
+    [
+      prizeTypeValue.value,
+      prizeCategoryValue.value,
+      titleImage.value,
+      detailImage.value,
+      validFrom.value,
+      validTo.value,
+      typeConfigValue.value,
+    ],
+  );
 
   const handleUpload = async (file: File): Promise<string> => {
     const formData = new FormData();
@@ -1799,19 +2171,30 @@ export function ParentPrizesPage() {
 
   if (!online)
     return (
-      <Result status="warning" title="当前处于离线状态" subTitle="请检查网络连接，恢复后重试" extra={<Button onClick={refetch}>重试</Button>} />
+      <Result
+        status="warning"
+        title="当前处于离线状态"
+        subTitle="请检查网络连接，恢复后重试"
+        extra={<Button onClick={refetch}>重试</Button>}
+      />
     );
-  if (loading)
-    return <Spin />;
+  if (loading) return <Spin />;
   if (error)
     return (
-      <Result status="error" title="加载失败" subTitle={error.message} extra={<Button onClick={refetch}>重试</Button>} />
+      <Result
+        status="error"
+        title="加载失败"
+        subTitle={error.message}
+        extra={<Button onClick={refetch}>重试</Button>}
+      />
     );
 
   return (
     <Space direction="vertical" size="large" style={{ width: '100%' }}>
       <Row justify="space-between" align="middle">
-        <Typography.Title level={4} style={{ margin: 0 }}>奖品</Typography.Title>
+        <Typography.Title level={4} style={{ margin: 0 }}>
+          奖品
+        </Typography.Title>
         <Button onClick={openNew}>新增奖品</Button>
       </Row>
 
@@ -1834,8 +2217,18 @@ export function ParentPrizesPage() {
             key: 'prizeType',
             render: (_: unknown, record: Prize) => {
               if (record.prizeType === 'VIRTUAL') {
-                const labels: Record<string, string> = { TV_TIME: '电视时长卡', COMPUTER_TIME: '电脑时长卡', PARK_PLAY: '公园游玩卡', GENERAL: '通用', TRAVEL: '旅游卡' };
-                return <Tag color="blue">虚拟 · {labels[record.prizeCategory ?? ''] || record.prizeCategory}</Tag>;
+                const labels: Record<string, string> = {
+                  TV_TIME: '电视时长卡',
+                  COMPUTER_TIME: '电脑时长卡',
+                  PARK_PLAY: '公园游玩卡',
+                  GENERAL: '通用',
+                  TRAVEL: '旅游卡',
+                };
+                return (
+                  <Tag color="blue">
+                    虚拟 · {labels[record.prizeCategory ?? ''] || record.prizeCategory}
+                  </Tag>
+                );
               }
               return <Tag>实物</Tag>;
             },
@@ -1844,7 +2237,9 @@ export function ParentPrizesPage() {
             title: '状态',
             key: 'enabled',
             render: (_: unknown, record: Prize) => (
-              <Tag color={record.enabled ? 'success' : 'default'}>{record.enabled ? '启用' : '停用'}</Tag>
+              <Tag color={record.enabled ? 'success' : 'default'}>
+                {record.enabled ? '启用' : '停用'}
+              </Tag>
             ),
           },
           {
@@ -1852,20 +2247,28 @@ export function ParentPrizesPage() {
             key: 'actions',
             render: (_: unknown, record: Prize) => (
               <Space>
-                <Button type="text" size="small" onClick={() => openEdit(record)}>编辑</Button>
+                <Button type="text" size="small" onClick={() => openEdit(record)}>
+                  编辑
+                </Button>
                 <Button size="small" onClick={() => togglePrizeEnabled(record)}>
                   {record.enabled ? '停用' : '启用'}
                 </Button>
-                <Button danger size="small" onClick={() => {
-                  Modal.confirm({
-                    title: '确认删除',
-                    content: '删除奖品将影响相关兑换记录，确认删除？',
-                    okText: '确认删除',
-                    okType: 'danger',
-                    cancelText: '取消',
-                    onOk: () => handleDeletePrize(record.id),
-                  });
-                }}>删除</Button>
+                <Button
+                  danger
+                  size="small"
+                  onClick={() => {
+                    Modal.confirm({
+                      title: '确认删除',
+                      content: '删除奖品将影响相关兑换记录，确认删除？',
+                      okText: '确认删除',
+                      okType: 'danger',
+                      cancelText: '取消',
+                      onOk: () => handleDeletePrize(record.id),
+                    });
+                  }}
+                >
+                  删除
+                </Button>
               </Space>
             ),
           },
@@ -1884,24 +2287,32 @@ export function ParentPrizesPage() {
         <Space direction="vertical" size="middle" style={{ width: '100%' }}>
           {saveError && <Alert message={saveError} type="error" showIcon />}
           <div>
-            <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>名称</Typography.Text>
+            <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>
+              名称
+            </Typography.Text>
             <Input id="prize-name" {...name.inputProps} />
           </div>
           <div>
-            <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>描述</Typography.Text>
+            <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>
+              描述
+            </Typography.Text>
             <TextArea id="prize-desc" {...description.inputProps} />
           </div>
           <div>
-            <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>积分价格</Typography.Text>
+            <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>
+              积分价格
+            </Typography.Text>
             <Input id="prize-cost" type="number" {...pointsCost.inputProps} />
           </div>
           <div>
-            <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>库存</Typography.Text>
+            <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>
+              库存
+            </Typography.Text>
             <Input id="prize-stock" type="number" {...availableStock.inputProps} />
           </div>
           <PrizeTypeConfigForms
             value={prizeTypeConfig}
-            onChange={v => {
+            onChange={(v) => {
               prizeTypeValue.setValue(v.prizeType);
               prizeCategoryValue.setValue(v.prizeCategory ?? '');
               titleImage.setValue(v.titleImage ?? '');
@@ -1919,7 +2330,8 @@ export function ParentPrizesPage() {
 }
 
 export function ParentBlindBoxesPage() {
-  const { items, loading, error, refetch, page, pageSize, setPage, total } = usePaginatedData<BlindBox>('/blind-boxes');
+  const { items, loading, error, refetch, page, pageSize, setPage, total } =
+    usePaginatedData<BlindBox>('/blind-boxes');
   const [selected, setSelected] = useState<BlindBox | null>(null);
   const { data: candidates } = useApi<{ candidates: BlindBoxCandidate[] }>(
     selected ? `/blind-boxes/${selected.id}/candidates` : '',
@@ -1928,18 +2340,29 @@ export function ParentBlindBoxesPage() {
 
   if (!online)
     return (
-      <Result status="warning" title="当前处于离线状态" subTitle="请检查网络连接，恢复后重试" extra={<Button onClick={refetch}>重试</Button>} />
+      <Result
+        status="warning"
+        title="当前处于离线状态"
+        subTitle="请检查网络连接，恢复后重试"
+        extra={<Button onClick={refetch}>重试</Button>}
+      />
     );
-  if (loading)
-    return <Spin />;
+  if (loading) return <Spin />;
   if (error)
     return (
-      <Result status="error" title="加载失败" subTitle={error.message} extra={<Button onClick={refetch}>重试</Button>} />
+      <Result
+        status="error"
+        title="加载失败"
+        subTitle={error.message}
+        extra={<Button onClick={refetch}>重试</Button>}
+      />
     );
 
   return (
     <Space direction="vertical" size="large" style={{ width: '100%' }}>
-      <Typography.Title level={4} style={{ margin: 0 }}>盲盒</Typography.Title>
+      <Typography.Title level={4} style={{ margin: 0 }}>
+        盲盒
+      </Typography.Title>
 
       <Table
         dataSource={items}
@@ -1958,7 +2381,9 @@ export function ParentBlindBoxesPage() {
             title: '状态',
             key: 'enabled',
             render: (_: unknown, record: BlindBox) => (
-              <Tag color={record.enabled ? 'success' : 'default'}>{record.enabled ? '启用' : '停用'}</Tag>
+              <Tag color={record.enabled ? 'success' : 'default'}>
+                {record.enabled ? '启用' : '停用'}
+              </Tag>
             ),
           },
           {
@@ -1997,7 +2422,8 @@ export function ParentBlindBoxesPage() {
 }
 
 export function ParentExchangesPage() {
-  const { items, loading, error, refetch, page, pageSize, setPage, total } = usePaginatedData<Exchange>('/exchanges');
+  const { items, loading, error, refetch, page, pageSize, setPage, total } =
+    usePaginatedData<Exchange>('/exchanges');
   const [confirmId, setConfirmId] = useState<number | null>(null);
   const [cancelRecord, setCancelRecord] = useState<{ id: number; reason: string } | null>(null);
   const online = useOnline();
@@ -2023,18 +2449,29 @@ export function ParentExchangesPage() {
 
   if (!online)
     return (
-      <Result status="warning" title="当前处于离线状态" subTitle="请检查网络连接，恢复后重试" extra={<Button onClick={refetch}>重试</Button>} />
+      <Result
+        status="warning"
+        title="当前处于离线状态"
+        subTitle="请检查网络连接，恢复后重试"
+        extra={<Button onClick={refetch}>重试</Button>}
+      />
     );
-  if (loading)
-    return <Spin />;
+  if (loading) return <Spin />;
   if (error)
     return (
-      <Result status="error" title="加载失败" subTitle={error.message} extra={<Button onClick={refetch}>重试</Button>} />
+      <Result
+        status="error"
+        title="加载失败"
+        subTitle={error.message}
+        extra={<Button onClick={refetch}>重试</Button>}
+      />
     );
 
   return (
     <Space direction="vertical" size="large" style={{ width: '100%' }}>
-      <Typography.Title level={4} style={{ margin: 0 }}>兑换履约</Typography.Title>
+      <Typography.Title level={4} style={{ margin: 0 }}>
+        兑换履约
+      </Typography.Title>
 
       <Table
         dataSource={items}
@@ -2083,7 +2520,9 @@ export function ParentExchangesPage() {
           {
             title: '创建时间',
             key: 'createdAt',
-            render: (_: unknown, record: Exchange) => <span>{dayjs(record.createdAt).format('YYYY-MM-DD HH:mm')}</span>,
+            render: (_: unknown, record: Exchange) => (
+              <span>{dayjs(record.createdAt).format('YYYY-MM-DD HH:mm')}</span>
+            ),
           },
           {
             title: '操作',
@@ -2091,8 +2530,21 @@ export function ParentExchangesPage() {
             render: (_: unknown, record: Exchange) =>
               record.status === 'PENDING_FULFILLMENT' ? (
                 <Space>
-                  <Button size="small" type="primary" onClick={() => setConfirmId(record.id)} loading={acting}>核销</Button>
-                  <Button size="small" onClick={() => setCancelRecord({ id: record.id, reason: '' })} loading={acting}>取消</Button>
+                  <Button
+                    size="small"
+                    type="primary"
+                    onClick={() => setConfirmId(record.id)}
+                    loading={acting}
+                  >
+                    核销
+                  </Button>
+                  <Button
+                    size="small"
+                    onClick={() => setCancelRecord({ id: record.id, reason: '' })}
+                    loading={acting}
+                  >
+                    取消
+                  </Button>
                 </Space>
               ) : (
                 <Typography.Text type="secondary">-</Typography.Text>
@@ -2106,8 +2558,17 @@ export function ParentExchangesPage() {
         onCancel={() => setConfirmId(null)}
         title="确认核销"
         footer={[
-          <Button key="cancel" onClick={() => setConfirmId(null)} disabled={acting}>取消</Button>,
-          <Button key="confirm" type="primary" onClick={() => confirmId !== null && fulfill(confirmId)} loading={acting}>确认核销</Button>,
+          <Button key="cancel" onClick={() => setConfirmId(null)} disabled={acting}>
+            取消
+          </Button>,
+          <Button
+            key="confirm"
+            type="primary"
+            onClick={() => confirmId !== null && fulfill(confirmId)}
+            loading={acting}
+          >
+            确认核销
+          </Button>,
         ]}
       >
         <Typography.Text>兑换一旦核销，积分将从孩子账户扣除。请确认已交付奖品。</Typography.Text>
@@ -2126,7 +2587,9 @@ export function ParentExchangesPage() {
             placeholder="取消原因（可选）"
             rows={3}
             value={cancelRecord?.reason ?? ''}
-            onChange={(e) => setCancelRecord((prev) => (prev ? { ...prev, reason: e.target.value } : null))}
+            onChange={(e) =>
+              setCancelRecord((prev) => (prev ? { ...prev, reason: e.target.value } : null))
+            }
           />
         </Space>
       </Modal>
@@ -2147,7 +2610,9 @@ export function ParentDevicesPage() {
   const handleBind = async () => {
     if (!deviceId.trim()) return;
     setBinding(true);
-    const res = await getClient().post<{ credential: string }>('/family/devices/bind', { deviceId: deviceId.trim() });
+    const res = await getClient().post<{ credential: string }>('/family/devices/bind', {
+      deviceId: deviceId.trim(),
+    });
     setBinding(false);
     if (res.error) {
       message.error(res.error.message ?? '授权失败');
@@ -2195,22 +2660,32 @@ export function ParentDevicesPage() {
 
   if (!online)
     return (
-      <Result status="warning" title="当前处于离线状态" subTitle="请检查网络连接，恢复后重试" extra={<Button onClick={refetch}>重试</Button>} />
+      <Result
+        status="warning"
+        title="当前处于离线状态"
+        subTitle="请检查网络连接，恢复后重试"
+        extra={<Button onClick={refetch}>重试</Button>}
+      />
     );
-  if (loading)
-    return <Spin />;
+  if (loading) return <Spin />;
   if (error)
     return (
-      <Result status="error" title="加载失败" subTitle={error.message} extra={<Button onClick={refetch}>重试</Button>} />
+      <Result
+        status="error"
+        title="加载失败"
+        subTitle={error.message}
+        extra={<Button onClick={refetch}>重试</Button>}
+      />
     );
-  if (!family)
-    return <Empty description="暂无数据" />;
+  if (!family) return <Empty description="暂无数据" />;
 
   const devices = family.devices ?? [];
 
   return (
     <Space direction="vertical" size="large" style={{ width: '100%' }}>
-      <Typography.Title level={4} style={{ margin: 0 }}>设备管理</Typography.Title>
+      <Typography.Title level={4} style={{ margin: 0 }}>
+        设备管理
+      </Typography.Title>
 
       {/* 授权新设备 */}
       <Card title="授权新设备">
@@ -2233,12 +2708,18 @@ export function ParentDevicesPage() {
         open={bindCredential !== null}
         onCancel={() => setBindCredential(null)}
         title="设备授权成功"
-        footer={[<Button key="close" onClick={() => setBindCredential(null)}>关闭</Button>]}
+        footer={[
+          <Button key="close" onClick={() => setBindCredential(null)}>
+            关闭
+          </Button>,
+        ]}
       >
         <Space direction="vertical" size="middle" style={{ width: '100%' }}>
           <Alert message="请将此凭据安全传递给孩子的设备" type="success" showIcon />
           <div>
-            <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>一次性凭据</Typography.Text>
+            <Typography.Text strong style={{ display: 'block', marginBottom: 4 }}>
+              一次性凭据
+            </Typography.Text>
             <Input.TextArea
               id="bind-credential"
               value={bindCredential ?? ''}

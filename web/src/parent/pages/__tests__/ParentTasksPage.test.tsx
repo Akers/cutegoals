@@ -375,10 +375,10 @@ describe('ParentTasksPage - component rendering', () => {
       vi.useRealTimers();
     });
 
-    it('日历 mock 在初次渲染时 data-selected 等于今日 (2026-07-24_2026-07-24)', () => {
+    it('日历 mock 在初次渲染时 data-selected 等于本周 (2026-07-19_2026-07-25)', () => {
       render(<ParentTasksPage />);
       const mockCalendar = screen.getByTestId('mock-task-calendar');
-      expect(mockCalendar.getAttribute('data-selected')).toBe('2026-07-24_2026-07-24');
+      expect(mockCalendar.getAttribute('data-selected')).toBe('2026-07-19_2026-07-25');
     });
 
     it('日历 mock 在初次渲染时 data-base-month 等于本月 (2026-07)', () => {
