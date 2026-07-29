@@ -871,11 +871,11 @@ describe('TaskCalendar - 双月日历组件', () => {
       expect(inner.getAttribute('data-selected')).toBe('false');
     });
 
-    // fix-build: today cell 非 selected 时 date-value 用深 teal 色
-    // (避免白字白底 + today 默认浅蓝边框不可见)
-    // 注意:mock Calendar 不渲染 antd CSS 类结构,.ant-picker-calendar-date-value
-    // 在 mock 中不存在;此测试验证 today cell 自身存在且 data-selected=false。
-    it('(c) selectedRange=day(非 today) 时 today cell date-value 应为深 teal 色 (fix-build)', () => {
+    // fix-build: today cell 非 selected 时 inner div color 用深 teal 色
+    // (避免白字在白底 + today 默认浅蓝边框上不可见)。
+    // 通过 inline style 精确控制,避免依赖 :not(.ant-picker-cell-selected) CSS 选择器
+    // (antd 在 value=today 时会给 today cell 强制加 ant-picker-cell-selected,导致选择器失效)。
+    it('(c) selectedRange=day(非 today) 时 today cell inner div color 应为深 teal (fix-build inline style)', () => {
       render(
         <TaskCalendar
           {...defaultProps}
@@ -887,20 +887,12 @@ describe('TaskCalendar - 双月日历组件', () => {
           }}
         />,
       );
-      // today = 2026-07-24 (sandbox),其 cell 内置 antd 默认天数 span
+      // today = 2026-07-24 (sandbox)
       const todayCell = within(julyPanel()).getByTestId('date-cell-24');
-      // dateCellRender inner div data-selected=false
       const inner = todayCell.querySelector('[data-bg]') as HTMLElement;
       expect(inner.getAttribute('data-selected')).toBe('false');
-      // mock 中 date-value 由 antd-default-date span 代表(无 inline color 样式,
-      // 真实 CSS color 由 stylesheet 注入;本断言在 mock 环境无意义,仅作结构占位)
-      const dateValue = todayCell.querySelector('.ant-picker-calendar-date-value') as HTMLElement;
-      // 在真实 antd 渲染中,此元素会获得 CSS 注入的 color: rgb(13,148,136)
-      // jsdom 下 stylesheet 不参与计算,dateValue 为 null 或无 inline color
-      // 故本测试仅验证 today cell 存在(真实浏览器行为由人工复核)
-      expect(
-        dateValue ?? todayCell.querySelector('[data-testid="antd-default-date"]'),
-      ).not.toBeNull();
+      // fix-build: inline style 精确控制 today 非 selected 时的文字色为深 teal
+      expect(inner.style.color).toBe('rgb(13, 148, 136)');
     });
 
     it('selectedRange=week(本周) 时当前周号行 (week-row-30) 有蓝色边框', () => {
