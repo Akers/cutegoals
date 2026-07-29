@@ -148,14 +148,18 @@ export function WeekNumberColumn({
             })
           : false;
 
-        // 检查是否在 selectedRange 中
+        // 检查是否在 selectedRange 中（fix-build: day 选中时该天所在周也高亮）
         const weekStartDate = row.startDate;
         const weekEndDate = weekStart.add(6, 'day').format('YYYY-MM-DD');
-        const isSelected =
+        const isSelected = !!(
           selectedRange &&
-          selectedRange.type === 'week' &&
-          selectedRange.startDate <= weekEndDate &&
-          selectedRange.endDate >= weekStartDate;
+          ((selectedRange.type === 'week' &&
+            weekStartDate <= selectedRange.endDate &&
+            weekEndDate >= selectedRange.startDate) ||
+            (selectedRange.type === 'day' &&
+              selectedRange.startDate >= weekStartDate &&
+              selectedRange.startDate <= weekEndDate))
+        );
 
         return (
           <div
@@ -264,22 +268,26 @@ export function CalendarPanel({ year, month, selectedRange, onSelect }: Calendar
       bgColor = 'var(--ant-color-success-bg)'; // 淡绿
     }
 
-    // 选中高亮 (tweak-build)：两个独立条件满足其一即高亮：
-    //   1. selectedRange.type === 'day' 且日期匹配（用户选中的单天）
-    //   2. 该日期是 today 且位于当前面板月份（today 固定高亮，与 selectedRange.type 无关）
-    // 视觉统一：深 teal 实心 + 白字 + 浅蓝外环，与 antd 内置 today 高亮对齐。
-    // 周选中时：周内日期 cell 不跟随高亮(产品要求:周选中只高亮周号行,
-    // 日期 cell 全部 data-selected='false')，但 today 除外（today 永远高亮）。
+    // 选中高亮 (fix-build)：today 不再独立判定，高亮完全由 selectedRange 范围决定。
+    //   - selectedRange.type === 'day'：单 cell 高亮（该 cell 在当前月面板且匹配 startDate=endDate）
+    //   - selectedRange.type === 'week' 或 'month'：仅 today（在范围内）高亮；周/月末内其他日期 cell 不高亮
+    //     （产品要求：week/month 选中只高亮周号行，日期 cell 全部 data-selected='false'）
+    //   - 前提：必须在当前月面板（isCurrentMonthForDate），非当前月面板不高亮
+    // 视觉统一：深 teal 实心 + 白字 + 浅蓝外环。
     const dateStr = date.format('YYYY-MM-DD');
     const today = dayjs();
     const todayStr = today.format('YYYY-MM-DD');
     const isCurrentMonthForDate = today.year() === year && today.month() + 1 === month;
     const isSelected = !!(
-      (selectedRange &&
-        selectedRange.type === 'day' &&
+      selectedRange &&
+      isCurrentMonthForDate &&
+      ((selectedRange.type === 'day' &&
         dateStr === selectedRange.startDate &&
         dateStr === selectedRange.endDate) ||
-      (isCurrentMonthForDate && dateStr === todayStr)
+        ((selectedRange.type === 'week' || selectedRange.type === 'month') &&
+          dateStr === todayStr &&
+          dateStr >= selectedRange.startDate &&
+          dateStr <= selectedRange.endDate))
     );
 
     return (
@@ -408,10 +416,15 @@ export function TaskCalendar({
            导致 cell 仍被添加 .ant-picker-cell-selected 类;此处用 scoped CSS
            局部覆盖视觉样式,不影响其他 antd 实例(选择器以
            .task-calendar-non-current-month 开头限定作用域)。 */
+        /* fix-build: 当前月面板同样需要抑制 antd 内置 selected 背景,
+           避免与 dateCellRender 的 teal 双层叠加造成视觉错位。 */
+        .task-calendar-current-month .ant-picker-cell-selected .ant-picker-calendar-date,
+        .task-calendar-current-month .ant-picker-cell-selected .ant-picker-calendar-date-today,
         .task-calendar-non-current-month .ant-picker-cell-selected .ant-picker-calendar-date,
         .task-calendar-non-current-month .ant-picker-cell-selected .ant-picker-calendar-date-today {
           background: transparent !important;
         }
+        .task-calendar-current-month .ant-picker-cell-selected .ant-picker-calendar-date-value,
         .task-calendar-non-current-month .ant-picker-cell-selected .ant-picker-calendar-date-value {
           color: inherit !important;
         }
