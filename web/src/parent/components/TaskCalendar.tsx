@@ -283,10 +283,6 @@ export function CalendarPanel({ year, month, selectedRange, onSelect }: Calendar
       dateStr === selectedRange.endDate
     );
 
-    // fix-build: today cell 非 selected 时用深 teal 色文字,避免白字在白底+浅蓝边框上不可见。
-    // 当 today 被 selected 时,isSelected=true 走白字分支。
-    const isTodayAndHighlighted = isCurrentMonthForDate && dateStr === todayStr && !isSelected;
-
     return (
       <div
         data-bg={bgColor ?? ''}
@@ -299,7 +295,6 @@ export function CalendarPanel({ year, month, selectedRange, onSelect }: Calendar
           right: 4,
           bottom: 0,
           backgroundColor: isSelected ? '#0d9488' : bgColor,
-          color: isSelected ? '#ffffff' : isTodayAndHighlighted ? '#0d9488' : undefined,
           borderRadius: 4,
           // inset 边框在 cell 内画边框,不影响外部布局
           boxShadow: isSelected ? 'inset 0 0 0 2px #93c5fd' : undefined,
@@ -433,10 +428,18 @@ export function TaskCalendar({
         .task-calendar-non-current-month .ant-picker-cell-selected .ant-picker-calendar-date-value {
           color: inherit !important;
         }
+        /* fix-build: today cell 非 selected 时 date-value 用深 teal 色,
+           避免白字在白底 + today 默认浅蓝边框上不可见。 */
+        .task-calendar-grid .ant-picker-cell-today .ant-picker-calendar-date-value {
+          color: #0d9488 !important;
+        }
+        /* today 非 selected 时 deep teal, selected 时白字(在 teal 背景上)。 */
+        .task-calendar-grid .ant-picker-cell-selected.ant-picker-cell-today .ant-picker-calendar-date-value {
+          color: #ffffff !important;
+        }
         /* fix-build: inner div 用 absolute + inset 填充 cell,遮住了 date-value;
            提升 date-value 的 z-index 让"29"白字显示在 inner teal 背景之上。 */
-        .task-calendar-grid .ant-picker-cell-selected .ant-picker-calendar-date-value,
-        .task-calendar-grid .ant-picker-cell-today .ant-picker-calendar-date-value {
+        .task-calendar-grid .ant-picker-cell-selected .ant-picker-calendar-date-value {
           z-index: 2 !important;
           position: relative;
         }

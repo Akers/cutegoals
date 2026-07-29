@@ -755,8 +755,8 @@ describe('TaskCalendar - 双月日历组件', () => {
       // 背景：深 teal 实心（与 antd parent colorPrimary 同源 = #0d9488）。
       // jsdom 把 hex 规范化为 rgb，所以断言用 rgb 形式。
       expect(inner.style.backgroundColor).toBe('rgb(13, 148, 136)');
-      // 文字：白色
-      expect(inner.style.color).toBe('rgb(255, 255, 255)');
+      // 文字色由 CSS .ant-picker-cell-selected.ant-picker-cell-today 控制
+      // (不在 inline style 中,jsdom 不验证 CSS,故不断言 color)。
       // 焦点环：inset 边框（在 cell 内画边框，不外扩）。
       // jsdom 不规范化 boxShadow 中的 hex，保留 '#93c5fd' 形式。
       expect(inner.style.boxShadow).toContain('inset');
@@ -871,11 +871,10 @@ describe('TaskCalendar - 双月日历组件', () => {
       expect(inner.getAttribute('data-selected')).toBe('false');
     });
 
-    // fix-build: today cell 非 selected 时 inner div color 用深 teal 色
-    // (避免白字在白底 + today 默认浅蓝边框上不可见)。
-    // 通过 inline style 精确控制,避免依赖 :not(.ant-picker-cell-selected) CSS 选择器
-    // (antd 在 value=today 时会给 today cell 强制加 ant-picker-cell-selected,导致选择器失效)。
-    it('(c) selectedRange=day(非 today) 时 today cell inner div color 应为深 teal (fix-build inline style)', () => {
+    // fix-build: today cell 非 selected 时 date-value 颜色由 CSS 控制
+    // (.ant-picker-cell-today .ant-picker-calendar-date-value { color: #0d9488 !important })。
+    // inner div 不再设置 inline color (因为 sibling 问题导致不生效)。
+    it('(c) selectedRange=day(非 today) 时 today cell inner div 无 inline color (CSS 控制 date-value)', () => {
       render(
         <TaskCalendar
           {...defaultProps}
@@ -891,8 +890,8 @@ describe('TaskCalendar - 双月日历组件', () => {
       const todayCell = within(julyPanel()).getByTestId('date-cell-24');
       const inner = todayCell.querySelector('[data-bg]') as HTMLElement;
       expect(inner.getAttribute('data-selected')).toBe('false');
-      // fix-build: inline style 精确控制 today 非 selected 时的文字色为深 teal
-      expect(inner.style.color).toBe('rgb(13, 148, 136)');
+      // inner div 不再设置 inline color;颜色由 CSS 规则控制(浏览器验证)
+      expect(inner.style.color).toBe('');
     });
 
     it('selectedRange=week(本周) 时当前周号行 (week-row-30) 有蓝色边框', () => {
