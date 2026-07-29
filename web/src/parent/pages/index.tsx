@@ -1231,11 +1231,12 @@ export function ParentTasksPage() {
   const todayStr = now.format('YYYY-MM-DD');
   const [calendarState, dispatch] = useReducer(calendarReducer, {
     baseMonth: now.format('YYYY-MM'),
-    // 默认选中本周 (tweak-build): type=week + 本周范围，todayStr 保留用于 dateCellRender 独立判定。
+    // fix-build 第三次迭代: type=day + today 单点（取消整周高亮）。
+    // 初始状态：仅 today cell 高亮（teal 实心）+ 当周蓝色边框。
     selectedRange: {
-      type: 'week',
-      startDate: now.startOf('week').format('YYYY-MM-DD'),
-      endDate: now.endOf('week').format('YYYY-MM-DD'),
+      type: 'day',
+      startDate: todayStr,
+      endDate: todayStr,
     },
     taskTypeFilters: ['LIMITED', 'REPEAT', 'STANDING'],
     viewAllMode: false,

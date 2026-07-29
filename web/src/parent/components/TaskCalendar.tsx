@@ -148,10 +148,11 @@ export function WeekNumberColumn({
             })
           : false;
 
-        // 检查是否在 selectedRange 中（fix-build: day 选中时该天所在周也高亮）
+        // fix-build 第三次迭代: isWeekInRange 独立判定（蓝色边框视觉）。
+        // 当周号行是否需要蓝色边框: type=week 时该周被选中,或 type=day 时选中那天在本周。
         const weekStartDate = row.startDate;
         const weekEndDate = weekStart.add(6, 'day').format('YYYY-MM-DD');
-        const isSelected = !!(
+        const isWeekInRange = !!(
           selectedRange &&
           ((selectedRange.type === 'week' &&
             weekStartDate <= selectedRange.endDate &&
@@ -166,7 +167,7 @@ export function WeekNumberColumn({
             key={row.startDate}
             data-testid={`week-row-${row.weekNum}`}
             data-has-tasks={hasTasks ? 'true' : 'false'}
-            data-selected={isSelected ? 'true' : 'false'}
+            data-selected={isWeekInRange ? 'true' : 'false'}
             onClick={() => onSelect({ type: 'SELECT_WEEK', startDate: row.startDate })}
             style={{
               flex: 1,
@@ -177,13 +178,10 @@ export function WeekNumberColumn({
               cursor: 'pointer',
               fontSize: 12,
               textAlign: 'center',
-              backgroundColor: isSelected
-                ? 'rgba(22, 119, 255, 0.18)'
-                : hasTasks
-                  ? 'var(--ant-color-info-bg)'
-                  : undefined,
+              backgroundColor: hasTasks ? 'var(--ant-color-info-bg)' : undefined,
               borderBottom: '1px solid #f0f0f0',
-              border: isSelected ? '1px solid rgba(22, 119, 255, 0.5)' : undefined,
+              // fix-build 第三次迭代:蓝色边框独立判定,无背景填充
+              border: isWeekInRange ? '2px solid rgba(22, 119, 255, 0.6)' : undefined,
               userSelect: 'none',
             }}
           >
@@ -268,9 +266,9 @@ export function CalendarPanel({ year, month, selectedRange, onSelect }: Calendar
       bgColor = 'var(--ant-color-success-bg)'; // 淡绿
     }
 
-    // 选中高亮 (fix-build)：today 不再独立判定，高亮完全由 selectedRange 范围决定。
-    //   - selectedRange.type === 'day'：单 cell 高亮（该 cell 在当前月面板且匹配 startDate=endDate）
-    //   - selectedRange.type === 'week' 或 'month'：范围内全部 cell 高亮（整周/整月）
+    // fix-build 第三次迭代:仅 type=day 单点高亮,取消 type=week/month 整周/整月高亮。
+    //   - selectedRange.type === 'day'：单 cell 高亮（startDate === endDate === 该日）
+    //   - selectedRange.type === 'week' 或 'month'：周号行蓝色边框,但日期 cell 不高亮
     //   - 前提：必须在当前月面板（isCurrentMonthForDate），非当前月面板不高亮
     // 视觉统一：深 teal 实心 + 白字 + 浅蓝外环。
     const dateStr = date.format('YYYY-MM-DD');
@@ -280,12 +278,9 @@ export function CalendarPanel({ year, month, selectedRange, onSelect }: Calendar
     const isSelected = !!(
       selectedRange &&
       isCurrentMonthForDate &&
-      ((selectedRange.type === 'day' &&
-        dateStr === selectedRange.startDate &&
-        dateStr === selectedRange.endDate) ||
-        ((selectedRange.type === 'week' || selectedRange.type === 'month') &&
-          dateStr >= selectedRange.startDate &&
-          dateStr <= selectedRange.endDate))
+      selectedRange.type === 'day' &&
+      dateStr === selectedRange.startDate &&
+      dateStr === selectedRange.endDate
     );
 
     return (

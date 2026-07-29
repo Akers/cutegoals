@@ -375,13 +375,11 @@ describe('ParentTasksPage - component rendering', () => {
       vi.useRealTimers();
     });
 
-    it('日历 mock 在初次渲染时 data-selected 等于本周 (2026-07-20_2026-07-26)', () => {
-      // tweak-calendar-selected-day-today-style fix:周首改为 Monday (与 antd
-      // Calendar zh_CN locale 一致) 后,2026-07-29 所在周是 7/27~8/2;
-      // 当前测试日期 2026-07-24 (周五) 所在周是 7/20~7/26。
+    it('日历 mock 在初次渲染时 data-selected 等于 today 单点 (2026-07-24_2026-07-24)', () => {
+      // fix-build 第三次迭代:初始状态从 type=week 改为 type=day+today 单点。
       render(<ParentTasksPage />);
       const mockCalendar = screen.getByTestId('mock-task-calendar');
-      expect(mockCalendar.getAttribute('data-selected')).toBe('2026-07-20_2026-07-26');
+      expect(mockCalendar.getAttribute('data-selected')).toBe('2026-07-24_2026-07-24');
     });
 
     it('日历 mock 在初次渲染时 data-base-month 等于本月 (2026-07)', () => {

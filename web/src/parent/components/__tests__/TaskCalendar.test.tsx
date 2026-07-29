@@ -583,6 +583,15 @@ describe('TaskCalendar - 双月日历组件', () => {
   // 与 baseMonth='2026-07' + 期望 today='2026-07-24' 一致，
   // 可避免 fake-timers 与 React 副作用在 jsdom 中的耦合问题。
   describe('默认选中今日 (回归, fix-calendar-default-current-date)', () => {
+    // today = 2026-07-24, fake timers 保证稳定性
+    beforeEach(() => {
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date('2026-07-24T12:00:00'));
+    });
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
     it('当前月面板:antd <Calendar> value 等于今日 (2026-07-24),而不是 monthDate (2026-07-01)', () => {
       render(
         <TaskCalendar
@@ -671,7 +680,7 @@ describe('TaskCalendar - 双月日历组件', () => {
   // 期望：周号行用「半透明浅蓝背景矩形」；选中周时周内日期 cell 不跟随高亮；
   //      选中某一天时仅该日期高亮，其他日期全部不高亮。
   describe('周/日高亮改用半透明浅蓝背景矩形 (fix-calendar-week-row-highlight-bg)', () => {
-    it('选中周时:周号行 backgroundColor 是半透明浅蓝 (rgba(22,119,255,0.18)),不使用 boxShadow', () => {
+    it('选中周时:周号行有蓝色边框 (border),无特殊背景色', () => {
       render(
         <TaskCalendar
           {...defaultProps}
@@ -683,16 +692,15 @@ describe('TaskCalendar - 双月日历组件', () => {
         />,
       );
       const weekRow = within(julyPanel()).getByTestId('week-row-27') as HTMLElement;
-      const bg = weekRow.style.backgroundColor;
-      expect(bg).toBe('rgba(22, 119, 255, 0.18)');
-      // 不使用 boxShadow 作为高亮标记
-      expect(weekRow.style.boxShadow).toBe('');
+      // fix-build 第三次迭代:蓝色边框独立判定,无背景填充
+      expect(weekRow.style.border).toContain('rgba(22, 119, 255, 0.6)');
+      // 无特殊背景色（hasTasks 的 info-bg 除外）
+      expect(weekRow.style.backgroundColor).not.toBe('rgba(22, 119, 255, 0.18)');
     });
 
-    it('选中周时:该周内所有日期 cell 的 data-selected 均为 true (整周高亮,fix-build)', () => {
-      // fix-build (tweak-calendar-selected-day-today-style):
-      // selectedRange=week → 范围内全部日期 cell 高亮（深 teal 实心）。
-      // 第 27 周 startDate=2026-06-29, endDate=2026-07-05,在 7 月面板内覆盖 7/1-7/5。
+    it('选中周时:周内所有日期 cell 的 data-selected 均为 false (fix-build 第三次迭代:取消整周高亮)', () => {
+      // fix-build 第三次迭代:type=week 时周号行蓝色边框,但日期 cell 不高亮。
+      // 第 27 周 startDate=2026-06-29, endDate=2026-07-05,覆盖 7/1-7/5。
       render(
         <TaskCalendar
           {...defaultProps}
@@ -703,11 +711,11 @@ describe('TaskCalendar - 双月日历组件', () => {
           }}
         />,
       );
-      // fix-build:范围内全部 cell 高亮 (深 teal 实心)
+      // fix-build 第三次迭代:week 类型下日期 cell 均不高亮
       for (const d of [1, 2, 3, 4, 5]) {
         const cell = within(julyPanel()).getByTestId(`date-cell-${d}`);
         const inner = cell.querySelector('[data-bg]') as HTMLElement;
-        expect(inner.getAttribute('data-selected')).toBe('true');
+        expect(inner.getAttribute('data-selected')).toBe('false');
       }
     });
 
@@ -822,8 +830,10 @@ describe('TaskCalendar - 双月日历组件', () => {
       vi.useRealTimers();
     });
 
-    it('(a) selectedRange=week(本周) 时 today cell 高亮 (today 在范围内)', () => {
-      // 本周 2026-07-19 (Sun) → 2026-07-25 (Sat)，today=2026-07-24 在本周范围内
+    it('(a) selectedRange=week(本周) 时 today cell 不高亮 (fix-build 第三次迭代:week 类型取消整周高亮)', () => {
+      // fix-build 第三次迭代:type=week 时周号行蓝色边框,但日期 cell 不高亮。
+      // 本周 2026-07-19 (Sun) → 2026-07-25 (Sat)，today=2026-07-24 在本周范围内，
+      // 但因 type=week 不再导致 cell 高亮,故 today cell 不高亮。
       render(
         <TaskCalendar
           {...defaultProps}
@@ -837,12 +847,7 @@ describe('TaskCalendar - 双月日历组件', () => {
       );
       const todayCell = within(julyPanel()).getByTestId('date-cell-24');
       const inner = todayCell.querySelector('[data-bg]') as HTMLElement;
-      // today 高亮是因为在 selectedRange 范围内，不是因为独立判定
-      expect(inner.getAttribute('data-selected')).toBe('true');
-      expect(inner.style.backgroundColor).toBe('rgb(13, 148, 136)');
-      expect(inner.style.color).toBe('rgb(255, 255, 255)');
-      expect(inner.style.boxShadow).toContain('#93c5fd');
-      expect(inner.style.boxShadow.startsWith('0 0 0 2px')).toBe(true);
+      expect(inner.getAttribute('data-selected')).toBe('false');
     });
 
     it('(b) selectedRange=day(非 today) 时 today 不高亮 (today 不在范围内)', () => {
@@ -863,7 +868,8 @@ describe('TaskCalendar - 双月日历组件', () => {
       expect(inner.getAttribute('data-selected')).toBe('false');
     });
 
-    it('selectedRange=week(本周) 时当前周号行 (week-row-30) 高亮', () => {
+    it('selectedRange=week(本周) 时当前周号行 (week-row-30) 有蓝色边框', () => {
+      // fix-build 第三次迭代:周号行有蓝色边框,无特殊背景色。
       // 本周 week-number = 30 (2026-07-19 Sun → 2026-07-25 Sat)
       render(
         <TaskCalendar
@@ -878,7 +884,7 @@ describe('TaskCalendar - 双月日历组件', () => {
       );
       const weekRow = within(julyPanel()).getByTestId('week-row-30') as HTMLElement;
       expect(weekRow.getAttribute('data-selected')).toBe('true');
-      expect(weekRow.style.backgroundColor).toBe('rgba(22, 119, 255, 0.18)');
+      expect(weekRow.style.border).toContain('rgba(22, 119, 255, 0.6)');
     });
 
     // Scenario 3: 用户点击非本周周号,today 不高亮(today 不在选中周内)
@@ -904,9 +910,10 @@ describe('TaskCalendar - 双月日历组件', () => {
       expect(todayInner.getAttribute('data-selected')).toBe('false');
     });
 
-    // Scenario 4: 非当前月面板 selected cell 不高亮
-    it('非当前月面板 (baseMonth=2026-08) 中 selectedRange 匹配的 cell 不高亮', () => {
-      // 八月面板中选中 8/2~8/8 (week-row-32)
+    // Scenario 4: 当前月面板中 type=week 时日期 cell 不高亮,但周号行有蓝色边框
+    it('当前月面板(baseMonth=2026-08) 中 type=week 时日期 cell 不高亮,但周号行有蓝色边框', () => {
+      // baseMonth=2026-08: 八月面板是当前月,七月面板是"非当前月"。
+      // fix-build 第三次迭代:type=week 时周号行蓝色边框,日期 cell 不高亮。
       render(
         <TaskCalendar
           {...defaultProps}
@@ -918,13 +925,12 @@ describe('TaskCalendar - 双月日历组件', () => {
           }}
         />,
       );
-      // 八月面板是当前月(2026-08)所以应该正常高亮
-      // 验证八月面板日期 cell 高亮
+      // 八月面板(当前月):选中 week 时周内日期 cell 不高亮
       const augCalendar = screen.getByTestId('mock-calendar-2026-08');
       const augCells = augCalendar.querySelectorAll('[data-selected="true"]');
-      // 选中 week 时周内日期 cell 不高亮(只有 week-row 高亮)
-      // 所以这里应该没有 date-cell 高亮
-      // 验证周号行高亮
+      // type=week 不导致 cell 高亮,故无 cell 高亮
+      expect(augCells.length).toBe(0);
+      // 但周号行(第32周,8/2~8/8)有蓝色边框
       const weekRow32 = within(augustPanel()).getByTestId('week-row-32') as HTMLElement;
       expect(weekRow32.getAttribute('data-selected')).toBe('true');
     });
