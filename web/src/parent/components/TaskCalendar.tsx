@@ -288,16 +288,21 @@ export function CalendarPanel({ year, month, selectedRange, onSelect }: Calendar
         data-bg={bgColor ?? ''}
         data-selected={isSelected ? 'true' : 'false'}
         style={{
-          // tweak-calendar-selected-day-today-style:selected 与 today 视觉一致,
-          // 颜色 #0d9488 与 antd parent 色板 colorPrimary 同源 (themes.ts)。
+          // 让 inner div 完整填充 antd cell,避免溢出
+          position: 'absolute',
+          top: 0,
+          left: 4,
+          right: 4,
+          bottom: 0,
           backgroundColor: isSelected ? '#0d9488' : bgColor,
           color: isSelected ? '#ffffff' : undefined,
           borderRadius: 4,
-          padding: '2px 4px',
-          minHeight: 30,
-          position: 'relative',
-          // 外层浅蓝焦点环 (spread 而非 inset),与 today 内置 box-shadow 视觉一致。
-          boxShadow: isSelected ? '0 0 0 2px #93c5fd' : undefined,
+          // inset 边框在 cell 内画边框,不影响外部布局
+          boxShadow: isSelected ? 'inset 0 0 0 2px #93c5fd' : undefined,
+          zIndex: 1,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
         }}
       >
         {/* 不再渲染独立天数数字：antd Calendar 默认会在 cell 中输出日期数字，

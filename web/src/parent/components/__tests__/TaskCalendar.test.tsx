@@ -757,12 +757,10 @@ describe('TaskCalendar - 双月日历组件', () => {
       expect(inner.style.backgroundColor).toBe('rgb(13, 148, 136)');
       // 文字：白色
       expect(inner.style.color).toBe('rgb(255, 255, 255)');
-      // 焦点环：外层浅蓝 spread（不再是 inset 边框）。
-      // jsdom 不规范化 boxShadow 中的 hex（保留 '#93c5fd' 形式），
-      // 也不自动给 0 加 px 单位，所以原始字符串为 '0 0 0 2px #93c5fd'。
+      // 焦点环：inset 边框（在 cell 内画边框，不外扩）。
+      // jsdom 不规范化 boxShadow 中的 hex，保留 '#93c5fd' 形式。
+      expect(inner.style.boxShadow).toContain('inset');
       expect(inner.style.boxShadow).toContain('#93c5fd');
-      expect(inner.style.boxShadow).not.toContain('inset');
-      expect(inner.style.boxShadow.startsWith('0 0 0 2px')).toBe(true);
     });
 
     it('选中一天时:其他日期 cell 的 data-selected 均为 false (取消其他天的高亮)', () => {
