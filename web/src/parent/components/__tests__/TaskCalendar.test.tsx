@@ -761,6 +761,11 @@ describe('TaskCalendar - 双月日历组件', () => {
       // jsdom 不规范化 boxShadow 中的 hex，保留 '#93c5fd' 形式。
       expect(inner.style.boxShadow).toContain('inset');
       expect(inner.style.boxShadow).toContain('#93c5fd');
+      // fix-build: position absolute + z-index 0 + pointer-events none
+      // 确保 inner teal 背景填充 cell 但不遮挡 date-value ("29" 白字)
+      expect(inner.style.position).toBe('absolute');
+      expect(inner.style.zIndex).toBe('0');
+      expect(inner.style.pointerEvents).toBe('none');
     });
 
     it('选中一天时:其他日期 cell 的 data-selected 均为 false (取消其他天的高亮)', () => {

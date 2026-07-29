@@ -299,7 +299,10 @@ export function CalendarPanel({ year, month, selectedRange, onSelect }: Calendar
           borderRadius: 4,
           // inset 边框在 cell 内画边框,不影响外部布局
           boxShadow: isSelected ? 'inset 0 0 0 2px #93c5fd' : undefined,
-          zIndex: 1,
+          // fix-build: z-index 0 让 antd-date-value (默认 z-index auto=0) 显示在 inner 之上;
+          // pointer-events: none 确保 inner 不拦截日期数字的点击事件
+          zIndex: 0,
+          pointerEvents: 'none',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -425,6 +428,13 @@ export function TaskCalendar({
         .task-calendar-current-month .ant-picker-cell-selected .ant-picker-calendar-date-value,
         .task-calendar-non-current-month .ant-picker-cell-selected .ant-picker-calendar-date-value {
           color: inherit !important;
+        }
+        /* fix-build: inner div 用 absolute + inset 填充 cell,遮住了 date-value;
+           提升 date-value 的 z-index 让"29"白字显示在 inner teal 背景之上。 */
+        .task-calendar-grid .ant-picker-cell-selected .ant-picker-calendar-date-value,
+        .task-calendar-grid .ant-picker-cell-today .ant-picker-calendar-date-value {
+          z-index: 2 !important;
+          position: relative;
         }
       `}</style>
 
