@@ -17,8 +17,12 @@
  *                       / `.weekdaysMin()` / `.monthsShort()`
  *  - weekOfYear      —— rc-picker getWeek / WeekPicker 调用 `.week()`
  *  - weekYear        —— rc-picker `YYYY-wo` 解析调用 `.weekYear()`
- *  - customParseFormat —— 支持以指定解析字符串构造 dayjs（如 `dayjs(s, 'YYYY-MM-DD')`）
+ *  - customParseFormat —— 支持以指定解析字符串构造 dayjs（如 `dayjs(s, 'YYYY-MM-DD')`)
  *  - advancedFormat  —— rc-picker `wo` 等 token；antd 高级格式化
+ *  - updateLocale    —— tweak-calendar-selected-day-today-style fix:把 'en' locale 的
+ *                       firstDayOfWeek 改为 1（周一）,与 antd Calendar 在 zh_CN locale
+ *                       下的视觉周首对齐；否则 dayjs 默认 Sunday 周首会导致
+ *                       selectedRange 范围与 UI 周编号错位 1 天。
  *
  * 另保留 localizedFormat 供业务侧本地化格式使用（非 rc-picker 必需）。
  */
@@ -30,6 +34,7 @@ import weekYear from 'dayjs/plugin/weekYear';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
+import updateLocale from 'dayjs/plugin/updateLocale';
 
 dayjs.extend(weekday);
 dayjs.extend(localeData);
@@ -38,5 +43,10 @@ dayjs.extend(weekYear);
 dayjs.extend(customParseFormat);
 dayjs.extend(localizedFormat);
 dayjs.extend(advancedFormat);
+dayjs.extend(updateLocale);
+// tweak-calendar-selected-day-today-style: 周一首 (1) — 与 antd Calendar 在
+// zh_CN locale 下的视觉对齐，避免 dayjs 默认 Sunday 周首造成 selectedRange
+// 与 UI 周编号错位 1 天。
+dayjs.updateLocale('en', { weekStart: 1 });
 
 export default dayjs;

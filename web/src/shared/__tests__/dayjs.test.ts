@@ -14,8 +14,9 @@ describe('shared/dayjs global plugins', () => {
     const today = dayjs('2026-07-22');
     const shifted = today.weekday(0);
     expect(shifted.isValid()).toBe(true);
-    // 周日=0, 周一=1, ..., 周六=6（dayjs 默认 en locale）
-    expect(shifted.day()).toBe(0);
+    // tweak-calendar-selected-day-today-style fix:周首改为 Monday (weekStart=1),
+    // weekday(0) 返回本周第一天（周一 = day 1）。
+    expect(shifted.day()).toBe(1);
   });
 
   it('weekOfYear 插件可用', () => {

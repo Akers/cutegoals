@@ -376,9 +376,10 @@ describe('TaskCalendar - 双月日历组件', () => {
     it('computeWeekNumbers 返回正确结构', () => {
       const rows = computeWeekNumbers(2026, 7);
       expect(rows).toHaveLength(6);
-      // 2026-07-01 是周三 → startOf('week') = 周日 2026-06-28
-      // week() 基于周日起始，2026-06-28 周日 = 第27周
-      expect(rows[0].startDate).toBe('2026-06-28');
+      // tweak-calendar-selected-day-today-style fix:周首改为 Monday (与 antd
+      // Calendar zh_CN locale 一致) 后,2026-07-01 周三所在的周 startDate =
+      // 2026-06-29 (周一) = 第27周。
+      expect(rows[0].startDate).toBe('2026-06-29');
       expect(rows[0].weekNum).toBe(27);
     });
 
@@ -412,7 +413,7 @@ describe('TaskCalendar - 双月日历组件', () => {
       await userEvent.click(within(julyPanel()).getByTestId('week-row-27'));
       expect(onSelect).toHaveBeenCalledWith<[CalendarAction]>({
         type: 'SELECT_WEEK',
-        startDate: '2026-06-28',
+        startDate: '2026-06-29',
       });
     });
 
@@ -422,8 +423,8 @@ describe('TaskCalendar - 双月日历组件', () => {
           {...defaultProps}
           selectedRange={{
             type: 'week',
-            startDate: '2026-06-28',
-            endDate: '2026-07-04',
+            startDate: '2026-06-29',
+            endDate: '2026-07-05',
           }}
         />,
       );
@@ -487,7 +488,7 @@ describe('TaskCalendar - 双月日历组件', () => {
       await userEvent.click(within(julyPanel()).getByTestId('week-row-27'));
       expect(onSelect).toHaveBeenCalledWith<[CalendarAction]>({
         type: 'SELECT_WEEK',
-        startDate: '2026-06-28',
+        startDate: '2026-06-29',
       });
     });
 
@@ -676,8 +677,8 @@ describe('TaskCalendar - 双月日历组件', () => {
           {...defaultProps}
           selectedRange={{
             type: 'week',
-            startDate: '2026-06-28',
-            endDate: '2026-07-04',
+            startDate: '2026-06-29',
+            endDate: '2026-07-05',
           }}
         />,
       );
@@ -688,23 +689,25 @@ describe('TaskCalendar - 双月日历组件', () => {
       expect(weekRow.style.boxShadow).toBe('');
     });
 
-    it('选中周时:该周内所有日期 cell 的 data-selected 均为 false (不联动日期)', () => {
+    it('选中周时:该周内所有日期 cell 的 data-selected 均为 true (整周高亮,fix-build)', () => {
+      // fix-build (tweak-calendar-selected-day-today-style):
+      // selectedRange=week → 范围内全部日期 cell 高亮（深 teal 实心）。
+      // 第 27 周 startDate=2026-06-29, endDate=2026-07-05,在 7 月面板内覆盖 7/1-7/5。
       render(
         <TaskCalendar
           {...defaultProps}
           selectedRange={{
             type: 'week',
-            startDate: '2026-06-28',
-            endDate: '2026-07-04',
+            startDate: '2026-06-29',
+            endDate: '2026-07-05',
           }}
         />,
       );
-      // 第 27 周 startDate=2026-06-28, endDate=2026-07-04,在 7 月面板内覆盖 7/1-7/4
-      // 面板里有 31 天,这些 7/1-7/4 应全为 false
-      for (const d of [1, 2, 3, 4]) {
+      // fix-build:范围内全部 cell 高亮 (深 teal 实心)
+      for (const d of [1, 2, 3, 4, 5]) {
         const cell = within(julyPanel()).getByTestId(`date-cell-${d}`);
         const inner = cell.querySelector('[data-bg]') as HTMLElement;
-        expect(inner.getAttribute('data-selected')).toBe('false');
+        expect(inner.getAttribute('data-selected')).toBe('true');
       }
     });
 
@@ -714,8 +717,8 @@ describe('TaskCalendar - 双月日历组件', () => {
           {...defaultProps}
           selectedRange={{
             type: 'week',
-            startDate: '2026-06-28',
-            endDate: '2026-07-04',
+            startDate: '2026-06-29',
+            endDate: '2026-07-05',
           }}
         />,
       );
@@ -774,7 +777,7 @@ describe('TaskCalendar - 双月日历组件', () => {
     });
 
     it('选中一天时:该天所在周号行高亮,其他周号行不高亮 (fix-build: day 选中时周高亮)', () => {
-      // 2026-07-01 属于第27周 (2026-06-28 ~ 2026-07-04)
+      // 2026-07-01 属于第27周 (2026-06-29 ~ 2026-07-05)
       render(
         <TaskCalendar
           {...defaultProps}

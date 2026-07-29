@@ -52,7 +52,7 @@ canonical_spec: openspec
 ```ts
 // pages/index.tsx ParentTasksPage
 const now = dayjs();
-const weekStart = now.startOf('week');  // 需 dayjs weekday 插件（已注册，见 web/src/shared/dayjs.ts）
+const weekStart = now.startOf('week');  // 周首配置：Monday (1) — 见决策 7
 const weekEnd = now.endOf('week');
 const initialSelectedRange = {
   type: 'week' as const,
@@ -62,7 +62,7 @@ const initialSelectedRange = {
 useReducer(calendarReducer, ..., { selectedRange: initialSelectedRange, baseMonth: now.format('YYYY-MM'), taskTypeFilters: ..., viewAllMode: false });
 ```
 
-**理由**：用户明确要求"默认选周"。week 类型触发 WeekNumberColumn 视觉高亮，dateCellRender 内 today 独立判定。
+**理由**：用户明确要求"默认选周"。week 类型触发 WeekNumberColumn 视觉高亮 + 范围内日期 cell 高亮（fix-build 后 today 不再独立分支）。
 
 ### 决策 2：`dateCellRender.isSelected` 改为 selectedRange 范围判定（fix-build：today 不再独立分支）
 
@@ -80,7 +80,6 @@ const isSelected = !!(
     dateStr === selectedRange.startDate &&
     dateStr === selectedRange.endDate) ||
     ((selectedRange.type === "week" || selectedRange.type === "month") &&
-      dateStr === todayStr &&
       dateStr >= selectedRange.startDate &&
       dateStr <= selectedRange.endDate))
 );
@@ -94,15 +93,23 @@ const isSelected = !!(
 - type=week/month：仅 today（在范围内）高亮；周/月末内其他日期 cell 不高亮（产品要求：week/month 选中只高亮周号行）
 - isCurrentMonthForDate 守卫确保非当前月面板不高亮（bug c）
 
-### 决策 3：week-row 高亮与 dateCell 高亮分离
+### 决策 3：week-row 高亮支持 day 模式（fix-build 修正）
 
-`WeekNumberColumn.isSelected` 保持原样（`TaskCalendar.tsx:154-158`）：
+`WeekNumberColumn.isSelected` 扩展为支持 day 模式（`TaskCalendar.tsx:154-162`）：
 
 ```ts
-const isSelected = selectedRange && selectedRange.type === 'week' && ...;
+const isSelected = !!(
+  selectedRange &&
+  ((selectedRange.type === 'week' &&
+    weekStartDate <= selectedRange.endDate &&
+    weekEndDate >= selectedRange.startDate) ||
+    (selectedRange.type === 'day' &&
+      selectedRange.startDate >= weekStartDate &&
+      selectedRange.startDate <= weekEndDate))
+);
 ```
 
-**理由**：用户已确认保留 week-row 现有视觉（半透明浅蓝背景）。两种高亮视觉不冲突——cell 高亮表示"焦点日"，week-row 高亮表示"范围圈选"。
+**理由（fix-build 修正）**：原决策 3 仅 type=week 时周号行高亮，但用户反馈"day 选中时该天所在周应保留浅蓝背景"（bug d）。fix-build 扩展为 day 模式也触发该天所在周的周号行高亮，保持"焦点日 ↔ 范围高亮"层级感。
 
 ### 决策 4（fix-build 修正）：范围匹配走 isCurrentMonthForDate 守卫
 
@@ -129,6 +136,12 @@ const isSelected = selectedRange && selectedRange.type === 'week' && ...;
 5. 跑 RED，确认失败
 6. 改实现，跑 GREEN
 
+**fix-build 第三次迭代补充**（dayjs 周首统一）：
+- 修改 `web/src/shared/dayjs.ts` 注册 `updateLocale` 插件并设置 `weekStart: 1`（Monday）
+- 同步更新 `web/src/shared/__tests__/dayjs.test.ts` 中 `weekday(0)` 断言（现返回 day=1 即周一）
+- 同步更新 `TaskCalendar.test.tsx` 中所有 `2026-06-28` / `2026-07-04` / `2026-07-19` 等断言为 Monday 周首对应日期
+- 同步更新 `ParentTasksPage.test.tsx` 中 `data-selected` 断言从 `2026-07-19_2026-07-25` 改为 `2026-07-20_2026-07-26`
+
 ## Risks / Trade-offs
 
 | 风险                                                                           | 缓解                                                                                                |
@@ -138,6 +151,7 @@ const isSelected = selectedRange && selectedRange.type === 'week' && ...;
 | baseMonth 变更后（用户导航到非当前月）today 不可见                             | 是符合 antd today 行为；用户已确认该语义                                                            |
 | 视觉色值硬编码不跟随未来主题切换                                               | TaskCalendar 仅 parent 使用；若未来扩展到其他角色再统一 token 化                                    |
 | week-row 视觉与 dateCell 视觉不一致                                            | 用户已确认保留差异；两种状态（范围 vs 焦点）区分有意义                                              |
+| dayjs 默认 Sunday 周首与 antd Calendar zh_CN Monday 周首错位 1 天（fix-build 发现） | shared/dayjs.ts 显式 `updateLocale('en', { weekStart: 1 })` 统一对齐                                  |
 
 ## Migration Plan
 
@@ -148,6 +162,12 @@ const isSelected = selectedRange && selectedRange.type === 'week' && ...;
 5. 运行 `prettier --write` 两个文件。
 6. 运行 `pnpm --filter web test -- TaskCalendar ParentTasksPage` 确认 RED → GREEN。
 7. 运行全量 `pnpm --filter web test` 确认无回归。
+
+**fix-build 第三次迭代补充**：浏览器实测验证
+- 启动 dev server + agent-browser 实际访问 `/parent/tasks`
+- 默认进入页面：第31周（按 Monday 周首 7/27~8/2）整周 teal 实心 + 白字 ✓
+- 点击 7/15：7/15 高亮 + 第29周号行浅蓝高亮 + 7/29 不再 teal 实心 ✓
+- 点击第30周号行：第30周（7/20~7/26）整周 teal 实心 + 第30周号行浅蓝高亮 + 7/29 不再 teal 实心 ✓
 8. 提交代码 + 更新 tasks.md 标记完成。
 9. 更新 delta spec `parent-task-calendar/spec.md`（已完成本 design 阶段）。
 

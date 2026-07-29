@@ -270,8 +270,7 @@ export function CalendarPanel({ year, month, selectedRange, onSelect }: Calendar
 
     // 选中高亮 (fix-build)：today 不再独立判定，高亮完全由 selectedRange 范围决定。
     //   - selectedRange.type === 'day'：单 cell 高亮（该 cell 在当前月面板且匹配 startDate=endDate）
-    //   - selectedRange.type === 'week' 或 'month'：仅 today（在范围内）高亮；周/月末内其他日期 cell 不高亮
-    //     （产品要求：week/month 选中只高亮周号行，日期 cell 全部 data-selected='false'）
+    //   - selectedRange.type === 'week' 或 'month'：范围内全部 cell 高亮（整周/整月）
     //   - 前提：必须在当前月面板（isCurrentMonthForDate），非当前月面板不高亮
     // 视觉统一：深 teal 实心 + 白字 + 浅蓝外环。
     const dateStr = date.format('YYYY-MM-DD');
@@ -285,7 +284,6 @@ export function CalendarPanel({ year, month, selectedRange, onSelect }: Calendar
         dateStr === selectedRange.startDate &&
         dateStr === selectedRange.endDate) ||
         ((selectedRange.type === 'week' || selectedRange.type === 'month') &&
-          dateStr === todayStr &&
           dateStr >= selectedRange.startDate &&
           dateStr <= selectedRange.endDate))
     );
