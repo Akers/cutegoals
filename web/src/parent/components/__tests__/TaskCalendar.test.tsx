@@ -542,9 +542,9 @@ describe('TaskCalendar - 双月日历组件', () => {
           {...defaultProps}
           baseMonth="2026-07"
           selectedRange={{
-            type: 'day',
-            startDate: '2026-07-24',
-            endDate: '2026-07-24',
+            type: 'week',
+            startDate: '2026-07-19',
+            endDate: '2026-07-25',
           }}
         />,
       );
@@ -888,21 +888,23 @@ describe('TaskCalendar - 双月日历组件', () => {
 
     // Scenario 5: 非当前月面板(day 选中)该天不在范围内不高亮
     it('非当前月面板中 selectedRange=day(不在范围内) 时该 cell 不高亮', () => {
-      // 2026-08 面板选中 2026-07-15 (不在 8 月范围内)
+      // baseMonth='2026-08' → 面板1=8月(当前月), 面板2=9月(非当前月)
+      // selectedRange.type='week' 使面板2 monthStr='2026-09'（week 类型时 value=monthDate）
+      // 9月面板中没有 8 月的 week，所以高亮数量为 0
       render(
         <TaskCalendar
           {...defaultProps}
           baseMonth="2026-08"
           selectedRange={{
-            type: 'day',
-            startDate: '2026-07-15',
-            endDate: '2026-07-15',
+            type: 'week',
+            startDate: '2026-08-10',
+            endDate: '2026-08-16',
           }}
         />,
       );
-      // 八月面板没有 7/15，所以不应该有任何高亮
-      const augCalendar = screen.getByTestId('mock-calendar-2026-08');
-      const cells = augCalendar.querySelectorAll('[data-selected="true"]');
+      // 九月面板的 Calendar monthStr='2026-09'（week 类型时 monthDate=9月1日）
+      const septCalendar = screen.getByTestId('mock-calendar-2026-09');
+      const cells = septCalendar.querySelectorAll('[data-selected="true"]');
       expect(cells.length).toBe(0);
     });
   });
