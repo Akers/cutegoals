@@ -436,6 +436,15 @@ export function TaskCalendar({
           z-index: 2 !important;
           position: relative;
         }
+        /* fix-build: today cell 非 selected 时 date-value 用深 teal 色,
+           避免白字在白底 + today 默认浅蓝边框上不可见。
+           当 today 被 selected 时,已有的 .ant-picker-cell-selected 规则覆盖
+           (color: inherit → 最终由 inner div 的白字决定)。 */
+        .task-calendar-grid .ant-picker-cell-today:not(.ant-picker-cell-selected) .ant-picker-calendar-date-value {
+          color: #0d9488 !important;
+          z-index: 2 !important;
+          position: relative;
+        }
       `}</style>
 
       {/* 导航栏 */}
