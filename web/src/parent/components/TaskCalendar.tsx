@@ -214,13 +214,6 @@ export function CalendarPanel({ year, month, selectedRange, onSelect }: Calendar
   const { data: calendarData, loading, error, refetch } = useApi<CalendarData>(apiPath);
   const monthDate = dayjs(`${year}-${String(month).padStart(2, '0')}-01`);
 
-  // 修复 fix-calendar-default-current-date / fix-calendar-non-current-no-highlight：
-  //   - 当前月面板: value=today 让 antd 内置高亮今日
-  //   - 非当前月面板: value=undefined 让 antd 不内置高亮任何 cell
-  //     (默认显示由 defaultValue={monthDate} 承担)
-  const today = dayjs();
-  const isCurrentMonth = today.year() === year && today.month() + 1 === month;
-
   // ── 加载态 ──
   if (loading) {
     return (
@@ -290,12 +283,7 @@ export function CalendarPanel({ year, month, selectedRange, onSelect }: Calendar
   return (
     <div
       data-testid={`calendar-panel-${year}-${month}`}
-      // fix-calendar-non-current-no-highlight-v2: 给非当前月面板加
-      // task-calendar-non-current-month 类,TaskCalendar 顶部 <style> 用该类
-      // 作 CSS 选择器前缀,局部覆盖 antd .ant-picker-cell-selected 的
-      // 绿底/字色。当前月面板 className 为 task-calendar-current-month,
-      // CSS 不匹配,行为不变。
-      className={isCurrentMonth ? 'task-calendar-current-month' : 'task-calendar-non-current-month'}
+      className="task-calendar-current-month"
       style={{ display: 'flex', flexDirection: 'column' }}
     >
       {/* 月份标题：跨越面板全宽，避免周号列从月份标题位置开始排布导致整体错位 */}
@@ -319,17 +307,15 @@ export function CalendarPanel({ year, month, selectedRange, onSelect }: Calendar
               .ant-picker-cell-selected 的视觉样式。 */}
         <div
           style={{ flex: 1, minWidth: 0 }}
-          className={
-            isCurrentMonth ? 'task-calendar-current-month' : 'task-calendar-non-current-month'
-          }
+          className="task-calendar-current-month"
         >
           <Calendar
             value={(() => {
-              if (!selectedRange) return isCurrentMonth ? today : monthDate;
+              if (!selectedRange) return monthDate;
               if (selectedRange.type === 'day') {
                 return dayjs(selectedRange.startDate);
               }
-              return isCurrentMonth ? today : monthDate;
+              return monthDate;
             })()}
             fullscreen={false}
             headerRender={() => null}
