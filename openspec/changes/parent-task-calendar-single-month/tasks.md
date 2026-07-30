@@ -7,8 +7,8 @@
 
 ## 2. 同步更新单元测试
 
-- [ ] 2.1 更新 `web/src/parent/components/TaskCalendar.test.tsx`：删除双月场景断言（双 CalendarPanel 渲染、双 API 请求、双月标题）
-- [ ] 2.2 添加单月场景断言：单 CalendarPanel 渲染、导航按钮切换 baseMonth 触发单次 API 请求、单月标题格式
+- [x] 2.1 更新 `web/src/parent/components/TaskCalendar.test.tsx`：删除双月场景断言（双 CalendarPanel 渲染、双 API 请求、双月标题）
+- [x] 2.2 添加单月场景断言：单 CalendarPanel 渲染、导航按钮切换 baseMonth 触发单次 API 请求、单月标题格式
 
 ## 3. 验证
 
