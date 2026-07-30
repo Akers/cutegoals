@@ -344,11 +344,7 @@ export function TaskCalendar({
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-      {/* 响应式媒体查询：小屏幕两列变一列 */}
       <style>{`
-        @media (max-width: 767px) {
-          .task-calendar-grid { grid-template-columns: 1fr !important; }
-        }
         /* 单月模式下不再需要抑制高亮 */
         /* Plan D: 不再抑制 antd selected 视觉,而是用 CSS 直接覆盖为 teal 实心。 */
 
@@ -390,13 +386,12 @@ export function TaskCalendar({
         <Button onClick={() => onNavigate(1)}>{'>'}</Button>
       </div>
 
-      {/* 双月面板：CSS Grid 自适应布局 */}
+      {/* 单月面板容器 */}
       <div
         className="task-calendar-grid"
         style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))',
-          gap: 16,
+          display: 'block',
+          width: '100%',
         }}
       >
         {/* 单月面板 */}
