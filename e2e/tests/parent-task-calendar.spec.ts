@@ -1,10 +1,10 @@
 import { test, expect } from '@playwright/test';
 
 /**
- * 家长端双月任务日历 E2E 测试
+ * 家长端单月任务日历 E2E 测试
  *
  * 覆盖：
- * - 双月日历渲染（桌面/移动端）
+ * - 单月日历渲染
  * - 日期点击 → 任务列表联动
  * - 任务类型筛选
  * - 查看全部模式
@@ -16,7 +16,7 @@ import { test, expect } from '@playwright/test';
  */
 const BASE_URL = process.env.BASE_URL || 'http://localhost:80';
 
-test.describe('家长端双月任务日历', () => {
+test.describe('家长端单月任务日历', () => {
 
   test.beforeEach(async ({ page }) => {
     // 登录为家长角色
@@ -25,16 +25,16 @@ test.describe('家长端双月任务日历', () => {
     // 此处为测试骨架，需要配合已有认证流程
   });
 
-  test('页面加载后显示双月日历', async ({ page }) => {
+  test('页面加载后显示单月日历', async ({ page }) => {
     await page.goto(`${BASE_URL}/parent/tasks`);
 
-    // 验证双月日历渲染
+    // 验证单月日历渲染
     const calendarGrid = page.locator('.task-calendar-grid');
     await expect(calendarGrid).toBeVisible();
 
-    // 验证两个日历面板
-    const panels = calendarGrid.locator('.calendar-panel');
-    await expect(panels).toHaveCount(2);
+    // 验证一个日历面板
+    const panel = calendarGrid.locator('.calendar-panel');
+    await expect(panel).toHaveCount(1);
   });
 
   test('点击有色日期 → 下方任务列表刷新为当天任务', async ({ page }) => {
@@ -94,13 +94,15 @@ test.describe('家长端双月任务日历', () => {
     await expect(selectedCell).toHaveCount(0);
   });
 
-  test('移动端日历上下堆叠', async ({ page }) => {
+  test('移动端单月布局', async ({ page }) => {
     // 设置为移动端视口
     await page.setViewportSize({ width: 375, height: 812 });
     await page.goto(`${BASE_URL}/parent/tasks`);
 
-    // 验证日历使用单列布局
+    // 验证日历在移动端仍然单月可见
     const calendarGrid = page.locator('.task-calendar-grid');
-    // 通过 CSS 属性验证 grid 为单列
+    await expect(calendarGrid).toBeVisible();
+    const panel = calendarGrid.locator('.calendar-panel');
+    await expect(panel).toHaveCount(1);
   });
 });
