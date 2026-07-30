@@ -504,3 +504,11 @@ base-ref: a5b57d815de2dfe7ae3b1bf26189b4209d3704f9
 | _（tasks.md 未列）_ Decision 9 E2E 调整 | Task 3.3 | ✓ 细化新增 |
 | _（tasks.md 未列）_ Decision 10 Spec Patch | Task 4.1 | ✓ 细化新增 |
 | _（tasks.md 未列）_ Task 3.2 ParentTasksPage.test 校验 | Task 3.2 | ✓ 验证确认 |
+
+---
+
+## 任务完成状态
+
+> 用于 `comet state task-checkoff` 验证。每行格式 `- [x] Task N.N: <唯一文本>`。
+
+- [x] Task 1.1: 简化 CalendarPanel 内部（删除 isCurrentMonth + 简化 antd value + 硬编码 className）
