@@ -349,12 +349,7 @@ export function TaskCalendar({
         @media (max-width: 767px) {
           .task-calendar-grid { grid-template-columns: 1fr !important; }
         }
-        /* fix-calendar-non-current-no-highlight-v2:
-           非当前月面板抑制 antd <Calendar> 的内置 cell-selected 绿底/字色。
-           antd 内部 useMergedState 在 value=undefined 时回退 defaultValue,
-           导致 cell 仍被添加 .ant-picker-cell-selected 类;此处用 scoped CSS
-           局部覆盖视觉样式,不影响其他 antd 实例(选择器以
-           .task-calendar-non-current-month 开头限定作用域)。 */
+        /* 单月模式下不再需要抑制高亮 */
         /* Plan D: 不再抑制 antd selected 视觉,而是用 CSS 直接覆盖为 teal 实心。 */
 
         /* selected day: teal 实心背景 + 白字 */
@@ -374,22 +369,9 @@ export function TaskCalendar({
           border: 1px solid #1677ff !important;
           border-radius: 4px;
         }
-        .task-calendar-non-current-month .ant-picker-cell-today:not(.ant-picker-cell-selected) .ant-picker-calendar-date {
-          border: 1px solid #1677ff !important;
-          border-radius: 4px;
-        }
         /* today 字色 teal (在 antd 浅蓝边框内可见); today 透明背景已由 antd 内置提供 */
         .task-calendar-current-month .ant-picker-cell-today .ant-picker-calendar-date-value {
           color: #0d9488 !important;
-        }
-
-        /* 非当前月面板: 保持默认 antd 行为（无 selected 视觉） */
-        .task-calendar-non-current-month .ant-picker-cell-selected .ant-picker-calendar-date,
-        .task-calendar-non-current-month .ant-picker-cell-selected .ant-picker-calendar-date-today {
-          background: transparent !important;
-        }
-        .task-calendar-non-current-month .ant-picker-cell-selected .ant-picker-calendar-date-value {
-          color: inherit !important;
         }
 
       `}</style>
