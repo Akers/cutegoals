@@ -518,3 +518,4 @@ base-ref: a5b57d815de2dfe7ae3b1bf26189b4209d3704f9
 - [x] Task 3.1: 重写 TaskCalendar.test.tsx 为单月场景
 - [x] Task 3.2: 校验 ParentTasksPage.test.tsx 无需变更
 - [x] Task 3.3: 更新 E2E 测试 parent-task-calendar.spec.ts
+- [x] Task 4.1: 修改 default-selected scenario + 新增 baseMonth 包含今天场景 (zero-change; brief 新描述与 Design Doc §Requirement line 24 + 实际行为三方矛盾，reviewer Approved Option A — spec.md 已准确反映实际行为；archive 待办：修正 Design Doc §Decision 6 "视觉权衡" stale premise)
