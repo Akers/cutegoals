@@ -513,3 +513,4 @@ base-ref: a5b57d815de2dfe7ae3b1bf26189b4209d3704f9
 
 - [x] Task 1.1: 简化 CalendarPanel 内部（删除 isCurrentMonth + 简化 antd value + 硬编码 className）
 - [x] Task 1.2: 删除第二个 CalendarPanel + 简化导航栏标题 + 删除 nextMonth
+- [x] Task 2.1: 删除 .task-calendar-non-current-month-* CSS 规则

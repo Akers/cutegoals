@@ -2,7 +2,7 @@
 
 - [x] 1.1 修改 TaskCalendar 移除第二个 CalendarPanel：删除 `nextMonth` 计算与第二个 `<CalendarPanel>` 渲染（web/src/parent/components/TaskCalendar.tsx 约 437-451 行）
 - [x] 1.2 简化导航栏标题：移除 `{currentMonth.format('YYYY年M月')} — {nextMonth.format('YYYY年M月')}` 中的 ` — {nextMonth.format(...)}` 部分，只保留当前月标题
-- [ ] 1.3 简化 CSS：删除 `.task-calendar-non-current-month-*` 全部规则（非当前月面板 cell-selected 透明覆盖、非当前月 today 浅蓝边框），保留 `.task-calendar-current-month-*` 全部规则
+- [x] 1.3 简化 CSS：删除 `.task-calendar-non-current-month-*` 全部规则（非当前月面板 cell-selected 透明覆盖、非当前月 today 浅蓝边框），保留 `.task-calendar-current-month-*` 全部规则
 - [ ] 1.4 简化 Grid 容器：`.task-calendar-grid` 样式从 `display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr))` 改为 `display: block; width: 100%`；移除 `<style>` 块中的 `@media (max-width: 767px)` 响应式覆盖
 
 ## 2. 同步更新单元测试
