@@ -339,9 +339,8 @@ export function TaskCalendar({
   // 解析 baseMonth
   const [year, month] = baseMonth.split('-').map(Number);
 
-  // 计算当前月和下月
+  // 计算当前月
   const currentMonth = dayjs(baseMonth + '-01');
-  const nextMonth = currentMonth.add(1, 'month');
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -405,9 +404,7 @@ export function TaskCalendar({
         }}
       >
         <Button onClick={() => onNavigate(-1)}>{'<'}</Button>
-        <span>
-          {currentMonth.format('YYYY年M月')} — {nextMonth.format('YYYY年M月')}
-        </span>
+        <span>{currentMonth.format('YYYY年M月')}</span>
         <Button onClick={() => onNavigate(1)}>{'>'}</Button>
       </div>
 
@@ -420,18 +417,10 @@ export function TaskCalendar({
           gap: 16,
         }}
       >
-        {/* 第一个月份面板 */}
+        {/* 单月面板 */}
         <CalendarPanel
           year={year}
           month={month}
-          selectedRange={selectedRange}
-          onSelect={onSelect}
-        />
-
-        {/* 第二个月份面板 */}
-        <CalendarPanel
-          year={nextMonth.year()}
-          month={nextMonth.month() + 1}
           selectedRange={selectedRange}
           onSelect={onSelect}
         />
