@@ -12,6 +12,6 @@
 
 ## 3. 验证
 
-- [ ] 3.1 单元测试：`pnpm --filter web test TaskCalendar` 全部通过
-- [ ] 3.2 类型检查：`pnpm --filter web typecheck` 通过
+- [x] 3.1 单元测试：`pnpm --filter web test TaskCalendar` 全部通过
+- [x] 3.2 类型检查：`pnpm --filter web typecheck` 通过
 - [ ] 3.3 E2E：`pnpm test:e2e -- parent-task-calendar` 全部通过
