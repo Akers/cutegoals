@@ -1,0 +1,9 @@
+{
+  "openspec_proposal": "openspec/changes/parent-task-calendar-single-month/proposal.md",
+  "openspec_design": "openspec/changes/parent-task-calendar-single-month/design.md",
+  "openspec_tasks": "openspec/changes/parent-task-calendar-single-month/tasks.md",
+  "openspec_delta_spec": "openspec/changes/parent-task-calendar-single-month/specs/parent-task-calendar/spec.md",
+  "handoff_context": "openspec/changes/parent-task-calendar-single-month/.comet/handoff/design-context.json",
+  "handoff_markdown": "openspec/changes/parent-task-calendar-single-month/.comet/handoff/design-context.md",
+  "archive_directory": "openspec/changes/archive/2026-07-31-parent-task-calendar-single-month"
+}

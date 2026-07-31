@@ -1,40 +1,73 @@
 import { test, expect } from '@playwright/test';
 
 /**
- * 家长端双月任务日历 E2E 测试
+ * 家长端单月任务日历 E2E 测试
  *
  * 覆盖：
- * - 双月日历渲染（桌面/移动端）
+ * - 单月日历渲染
  * - 日期点击 → 任务列表联动
  * - 任务类型筛选
  * - 查看全部模式
  * - 跨月周号
+ *
+ * 认证：
+ *   beforeEach 通过 page.request 调用 POST /api/auth/login 完成家长登录。
+ *   - 默认行为：要求环境变量 E2E_PARENT_PHONE / E2E_PARENT_PASSWORD，
+ *     否则 test.skip（避免在缺失凭据的环境下污染 CI 失败计数）。
+ *   - 凭据应来自一次 /api/auth/initialize 写入的账号（该账号同时持有
+ *     INSTANCE_ADMIN + PARENT 双角色，可访问 /parent/*）。
+ *   - 登录成功写入的 HttpOnly cookies (access_token / refresh_token /
+ *     csrf_token) 通过 page.request 共享到 page context，后续
+ *     page.goto('/parent/tasks') 由 AuthGuard 校验通过。
  *
  * 需要运行中的 CuteGoals 实例。
  * 启动: docker compose -f deploy/docker-compose.yml up -d
  * 运行: npx playwright test tests/parent-task-calendar.spec.ts
  */
 const BASE_URL = process.env.BASE_URL || 'http://localhost:80';
+const PARENT_PHONE = process.env.E2E_PARENT_PHONE || '';
+const PARENT_PASSWORD = process.env.E2E_PARENT_PASSWORD || '';
 
-test.describe('家长端双月任务日历', () => {
+test.describe('家长端单月任务日历', () => {
 
-  test.beforeEach(async ({ page }) => {
-    // 登录为家长角色
-    await page.goto(`${BASE_URL}/parent/login`);
-    // 实际测试需要先初始化或使用已登录 cookie
-    // 此处为测试骨架，需要配合已有认证流程
+  test.beforeEach(async ({ page }, testInfo) => {
+    // 凭据缺失时静默跳过，避免给 CI 噪声
+    test.skip(
+      !PARENT_PHONE || !PARENT_PASSWORD,
+      'E2E 家长凭据缺失：设置 E2E_PARENT_PHONE 和 E2E_PARENT_PASSWORD（来源：/api/auth/initialize 创建的账号）',
+    );
+
+    // 通过 page.request 登录（与 page 共享 BrowserContext cookie jar）
+    const response = await page.request.post(`${BASE_URL}/api/auth/login`, {
+      data: { phone: PARENT_PHONE, password: PARENT_PASSWORD },
+      failOnStatusCode: false,
+    });
+
+    if (!response.ok()) {
+      const body = await response.text();
+      throw new Error(
+        `parent login failed (status=${response.status()}, url=${BASE_URL}/api/auth/login, body=${body || '<empty>'})`,
+      );
+    }
+
+    // 标记 cookie 已设，避免 beforeAll/log 误判
+    testInfo.attachments.push({
+      name: 'login-cookies',
+      body: Buffer.from(`logged in as ${PARENT_PHONE.slice(0, 3)}**** on ${BASE_URL}`),
+      contentType: 'text/plain',
+    });
   });
 
-  test('页面加载后显示双月日历', async ({ page }) => {
+  test('页面加载后显示单月日历', async ({ page }) => {
     await page.goto(`${BASE_URL}/parent/tasks`);
 
-    // 验证双月日历渲染
+    // 验证单月日历渲染
     const calendarGrid = page.locator('.task-calendar-grid');
     await expect(calendarGrid).toBeVisible();
 
-    // 验证两个日历面板
-    const panels = calendarGrid.locator('.calendar-panel');
-    await expect(panels).toHaveCount(2);
+    // 验证一个日历面板
+    const panel = calendarGrid.locator('.calendar-panel');
+    await expect(panel).toHaveCount(1);
   });
 
   test('点击有色日期 → 下方任务列表刷新为当天任务', async ({ page }) => {
@@ -94,13 +127,15 @@ test.describe('家长端双月任务日历', () => {
     await expect(selectedCell).toHaveCount(0);
   });
 
-  test('移动端日历上下堆叠', async ({ page }) => {
+  test('移动端单月布局', async ({ page }) => {
     // 设置为移动端视口
     await page.setViewportSize({ width: 375, height: 812 });
     await page.goto(`${BASE_URL}/parent/tasks`);
 
-    // 验证日历使用单列布局
+    // 验证日历在移动端仍然单月可见
     const calendarGrid = page.locator('.task-calendar-grid');
-    // 通过 CSS 属性验证 grid 为单列
+    await expect(calendarGrid).toBeVisible();
+    const panel = calendarGrid.locator('.calendar-panel');
+    await expect(panel).toHaveCount(1);
   });
 });
