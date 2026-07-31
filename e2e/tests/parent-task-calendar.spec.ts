@@ -10,19 +10,52 @@ import { test, expect } from '@playwright/test';
  * - 查看全部模式
  * - 跨月周号
  *
+ * 认证：
+ *   beforeEach 通过 page.request 调用 POST /api/auth/login 完成家长登录。
+ *   - 默认行为：要求环境变量 E2E_PARENT_PHONE / E2E_PARENT_PASSWORD，
+ *     否则 test.skip（避免在缺失凭据的环境下污染 CI 失败计数）。
+ *   - 凭据应来自一次 /api/auth/initialize 写入的账号（该账号同时持有
+ *     INSTANCE_ADMIN + PARENT 双角色，可访问 /parent/*）。
+ *   - 登录成功写入的 HttpOnly cookies (access_token / refresh_token /
+ *     csrf_token) 通过 page.request 共享到 page context，后续
+ *     page.goto('/parent/tasks') 由 AuthGuard 校验通过。
+ *
  * 需要运行中的 CuteGoals 实例。
  * 启动: docker compose -f deploy/docker-compose.yml up -d
  * 运行: npx playwright test tests/parent-task-calendar.spec.ts
  */
 const BASE_URL = process.env.BASE_URL || 'http://localhost:80';
+const PARENT_PHONE = process.env.E2E_PARENT_PHONE || '';
+const PARENT_PASSWORD = process.env.E2E_PARENT_PASSWORD || '';
 
 test.describe('家长端单月任务日历', () => {
 
-  test.beforeEach(async ({ page }) => {
-    // 登录为家长角色
-    await page.goto(`${BASE_URL}/parent/login`);
-    // 实际测试需要先初始化或使用已登录 cookie
-    // 此处为测试骨架，需要配合已有认证流程
+  test.beforeEach(async ({ page }, testInfo) => {
+    // 凭据缺失时静默跳过，避免给 CI 噪声
+    test.skip(
+      !PARENT_PHONE || !PARENT_PASSWORD,
+      'E2E 家长凭据缺失：设置 E2E_PARENT_PHONE 和 E2E_PARENT_PASSWORD（来源：/api/auth/initialize 创建的账号）',
+    );
+
+    // 通过 page.request 登录（与 page 共享 BrowserContext cookie jar）
+    const response = await page.request.post(`${BASE_URL}/api/auth/login`, {
+      data: { phone: PARENT_PHONE, password: PARENT_PASSWORD },
+      failOnStatusCode: false,
+    });
+
+    if (!response.ok()) {
+      const body = await response.text();
+      throw new Error(
+        `parent login failed (status=${response.status()}, url=${BASE_URL}/api/auth/login, body=${body || '<empty>'})`,
+      );
+    }
+
+    // 标记 cookie 已设，避免 beforeAll/log 误判
+    testInfo.attachments.push({
+      name: 'login-cookies',
+      body: Buffer.from(`logged in as ${PARENT_PHONE.slice(0, 3)}**** on ${BASE_URL}`),
+      contentType: 'text/plain',
+    });
   });
 
   test('页面加载后显示单月日历', async ({ page }) => {
