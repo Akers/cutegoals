@@ -1,0 +1,14 @@
+{
+  "change": "parent-task-calendar-single-month",
+  "phase": "design",
+  "mode": "compact",
+  "canonical_spec": "openspec",
+  "generated_by": "comet-handoff.sh",
+  "context_hash": "df2c3ca21d0da339a44354878c85e9f3f49836592997f0e23f20ee1242bcf30d",
+  "files": [
+    { "path": "openspec/changes/parent-task-calendar-single-month/proposal.md", "sha256": "76a93d4b4c823f53fca078bdd91e71f766d4a851a356791abfca518e303d3b2c" },
+    { "path": "openspec/changes/parent-task-calendar-single-month/design.md", "sha256": "663ab95ccf20328770ccd0a553d3ed4f531795c90e67c5d5e2ed0137dc6903b7" },
+    { "path": "openspec/changes/parent-task-calendar-single-month/tasks.md", "sha256": "cd77a264fe7d07d41a81f030f07e95bd6bdf955455756b8c806167fe8e45560d" },
+    { "path": "openspec/changes/parent-task-calendar-single-month/specs/parent-task-calendar/spec.md", "sha256": "4bc999e7b3786441c80da6232a8946ad8bb3f7f8116e3334c414f9ea05b32518" }
+  ]
+}

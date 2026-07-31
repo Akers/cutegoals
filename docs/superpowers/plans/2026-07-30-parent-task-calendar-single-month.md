@@ -2,6 +2,7 @@
 change: parent-task-calendar-single-month
 design-doc: docs/superpowers/specs/2026-07-30-parent-task-calendar-single-month-design.md
 base-ref: a5b57d815de2dfe7ae3b1bf26189b4209d3704f9
+archived-with: 2026-07-31-parent-task-calendar-single-month
 ---
 
 # parent-task-calendar-single-month 实施计划
