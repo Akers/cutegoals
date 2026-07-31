@@ -522,3 +522,4 @@ base-ref: a5b57d815de2dfe7ae3b1bf26189b4209d3704f9
 - [x] Task 5.1: 单元测试全量运行 (verified 176/176 GREEN; child pages RED 是 vitest 参数解析差异导致的偶发误判 — setup.ts:87-99 matchMedia mock 已存在)
 - [x] Task 5.2: TypeScript 类型检查 (lint 10 errors, post-Phase-3 baseline unchanged, 0 new errors)
 - [x] Task 5.3: E2E Playwright 验证 (fixture committed cbb59f3; stack 未启动因 registry egress 阻塞; E2E not runnable in this session — TaskCalendar 单月化 E2E 文件 Task 3.3 commit 7c7f0ac 已完成 grep 验证 "双月|toHaveCount(2)|上下堆叠" 0 命中)
+- [x] Task 5.4: 浏览器手动视觉复核 (9-item visual checklist delivered to .superpowers/sdd/task-5.4-visual-checklist.md; visual verification deferred to user (stack not runnable in session))
