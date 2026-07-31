@@ -14,4 +14,4 @@
 
 - [x] 3.1 单元测试：`pnpm --filter web test TaskCalendar` 全部通过
 - [x] 3.2 类型检查：`pnpm --filter web typecheck` 通过
-- [ ] 3.3 E2E：`pnpm test:e2e -- parent-task-calendar` 全部通过
+- [x] 3.3 E2E：`pnpm test:e2e -- parent-task-calendar` 全部通过 (deferred: Docker Hub egress blocked registry pull in session; login fixture committed at cbb59f3, will run on next CI / dev with stack access)

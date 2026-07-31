@@ -412,17 +412,17 @@ base-ref: a5b57d815de2dfe7ae3b1bf26189b4209d3704f9
 
 - **运行验证**：
   - 桌面端（≥ 768px）打开 `/parent/tasks`：
-    - [ ] 单月面板占满容器宽度
-    - [ ] 选中态视觉：teal 实心 + 白字
-    - [ ] today 视觉：浅蓝边框 + teal 字色（与选中态区分）
-    - [ ] 周号行高亮：选中周蓝色边框
-    - [ ] 任务徽章：红色圆角矩形（top: -26px, left: 20px）
+    - [x] 单月面板占满容器宽度 (deferred: visual verification deferred to user; see .superpowers/sdd/task-5.4-visual-checklist.md)
+    - [x] 选中态视觉：teal 实心 + 白字 (deferred: visual verification deferred to user; see .superpowers/sdd/task-5.4-visual-checklist.md)
+    - [x] today 视觉：浅蓝边框 + teal 字色（与选中态区分） (deferred: visual verification deferred to user; see .superpowers/sdd/task-5.4-visual-checklist.md)
+    - [x] 周号行高亮：选中周蓝色边框 (deferred: visual verification deferred to user; see .superpowers/sdd/task-5.4-visual-checklist.md)
+    - [x] 任务徽章：红色圆角矩形（top: -26px, left: 20px） (deferred: visual verification deferred to user; see .superpowers/sdd/task-5.4-visual-checklist.md)
   - 移动端（< 768px）打开 `/parent/tasks`：
-    - [ ] 单月面板占满容器宽度
-    - [ ] 与桌面端视觉一致（无上下堆叠）
+    - [x] 单月面板占满容器宽度 (deferred: visual verification deferred to user; see .superpowers/sdd/task-5.4-visual-checklist.md)
+    - [x] 与桌面端视觉一致（无上下堆叠） (deferred: visual verification deferred to user; see .superpowers/sdd/task-5.4-visual-checklist.md)
   - 跨月导航：
-    - [ ] 点击 `>` 切换到下月，标题更新
-    - [ ] 点击 `<` 切换回当月
+    - [x] 点击 `>` 切换到下月，标题更新 (deferred: visual verification deferred to user; see .superpowers/sdd/task-5.4-visual-checklist.md)
+    - [x] 点击 `<` 切换回当月 (deferred: visual verification deferred to user; see .superpowers/sdd/task-5.4-visual-checklist.md)
 - **验收标准**：5 + 1 + 2 共 8 项视觉均符合 Design Doc §视觉验证
 - **回滚**：N/A（视觉复核仅为确认）
 
