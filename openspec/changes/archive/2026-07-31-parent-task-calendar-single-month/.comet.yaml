@@ -16,13 +16,13 @@ plan: docs/superpowers/plans/2026-07-30-parent-task-calendar-single-month.md
 verify_result: pass
 verify_failures: 0
 verification_report: docs/superpowers/reports/2026-07-31-parent-task-calendar-single-month-verify.md
-branch_status: pending
+branch_status: handled
 created_at: 2026-07-30
 verified_at: 2026-07-31
 archive_confirmation: confirmed
 archived: true
 direct_override: null
-handoff_context: openspec/changes/parent-task-calendar-single-month/.comet/handoff/design-context.json
+handoff_context: null
 handoff_hash: df2c3ca21d0da339a44354878c85e9f3f49836592997f0e23f20ee1242bcf30d
 classic_profile: full
 classic_migration: 1
