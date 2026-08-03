@@ -70,6 +70,8 @@ function CalendarHeader({
         padding: '8px 0',
         cursor: 'pointer',
         userSelect: 'none',
+        // tweak-calendar-picker-font-size: 字号 +2 (antd 默认 ~14px → 16px)
+        fontSize: 16,
       }}
     >
       {year}年{month}月
@@ -176,7 +178,8 @@ export function WeekNumberColumn({
               justifyContent: 'center',
               padding: '0 8px',
               cursor: 'pointer',
-              fontSize: 12,
+              // tweak-calendar-picker-font-size: 字号 +2 (12 → 14)
+              fontSize: 14,
               textAlign: 'center',
               backgroundColor: hasTasks ? 'var(--ant-color-info-bg)' : undefined,
               borderBottom: '1px solid #f0f0f0',
@@ -370,6 +373,12 @@ export function TaskCalendar({
           color: #0d9488 !important;
         }
 
+        /* tweak-calendar-picker-font-size: 字号 +2 (antd 默认 ~14px → 16px)
+           日期单元格数字文本由 antd 内部渲染,外部行内 style 无法挂入,统一在此覆盖 */
+        .task-calendar-current-month .ant-picker-calendar-date-value {
+          font-size: 16px !important;
+        }
+
       `}</style>
 
       {/* 导航栏 */}
@@ -382,7 +391,7 @@ export function TaskCalendar({
         }}
       >
         <Button onClick={() => onNavigate(-1)}>{'<'}</Button>
-        <span>{currentMonth.format('YYYY年M月')}</span>
+        <span style={{ fontSize: 16 }}>{currentMonth.format('YYYY年M月')}</span>
         <Button onClick={() => onNavigate(1)}>{'>'}</Button>
       </div>
 
