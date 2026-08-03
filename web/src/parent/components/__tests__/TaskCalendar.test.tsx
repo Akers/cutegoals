@@ -331,15 +331,17 @@ describe('TaskCalendar - 单月日历组件', () => {
       expect(cell1.querySelector('[data-testid^="task-badge-"]')).not.toBeInTheDocument();
     });
 
-    it('任务数角标使用绝对定位 (top:-26px, left:20px, fontSize:7px,不撑高 cell 行高)', () => {
+    it('任务数角标使用绝对定位 (top:2px, left:2px, fontSize:7px,不撑高 cell 行高)', () => {
       render(<TaskCalendar {...defaultProps} />);
       const badge = within(singlePanel())
         .getByTestId('date-cell-1')
         .querySelector('[data-testid="task-badge-2026-07-01"]') as HTMLElement;
       expect(badge).toBeInTheDocument();
       expect(badge.style.position).toBe('absolute');
-      expect(badge.style.top).toBe('-26px');
-      expect(badge.style.left).toBe('20px');
+      // fix-calendar-task-badge-alignment: 角标应落在 cell 左上角内 2 px,
+      // 避免 top:-26 / left:20 导致的「角标跑到上一行」错位。
+      expect(badge.style.top).toBe('2px');
+      expect(badge.style.left).toBe('2px');
       expect(badge.style.fontSize).toBe('7px');
     });
 
