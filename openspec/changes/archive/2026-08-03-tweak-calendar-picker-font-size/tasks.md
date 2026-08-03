@@ -15,5 +15,5 @@
 
 ## 3. 提交与收尾
 
-- [ ] 3.1 提交代码：`tweak: 日历选择控件字号 +2 (date / week / month header)`，单 commit
-- [ ] 3.2 确认 `git status` 无遗留改动；运行 `openspec validate --change tweak-calendar-picker-font-size` 通过
+- [x] 3.1 提交代码：`tweak: 日历选择控件字号 +2 (date / week / month header)`，单 commit（实际为 1 个 commit + 1 次 amend，含 delta spec 与 proposal 同步；最终 hash `6b06dbf`）
+- [x] 3.2 确认 `git status` 无遗留改动；运行 `openspec validate --change tweak-calendar-picker-font-size` 通过 — 通过：`Change 'tweak-calendar-picker-font-size' is valid`（strict 模式）
