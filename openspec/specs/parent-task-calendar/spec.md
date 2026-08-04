@@ -55,6 +55,11 @@ TBD - created by archiving change parent-dual-month-task-calendar. Update Purpos
 - **WHEN** 2026-07-25 没有任何任务分配
 - **THEN** 该日期单元格显示默认样式，无徽章
 
+#### Scenario: 角标位置基线 (fix-calendar-task-badge-alignment)
+
+- **WHEN** 任何有任务的日期 cell（`total > 0`）通过 antd `dateCellRender` 渲染任务数角标（`data-testid="task-badge-<YYYY-MM-DD>"`）
+- **THEN** 角标实际渲染位置 SHALL 贴该日期内盒（.ant-picker-cell-inner）右上角（即 inline style `position: absolute; top: 0px; right: 0px`）；角标 SHALL NOT 跨出 cell 顶部进入上一行日期行；不同浏览器 / antd 版本下位置基线不变（由内联 style + vitest 断言兜底）
+
 ### Requirement: 周号指示器
 
 日历左侧 SHALL 显示 ISO 8601 周号。当周内任一天有任务分配时，该周号单元格 MUST 显示颜色标记（与优先级最高的任务类型同色），无任务的周 MUST 保持默认样式。周号 MUST 可点击。
