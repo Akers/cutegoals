@@ -262,10 +262,10 @@ export function CalendarPanel({ year, month, selectedRange, onSelect }: Calendar
         style={{
           position: 'absolute',
           zIndex: 1,
-          // fix-calendar-task-badge-alignment: 角标定位放回日期内盒右上角内 2 px,
+          // fix-calendar-task-badge-alignment: 角标贴日期内盒右上角 (top:0, right:0),
           // 避免原 top:-26 / left:20 导致的「角标跨入上一周日期行」错位。
-          top: 2,
-          right: 2,
+          top: 0,
+          right: 0,
           backgroundColor: '#ff4d4f',
           color: '#fff',
           borderRadius: 5,
