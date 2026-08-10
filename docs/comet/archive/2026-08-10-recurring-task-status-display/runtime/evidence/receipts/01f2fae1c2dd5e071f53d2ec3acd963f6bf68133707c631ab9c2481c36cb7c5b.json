@@ -1,0 +1,28 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "manual-evidence",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "recurring-task-status-display",
+    "sourceRevision": 3,
+    "contractHash": "6e42ad361c75ced3e791df2808bfbfb0275f18ab2f13cb8ae2c3b4cd0cf20cc3",
+    "scopeHash": "21b92af79c4fd14f40a9d0143247a394d2374dbfbfd794478b879bf9158794ac",
+    "snapshotHash": "84c6baa0ab91fbfe7acb7eada65e15ca490334ab91b5430d027de692eae7eb04",
+    "artifactHash": "cc649a02ea3ba688042a154e8904287194c2825198bebc0d0ef0b7e173961399"
+  },
+  "acceptanceIds": [
+    "acceptance-53b8d196d96d84535213401629e69365ba5bdc13fbd49d98e543b37b33a225e6"
+  ],
+  "actor": "native-runtime:manual-evidence",
+  "issuedAt": "2026-08-10T02:34:53.380Z",
+  "evidence": {
+    "steps": [
+      "代码审查 getCalendar 身份范围"
+    ],
+    "observations": [
+      "getCalendar(487行) 对孩子身份强制 childId=viewerChildId(501-502行)，孩子只能查看自己的日历；childId 查询参数仅对家长身份生效(503-505行)。"
+    ]
+  },
+  "receiptHash": "01f2fae1c2dd5e071f53d2ec3acd963f6bf68133707c631ab9c2481c36cb7c5b"
+}

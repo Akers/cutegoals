@@ -462,11 +462,14 @@ public class TaskAssignmentService {
 
         Page<TaskAssignment> page = taskAssignmentMapper.selectPage(new Page<>(pageNum, pageSize), wrapper);
 
+        // Batch-fetch progress data for REPEAT assignments
+        Map<String, Long> progressMap = buildProgressMap(page.getRecords());
+
         // Enrich with overdue info
         LocalDateTime now = LocalDateTime.now();
         List<Map<String, Object>> enrichedContent = new ArrayList<>();
         for (TaskAssignment assignment : page.getRecords()) {
-            enrichedContent.add(enrichAssignment(assignment, now));
+            enrichedContent.add(enrichAssignment(assignment, now, progressMap));
         }
 
         Map<String, Object> result = new LinkedHashMap<>();
@@ -549,8 +552,9 @@ public class TaskAssignmentService {
                 String status = assignment.getStatus() != null ? assignment.getStatus() : "PENDING";
                 dayData.merge(status.toLowerCase(), 1, (a, b) -> ((int) a) + 1);
 
-                // Overdue check
-                boolean isOverdue = now.isAfter(assignment.getDeadline())
+                // Overdue check — REPEAT assignments are never overdue
+                boolean isOverdue = !"REPEAT".equals(assignment.getSnapshotTemplateTaskType())
+                        && now.isAfter(assignment.getDeadline())
                         && !"APPROVED".equals(assignment.getStatus())
                         && !Boolean.TRUE.equals(assignment.getCancelled());
                 if (isOverdue) {
@@ -710,7 +714,14 @@ public class TaskAssignmentService {
             throw new BusinessException(ErrorCode.TASK_ASSIGNMENT_FORBIDDEN);
         }
 
-        return enrichAssignment(assignment, LocalDateTime.now());
+        // For REPEAT assignments, fetch progress data
+        Map<String, Long> progressMap = Collections.emptyMap();
+        if ("REPEAT".equals(assignment.getSnapshotTemplateTaskType())) {
+            List<TaskAssignment> singleList = List.of(assignment);
+            progressMap = buildProgressMap(singleList);
+        }
+
+        return enrichAssignment(assignment, LocalDateTime.now(), progressMap);
     }
 
     // ========== Late Policy Management ==========
@@ -774,7 +785,9 @@ public class TaskAssignmentService {
         item.put("submissionCount", assignment.getSubmissionCount());
 
         // Overdue is derived: strictly later than deadline
-        boolean isOverdue = now.isAfter(assignment.getDeadline())
+        // REPEAT assignments are never overdue regardless of deadline/status
+        boolean isOverdue = !"REPEAT".equals(assignment.getSnapshotTemplateTaskType())
+                && now.isAfter(assignment.getDeadline())
                 && !Boolean.TRUE.equals(assignment.getCancelled())
                 && !"APPROVED".equals(assignment.getStatus());
         item.put("overdue", isOverdue);
@@ -783,7 +796,75 @@ public class TaskAssignmentService {
         item.put("canSubmit", true);
         item.put("submissionBlockReason", null);
 
+        // Progress fields (null for non-REPEAT)
+        item.put("approvedSubmissionCount", null);
+        item.put("earnedPoints", null);
+
         return item;
+    }
+
+    private Map<String, Object> enrichAssignment(TaskAssignment assignment, LocalDateTime now,
+                                                 Map<String, Long> progressMap) {
+        Map<String, Object> item = enrichAssignment(assignment, now);
+
+        if ("REPEAT".equals(assignment.getSnapshotTemplateTaskType()) && progressMap != null) {
+            String key = assignment.getChildId() + ":" + assignment.getTemplateId();
+            Long approvedCount = progressMap.get(key + ":approved");
+            Long earnedPts = progressMap.get(key + ":earned");
+            item.put("approvedSubmissionCount", approvedCount != null ? approvedCount.intValue() : 0);
+            item.put("earnedPoints", earnedPts != null ? earnedPts.intValue() : 0);
+        }
+
+        return item;
+    }
+
+    /**
+     * Batch-fetch approved count and earned points for REPEAT assignments.
+     * Key format: childId:templateId:approved / childId:templateId:earned
+     * Returns empty map if no REPEAT assignments in the list.
+     */
+    private Map<String, Long> buildProgressMap(List<TaskAssignment> assignments) {
+        Map<String, Long> progressMap = new HashMap<>();
+
+        // Group REPEAT assignments by childId
+        Map<Long, List<Long>> byChild = new HashMap<>();
+        for (TaskAssignment a : assignments) {
+            if ("REPEAT".equals(a.getSnapshotTemplateTaskType())) {
+                byChild.computeIfAbsent(a.getChildId(), k -> new ArrayList<>()).add(a.getTemplateId());
+            }
+        }
+
+        if (byChild.isEmpty()) {
+            return progressMap;
+        }
+
+        // For each childId, issue at most 2 batch queries
+        for (Map.Entry<Long, List<Long>> entry : byChild.entrySet()) {
+            Long childId = entry.getKey();
+            List<Long> templateIds = entry.getValue();
+
+            // Batch query for approved counts
+            List<Map<String, Object>> approvedRows = taskAssignmentMapper.countApprovedBatch(childId, templateIds);
+            for (Map<String, Object> row : approvedRows) {
+                Object templateIdObj = row.get("templateId");
+                Object countObj = row.get("approvedCount");
+                long templateId = templateIdObj instanceof Number ? ((Number) templateIdObj).longValue() : 0L;
+                long count = countObj instanceof Number ? ((Number) countObj).longValue() : 0L;
+                progressMap.put(childId + ":" + templateId + ":approved", count);
+            }
+
+            // Batch query for earned points
+            List<Map<String, Object>> earnedRows = taskAssignmentMapper.sumEarnBatch(childId, templateIds);
+            for (Map<String, Object> row : earnedRows) {
+                Object templateIdObj = row.get("templateId");
+                Object amountObj = row.get("earnedPoints");
+                long templateId = templateIdObj instanceof Number ? ((Number) templateIdObj).longValue() : 0L;
+                long amount = amountObj instanceof Number ? ((Number) amountObj).longValue() : 0L;
+                progressMap.put(childId + ":" + templateId + ":earned", amount);
+            }
+        }
+
+        return progressMap;
     }
 
     private String getFamilyLatePolicy(Long familyId) {

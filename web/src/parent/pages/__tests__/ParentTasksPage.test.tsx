@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import dayjs from 'dayjs';
 
 // ── Global mocks ──────────────────────────────────────────────────
 vi.mock('@shared/hooks/useApi', () => ({
@@ -35,7 +34,7 @@ vi.mock('@parent/components/PrizeTypeConfigForms', () => ({
 // Mock TaskCalendar — it has its own thorough tests; avoid
 // antd Calendar dayjs plugin incompatibility in jsdom.
 vi.mock('@parent/components/TaskCalendar', () => ({
-  TaskCalendar: ({ baseMonth, selectedRange, onSelect, onNavigate }: any) => {
+  TaskCalendar: ({ baseMonth, selectedRange }: any) => {
     const React = require('react');
     return React.createElement(
       'div',
@@ -55,10 +54,12 @@ import { useApi } from '@shared/hooks/useApi';
 const mockUseApi = vi.mocked(useApi);
 
 import {
+  buildQueryA,
+  buildQueryRepeat,
   calendarReducer,
   type CalendarPageState,
-  type CalendarAction2,
   ParentTasksPage,
+  formatRepeatProgress,
 } from '../index';
 
 // ═══════════════════════════════════════════════════════════════════
@@ -67,80 +68,34 @@ import {
 describe('calendarReducer - pure function', () => {
   const baseState: CalendarPageState = {
     baseMonth: '2026-07',
-    selectedRange: null,
+    selectedDate: '2026-07-15',
     taskTypeFilters: ['LIMITED', 'REPEAT', 'STANDING'],
-    viewAllMode: false,
   };
 
   describe('SELECT_DATE', () => {
-    it('设置 selectedRange 为单日', () => {
-      const next = calendarReducer(baseState, { type: 'SELECT_DATE', date: '2026-07-15' });
-      expect(next.selectedRange).toEqual({
-        type: 'day',
-        startDate: '2026-07-15',
-        endDate: '2026-07-15',
-      });
-      expect(next.viewAllMode).toBe(false);
+    it('设置 selectedDate 为指定日期', () => {
+      const next = calendarReducer(baseState, { type: 'SELECT_DATE', date: '2026-08-01' });
+      expect(next.selectedDate).toBe('2026-08-01');
+    });
+
+    it('selectedDate 变为 null 后可恢复', () => {
+      const s1 = calendarReducer(baseState, { type: 'CLEAR_DATE' });
+      expect(s1.selectedDate).toBeNull();
+      const s2 = calendarReducer(s1, { type: 'SELECT_DATE', date: '2026-09-01' });
+      expect(s2.selectedDate).toBe('2026-09-01');
     });
   });
 
-  describe('SELECT_WEEK', () => {
-    it('设置 selectedRange 为周（7天）', () => {
-      const next = calendarReducer(baseState, { type: 'SELECT_WEEK', startDate: '2026-07-06' });
-      expect(next.selectedRange).toEqual({
-        type: 'week',
-        startDate: '2026-07-06',
-        endDate: '2026-07-12',
-      });
-      expect(next.viewAllMode).toBe(false);
+  describe('CLEAR_DATE', () => {
+    it('selectedDate 有值时变为 null', () => {
+      const next = calendarReducer(baseState, { type: 'CLEAR_DATE' });
+      expect(next.selectedDate).toBeNull();
     });
 
-    it('处理跨月周', () => {
-      const next = calendarReducer(baseState, { type: 'SELECT_WEEK', startDate: '2026-06-29' });
-      expect(next.selectedRange).toEqual({
-        type: 'week',
-        startDate: '2026-06-29',
-        endDate: '2026-07-05',
-      });
-    });
-
-    it('周日开始到周六', () => {
-      const next = calendarReducer(baseState, { type: 'SELECT_WEEK', startDate: '2026-07-05' });
-      expect(next.selectedRange).toEqual({
-        type: 'week',
-        startDate: '2026-07-05',
-        endDate: '2026-07-11',
-      });
-    });
-  });
-
-  describe('SELECT_MONTH', () => {
-    it('设置 selectedRange 为整月', () => {
-      const next = calendarReducer(baseState, { type: 'SELECT_MONTH', year: 2026, month: 7 });
-      expect(next.selectedRange).toEqual({
-        type: 'month',
-        startDate: '2026-07-01',
-        endDate: '2026-07-31',
-      });
-      expect(next.viewAllMode).toBe(false);
-    });
-
-    it('处理2月闰年', () => {
-      const next = calendarReducer(baseState, { type: 'SELECT_MONTH', year: 2024, month: 2 });
-      expect(next.selectedRange).toEqual({
-        type: 'month',
-        startDate: '2024-02-01',
-        endDate: '2024-02-29',
-      });
-    });
-
-    it('处理2月平年', () => {
-      const next = calendarReducer(baseState, { type: 'SELECT_MONTH', year: 2025, month: 2 });
-      expect(next.selectedRange).toEqual({
-        type: 'month',
-        startDate: '2025-02-01',
-        endDate: '2025-02-28',
-      });
+    it('selectedDate 已为 null 时保持 null', () => {
+      const nullState: CalendarPageState = { ...baseState, selectedDate: null };
+      const next = calendarReducer(nullState, { type: 'CLEAR_DATE' });
+      expect(next.selectedDate).toBeNull();
     });
   });
 
@@ -159,81 +114,102 @@ describe('calendarReducer - pure function', () => {
       const next = calendarReducer(
         {
           ...baseState,
-          viewAllMode: true,
-          selectedRange: { type: 'day', startDate: '2026-07-01', endDate: '2026-07-01' },
+          selectedDate: '2026-07-20',
         },
         { type: 'SET_FILTERS', payload: ['REPEAT'] },
       );
       expect(next.taskTypeFilters).toEqual(['REPEAT']);
-      expect(next.viewAllMode).toBe(true);
-      expect(next.selectedRange).toBeTruthy();
-    });
-  });
-
-  describe('VIEW_ALL', () => {
-    it('设置 viewAllMode=true 并清除 selectedRange', () => {
-      const stateWithSelection: CalendarPageState = {
-        ...baseState,
-        selectedRange: { type: 'day', startDate: '2026-07-01', endDate: '2026-07-01' },
-      };
-      const next = calendarReducer(stateWithSelection, { type: 'VIEW_ALL' });
-      expect(next.viewAllMode).toBe(true);
-      expect(next.selectedRange).toBeNull();
-    });
-
-    it('重复 VIEW_ALL 保持 viewAllMode=true', () => {
-      const next = calendarReducer({ ...baseState, viewAllMode: true }, { type: 'VIEW_ALL' });
-      expect(next.viewAllMode).toBe(true);
+      expect(next.selectedDate).toBe('2026-07-20');
     });
   });
 
   describe('NAV_MONTH', () => {
     it('NAV_MONTH 前进一个月', () => {
-      const next = calendarReducer(baseState, { type: 'NAV_MONTH', payload: 1 });
+      const next = calendarReducer(baseState, { type: 'NAV_MONTH', payload: { baseMonth: '2026-07', direction: 1 } });
       expect(next.baseMonth).toBe('2026-08');
     });
 
     it('NAV_MONTH 后退一个月', () => {
-      const next = calendarReducer(baseState, { type: 'NAV_MONTH', payload: -1 });
+      const next = calendarReducer(baseState, { type: 'NAV_MONTH', payload: { baseMonth: '2026-07', direction: -1 } });
       expect(next.baseMonth).toBe('2026-06');
     });
 
     it('跨年 NAV_MONTH 前进', () => {
       const state: CalendarPageState = { ...baseState, baseMonth: '2026-12' };
-      const next = calendarReducer(state, { type: 'NAV_MONTH', payload: 1 });
+      const next = calendarReducer(state, { type: 'NAV_MONTH', payload: { baseMonth: '2026-12', direction: 1 } });
       expect(next.baseMonth).toBe('2027-01');
     });
 
     it('跨年 NAV_MONTH 后退', () => {
       const state: CalendarPageState = { ...baseState, baseMonth: '2026-01' };
-      const next = calendarReducer(state, { type: 'NAV_MONTH', payload: -1 });
+      const next = calendarReducer(state, { type: 'NAV_MONTH', payload: { baseMonth: '2026-01', direction: -1 } });
       expect(next.baseMonth).toBe('2025-12');
     });
   });
 
   describe('复合交互场景', () => {
-    it('SELECT_DATE 后 VIEW_ALL 清除选择', () => {
-      const s1 = calendarReducer(baseState, { type: 'SELECT_DATE', date: '2026-07-15' });
-      expect(s1.selectedRange).not.toBeNull();
-      const s2 = calendarReducer(s1, { type: 'VIEW_ALL' });
-      expect(s2.selectedRange).toBeNull();
-      expect(s2.viewAllMode).toBe(true);
+    it('SELECT_DATE 后 CLEAR_DATE 清除选择', () => {
+      const s1 = calendarReducer(baseState, { type: 'SELECT_DATE', date: '2026-08-01' });
+      expect(s1.selectedDate).toBe('2026-08-01');
+      const s2 = calendarReducer(s1, { type: 'CLEAR_DATE' });
+      expect(s2.selectedDate).toBeNull();
     });
 
-    it('VIEW_ALL 后 SELECT_DATE 重置 viewAllMode', () => {
-      const s1 = calendarReducer(baseState, { type: 'VIEW_ALL' });
-      expect(s1.viewAllMode).toBe(true);
-      const s2 = calendarReducer(s1, { type: 'SELECT_DATE', date: '2026-08-01' });
-      expect(s2.viewAllMode).toBe(false);
-      expect(s2.selectedRange).not.toBeNull();
+    it('CLEAR_DATE 后 SELECT_DATE 重置 selectedDate', () => {
+      const s1 = calendarReducer(baseState, { type: 'CLEAR_DATE' });
+      expect(s1.selectedDate).toBeNull();
+      const s2 = calendarReducer(s1, { type: 'SELECT_DATE', date: '2026-09-01' });
+      expect(s2.selectedDate).toBe('2026-09-01');
     });
 
     it('SET_FILTERS 后 NAV_MONTH 保留筛选', () => {
       const s1 = calendarReducer(baseState, { type: 'SET_FILTERS', payload: ['STANDING'] });
-      const s2 = calendarReducer(s1, { type: 'NAV_MONTH', payload: 1 });
+      const s2 = calendarReducer(s1, { type: 'NAV_MONTH', payload: { baseMonth: '2026-07', direction: 1 } });
       expect(s2.taskTypeFilters).toEqual(['STANDING']);
       expect(s2.baseMonth).toBe('2026-08');
     });
+  });
+});
+
+// ═══════════════════════════════════════════════════════════════════
+// 3.4a-bis: buildQueryA / buildQueryRepeat 分页参数测试
+// 回归：pageSize 必须落在后端 TaskAssignmentService 校验区间 [1,100] 内
+// ═══════════════════════════════════════════════════════════════════
+describe('buildQueryA / buildQueryRepeat - pageSize 回归', () => {
+  const stateWithDate: CalendarPageState = {
+    baseMonth: '2026-07',
+    selectedDate: '2026-07-15',
+    taskTypeFilters: ['LIMITED', 'REPEAT', 'STANDING'],
+  };
+  const stateViewAll: CalendarPageState = { ...stateWithDate, selectedDate: null };
+
+  const paramsOf = (q: string) => new URL(q, 'http://localhost').searchParams;
+
+  it('A1: buildQueryA 默认带日期时 pageSize=100 且携带 startDate/endDate', () => {
+    const p = paramsOf(buildQueryA(stateWithDate));
+    expect(p.get('pageSize')).toBe('100');
+    expect(p.get('startDate')).toBe('2026-07-15');
+    expect(p.get('endDate')).toBe('2026-07-15');
+  });
+
+  it('A1: buildQueryRepeat pageSize=100 且固定 taskType=REPEAT', () => {
+    const p = paramsOf(buildQueryRepeat(stateWithDate));
+    expect(p.get('pageSize')).toBe('100');
+    expect(p.get('taskType')).toBe('REPEAT');
+  });
+
+  it('A2: 切换日期后 buildQueryA 仍 pageSize=100 且携带对应日期', () => {
+    const p = paramsOf(buildQueryA({ ...stateWithDate, selectedDate: '2026-08-01' }));
+    expect(p.get('pageSize')).toBe('100');
+    expect(p.get('startDate')).toBe('2026-08-01');
+    expect(p.get('endDate')).toBe('2026-08-01');
+  });
+
+  it('A3: 查看全部（selectedDate=null）时 buildQueryA pageSize=100 且不带日期', () => {
+    const p = paramsOf(buildQueryA(stateViewAll));
+    expect(p.get('pageSize')).toBe('100');
+    expect(p.get('startDate')).toBeNull();
+    expect(p.get('endDate')).toBeNull();
   });
 });
 
@@ -244,7 +220,7 @@ describe('ParentTasksPage - component rendering', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockUseApi.mockReturnValue({
-      data: { content: [], page: 1, pageSize: 20, totalElements: 0, totalPages: 0 },
+      data: { content: [], page: 1, pageSize: 100, totalElements: 0, totalPages: 0 },
       loading: false,
       error: undefined,
       refetch: vi.fn(),
@@ -312,11 +288,10 @@ describe('ParentTasksPage - component rendering', () => {
     mockUseApi.mockReturnValue({
       data: undefined,
       loading: false,
-      error: { error_code: 'NETWORK_ERROR', message: '加载失败' },
+      error: { message: 'network' } as any,
       refetch: vi.fn(),
     });
     render(<ParentTasksPage />);
-    // Both title and subtitle may contain "加载失败"
     const errorTexts = screen.getAllByText('加载失败');
     expect(errorTexts.length).toBeGreaterThanOrEqual(1);
   });
@@ -350,7 +325,7 @@ describe('ParentTasksPage - component rendering', () => {
           },
         ],
         page: 1,
-        pageSize: 20,
+        pageSize: 100,
         totalElements: 1,
         totalPages: 1,
       },
@@ -363,9 +338,238 @@ describe('ParentTasksPage - component rendering', () => {
     expect(screen.getByText('待处理')).toBeInTheDocument();
   });
 
+  // ═══════════════ A∪B∪C 合并去重═══════════════
+  describe('A∪B∪C 合并去重', () => {
+    it('合并 A 类（deadline命中）+ B类（WEEKLY）+ C类（DAILY），MONTHLY 被过滤', () => {
+      // 调用顺序: queryA → queryRepeat → templates → children
+      mockUseApi
+        .mockReturnValueOnce({
+          data: {
+            content: [
+              {
+                id: 1,
+                childId: 10,
+                templateId: 100,
+                difficultyId: 5,
+                status: 'PENDING',
+                deadline: '2026-07-15',
+                snapshotTemplateName: 'taskA1',
+                snapshotDifficultyName: '中级',
+                snapshotDifficultyReward: 50,
+                snapshotTemplateTaskType: 'LIMITED',
+                overdue: false,
+                snapshotTemplateAllowResubmit: false,
+                snapshotTemplateMaxSubmissions: 1,
+                snapshotTemplatePointsCap: 100,
+                canSubmit: true,
+                submissionBlockReason: null,
+              },
+              {
+                id: 2,
+                childId: 10,
+                templateId: 101,
+                difficultyId: 5,
+                status: 'PENDING',
+                deadline: '2026-07-15',
+                snapshotTemplateName: 'taskA2',
+                snapshotDifficultyName: '中级',
+                snapshotDifficultyReward: 50,
+                snapshotTemplateTaskType: 'STANDING',
+                overdue: false,
+                snapshotTemplateAllowResubmit: false,
+                snapshotTemplateMaxSubmissions: 1,
+                snapshotTemplatePointsCap: 100,
+                canSubmit: true,
+                submissionBlockReason: null,
+              },
+            ],
+            page: 1,
+            pageSize: 100,
+            totalElements: 2,
+            totalPages: 1,
+          },
+          loading: false,
+          error: undefined,
+          refetch: vi.fn(),
+        })
+        .mockReturnValueOnce({
+          data: {
+            content: [
+              {
+                id: 3,
+                childId: 10,
+                templateId: 102,
+                difficultyId: 5,
+                status: 'PENDING',
+                deadline: '2026-07-20',
+                snapshotTemplateName: 'taskBWeekly',
+                snapshotDifficultyName: '中级',
+                snapshotDifficultyReward: 50,
+                snapshotTemplateTaskType: 'REPEAT',
+                snapshotTemplateTypeConfig: JSON.stringify({ frequency: 'WEEKLY' }),
+                overdue: false,
+                snapshotTemplateAllowResubmit: false,
+                snapshotTemplateMaxSubmissions: 1,
+                snapshotTemplatePointsCap: 100,
+                canSubmit: true,
+                submissionBlockReason: null,
+              },
+              {
+                id: 4,
+                childId: 10,
+                templateId: 103,
+                difficultyId: 5,
+                status: 'PENDING',
+                deadline: '2026-07-21',
+                snapshotTemplateName: 'taskCDaily',
+                snapshotDifficultyName: '中级',
+                snapshotDifficultyReward: 50,
+                snapshotTemplateTaskType: 'REPEAT',
+                snapshotTemplateTypeConfig: JSON.stringify({ frequency: 'DAILY' }),
+                overdue: false,
+                snapshotTemplateAllowResubmit: false,
+                snapshotTemplateMaxSubmissions: 1,
+                snapshotTemplatePointsCap: 100,
+                canSubmit: true,
+                submissionBlockReason: null,
+              },
+              {
+                id: 5,
+                childId: 10,
+                templateId: 104,
+                difficultyId: 5,
+                status: 'PENDING',
+                deadline: '2026-07-22',
+                snapshotTemplateName: 'taskMMonthly',
+                snapshotDifficultyName: '中级',
+                snapshotDifficultyReward: 50,
+                snapshotTemplateTaskType: 'REPEAT',
+                snapshotTemplateTypeConfig: JSON.stringify({ frequency: 'MONTHLY' }),
+                overdue: false,
+                snapshotTemplateAllowResubmit: false,
+                snapshotTemplateMaxSubmissions: 1,
+                snapshotTemplatePointsCap: 100,
+                canSubmit: true,
+                submissionBlockReason: null,
+              },
+            ],
+            page: 1,
+            pageSize: 100,
+            totalElements: 3,
+            totalPages: 1,
+          },
+          loading: false,
+          error: undefined,
+          refetch: vi.fn(),
+        })
+        .mockReturnValueOnce({
+          data: { content: [], page: 1, pageSize: 100, totalElements: 0, totalPages: 0 },
+          loading: false,
+          error: undefined,
+          refetch: vi.fn(),
+        })
+        .mockReturnValueOnce({
+          data: { content: [], page: 1, pageSize: 100, totalElements: 0, totalPages: 0 },
+          loading: false,
+          error: undefined,
+          refetch: vi.fn(),
+        });
+
+      render(<ParentTasksPage />);
+      expect(screen.getByText('taskA1')).toBeInTheDocument();
+      expect(screen.getByText('taskA2')).toBeInTheDocument();
+      expect(screen.getByText('taskBWeekly')).toBeInTheDocument();
+      expect(screen.getByText('taskCDaily')).toBeInTheDocument();
+      expect(screen.queryByText('taskMMonthly')).not.toBeInTheDocument();
+    });
+
+    it('A 中已有的任务不会因 B/C 类重复出现（id 去重）', () => {
+      // 如果 taskA1 的 id 也出现在 queryRepeat 结果中，只应显示一次
+      mockUseApi
+        .mockReturnValueOnce({
+          data: {
+            content: [
+              {
+                id: 1,
+                childId: 10,
+                templateId: 100,
+                difficultyId: 5,
+                status: 'PENDING',
+                deadline: '2026-07-15',
+                snapshotTemplateName: 'taskA1',
+                snapshotDifficultyName: '中级',
+                snapshotDifficultyReward: 50,
+                snapshotTemplateTaskType: 'LIMITED',
+                overdue: false,
+                snapshotTemplateAllowResubmit: false,
+                snapshotTemplateMaxSubmissions: 1,
+                snapshotTemplatePointsCap: 100,
+                canSubmit: true,
+                submissionBlockReason: null,
+              },
+            ],
+            page: 1,
+            pageSize: 100,
+            totalElements: 1,
+            totalPages: 1,
+          },
+          loading: false,
+          error: undefined,
+          refetch: vi.fn(),
+        })
+        .mockReturnValueOnce({
+          data: {
+            content: [
+              {
+                id: 1, // same id as taskA1
+                childId: 10,
+                templateId: 100,
+                difficultyId: 5,
+                status: 'PENDING',
+                deadline: '2026-07-20',
+                snapshotTemplateName: 'taskA1_dup',
+                snapshotDifficultyName: '中级',
+                snapshotDifficultyReward: 50,
+                snapshotTemplateTaskType: 'REPEAT',
+                snapshotTemplateTypeConfig: JSON.stringify({ frequency: 'WEEKLY' }),
+                overdue: false,
+                snapshotTemplateAllowResubmit: false,
+                snapshotTemplateMaxSubmissions: 1,
+                snapshotTemplatePointsCap: 100,
+                canSubmit: true,
+                submissionBlockReason: null,
+              },
+            ],
+            page: 1,
+            pageSize: 100,
+            totalElements: 1,
+            totalPages: 1,
+          },
+          loading: false,
+          error: undefined,
+          refetch: vi.fn(),
+        })
+        .mockReturnValueOnce({
+          data: { content: [], page: 1, pageSize: 100, totalElements: 0, totalPages: 0 },
+          loading: false,
+          error: undefined,
+          refetch: vi.fn(),
+        })
+        .mockReturnValueOnce({
+          data: { content: [], page: 1, pageSize: 100, totalElements: 0, totalPages: 0 },
+          loading: false,
+          error: undefined,
+          refetch: vi.fn(),
+        });
+
+      render(<ParentTasksPage />);
+      // 只应出现一次
+      const cards = screen.getAllByText('taskA1');
+      expect(cards.length).toBe(1);
+    });
+  });
+
   // ═══════════════ 默认选中今日（回归）═══════════════
-  // 修复日历进入页面时高亮 1 号而不高亮今日的 bug：ParentTasksPage 的
-  // calendarReducer 初值 selectedRange 应当等于今日，而不是 null。
   describe('默认选中今日 (回归, fix-calendar-default-current-date)', () => {
     beforeEach(() => {
       vi.useFakeTimers();
@@ -376,7 +580,6 @@ describe('ParentTasksPage - component rendering', () => {
     });
 
     it('日历 mock 在初次渲染时 data-selected 等于 today 单点 (2026-07-24_2026-07-24)', () => {
-      // fix-build 第三次迭代:初始状态从 type=week 改为 type=day+today 单点。
       render(<ParentTasksPage />);
       const mockCalendar = screen.getByTestId('mock-task-calendar');
       expect(mockCalendar.getAttribute('data-selected')).toBe('2026-07-24_2026-07-24');
@@ -386,6 +589,195 @@ describe('ParentTasksPage - component rendering', () => {
       render(<ParentTasksPage />);
       const mockCalendar = screen.getByTestId('mock-task-calendar');
       expect(mockCalendar.getAttribute('data-base-month')).toBe('2026-07');
+    });
+  });
+
+  // ═══════════════ formatRepeatProgress 纯函数 ════════════════
+  describe('formatRepeatProgress', () => {
+    it('正常渲染提交次数和积分', () => {
+      const result = formatRepeatProgress({
+        approvedSubmissionCount: 2,
+        earnedPoints: 30,
+        snapshotTemplateMaxSubmissions: 5,
+        snapshotTemplatePointsCap: 100,
+      });
+      expect(result).toBe('提交 2/5 · 积分 30/100');
+    });
+
+    it('null 字段兜底为 0', () => {
+      const result = formatRepeatProgress({
+        approvedSubmissionCount: null,
+        earnedPoints: null,
+        snapshotTemplateMaxSubmissions: null,
+        snapshotTemplatePointsCap: null,
+      });
+      expect(result).toBe('提交 0/不限 · 积分 0/不限');
+    });
+
+    it('上限为 0 时渲染不限', () => {
+      const result = formatRepeatProgress({
+        approvedSubmissionCount: 2,
+        earnedPoints: 30,
+        snapshotTemplateMaxSubmissions: 0,
+        snapshotTemplatePointsCap: 0,
+      });
+      expect(result).toBe('提交 2/不限 · 积分 30/不限');
+    });
+  });
+
+  // ═══════════════ REPEAT 卡片进度显示 ════════════════
+  describe('REPEAT 卡片进度显示', () => {
+    it('REPEAT 卡片显示进度：提交 2/5 · 积分 30/100', () => {
+      mockUseApi.mockReturnValue({
+        data: {
+          content: [
+            {
+              id: 1,
+              childId: 10,
+              templateId: 100,
+              difficultyId: 5,
+              status: 'PENDING',
+              deadline: '2026-07-15',
+              snapshotTemplateName: '数学练习',
+              snapshotDifficultyName: '中级',
+              snapshotDifficultyReward: 50,
+              snapshotTemplateTaskType: 'REPEAT',
+              snapshotTemplateTypeConfig: JSON.stringify({ frequency: 'DAILY' }),
+              overdue: false,
+              snapshotTemplateAllowResubmit: true,
+              snapshotTemplateMaxSubmissions: 5,
+              snapshotTemplatePointsCap: 100,
+              approvedSubmissionCount: 2,
+              earnedPoints: 30,
+              canSubmit: true,
+              submissionBlockReason: null,
+            },
+          ],
+          page: 1,
+          pageSize: 100,
+          totalElements: 1,
+          totalPages: 1,
+        },
+        loading: false,
+        error: undefined,
+        refetch: vi.fn(),
+      });
+      render(<ParentTasksPage />);
+      expect(screen.getByText('提交 2/5 · 积分 30/100')).toBeInTheDocument();
+    });
+
+    it('上限为 0/null 时渲染不限', () => {
+      mockUseApi.mockReturnValue({
+        data: {
+          content: [
+            {
+              id: 2,
+              childId: 10,
+              templateId: 101,
+              difficultyId: 5,
+              status: 'PENDING',
+              deadline: '2026-07-15',
+              snapshotTemplateName: '英语打卡',
+              snapshotDifficultyName: '中级',
+              snapshotDifficultyReward: 30,
+              snapshotTemplateTaskType: 'REPEAT',
+              snapshotTemplateTypeConfig: JSON.stringify({ frequency: 'WEEKLY' }),
+              overdue: false,
+              snapshotTemplateAllowResubmit: true,
+              snapshotTemplateMaxSubmissions: 0,
+              snapshotTemplatePointsCap: null,
+              approvedSubmissionCount: 2,
+              earnedPoints: 30,
+              canSubmit: true,
+              submissionBlockReason: null,
+            },
+          ],
+          page: 1,
+          pageSize: 100,
+          totalElements: 1,
+          totalPages: 1,
+        },
+        loading: false,
+        error: undefined,
+        refetch: vi.fn(),
+      });
+      render(<ParentTasksPage />);
+      expect(screen.getByText('提交 2/不限 · 积分 30/不限')).toBeInTheDocument();
+    });
+
+    it('REPEAT 卡片（overdue=false）不出现「已逾期」', () => {
+      mockUseApi.mockReturnValue({
+        data: {
+          content: [
+            {
+              id: 3,
+              childId: 10,
+              templateId: 102,
+              difficultyId: 5,
+              status: 'PENDING',
+              deadline: '2026-07-15',
+              snapshotTemplateName: 'REPEAT任务',
+              snapshotDifficultyName: '中级',
+              snapshotDifficultyReward: 20,
+              snapshotTemplateTaskType: 'REPEAT',
+              snapshotTemplateTypeConfig: JSON.stringify({ frequency: 'DAILY' }),
+              overdue: false,
+              snapshotTemplateAllowResubmit: true,
+              snapshotTemplateMaxSubmissions: 10,
+              snapshotTemplatePointsCap: 200,
+              approvedSubmissionCount: 1,
+              earnedPoints: 10,
+              canSubmit: true,
+              submissionBlockReason: null,
+            },
+          ],
+          page: 1,
+          pageSize: 100,
+          totalElements: 1,
+          totalPages: 1,
+        },
+        loading: false,
+        error: undefined,
+        refetch: vi.fn(),
+      });
+      render(<ParentTasksPage />);
+      expect(screen.queryByText('已逾期')).not.toBeInTheDocument();
+    });
+
+    it('LIMITED 卡片 overdue=true 仍显示「已逾期」（回归保护）', () => {
+      mockUseApi.mockReturnValue({
+        data: {
+          content: [
+            {
+              id: 4,
+              childId: 10,
+              templateId: 103,
+              difficultyId: 5,
+              status: 'PENDING',
+              deadline: '2026-07-15',
+              snapshotTemplateName: 'LIMITED任务',
+              snapshotDifficultyName: '中级',
+              snapshotDifficultyReward: 30,
+              snapshotTemplateTaskType: 'LIMITED',
+              overdue: true,
+              snapshotTemplateAllowResubmit: false,
+              snapshotTemplateMaxSubmissions: 1,
+              snapshotTemplatePointsCap: 100,
+              canSubmit: true,
+              submissionBlockReason: null,
+            },
+          ],
+          page: 1,
+          pageSize: 100,
+          totalElements: 1,
+          totalPages: 1,
+        },
+        loading: false,
+        error: undefined,
+        refetch: vi.fn(),
+      });
+      render(<ParentTasksPage />);
+      expect(screen.getByText('已逾期')).toBeInTheDocument();
     });
   });
 });

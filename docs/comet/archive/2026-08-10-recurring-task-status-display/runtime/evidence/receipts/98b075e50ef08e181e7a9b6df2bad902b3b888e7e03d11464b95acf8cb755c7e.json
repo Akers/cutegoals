@@ -1,0 +1,50 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "automated-check",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "recurring-task-status-display",
+    "sourceRevision": 3,
+    "contractHash": "6e42ad361c75ced3e791df2808bfbfb0275f18ab2f13cb8ae2c3b4cd0cf20cc3",
+    "scopeHash": "21b92af79c4fd14f40a9d0143247a394d2374dbfbfd794478b879bf9158794ac",
+    "snapshotHash": "84c6baa0ab91fbfe7acb7eada65e15ca490334ab91b5430d027de692eae7eb04",
+    "artifactHash": "cc649a02ea3ba688042a154e8904287194c2825198bebc0d0ef0b7e173961399"
+  },
+  "acceptanceIds": [
+    "acceptance-09ded073395e67f384c4fbe9fb8eaa319c344de2696aa489ff107e4b72c1cc6e",
+    "acceptance-5efa60463e004d650d6fa594043fdfeded94924d209e0f3f279c0db73a80d5d0",
+    "acceptance-fc93c094c8921f5d2d9038db3757dc9a954b5f44a58d763ad22e8a36d97000bb"
+  ],
+  "actor": "native-runtime:command:bash",
+  "issuedAt": "2026-08-10T02:32:18.284Z",
+  "evidence": {
+    "executable": "bash",
+    "args": [
+      "-c",
+      "cd /home/akers/projects/cutegoals/web && set -o pipefail && npx vitest run src/parent/pages/__tests__/ParentTasksPage.test.tsx 2>&1 | tail -12"
+    ],
+    "cwd": ".",
+    "exitCode": 0,
+    "signal": null,
+    "timedOut": false,
+    "timeoutMs": 300000,
+    "startedAt": "2026-08-10T02:32:16.411Z",
+    "endedAt": "2026-08-10T02:32:18.284Z",
+    "worktree": {
+      "provider": "git",
+      "root": ".",
+      "beforeCommit": "ae41e86018d09d9372947b9baafe3923f57de912",
+      "afterCommit": "ae41e86018d09d9372947b9baafe3923f57de912"
+    },
+    "afterFence": {
+      "snapshotHash": "84c6baa0ab91fbfe7acb7eada65e15ca490334ab91b5430d027de692eae7eb04",
+      "scopeHash": "21b92af79c4fd14f40a9d0143247a394d2374dbfbfd794478b879bf9158794ac",
+      "matched": true
+    },
+    "outputHash": "740531b179310ac5278218c04d07cfc22211813a748a2a0527ed6e7112b7eba4",
+    "outputSummary": "RUN  v2.0.5 /home/akers/projects/cutegoals/web\n\n ✓ src/parent/pages/__tests__/ParentTasksPage.test.tsx  (42 tests) 475ms\n\n Test Files  1 passed (1)\n      Tests  42 passed (42)\n   Start at  10:32:16\n   Duration  1.55s (transform 111ms, setup 64ms, collect 680ms, tests 475ms, environment 134ms, prepare 54ms)",
+    "outputTruncated": false
+  },
+  "receiptHash": "98b075e50ef08e181e7a9b6df2bad902b3b888e7e03d11464b95acf8cb755c7e"
+}

@@ -1,0 +1,28 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "manual-evidence",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "recurring-task-status-display",
+    "sourceRevision": 3,
+    "contractHash": "6e42ad361c75ced3e791df2808bfbfb0275f18ab2f13cb8ae2c3b4cd0cf20cc3",
+    "scopeHash": "21b92af79c4fd14f40a9d0143247a394d2374dbfbfd794478b879bf9158794ac",
+    "snapshotHash": "84c6baa0ab91fbfe7acb7eada65e15ca490334ab91b5430d027de692eae7eb04",
+    "artifactHash": "cc649a02ea3ba688042a154e8904287194c2825198bebc0d0ef0b7e173961399"
+  },
+  "acceptanceIds": [
+    "acceptance-383a5317cd0a3f76fb16008682f0eca167c14133f1eea0355e7a0d259ae55a06"
+  ],
+  "actor": "native-runtime:manual-evidence",
+  "issuedAt": "2026-08-10T02:34:52.972Z",
+  "evidence": {
+    "steps": [
+      "核对 task-assignment capability Purpose 条款来源"
+    ],
+    "observations": [
+      "该条款为归档 change core-features 遗留的占位 Purpose（TBD），无具体行为要求；本 change 维持 task-assignment 能力定位，仅新增重复任务逾期与进度显示规则，不影响该条款。"
+    ]
+  },
+  "receiptHash": "9cac09ba6139039b11e940307e63f89686814defcb0995aec581c9b4b584dc5d"
+}

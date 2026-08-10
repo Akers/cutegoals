@@ -1,0 +1,31 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "static-inspection",
+  "role": "required-check",
+  "status": "passed",
+  "bindings": {
+    "change": "recurring-task-status-display",
+    "sourceRevision": 3,
+    "contractHash": "6e42ad361c75ced3e791df2808bfbfb0275f18ab2f13cb8ae2c3b4cd0cf20cc3",
+    "scopeHash": "21b92af79c4fd14f40a9d0143247a394d2374dbfbfd794478b879bf9158794ac",
+    "snapshotHash": "84c6baa0ab91fbfe7acb7eada65e15ca490334ab91b5430d027de692eae7eb04",
+    "artifactHash": "cc649a02ea3ba688042a154e8904287194c2825198bebc0d0ef0b7e173961399"
+  },
+  "acceptanceIds": [],
+  "actor": "native-runtime:scoped-text-safety",
+  "issuedAt": "2026-08-10T02:37:07.177Z",
+  "evidence": {
+    "subjects": [
+      "server/task/src/main/java/com/cutegoals/task/mapper/TaskAssignmentMapper.java",
+      "server/task/src/main/java/com/cutegoals/task/service/TaskAssignmentService.java",
+      "server/task/src/test/java/com/cutegoals/task/service/TaskAssignmentServiceTest.java",
+      "web/src/parent/pages/__tests__/ParentTasksPage.test.tsx",
+      "web/src/parent/pages/index.tsx"
+    ],
+    "rule": "scoped-text-safety",
+    "resultSummary": "The built-in scoped inspection passed without skipped or blocking input.",
+    "checkReceiptRef": "runtime/evidence/check-receipts/e3ad67d03b8ef1950599778c6e86e5875bcea337edfc06d61ff54151351d3107.json",
+    "checkReceiptHash": "e3ad67d03b8ef1950599778c6e86e5875bcea337edfc06d61ff54151351d3107"
+  },
+  "receiptHash": "7fd511803198d0e7df28f45ed8bc34c9ed3e87151f1bb4e2c7a58fc00b4c00f6"
+}

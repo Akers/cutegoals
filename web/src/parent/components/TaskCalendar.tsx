@@ -1,4 +1,3 @@
-import React from 'react';
 import dayjs from 'dayjs';
 import { Calendar, Spin, Alert, Button } from 'antd';
 import { useApi } from '@shared/hooks/useApi';
@@ -41,6 +40,7 @@ export interface TaskCalendarProps {
   selectedRange: CalendarSelection | null;
   onSelect: (action: CalendarAction) => void;
   onNavigate: (direction: -1 | 1) => void;
+  singleDayOnly?: boolean;
 }
 
 // ── CalendarHeader 子组件 ───────────────────────────────────────
@@ -50,25 +50,28 @@ export interface CalendarHeaderProps {
   month: number;
   selectedRange: CalendarSelection | null;
   onSelect: (a: CalendarAction) => void;
+  singleDayOnly?: boolean;
 }
 
 function CalendarHeader({
   year,
   month,
   onSelect,
+  singleDayOnly,
 }: {
   year: number;
   month: number;
   onSelect: (a: CalendarAction) => void;
+  singleDayOnly?: boolean;
 }) {
   return (
     <div
-      onClick={() => onSelect({ type: 'SELECT_MONTH', year, month })}
+      onClick={singleDayOnly ? undefined : () => onSelect({ type: 'SELECT_MONTH', year, month })}
       style={{
         textAlign: 'center',
         fontWeight: 600,
         padding: '8px 0',
-        cursor: 'pointer',
+        cursor: singleDayOnly ? 'default' : 'pointer',
         userSelect: 'none',
         // tweak-calendar-picker-font-size: 字号 +2 (antd 默认 ~14px → 16px)
         fontSize: 16,
@@ -210,9 +213,10 @@ export interface CalendarPanelProps {
   month: number;
   selectedRange: CalendarSelection | null;
   onSelect: (action: CalendarAction) => void;
+  singleDayOnly?: boolean;
 }
 
-export function CalendarPanel({ year, month, selectedRange, onSelect }: CalendarPanelProps) {
+export function CalendarPanel({ year, month, selectedRange, onSelect, singleDayOnly }: CalendarPanelProps) {
   const apiPath = `/task-assignments/calendar?year=${year}&month=${month}`;
   const { data: calendarData, loading, error, refetch } = useApi<CalendarData>(apiPath);
   const monthDate = dayjs(`${year}-${String(month).padStart(2, '0')}-01`);
@@ -292,18 +296,20 @@ export function CalendarPanel({ year, month, selectedRange, onSelect }: Calendar
       style={{ display: 'flex', flexDirection: 'column' }}
     >
       {/* 月份标题：跨越面板全宽，避免周号列从月份标题位置开始排布导致整体错位 */}
-      <CalendarHeader year={year} month={month} onSelect={onSelect} />
+      <CalendarHeader year={year} month={month} onSelect={onSelect} singleDayOnly={singleDayOnly} />
       {/* 周号列 + 日历主体并排；align-items: stretch 让两侧同高，
           周号列内部 6 行 flex:1 均分剩余高度，逐行对齐日历 6 个日期行 */}
       <div style={{ display: 'flex', alignItems: 'stretch' }}>
         {/* 左侧周号列 */}
-        <WeekNumberColumn
-          year={year}
-          month={month}
-          calendarData={calendarData}
-          selectedRange={selectedRange}
-          onSelect={onSelect}
-        />
+        {!singleDayOnly && (
+          <WeekNumberColumn
+            year={year}
+            month={month}
+            calendarData={calendarData}
+            selectedRange={selectedRange}
+            onSelect={onSelect}
+          />
+        )}
         {/* 右侧日历主体：wrapper className 给后续 scoped CSS 选择器分流
               (fix-calendar-non-current-no-highlight-v2)。
               当前月面板 value=today;非当前月面板 value=monthDate — 让 antd
@@ -340,6 +346,7 @@ export function TaskCalendar({
   selectedRange,
   onSelect,
   onNavigate,
+  singleDayOnly,
 }: TaskCalendarProps) {
   // 解析 baseMonth
   const [year, month] = baseMonth.split('-').map(Number);
@@ -411,6 +418,7 @@ export function TaskCalendar({
           month={month}
           selectedRange={selectedRange}
           onSelect={onSelect}
+          singleDayOnly={singleDayOnly}
         />
       </div>
     </div>

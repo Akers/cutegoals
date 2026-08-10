@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, useReducer, useRef, useCallback } from 'react';
+import { useEffect, useMemo, useState, useReducer, useCallback } from 'react';
 import { history } from 'umi';
 import { getClient } from '@shared/api';
 import type { TaskTypeValue } from '@shared/api/types';
@@ -30,7 +30,6 @@ import { useOnline } from '@shared/theme';
 import { TaskTypeConfigForms, type TypeConfigValue } from '@parent/components/TaskTypeConfigForms';
 import { TaskTypeFilter } from '@parent/components/TaskTypeFilter';
 import { TaskCalendar } from '@parent/components/TaskCalendar';
-import type { CalendarSelection, CalendarAction } from '@parent/components/TaskCalendar';
 import {
   PrizeTypeConfigForms,
   type PrizeTypeConfig,
@@ -75,6 +74,25 @@ function repeatTaskLabel(
     }
   }
   return null;
+}
+
+/**
+ * 生成 REPEAT 任务的进度文本，格式：「提交 {当前}/{上限} · 积分 {已获}/{上限}」。
+ * 上限为 null 或 0 时渲染「不限」。
+ */
+export function formatRepeatProgress(task: {
+  approvedSubmissionCount?: number | null;
+  earnedPoints?: number | null;
+  snapshotTemplateMaxSubmissions: number | null;
+  snapshotTemplatePointsCap: number | null;
+}): string {
+  const current = task.approvedSubmissionCount ?? 0;
+  const earned = task.earnedPoints ?? 0;
+  const max = task.snapshotTemplateMaxSubmissions;
+  const cap = task.snapshotTemplatePointsCap;
+  const maxLabel = max === null || max === 0 ? '不限' : String(max);
+  const capLabel = cap === null || cap === 0 ? '不限' : String(cap);
+  return `提交 ${current}/${maxLabel} · 积分 ${earned}/${capLabel}`;
 }
 
 // 后端分页响应统一契约：{content,page,pageSize,totalElements,totalPages}
@@ -166,6 +184,7 @@ interface TaskAssignment {
   snapshotTemplateDescription?: string;
   snapshotTemplateCategory?: string;
   snapshotTemplateTaskType?: string;
+  snapshotTemplateTypeConfig?: string;
   overdue: boolean;
   version?: number;
   cancelled?: boolean;
@@ -173,6 +192,8 @@ interface TaskAssignment {
   snapshotTemplateAllowResubmit: boolean | null;
   snapshotTemplateMaxSubmissions: number | null;
   snapshotTemplatePointsCap: number | null;
+  approvedSubmissionCount?: number | null;
+  earnedPoints?: number | null;
   canSubmit: boolean;
   submissionBlockReason: 'MAX_REACHED' | 'POINTS_CAP_REACHED' | null;
 }
@@ -1147,18 +1168,15 @@ export function ParentTemplatesPage() {
 
 export interface CalendarPageState {
   baseMonth: string;
-  selectedRange: CalendarSelection | null;
+  selectedDate: string | null; // null 表示「查看全部」
   taskTypeFilters: TaskTypeValue[];
-  viewAllMode: boolean;
 }
 
 export type CalendarAction2 =
   | { type: 'SELECT_DATE'; date: string }
-  | { type: 'SELECT_WEEK'; startDate: string }
-  | { type: 'SELECT_MONTH'; year: number; month: number }
+  | { type: 'CLEAR_DATE' }
   | { type: 'SET_FILTERS'; payload: TaskTypeValue[] }
-  | { type: 'VIEW_ALL' }
-  | { type: 'NAV_MONTH'; payload: -1 | 1 };
+  | { type: 'NAV_MONTH'; payload: { baseMonth: string; direction: -1 | 1 } };
 
 export function calendarReducer(
   state: CalendarPageState,
@@ -1166,99 +1184,100 @@ export function calendarReducer(
 ): CalendarPageState {
   switch (action.type) {
     case 'SELECT_DATE':
-      return {
-        ...state,
-        selectedRange: { type: 'day', startDate: action.date, endDate: action.date },
-        viewAllMode: false,
-      };
-    case 'SELECT_WEEK': {
-      const start = dayjs(action.startDate);
-      return {
-        ...state,
-        selectedRange: {
-          type: 'week',
-          startDate: action.startDate,
-          endDate: start.add(6, 'day').format('YYYY-MM-DD'),
-        },
-        viewAllMode: false,
-      };
-    }
-    case 'SELECT_MONTH': {
-      const m = dayjs(`${action.year}-${String(action.month).padStart(2, '0')}-01`);
-      return {
-        ...state,
-        selectedRange: {
-          type: 'month',
-          startDate: m.format('YYYY-MM-DD'),
-          endDate: m.endOf('month').format('YYYY-MM-DD'),
-        },
-        viewAllMode: false,
-      };
-    }
+      return { ...state, selectedDate: action.date };
+    case 'CLEAR_DATE':
+      return { ...state, selectedDate: null };
     case 'SET_FILTERS':
       return { ...state, taskTypeFilters: action.payload };
-    case 'VIEW_ALL':
-      return { ...state, viewAllMode: true, selectedRange: null };
     case 'NAV_MONTH': {
       const m = dayjs(state.baseMonth + '-01');
-      return { ...state, baseMonth: m.add(action.payload, 'month').format('YYYY-MM') };
+      return { ...state, baseMonth: m.add(action.payload.direction, 'month').format('YYYY-MM') };
     }
     default:
       return state;
   }
 }
 
-function buildQuery(state: CalendarPageState): string {
+export function buildQueryA(state: CalendarPageState): string {
   const params = new URLSearchParams();
   params.set('page', '1');
-  params.set('pageSize', '20');
-
-  if (state.taskTypeFilters.length > 0 && state.taskTypeFilters.length < 3) {
-    params.set('taskType', state.taskTypeFilters.join(','));
+  params.set('pageSize', '100');
+  if (state.selectedDate) {
+    params.set('startDate', state.selectedDate);
+    params.set('endDate', state.selectedDate);
   }
-
-  if (!state.viewAllMode && state.selectedRange) {
-    params.set('startDate', state.selectedRange.startDate);
-    params.set('endDate', state.selectedRange.endDate);
-  }
-
   return `/task-assignments?${params.toString()}`;
+}
+
+export function buildQueryRepeat(_state: CalendarPageState): string {
+  // 拉全量 REPEAT，前端再按 frequency 二次过滤；不依赖 state
+  const params = new URLSearchParams();
+  params.set('page', '1');
+  params.set('pageSize', '100');
+  params.set('taskType', 'REPEAT');
+  return `/task-assignments?${params.toString()}`;
+}
+
+function parseFrequency(typeConfig?: string): string | null {
+  if (!typeConfig) return null;
+  try {
+    const parsed = JSON.parse(typeConfig) as { frequency?: string };
+    return parsed.frequency ?? null;
+  } catch {
+    return null;
+  }
+}
+
+function isWeeklyOrDailyRepeat(task: TaskAssignment): boolean {
+  if (task.snapshotTemplateTaskType !== 'REPEAT') return false;
+  const freq = parseFrequency(task.snapshotTemplateTypeConfig);
+  return freq === 'WEEKLY' || freq === 'DAILY';
 }
 
 export function ParentTasksPage() {
   // ── 日历状态管理 ──
   const now = dayjs();
   const todayStr = now.format('YYYY-MM-DD');
-  const [calendarState, dispatch] = useReducer(calendarReducer, {
-    baseMonth: now.format('YYYY-MM'),
-    // fix-build 第三次迭代: type=day + today 单点（取消整周高亮）。
-    // 初始状态：仅 today cell 高亮（teal 实心）+ 当周蓝色边框。
-    selectedRange: {
-      type: 'day',
-      startDate: todayStr,
-      endDate: todayStr,
-    },
+  const monthStr = now.format('YYYY-MM');
+  const [state, dispatch] = useReducer(calendarReducer, {
+    baseMonth: monthStr,
+    selectedDate: todayStr,
     taskTypeFilters: ['LIMITED', 'REPEAT', 'STANDING'],
-    viewAllMode: false,
   });
 
-  // 动态构建查询参数（debounce 300ms），初始值与 buildQuery 保持一致
-  const debounceTimer = useRef<ReturnType<typeof setTimeout>>();
-  const [queryPath, setQueryPath] = useState(() => buildQuery(calendarState));
+  // 动态构建两个查询参数（debounce 300ms）
+  const [queryA, setQueryA] = useState(() => buildQueryA({ baseMonth: monthStr, selectedDate: todayStr, taskTypeFilters: ['LIMITED', 'REPEAT', 'STANDING'] }));
+  const [queryRepeat, setQueryRepeat] = useState(() => buildQueryRepeat({ baseMonth: monthStr, selectedDate: todayStr, taskTypeFilters: ['LIMITED', 'REPEAT', 'STANDING'] }));
 
   useEffect(() => {
-    if (debounceTimer.current) clearTimeout(debounceTimer.current);
-    debounceTimer.current = setTimeout(() => {
-      setQueryPath(buildQuery(calendarState));
+    const t = setTimeout(() => {
+      setQueryA(buildQueryA(state));
+      setQueryRepeat(buildQueryRepeat(state));
     }, 300);
-    return () => {
-      if (debounceTimer.current) clearTimeout(debounceTimer.current);
-    };
-  }, [calendarState]);
+    return () => clearTimeout(t);
+  }, [state]);
 
-  const { data, loading, error, refetch } = useApi<PageResult<TaskAssignment>>(queryPath);
+  const {
+    data: dataA,
+    loading: loadingA,
+    error: errorA,
+    refetch: refetchA,
+  } = useApi<PageResult<TaskAssignment>>(queryA);
+  const {
+    data: dataRepeat,
+    loading: loadingRepeat,
+    error: errorRepeat,
+    refetch: refetchRepeat,
+  } = useApi<PageResult<TaskAssignment>>(queryRepeat);
   const { data: templates } = useApi<PageResult<TaskTemplate>>('/task-templates?enabled=true');
   const { data: children } = useApi<PageResult<ChildProfile>>('/family/children');
+
+  const loading = loadingA || loadingRepeat;
+  const error = errorA ?? errorRepeat;
+  const refetch = useCallback(async () => {
+    await Promise.all([refetchA(), refetchRepeat()]);
+  }, [refetchA, refetchRepeat]);
+
   const childNameMap = useMemo(() => {
     const map = new Map<number, string>();
     for (const c of children?.content ?? []) {
@@ -1266,6 +1285,27 @@ export function ParentTasksPage() {
     }
     return map;
   }, [children]);
+
+  // 合并+去重+后置过滤
+  const assignments = useMemo(() => {
+    const listA = dataA?.content ?? [];
+    const listRepeat = dataRepeat?.content ?? [];
+    const weeklyDaily = listRepeat.filter(isWeeklyOrDailyRepeat);
+    // Map<id> 去重，A 优先
+    const merged = new Map<number, TaskAssignment>();
+    for (const t of listA) merged.set(t.id, t);
+    for (const t of weeklyDaily) {
+      if (!merged.has(t.id)) merged.set(t.id, t);
+    }
+    // 按 taskTypeFilters 后置过滤
+    const filters = state.taskTypeFilters;
+    const result = Array.from(merged.values()).filter((t) => {
+      const tp = t.snapshotTemplateTaskType;
+      if (!tp) return true; // 未知类型不隐藏
+      return filters.includes(tp as TaskTypeValue);
+    });
+    return result;
+  }, [dataA, dataRepeat, state.taskTypeFilters]);
   const [showAssign, setShowAssign] = useState(false);
   const templateId = useFormField();
   const difficultyId = useFormField();
@@ -1468,8 +1508,6 @@ export function ParentTasksPage() {
       />
     );
 
-  const assignments = data?.content ?? [];
-
   return (
     <Space direction="vertical" size="large" style={{ width: '100%' }}>
       <Row justify="space-between" align="middle">
@@ -1498,32 +1536,41 @@ export function ParentTasksPage() {
 
       <Card title="日历">
         <TaskCalendar
-          baseMonth={calendarState.baseMonth}
-          selectedRange={calendarState.selectedRange}
+          baseMonth={state.baseMonth}
+          selectedRange={
+            state.selectedDate
+              ? { type: 'day', startDate: state.selectedDate, endDate: state.selectedDate }
+              : null
+          }
+          singleDayOnly
           onSelect={(action) => {
-            type ActionMap = Record<string, CalendarAction2['type']>;
-            const typeMap: ActionMap = {
-              SELECT_DATE: 'SELECT_DATE',
-              SELECT_WEEK: 'SELECT_WEEK',
-              SELECT_MONTH: 'SELECT_MONTH',
-            };
-            dispatch({ type: typeMap[action.type], ...action } as CalendarAction2);
+            if (action.type === 'SELECT_DATE') {
+              dispatch({ type: 'SELECT_DATE', date: action.date });
+            }
           }}
-          onNavigate={(dir) => dispatch({ type: 'NAV_MONTH', payload: dir })}
+          onNavigate={(direction) =>
+            dispatch({ type: 'NAV_MONTH', payload: { baseMonth: state.baseMonth, direction } })
+          }
         />
       </Card>
 
       <Card>
         <Space direction="vertical" size="small" style={{ width: '100%' }}>
           <TaskTypeFilter
-            selected={calendarState.taskTypeFilters}
+            selected={state.taskTypeFilters}
             onChange={(types) => dispatch({ type: 'SET_FILTERS', payload: types })}
           />
           <Button
-            type={calendarState.viewAllMode ? 'primary' : 'default'}
-            onClick={() => dispatch({ type: 'VIEW_ALL' })}
+            type={state.selectedDate === null ? 'primary' : 'default'}
+            onClick={() => {
+              if (state.selectedDate === null) {
+                dispatch({ type: 'SELECT_DATE', date: todayStr });
+              } else {
+                dispatch({ type: 'CLEAR_DATE' });
+              }
+            }}
           >
-            {calendarState.viewAllMode ? '查看全部（已激活）' : '查看全部'}
+            {state.selectedDate === null ? '查看全部（已激活）' : '查看全部'}
           </Button>
         </Space>
       </Card>
@@ -1551,6 +1598,11 @@ export function ParentTasksPage() {
                         : `孩子：${childName} · 截止 ${a.deadline}`;
                     })()}
                   </Typography.Text>
+                  {a.snapshotTemplateTaskType === 'REPEAT' && (
+                    <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+                      {formatRepeatProgress(a)}
+                    </Typography.Text>
+                  )}
                   {a.overdue && (
                     <Typography.Text style={{ fontSize: 12, fontWeight: 600, color: '#faad14' }}>
                       已逾期

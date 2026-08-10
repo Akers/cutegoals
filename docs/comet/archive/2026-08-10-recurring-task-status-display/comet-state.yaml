@@ -1,0 +1,23 @@
+schema: comet.native.v3
+minimum_runtime_version: 3
+revision: 5
+verification_protocol: legacy-v1
+name: recurring-task-status-display
+language: zh-CN
+phase: archive
+brief: brief.md
+approval: confirmed
+approved_contract_hash: 6e42ad361c75ced3e791df2808bfbfb0275f18ab2f13cb8ae2c3b4cd0cf20cc3
+spec_changes:
+  - capability: task-assignment
+    operation: create
+    source: specs/task-assignment/spec.md
+    base_hash: null
+verification_result: pass
+verification_report: verification.md
+implementation_scope: runtime/evidence/scopes/21b92af79c4fd14f40a9d0143247a394d2374dbfbfd794478b879bf9158794ac.json
+verification_evidence: runtime/evidence/verifications/a9efca4f470506c99d642126c297afcaf2beb554ac3afe24bee1cb9d1fbf0fe5.json
+partial_allowance: null
+archived: true
+created_at: 2026-08-07
+run_id: e595a8ed-a791-4c7b-b7b4-50c8472ac66c

@@ -1,0 +1,48 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "automated-check",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "recurring-task-status-display",
+    "sourceRevision": 3,
+    "contractHash": "6e42ad361c75ced3e791df2808bfbfb0275f18ab2f13cb8ae2c3b4cd0cf20cc3",
+    "scopeHash": "21b92af79c4fd14f40a9d0143247a394d2374dbfbfd794478b879bf9158794ac",
+    "snapshotHash": "84c6baa0ab91fbfe7acb7eada65e15ca490334ab91b5430d027de692eae7eb04",
+    "artifactHash": "cc649a02ea3ba688042a154e8904287194c2825198bebc0d0ef0b7e173961399"
+  },
+  "acceptanceIds": [
+    "acceptance-0964290aeaef417e428114cdcfa86712cb4df50a4835673a57a05785d7ae1881"
+  ],
+  "actor": "native-runtime:command:bash",
+  "issuedAt": "2026-08-10T02:28:42.773Z",
+  "evidence": {
+    "executable": "bash",
+    "args": [
+      "-c",
+      "set -o pipefail; mvn -f /home/akers/projects/cutegoals/server/pom.xml -pl task test -Dtest=RepeatTaskSchedulerTest,TaskAssignmentServiceTest,TaskTemplateFrequencyServiceTest 2>&1 | tail -5"
+    ],
+    "cwd": ".",
+    "exitCode": 0,
+    "signal": null,
+    "timedOut": false,
+    "timeoutMs": 600000,
+    "startedAt": "2026-08-10T02:28:40.253Z",
+    "endedAt": "2026-08-10T02:28:42.773Z",
+    "worktree": {
+      "provider": "git",
+      "root": ".",
+      "beforeCommit": "ae41e86018d09d9372947b9baafe3923f57de912",
+      "afterCommit": "ae41e86018d09d9372947b9baafe3923f57de912"
+    },
+    "afterFence": {
+      "snapshotHash": "84c6baa0ab91fbfe7acb7eada65e15ca490334ab91b5430d027de692eae7eb04",
+      "scopeHash": "21b92af79c4fd14f40a9d0143247a394d2374dbfbfd794478b879bf9158794ac",
+      "matched": true
+    },
+    "outputHash": "9e11d6b34e3b21312ca6caccae532d70a487113411bcfd8712d2813d801f4107",
+    "outputSummary": "[INFO] BUILD SUCCESS\n[INFO] ------------------------------------------------------------------------\n[INFO] Total time:  1.942 s\n[INFO] Finished at: 2026-08-10T10:28:42+08:00\n[INFO] ------------------------------------------------------------------------",
+    "outputTruncated": false
+  },
+  "receiptHash": "4cff19ea7dc1679d66cd2bba50682201dfa2e005fe4f276f54c5aab13fdc9359"
+}

@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Mapper
@@ -50,4 +51,32 @@ public interface TaskAssignmentMapper extends BaseMapper<TaskAssignment> {
 
     @Update("UPDATE task_assignment SET status = 'OPEN' WHERE id = #{id} AND status = 'PENDING_OPEN'")
     int openAssignment(@Param("id") Long id);
+
+    // === REPEAT progress batch queries (approvedSubmissionCount / earnedPoints) ===
+
+    @Select("<script>" +
+            "SELECT a.template_id AS templateId, COUNT(r.id) AS approvedCount " +
+            "FROM task_review r " +
+            "JOIN task_attempt t ON r.attempt_id = t.id " +
+            "JOIN task_assignment a ON t.assignment_id = a.id " +
+            "WHERE a.child_id = #{childId} " +
+            "AND r.decision = 'APPROVED' " +
+            "AND a.template_id IN " +
+            "<foreach collection='templateIds' item='id' open='(' separator=',' close=')'>#{id}</foreach> " +
+            "GROUP BY a.template_id " +
+            "</script>")
+    List<Map<String, Object>> countApprovedBatch(@Param("childId") Long childId, @Param("templateIds") List<Long> templateIds);
+
+    @Select("<script>" +
+            "SELECT a.template_id AS templateId, COALESCE(SUM(l.amount), 0) AS earnedPoints " +
+            "FROM points_ledger l " +
+            "JOIN task_attempt t ON l.business_ref = CONCAT('ATTEMPT_', t.id) " +
+            "JOIN task_assignment a ON t.assignment_id = a.id " +
+            "WHERE a.child_id = #{childId} " +
+            "AND l.type = 'EARN' " +
+            "AND a.template_id IN " +
+            "<foreach collection='templateIds' item='id' open='(' separator=',' close=')'>#{id}</foreach> " +
+            "GROUP BY a.template_id " +
+            "</script>")
+    List<Map<String, Object>> sumEarnBatch(@Param("childId") Long childId, @Param("templateIds") List<Long> templateIds);
 }

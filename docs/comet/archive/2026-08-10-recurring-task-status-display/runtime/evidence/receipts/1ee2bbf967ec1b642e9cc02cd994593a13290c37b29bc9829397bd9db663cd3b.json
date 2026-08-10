@@ -1,0 +1,28 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "manual-evidence",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "recurring-task-status-display",
+    "sourceRevision": 3,
+    "contractHash": "6e42ad361c75ced3e791df2808bfbfb0275f18ab2f13cb8ae2c3b4cd0cf20cc3",
+    "scopeHash": "21b92af79c4fd14f40a9d0143247a394d2374dbfbfd794478b879bf9158794ac",
+    "snapshotHash": "84c6baa0ab91fbfe7acb7eada65e15ca490334ab91b5430d027de692eae7eb04",
+    "artifactHash": "cc649a02ea3ba688042a154e8904287194c2825198bebc0d0ef0b7e173961399"
+  },
+  "acceptanceIds": [
+    "acceptance-6634b764bda24a6a8128a0b85fedfc711656fbe5588af5abe7c850a8fa2863fc"
+  ],
+  "actor": "native-runtime:manual-evidence",
+  "issuedAt": "2026-08-10T02:34:53.586Z",
+  "evidence": {
+    "steps": [
+      "代码审查单分配迟交策略覆盖"
+    ],
+    "observations": [
+      "分配创建时 latePolicy 取自家庭默认值(createBatchAssignments:193 getFamilyLatePolicy；createAssignmentEntity:347 持久化到分配行)；updateLatePolicy(729-748行) 支持对 PENDING 分配单独覆盖为 ALLOW/REJECT 并记录审计，故家庭默认拒绝迟交时单个分配仍可允许。"
+    ]
+  },
+  "receiptHash": "1ee2bbf967ec1b642e9cc02cd994593a13290c37b29bc9829397bd9db663cd3b"
+}

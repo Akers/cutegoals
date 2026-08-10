@@ -1,0 +1,28 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "manual-evidence",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "recurring-task-status-display",
+    "sourceRevision": 3,
+    "contractHash": "6e42ad361c75ced3e791df2808bfbfb0275f18ab2f13cb8ae2c3b4cd0cf20cc3",
+    "scopeHash": "21b92af79c4fd14f40a9d0143247a394d2374dbfbfd794478b879bf9158794ac",
+    "snapshotHash": "84c6baa0ab91fbfe7acb7eada65e15ca490334ab91b5430d027de692eae7eb04",
+    "artifactHash": "cc649a02ea3ba688042a154e8904287194c2825198bebc0d0ef0b7e173961399"
+  },
+  "acceptanceIds": [
+    "acceptance-0964290aeaef417e428114cdcfa86712cb4df50a4835673a57a05785d7ae1881"
+  ],
+  "actor": "native-runtime:manual-evidence",
+  "issuedAt": "2026-08-10T02:34:52.768Z",
+  "evidence": {
+    "steps": [
+      "代码审查 updateAssignment 的可编辑状态与难度校验"
+    ],
+    "observations": [
+      "updateAssignment(TaskAssignmentService.java:622) 仅允许 PENDING/REJECTED 编辑(638-642行)；改难度时经 getEnabledDifficulty 校验为该模板当前启用难度并同步快照(654-663行)；version 乐观锁防并发(644-651、689-693行)。单测 shouldUpdatePendingAssignment 覆盖编辑路径。"
+    ]
+  },
+  "receiptHash": "44fcaa2c2298738975cf4db4c5c50c6840c438119a1b7d01608d14b88058e5a5"
+}

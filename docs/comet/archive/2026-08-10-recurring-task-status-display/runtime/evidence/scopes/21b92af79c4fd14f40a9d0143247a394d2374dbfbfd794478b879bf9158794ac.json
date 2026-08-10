@@ -1,0 +1,131 @@
+{
+  "schema": "comet.native.implementation-scope.v2",
+  "contractHash": "6e42ad361c75ced3e791df2808bfbfb0275f18ab2f13cb8ae2c3b4cd0cf20cc3",
+  "baselineProjectionRef": "runtime/evidence/snapshots/7e563c13568feb076791a4e0834f2dd02321163553ea361d32eb5c0b55aa5ba0.json",
+  "baselineProjectionHash": "7e563c13568feb076791a4e0834f2dd02321163553ea361d32eb5c0b55aa5ba0",
+  "currentProjectionRef": "runtime/evidence/snapshots/84c6baa0ab91fbfe7acb7eada65e15ca490334ab91b5430d027de692eae7eb04.json",
+  "currentProjectionHash": "84c6baa0ab91fbfe7acb7eada65e15ca490334ab91b5430d027de692eae7eb04",
+  "complete": true,
+  "declaredArtifacts": [
+    {
+      "path": "server/task/src/main/java/com/cutegoals/task/mapper/TaskAssignmentMapper.java",
+      "kind": "file"
+    },
+    {
+      "path": "server/task/src/main/java/com/cutegoals/task/service/TaskAssignmentService.java",
+      "kind": "file"
+    },
+    {
+      "path": "server/task/src/test/java/com/cutegoals/task/service/TaskAssignmentServiceTest.java",
+      "kind": "file"
+    },
+    {
+      "path": "web/src/parent/components/TaskCalendar.tsx",
+      "kind": "file"
+    },
+    {
+      "path": "web/src/parent/pages/__tests__/ParentTasksPage.test.tsx",
+      "kind": "file"
+    },
+    {
+      "path": "web/src/parent/pages/index.tsx",
+      "kind": "file"
+    }
+  ],
+  "changes": [
+    {
+      "path": "server/task/src/main/java/com/cutegoals/task/mapper/TaskAssignmentMapper.java",
+      "kind": "modified",
+      "before": {
+        "hash": "982f301d4fc9f1577b33904591410228a98c0f71cf226aff99e62906724773b9",
+        "size": 2540
+      },
+      "after": {
+        "hash": "4a86bb4cf975ac68b88b8b8e59b0283c41d534fb57d5e577c5376759f2ab5be4",
+        "size": 4079
+      },
+      "attributedTo": [
+        {
+          "path": "server/task/src/main/java/com/cutegoals/task/mapper/TaskAssignmentMapper.java",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "server/task/src/main/java/com/cutegoals/task/service/TaskAssignmentService.java",
+      "kind": "modified",
+      "before": {
+        "hash": "f118664271a3b804493431355f450561e8c1c5683d91f45784d883c05bf5bba9",
+        "size": 41916
+      },
+      "after": {
+        "hash": "1ddb88b81d78c367e60cc870ad91c8b6a5d06cf607792f98064d0dcca67d350d",
+        "size": 45972
+      },
+      "attributedTo": [
+        {
+          "path": "server/task/src/main/java/com/cutegoals/task/service/TaskAssignmentService.java",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "server/task/src/test/java/com/cutegoals/task/service/TaskAssignmentServiceTest.java",
+      "kind": "modified",
+      "before": {
+        "hash": "b653058a2d69ef769d4fe02578cec1277ec1b5be7a2f4ffc667040835dce7dba",
+        "size": 42679
+      },
+      "after": {
+        "hash": "d8e6629e8d7281d50806fa795d54366e10040f372d999a42f368e40f5ae20017",
+        "size": 51150
+      },
+      "attributedTo": [
+        {
+          "path": "server/task/src/test/java/com/cutegoals/task/service/TaskAssignmentServiceTest.java",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "web/src/parent/pages/__tests__/ParentTasksPage.test.tsx",
+      "kind": "modified",
+      "before": {
+        "hash": "747b71fbe194c54ebd8d5e6e02d28aba1f827e6766f2ee36d090ecbd4a07493e",
+        "size": 22037
+      },
+      "after": {
+        "hash": "23d47203200756b58cd7e232b3876295f6a2a082a3dda63bbec77a8bc3166cd5",
+        "size": 28360
+      },
+      "attributedTo": [
+        {
+          "path": "web/src/parent/pages/__tests__/ParentTasksPage.test.tsx",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "web/src/parent/pages/index.tsx",
+      "kind": "modified",
+      "before": {
+        "hash": "0fd95e19c4a6d98be3518dde1c496ab97e148a8c36084acbdbbe2f42c4f77a93",
+        "size": 91142
+      },
+      "after": {
+        "hash": "6880223750ab34ecb6dca13e2e10947f9d0c64cdb14bd7dcd6c08db7c6579563",
+        "size": 92274
+      },
+      "attributedTo": [
+        {
+          "path": "web/src/parent/pages/index.tsx",
+          "kind": "file"
+        }
+      ]
+    }
+  ],
+  "unattributed": [],
+  "unresolvedScopes": [],
+  "noCodeReason": null,
+  "scopeHash": "21b92af79c4fd14f40a9d0143247a394d2374dbfbfd794478b879bf9158794ac"
+}

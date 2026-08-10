@@ -1,0 +1,28 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "manual-evidence",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "recurring-task-status-display",
+    "sourceRevision": 3,
+    "contractHash": "6e42ad361c75ced3e791df2808bfbfb0275f18ab2f13cb8ae2c3b4cd0cf20cc3",
+    "scopeHash": "21b92af79c4fd14f40a9d0143247a394d2374dbfbfd794478b879bf9158794ac",
+    "snapshotHash": "84c6baa0ab91fbfe7acb7eada65e15ca490334ab91b5430d027de692eae7eb04",
+    "artifactHash": "cc649a02ea3ba688042a154e8904287194c2825198bebc0d0ef0b7e173961399"
+  },
+  "acceptanceIds": [
+    "acceptance-c91a4fafd15dbfa53888d28973d69920a5d72f8ad24dc640edc64f2a83a99cbc"
+  ],
+  "actor": "native-runtime:manual-evidence",
+  "issuedAt": "2026-08-10T02:34:54.430Z",
+  "evidence": {
+    "steps": [
+      "代码审查创建事务性与幂等键"
+    ],
+    "observations": [
+      "createAssignment/createBatchAssignments 均为 @Transactional；事务回滚时分配与幂等键记录均不落库，同键重试按新请求处理；成功后的同键重试返回既有记录(shouldReturnExistingForIdempotentCreate 覆盖)。"
+    ]
+  },
+  "receiptHash": "4298626e69255cf05dfa6598146b1dfd71868e51d0fbc906324ab402d9aad873"
+}

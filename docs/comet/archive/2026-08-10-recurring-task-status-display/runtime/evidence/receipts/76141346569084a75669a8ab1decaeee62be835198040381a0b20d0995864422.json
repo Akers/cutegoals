@@ -1,0 +1,28 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "manual-evidence",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "recurring-task-status-display",
+    "sourceRevision": 3,
+    "contractHash": "6e42ad361c75ced3e791df2808bfbfb0275f18ab2f13cb8ae2c3b4cd0cf20cc3",
+    "scopeHash": "21b92af79c4fd14f40a9d0143247a394d2374dbfbfd794478b879bf9158794ac",
+    "snapshotHash": "84c6baa0ab91fbfe7acb7eada65e15ca490334ab91b5430d027de692eae7eb04",
+    "artifactHash": "cc649a02ea3ba688042a154e8904287194c2825198bebc0d0ef0b7e173961399"
+  },
+  "acceptanceIds": [
+    "acceptance-aae5832999b7677aa5167685f1ba52ac982e524fd481c818aee41c3646fa839d"
+  ],
+  "actor": "native-runtime:manual-evidence",
+  "issuedAt": "2026-08-10T02:34:53.794Z",
+  "evidence": {
+    "steps": [
+      "代码审查 cancelAssignment 状态约束"
+    ],
+    "observations": [
+      "cancelAssignment 仅拒绝 APPROVED(590-593行)，SUBMITTED 状态分配可取消；取消后分配记录、审计历史(ASSIGNMENT_CANCELLED,612-613行)保留，提交与审核历史不删除。"
+    ]
+  },
+  "receiptHash": "76141346569084a75669a8ab1decaeee62be835198040381a0b20d0995864422"
+}

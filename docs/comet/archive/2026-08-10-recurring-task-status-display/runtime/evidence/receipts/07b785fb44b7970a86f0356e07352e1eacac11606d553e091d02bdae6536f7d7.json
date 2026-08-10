@@ -1,0 +1,28 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "manual-evidence",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "recurring-task-status-display",
+    "sourceRevision": 3,
+    "contractHash": "6e42ad361c75ced3e791df2808bfbfb0275f18ab2f13cb8ae2c3b4cd0cf20cc3",
+    "scopeHash": "21b92af79c4fd14f40a9d0143247a394d2374dbfbfd794478b879bf9158794ac",
+    "snapshotHash": "84c6baa0ab91fbfe7acb7eada65e15ca490334ab91b5430d027de692eae7eb04",
+    "artifactHash": "cc649a02ea3ba688042a154e8904287194c2825198bebc0d0ef0b7e173961399"
+  },
+  "acceptanceIds": [
+    "acceptance-39fa58e2bb06ce07e17a48ebe8e67447443f773901e722d5b3f4c5ce848f133a"
+  ],
+  "actor": "native-runtime:manual-evidence",
+  "issuedAt": "2026-08-10T02:34:53.173Z",
+  "evidence": {
+    "steps": [
+      "代码审查 cancelAssignment 并发控制"
+    ],
+    "observations": [
+      "cancelAssignment(575行) 使用 SELECT ... FOR UPDATE(findByIdForUpdate,577-579行) 加带状态条件的条件 UPDATE(cancelWithCondition,600-610行)：若分配已被并发批准，取消影响 0 行并抛 TASK_ASSIGNMENT_ALREADY_APPROVED，保证批准与取消仅一方成功。shouldRejectCancelApprovedAssignment 覆盖已批准拒绝。"
+    ]
+  },
+  "receiptHash": "07b785fb44b7970a86f0356e07352e1eacac11606d553e091d02bdae6536f7d7"
+}

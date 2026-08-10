@@ -1,0 +1,560 @@
+{
+  "schema": "comet.native.verification-evidence.v2",
+  "change": "recurring-task-status-display",
+  "sourceRevision": 3,
+  "result": "pass",
+  "freshness": "complete",
+  "contractHash": "6e42ad361c75ced3e791df2808bfbfb0275f18ab2f13cb8ae2c3b4cd0cf20cc3",
+  "acceptanceCriteriaHash": "da152e971a831b5cb8789e55d85b4be1a1ad8fde36376c29f640be51f5692d46",
+  "implementationScopeRef": "runtime/evidence/scopes/21b92af79c4fd14f40a9d0143247a394d2374dbfbfd794478b879bf9158794ac.json",
+  "implementationScopeHash": "21b92af79c4fd14f40a9d0143247a394d2374dbfbfd794478b879bf9158794ac",
+  "reportRef": "verification.md",
+  "reportHash": "24538b3c1e1c6afdd9d3debed0a43ef700f73bdf0109183054646476ca394594",
+  "acceptanceTrace": {
+    "schema": "comet.native.acceptance-trace.v2",
+    "nativeRootRef": "docs/comet",
+    "criteriaHash": "da152e971a831b5cb8789e55d85b4be1a1ad8fde36376c29f640be51f5692d46",
+    "total": 51,
+    "evidenced": 51,
+    "skipped": 0,
+    "entries": [
+      {
+        "acceptanceId": "acceptance-0964290aeaef417e428114cdcfa86712cb4df50a4835673a57a05785d7ae1881",
+        "status": "passed",
+        "kind": "spec-scenario",
+        "source": "specs/task-assignment/spec.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/44fcaa2c2298738975cf4db4c5c50c6840c438119a1b7d01608d14b88058e5a5.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-09ded073395e67f384c4fbe9fb8eaa319c344de2696aa489ff107e4b72c1cc6e",
+        "status": "passed",
+        "kind": "brief-example",
+        "source": "brief.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/3bfd2bead41464acebc911f473b32e90c1679741fd51c70da60ebc14b7f6293b.json",
+          "runtime/evidence/receipts/98b075e50ef08e181e7a9b6df2bad902b3b888e7e03d11464b95acf8cb755c7e.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-20ba13827b60b1a861ab7dcb938eee25fc00931e6c5bc83d9ecfd99593a9f245",
+        "status": "passed",
+        "kind": "spec-must",
+        "source": "specs/task-assignment/spec.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/3bfd2bead41464acebc911f473b32e90c1679741fd51c70da60ebc14b7f6293b.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-280a6dfb84c5270d7d698b0c53aebb3a57dfe4aa8ebe9e8eb63daa0e9e055c64",
+        "status": "passed",
+        "kind": "spec-must",
+        "source": "specs/task-assignment/spec.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/3bfd2bead41464acebc911f473b32e90c1679741fd51c70da60ebc14b7f6293b.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-2d53ed9bd805348e692b63ada5b2675858ad1f0248904387b3b8a892a47e4cc2",
+        "status": "passed",
+        "kind": "spec-scenario",
+        "source": "specs/task-assignment/spec.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/3bfd2bead41464acebc911f473b32e90c1679741fd51c70da60ebc14b7f6293b.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-2d5a551dbe27574f22d7fe8e6b5dc8c35988a86f35f134fd911f19100e128515",
+        "status": "passed",
+        "kind": "spec-scenario",
+        "source": "specs/task-assignment/spec.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/3bfd2bead41464acebc911f473b32e90c1679741fd51c70da60ebc14b7f6293b.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-311286c783ace02f00ff5cfed5a7ca3bda8ab1e4389939149e01327714cbd4b5",
+        "status": "passed",
+        "kind": "spec-must",
+        "source": "specs/task-assignment/spec.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/3bfd2bead41464acebc911f473b32e90c1679741fd51c70da60ebc14b7f6293b.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-383a5317cd0a3f76fb16008682f0eca167c14133f1eea0355e7a0d259ae55a06",
+        "status": "passed",
+        "kind": "spec-must",
+        "source": "specs/task-assignment/spec.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/9cac09ba6139039b11e940307e63f89686814defcb0995aec581c9b4b584dc5d.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-39fa58e2bb06ce07e17a48ebe8e67447443f773901e722d5b3f4c5ce848f133a",
+        "status": "passed",
+        "kind": "spec-scenario",
+        "source": "specs/task-assignment/spec.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/07b785fb44b7970a86f0356e07352e1eacac11606d553e091d02bdae6536f7d7.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-4b7b72aea93883fa5ca7613fd9c4e8a5c3b7d0d390175be533b13a0b3be7514f",
+        "status": "passed",
+        "kind": "spec-scenario",
+        "source": "specs/task-assignment/spec.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/3bfd2bead41464acebc911f473b32e90c1679741fd51c70da60ebc14b7f6293b.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-53b8d196d96d84535213401629e69365ba5bdc13fbd49d98e543b37b33a225e6",
+        "status": "passed",
+        "kind": "spec-scenario",
+        "source": "specs/task-assignment/spec.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/01f2fae1c2dd5e071f53d2ec3acd963f6bf68133707c631ab9c2481c36cb7c5b.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-57b38ce3216d117f52278d7af3e2f491c9ba545731ad277f53280c819e485971",
+        "status": "passed",
+        "kind": "spec-scenario",
+        "source": "specs/task-assignment/spec.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/3bfd2bead41464acebc911f473b32e90c1679741fd51c70da60ebc14b7f6293b.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-5c9253efa22ec578f7c685e9303edb003a436e9a91c10359bb11dc7c171fa6c8",
+        "status": "passed",
+        "kind": "spec-must",
+        "source": "specs/task-assignment/spec.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/3bfd2bead41464acebc911f473b32e90c1679741fd51c70da60ebc14b7f6293b.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-5e079923f90eb7a2c12c8132c3ac33b0a7ca8502bbc614504725e192377dbf28",
+        "status": "passed",
+        "kind": "spec-must",
+        "source": "specs/task-assignment/spec.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/3bfd2bead41464acebc911f473b32e90c1679741fd51c70da60ebc14b7f6293b.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-5efa60463e004d650d6fa594043fdfeded94924d209e0f3f279c0db73a80d5d0",
+        "status": "passed",
+        "kind": "brief-example",
+        "source": "brief.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/3bfd2bead41464acebc911f473b32e90c1679741fd51c70da60ebc14b7f6293b.json",
+          "runtime/evidence/receipts/98b075e50ef08e181e7a9b6df2bad902b3b888e7e03d11464b95acf8cb755c7e.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-6634b764bda24a6a8128a0b85fedfc711656fbe5588af5abe7c850a8fa2863fc",
+        "status": "passed",
+        "kind": "spec-scenario",
+        "source": "specs/task-assignment/spec.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/1ee2bbf967ec1b642e9cc02cd994593a13290c37b29bc9829397bd9db663cd3b.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-6d5410677bfc295d4744801f37798d0795d96a51cc2db2969357c70302ec7514",
+        "status": "passed",
+        "kind": "spec-scenario",
+        "source": "specs/task-assignment/spec.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/3bfd2bead41464acebc911f473b32e90c1679741fd51c70da60ebc14b7f6293b.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-6f161158459d4e7ff9ce42743a52045984adfc829aea5bb97b30960cbabb123e",
+        "status": "passed",
+        "kind": "spec-scenario",
+        "source": "specs/task-assignment/spec.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/3bfd2bead41464acebc911f473b32e90c1679741fd51c70da60ebc14b7f6293b.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-85c2ae60fe82002ca03e231cc58104b0ca76d3663d7950d56e307ca860cfe69c",
+        "status": "passed",
+        "kind": "spec-scenario",
+        "source": "specs/task-assignment/spec.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/3bfd2bead41464acebc911f473b32e90c1679741fd51c70da60ebc14b7f6293b.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-879ab010c18b9655511df2e3692054d1123cdfd1c51877d4150e9ef70032d651",
+        "status": "passed",
+        "kind": "spec-scenario",
+        "source": "specs/task-assignment/spec.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/3bfd2bead41464acebc911f473b32e90c1679741fd51c70da60ebc14b7f6293b.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-8f0cdb3b74d99b15ad9a99766f58ce71e467abb47434bd34a0ffa2f39d09f309",
+        "status": "passed",
+        "kind": "spec-scenario",
+        "source": "specs/task-assignment/spec.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/3bfd2bead41464acebc911f473b32e90c1679741fd51c70da60ebc14b7f6293b.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-992a262c4867e922e697422dc26f6d5f14a5ab24a26d453cc47929b7d373da52",
+        "status": "passed",
+        "kind": "spec-scenario",
+        "source": "specs/task-assignment/spec.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/3bfd2bead41464acebc911f473b32e90c1679741fd51c70da60ebc14b7f6293b.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-99d5a8dabdb75d69eab050b09b109378441185d57a92da4762a97ed93368d11f",
+        "status": "passed",
+        "kind": "spec-scenario",
+        "source": "specs/task-assignment/spec.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/3bfd2bead41464acebc911f473b32e90c1679741fd51c70da60ebc14b7f6293b.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-9a717069d029d98e02757c7a43b836343b2f3bbe69946e7358ea7da9fa396ddc",
+        "status": "passed",
+        "kind": "spec-scenario",
+        "source": "specs/task-assignment/spec.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/3bfd2bead41464acebc911f473b32e90c1679741fd51c70da60ebc14b7f6293b.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-9cb5ea85997f4bf4fa8c60058c29309f228931b690b21104452a95c679f9a7be",
+        "status": "passed",
+        "kind": "spec-scenario",
+        "source": "specs/task-assignment/spec.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/3bfd2bead41464acebc911f473b32e90c1679741fd51c70da60ebc14b7f6293b.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-9f9d170740c8758761e74b28f70a1e8b69d3f9ff93d02e195c50fac72b2a94d4",
+        "status": "passed",
+        "kind": "spec-scenario",
+        "source": "specs/task-assignment/spec.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/3bfd2bead41464acebc911f473b32e90c1679741fd51c70da60ebc14b7f6293b.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-a071e952b0f36b3dddb7ea2a353a2eb8b03ddd6e34a294dfe5ecde974c2b1643",
+        "status": "passed",
+        "kind": "spec-scenario",
+        "source": "specs/task-assignment/spec.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/3bfd2bead41464acebc911f473b32e90c1679741fd51c70da60ebc14b7f6293b.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-a5c157b158aab6a2f6ae117e611aaf4d665e89dc65eb8ee9f355feed6c97af32",
+        "status": "passed",
+        "kind": "spec-scenario",
+        "source": "specs/task-assignment/spec.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/3bfd2bead41464acebc911f473b32e90c1679741fd51c70da60ebc14b7f6293b.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-aae5832999b7677aa5167685f1ba52ac982e524fd481c818aee41c3646fa839d",
+        "status": "passed",
+        "kind": "spec-scenario",
+        "source": "specs/task-assignment/spec.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/76141346569084a75669a8ab1decaeee62be835198040381a0b20d0995864422.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-b3605793cdce12d4094d9c4b280df34245ed371187279c92f79d973ae8536f25",
+        "status": "passed",
+        "kind": "spec-scenario",
+        "source": "specs/task-assignment/spec.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/c29006169becf262e848640cd7738ae028e7b24028a2764170b20d5c153ec8cc.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-ba17a0cd8e169b527caa7ba6e52d453d93040ea59edc604e79208e113aca6659",
+        "status": "passed",
+        "kind": "spec-scenario",
+        "source": "specs/task-assignment/spec.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/226e0bc7ad207c4ca5f9d3a46b6cf748cb5a1f43bcb02ee5649dca030bb0e909.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-c01889e717d914d6ad6dad2cd9ea26eebdc132027d9c60173d56bd05088eb7f7",
+        "status": "passed",
+        "kind": "spec-scenario",
+        "source": "specs/task-assignment/spec.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/3bfd2bead41464acebc911f473b32e90c1679741fd51c70da60ebc14b7f6293b.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-c6447320e6d8c7393e0551f977ea55cec176dd0514b401aefb7f84cd98c735af",
+        "status": "passed",
+        "kind": "spec-scenario",
+        "source": "specs/task-assignment/spec.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/3bfd2bead41464acebc911f473b32e90c1679741fd51c70da60ebc14b7f6293b.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-c91a4fafd15dbfa53888d28973d69920a5d72f8ad24dc640edc64f2a83a99cbc",
+        "status": "passed",
+        "kind": "spec-scenario",
+        "source": "specs/task-assignment/spec.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/4298626e69255cf05dfa6598146b1dfd71868e51d0fbc906324ab402d9aad873.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-cdfbdb7670750fc3d5be30713f66f2331394e6365826e022ae68a434f50e02f8",
+        "status": "passed",
+        "kind": "spec-scenario",
+        "source": "specs/task-assignment/spec.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/3bfd2bead41464acebc911f473b32e90c1679741fd51c70da60ebc14b7f6293b.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-cf9de89181822b51ed092f4e0b55e8cbddda10b40b106c5be9267417b91b969d",
+        "status": "passed",
+        "kind": "spec-scenario",
+        "source": "specs/task-assignment/spec.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/4c0f511fc8eb9761c9ba8e507706d20f34f9c9a6d0894369aaf84d43b705a211.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-d0c313c740bdd067885edc28a375f6856578ad8411bed2fb01fc9cb342567ec2",
+        "status": "passed",
+        "kind": "spec-scenario",
+        "source": "specs/task-assignment/spec.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/3bfd2bead41464acebc911f473b32e90c1679741fd51c70da60ebc14b7f6293b.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-d0c61052d404762f59568dd4fd4624517894b7fd1d12cd3eb987a29439263eed",
+        "status": "passed",
+        "kind": "spec-must",
+        "source": "specs/task-assignment/spec.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/3bfd2bead41464acebc911f473b32e90c1679741fd51c70da60ebc14b7f6293b.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-d21bcedd93ae3a6da774ee03e4ebc3d772a13ddcbb2b5486f6ac76d210428ae7",
+        "status": "passed",
+        "kind": "spec-must",
+        "source": "specs/task-assignment/spec.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/3bfd2bead41464acebc911f473b32e90c1679741fd51c70da60ebc14b7f6293b.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-d35d6d33073d35f8bde387288afa09d44432de0c55904f41075d8dd959fe4093",
+        "status": "passed",
+        "kind": "spec-scenario",
+        "source": "specs/task-assignment/spec.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/3bfd2bead41464acebc911f473b32e90c1679741fd51c70da60ebc14b7f6293b.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-d5441e8cf3b7c8fa757036f98e6e672c346c7f761b22b55ebac7415b10c87208",
+        "status": "passed",
+        "kind": "spec-scenario",
+        "source": "specs/task-assignment/spec.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/32155804572a47c0c6dc88d9a2de381bbcb0bb5e945f23cc1768edc1ec73ba44.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-dfc8e28a6b06d4a0d6ee1ab9801f477fa597abe46bd73be968bbfe76a5922b2b",
+        "status": "passed",
+        "kind": "spec-scenario",
+        "source": "specs/task-assignment/spec.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/3bfd2bead41464acebc911f473b32e90c1679741fd51c70da60ebc14b7f6293b.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-e119ec18ea3d3949f8ebd65905f85baa582115f28ced919880b3f7b3fbb7b63a",
+        "status": "passed",
+        "kind": "spec-must",
+        "source": "specs/task-assignment/spec.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/3bfd2bead41464acebc911f473b32e90c1679741fd51c70da60ebc14b7f6293b.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-e30db2fafef9bc7474c5c32ca156f4994eedecee2c6194a6619ebb0ec5d878eb",
+        "status": "passed",
+        "kind": "spec-scenario",
+        "source": "specs/task-assignment/spec.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/3bfd2bead41464acebc911f473b32e90c1679741fd51c70da60ebc14b7f6293b.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-e7834e53dc9450b909e4fd94e0659425b3d9fa32ca9c1fbb2d1a0a1d9bc855f8",
+        "status": "passed",
+        "kind": "spec-scenario",
+        "source": "specs/task-assignment/spec.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/3bfd2bead41464acebc911f473b32e90c1679741fd51c70da60ebc14b7f6293b.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-e80c26f393c1d8daab37d2d592debafd00d82212b202eb184ebbb43db09663b6",
+        "status": "passed",
+        "kind": "spec-scenario",
+        "source": "specs/task-assignment/spec.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/3bfd2bead41464acebc911f473b32e90c1679741fd51c70da60ebc14b7f6293b.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-ee94ee28676fd32f8ec71f5dbaabd2aef4f3b2bb336a85c7a142fb0927a4f342",
+        "status": "passed",
+        "kind": "spec-must",
+        "source": "specs/task-assignment/spec.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/3bfd2bead41464acebc911f473b32e90c1679741fd51c70da60ebc14b7f6293b.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-f21ef951237d2e87206a1583986a7e6fd1eb750abb5b4b9d1212bad5049baa66",
+        "status": "passed",
+        "kind": "spec-must",
+        "source": "specs/task-assignment/spec.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/3bfd2bead41464acebc911f473b32e90c1679741fd51c70da60ebc14b7f6293b.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-f37de3cb5e54e2ec6e21553c505d0a8dfac2b2017e255c579b44a51eaa2fb634",
+        "status": "passed",
+        "kind": "spec-scenario",
+        "source": "specs/task-assignment/spec.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/3bfd2bead41464acebc911f473b32e90c1679741fd51c70da60ebc14b7f6293b.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-f943106151a98f3c51ae7cfdf21fd977449ab8c6a783220bd2b48907b5c5ae69",
+        "status": "passed",
+        "kind": "spec-scenario",
+        "source": "specs/task-assignment/spec.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/b1ebe93517da2a7838efef07f44c7f330e2e770604182af8841afcfda9b2ed7d.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-fc93c094c8921f5d2d9038db3757dc9a954b5f44a58d763ad22e8a36d97000bb",
+        "status": "passed",
+        "kind": "brief-example",
+        "source": "brief.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/3bfd2bead41464acebc911f473b32e90c1679741fd51c70da60ebc14b7f6293b.json",
+          "runtime/evidence/receipts/98b075e50ef08e181e7a9b6df2bad902b3b888e7e03d11464b95acf8cb755c7e.json"
+        ],
+        "skippedReason": null
+      }
+    ],
+    "traceHash": "1645504101e527772ffcdddfd4aff98ab4259cf7830d5070de63c56a876d9b90"
+  },
+  "partialAllowanceRef": null,
+  "partialAllowanceHash": null,
+  "requiredReceiptRefs": [
+    "runtime/evidence/receipts/7fd511803198d0e7df28f45ed8bc34c9ed3e87151f1bb4e2c7a58fc00b4c00f6.json"
+  ],
+  "receiptRefs": [
+    "runtime/evidence/receipts/01f2fae1c2dd5e071f53d2ec3acd963f6bf68133707c631ab9c2481c36cb7c5b.json",
+    "runtime/evidence/receipts/07b785fb44b7970a86f0356e07352e1eacac11606d553e091d02bdae6536f7d7.json",
+    "runtime/evidence/receipts/1ee2bbf967ec1b642e9cc02cd994593a13290c37b29bc9829397bd9db663cd3b.json",
+    "runtime/evidence/receipts/226e0bc7ad207c4ca5f9d3a46b6cf748cb5a1f43bcb02ee5649dca030bb0e909.json",
+    "runtime/evidence/receipts/32155804572a47c0c6dc88d9a2de381bbcb0bb5e945f23cc1768edc1ec73ba44.json",
+    "runtime/evidence/receipts/3bfd2bead41464acebc911f473b32e90c1679741fd51c70da60ebc14b7f6293b.json",
+    "runtime/evidence/receipts/4298626e69255cf05dfa6598146b1dfd71868e51d0fbc906324ab402d9aad873.json",
+    "runtime/evidence/receipts/44fcaa2c2298738975cf4db4c5c50c6840c438119a1b7d01608d14b88058e5a5.json",
+    "runtime/evidence/receipts/4c0f511fc8eb9761c9ba8e507706d20f34f9c9a6d0894369aaf84d43b705a211.json",
+    "runtime/evidence/receipts/76141346569084a75669a8ab1decaeee62be835198040381a0b20d0995864422.json",
+    "runtime/evidence/receipts/98b075e50ef08e181e7a9b6df2bad902b3b888e7e03d11464b95acf8cb755c7e.json",
+    "runtime/evidence/receipts/9cac09ba6139039b11e940307e63f89686814defcb0995aec581c9b4b584dc5d.json",
+    "runtime/evidence/receipts/b1ebe93517da2a7838efef07f44c7f330e2e770604182af8841afcfda9b2ed7d.json",
+    "runtime/evidence/receipts/c29006169becf262e848640cd7738ae028e7b24028a2764170b20d5c153ec8cc.json"
+  ],
+  "createdAt": "2026-08-10T02:37:07.653Z",
+  "envelopeHash": "a9efca4f470506c99d642126c297afcaf2beb554ac3afe24bee1cb9d1fbf0fe5"
+}

@@ -864,6 +864,182 @@ class TaskAssignmentServiceTest {
         assertFalse(params.containsKey("endDate"));
     }
 
+    // ========== REPEAT progress enrichment ==========
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void shouldEnrichRepeatAssignmentWithProgressFromBatchQuery() {
+        // Case 1: REPEAT assignment (deadline passed, PENDING, not cancelled) → overdue=false,
+        // approvedSubmissionCount/earnedPoints from batch query (2 / 30)
+        TaskAssignment repeat = createSampleAssignment();
+        repeat.setId(1L);
+        repeat.setSnapshotTemplateTaskType("REPEAT");
+        repeat.setDeadline(LocalDateTime.now().minusDays(1)); // deadline passed
+        repeat.setStatus("PENDING");
+        repeat.setCancelled(false);
+
+        Page<TaskAssignment> page = new Page<>(1, 20, 1);
+        page.setRecords(List.of(repeat));
+
+        when(taskAssignmentMapper.selectPage(any(Page.class), any(LambdaQueryWrapper.class)))
+                .thenReturn(page);
+        when(taskAssignmentMapper.countApprovedBatch(eq(childId), eq(List.of(templateId))))
+                .thenReturn(List.of(Map.of("templateId", templateId, "approvedCount", 2L)));
+        when(taskAssignmentMapper.sumEarnBatch(eq(childId), eq(List.of(templateId))))
+                .thenReturn(List.of(Map.of("templateId", templateId, "earnedPoints", 30L)));
+
+        Map<String, Object> result = taskAssignmentService.queryAssignments(new LinkedHashMap<>(), familyId, null);
+        List<Map<String, Object>> content = (List<Map<String, Object>>) result.get("content");
+
+        assertEquals(1, content.size());
+        Map<String, Object> item = content.get(0);
+        assertEquals(false, item.get("overdue"));
+        assertEquals(2, ((Number) item.get("approvedSubmissionCount")).intValue());
+        assertEquals(30, ((Number) item.get("earnedPoints")).intValue());
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void shouldEnrichLimitedAssignmentWithNullProgress() {
+        // Case 2: LIMITED assignment (deadline passed, PENDING) → overdue=true,
+        // approvedSubmissionCount=null, earnedPoints=null
+        TaskAssignment limited = createSampleAssignment();
+        limited.setId(1L);
+        limited.setSnapshotTemplateTaskType("LIMITED");
+        limited.setDeadline(LocalDateTime.now().minusDays(1)); // deadline passed
+        limited.setStatus("PENDING");
+        limited.setCancelled(false);
+
+        Page<TaskAssignment> page = new Page<>(1, 20, 1);
+        page.setRecords(List.of(limited));
+
+        when(taskAssignmentMapper.selectPage(any(Page.class), any(LambdaQueryWrapper.class)))
+                .thenReturn(page);
+
+        Map<String, Object> result = taskAssignmentService.queryAssignments(new LinkedHashMap<>(), familyId, null);
+        List<Map<String, Object>> content = (List<Map<String, Object>>) result.get("content");
+
+        assertEquals(1, content.size());
+        Map<String, Object> item = content.get(0);
+        assertEquals(true, item.get("overdue"));
+        assertNull(item.get("approvedSubmissionCount"));
+        assertNull(item.get("earnedPoints"));
+    }
+
+    @Test
+    void shouldNotCallBatchQueriesWhenNoRepeatAssignments() {
+        // Case 3: Page contains only LIMITED/STANDING → countApprovedBatch/sumEarnBatch never called
+        TaskAssignment limited = createSampleAssignment();
+        limited.setId(1L);
+        limited.setSnapshotTemplateTaskType("LIMITED");
+        limited.setDeadline(LocalDateTime.now().minusDays(1));
+
+        TaskAssignment standing = createSampleAssignment();
+        standing.setId(2L);
+        standing.setSnapshotTemplateTaskType("STANDING");
+        standing.setDeadline(LocalDateTime.now().minusDays(1));
+
+        Page<TaskAssignment> page = new Page<>(1, 20, 2);
+        page.setRecords(List.of(limited, standing));
+
+        when(taskAssignmentMapper.selectPage(any(Page.class), any(LambdaQueryWrapper.class)))
+                .thenReturn(page);
+
+        taskAssignmentService.queryAssignments(new LinkedHashMap<>(), familyId, null);
+
+        verify(taskAssignmentMapper, never()).countApprovedBatch(anyLong(), anyList());
+        verify(taskAssignmentMapper, never()).sumEarnBatch(anyLong(), anyList());
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void shouldDefaultRepeatProgressToZeroWhenBatchReturnsEmpty() {
+        // Case 4: REPEAT assignment but batch query returns empty list → approvedSubmissionCount=0, earnedPoints=0
+        TaskAssignment repeat = createSampleAssignment();
+        repeat.setId(1L);
+        repeat.setSnapshotTemplateTaskType("REPEAT");
+        repeat.setDeadline(LocalDateTime.now().minusDays(1));
+        repeat.setStatus("PENDING");
+        repeat.setCancelled(false);
+
+        Page<TaskAssignment> page = new Page<>(1, 20, 1);
+        page.setRecords(List.of(repeat));
+
+        when(taskAssignmentMapper.selectPage(any(Page.class), any(LambdaQueryWrapper.class)))
+                .thenReturn(page);
+        when(taskAssignmentMapper.countApprovedBatch(eq(childId), eq(List.of(templateId))))
+                .thenReturn(List.of());
+        when(taskAssignmentMapper.sumEarnBatch(eq(childId), eq(List.of(templateId))))
+                .thenReturn(List.of());
+
+        Map<String, Object> result = taskAssignmentService.queryAssignments(new LinkedHashMap<>(), familyId, null);
+        List<Map<String, Object>> content = (List<Map<String, Object>>) result.get("content");
+
+        assertEquals(1, content.size());
+        Map<String, Object> item = content.get(0);
+        assertEquals(0, ((Number) item.get("approvedSubmissionCount")).intValue());
+        assertEquals(0, ((Number) item.get("earnedPoints")).intValue());
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void shouldCountOnlyLimitedAsOverdueInCalendarWhenMixedWithRepeat() {
+        // Case 5: Same day two assignments: REPEAT (deadline passed, PENDING) and
+        // LIMITED (deadline passed, PENDING) → overdue count = 1 (LIMITED only)
+        LocalDate today = LocalDate.of(2026, 7, 15);
+
+        TaskAssignment repeatAssignment = createSampleAssignment();
+        repeatAssignment.setId(1L);
+        repeatAssignment.setDeadline(today.atStartOfDay().minusDays(1));
+        repeatAssignment.setSnapshotTemplateTaskType("REPEAT");
+        repeatAssignment.setStatus("PENDING");
+        repeatAssignment.setCancelled(false);
+
+        TaskAssignment limitedAssignment = createSampleAssignment();
+        limitedAssignment.setId(2L);
+        limitedAssignment.setDeadline(today.atStartOfDay().minusDays(1));
+        limitedAssignment.setSnapshotTemplateTaskType("LIMITED");
+        limitedAssignment.setStatus("PENDING");
+        limitedAssignment.setCancelled(false);
+
+        when(taskAssignmentMapper.selectList(any(LambdaQueryWrapper.class)))
+                .thenReturn(List.of(repeatAssignment, limitedAssignment));
+
+        Map<String, Object> params = new LinkedHashMap<>();
+        params.put("year", "2026");
+        params.put("month", "7");
+
+        Map<String, Object> result = taskAssignmentService.getCalendar(params, familyId, null);
+
+        Map<LocalDate, Map<String, Object>> days = (Map<LocalDate, Map<String, Object>>) result.get("days");
+        Map<String, Object> dayData = days.get(today.minusDays(1)); // deadline is July 14
+        assertEquals(1, ((Number) dayData.get("overdue")).intValue());
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void shouldEnrichRepeatDetailWithProgressAndNoOverdue() {
+        // Case 6: getAssignmentDetail for REPEAT → overdue=false, progress from batch query
+        TaskAssignment repeat = createSampleAssignment();
+        repeat.setId(1L);
+        repeat.setSnapshotTemplateTaskType("REPEAT");
+        repeat.setDeadline(LocalDateTime.now().minusDays(1));
+        repeat.setStatus("PENDING");
+        repeat.setCancelled(false);
+
+        when(taskAssignmentMapper.findById(1L)).thenReturn(Optional.of(repeat));
+        when(taskAssignmentMapper.countApprovedBatch(eq(childId), eq(List.of(templateId))))
+                .thenReturn(List.of(Map.of("templateId", templateId, "approvedCount", 3L)));
+        when(taskAssignmentMapper.sumEarnBatch(eq(childId), eq(List.of(templateId))))
+                .thenReturn(List.of(Map.of("templateId", templateId, "earnedPoints", 45L)));
+
+        Map<String, Object> result = taskAssignmentService.getAssignmentDetail(1L, familyId, null);
+
+        assertEquals(false, result.get("overdue"));
+        assertEquals(3, ((Number) result.get("approvedSubmissionCount")).intValue());
+        assertEquals(45, ((Number) result.get("earnedPoints")).intValue());
+    }
+
     // ========== Helpers ==========
 
     private TaskTemplate createSampleTemplate() {
