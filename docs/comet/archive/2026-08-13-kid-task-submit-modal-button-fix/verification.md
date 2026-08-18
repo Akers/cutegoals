@@ -1,0 +1,145 @@
+# Acceptance evidence
+
+| Acceptance ID | Status | Evidence |
+|---|---|---|
+| acceptance-0caf7d39…8291785 | passed | vitest `pages.test.tsx` 关闭路径覆盖（取消/×/ESC/遮罩），全部通过 |
+| acceptance-7e751cc5…2683de | passed | vitest Modal footer 测试 + agent-browser snapshot 显示 Modal 内只有 textarea + footer（取消+提交），无表单内独立提交按钮 |
+| acceptance-908f0236…93af32 | passed | vitest Modal footer 测试 + agent-browser 实地验证 textarea 空时 footer 提交按钮 disabled；fill 后 enabled |
+| acceptance-a4ab90c4…88a153 | passed | vitest 新增测试「REJECTED 任务 footer 主按钮文案『重新提交』」通过 |
+| acceptance-a9bfa4c5…da415 | passed | agent-browser 端到端 manual receipt：点击 footer「提交」→ POST /api/task-review/submissions 200 SUCCESS → Modal 关闭 → GET /api/task-assignments 刷新 → assignmentId=12 status=SUBMITTED |
+| acceptance-af507b1e…74a786 | passed | vitest 新增 3 个 Modal footer 测试全部通过；fetch 断言含 `{assignmentId, notes, idempotencyKey}` |
+
+<!-- comet-native:acceptance-evidence:start -->
+[
+  {
+    "acceptance_id": "acceptance-0caf7d3936131c02669d3b0f2af364e30bfa73fda2fe23b0a15ada1014291785",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/e1787e58f6e4ab7a70c199032f45a0b9eb8b72cb5b3fb00fc8fa48bdcf12e9ab.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-7e751cc568516af2b4b6cea30bea7ecf6351ea473ef09a99bc4316921a2683de",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/e1787e58f6e4ab7a70c199032f45a0b9eb8b72cb5b3fb00fc8fa48bdcf12e9ab.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-908f02361067fad2b397d878642cde5d458f3f101184a229dd0b0ba98e93af32",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/e1787e58f6e4ab7a70c199032f45a0b9eb8b72cb5b3fb00fc8fa48bdcf12e9ab.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-a4ab90c4bd2cb2f661588f5c5256290c4e9be6c887e5c0cccbab4eb56f88a153",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/e1787e58f6e4ab7a70c199032f45a0b9eb8b72cb5b3fb00fc8fa48bdcf12e9ab.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-a9bfa4c5480d5ed2de65ea24f7246175f68e6712c84a629397202310e7eda415",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/1327c112ae82ea08840113fc8c14cd02b142921158734e0fb635e4e093c2c157.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-af507b1e96141a81f237a4193e9321ce33637e2844f3784f7485c4e12744a786",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/e1787e58f6e4ab7a70c199032f45a0b9eb8b72cb5b3fb00fc8fa48bdcf12e9ab.json"
+    ]
+  }
+]
+<!-- comet-native:acceptance-evidence:end -->
+
+# Commands and results
+
+## 1. TypeScript 静态检查
+
+```bash
+cd /home/akers/projects/cutegoals/web && npx tsc --noEmit
+```
+
+结果：仅预存 `src/parent/components/TaskTypeConfigForms.tsx(241,29): error TS6196: All exported members must be exported on top level`（不在本次范围）。本次修改的 `web/src/child/pages/index.tsx` 与 `web/src/child/__tests__/pages.test.tsx` 无 TypeScript 错误。
+
+## 2. 单元测试（child 模块整体）
+
+```bash
+cd /home/akers/projects/cutegoals/web && npx vitest run src/child
+```
+
+结果：**3 files / 26 tests 全部通过**（ChildApp 1 + auth 5 + pages 20）。pages.test.tsx 含本次新增 3 个 Modal footer 测试。
+
+## 3. 单元测试（Modal footer 子集）
+
+```bash
+cd /home/akers/projects/cutegoals/web && npx vitest run src/child/__tests__/pages.test.tsx -t 'Modal footer'
+```
+
+结果：**3 tests passed**，断言包括：
+- 打开 Modal 后无表单内独立提交按钮
+- footer 显示取消+提交
+- 空 textarea 时 footer 提交 disabled
+- 输入 textarea 后点击 footer「提交」触发 `POST /task-review/submissions`，body 含 `{assignmentId:1, notes:'我已经完成了', idempotencyKey:string}`
+- REJECTED 任务 footer 主按钮文案为「重新提交」
+
+## 4. 后端编译验证
+
+```bash
+cd /home/akers/projects/cutegoals/server && mvn -pl task-review -am compile -DskipTests -q
+```
+
+结果：通过（task-review 模块及依赖全部编译成功）。本次新增的 `resolveChildIdFromSession(HttpServletRequest)` 私有 helper 与既有 PointsController、TaskReviewController L172-L193 同模式。
+
+## 5. agent-browser 端到端验收
+
+执行序列（cici childId=2，PIN 180614，deviceId=agent-browser-dev）：
+
+1. `fetch /api/auth/child/login {deviceId:'agent-browser-dev',childId:2,pin:'180614'}` → 200 SUCCESS（cici 登录）
+2. `agent-browser open http://localhost:8000/child/tasks` → 看到 PENDING 任务列表
+3. `agent-browser click @e29`（PENDING 任务卡片「提交」按钮）→ Modal 打开
+4. `agent-browser snapshot -i -s ".ant-modal"` → 显示：标题「提交任务」+ Close 按钮 + textarea + footer（取 消 + 提 交）。**无表单内独立提交按钮**。提交按钮初始 `disabled`
+5. `agent-browser fill @e33 "我已经完成了agent-browser最终验收测试"` → footer 提交按钮变为 enabled
+6. `agent-browser click @e35`（footer 提交按钮）→ 触发 `POST /api/task-review/submissions`，请求体 `{assignmentId:12, notes:"...", idempotencyKey:"..."}`（前端不传 childId）
+7. 后端 200 SUCCESS（从 session JWT claim `currentChildId` 派生 childId），assignmentId=12 status 变为 **SUBMITTED**，`submittedAt=2026-08-13T11:52:20`
+
+# Skipped checks
+
+无跳过的必检项。
+
+# Spec consistency
+
+本次 change 不修改任何 capability spec（仅 bug fix + UX 微调）。已修改的实现文件：
+
+- `web/src/child/pages/index.tsx`（Modal 改造）
+- `web/src/child/__tests__/pages.test.tsx`（新增 3 个 Modal footer 测试）
+- `server/task-review/.../TaskReviewController.java`（submitTask 改为从 session 派生 childId，与同 controller L172-L193 queryReviewHistory 和 PointsController#resolveChildIdFromSession 同模式）
+
+行为变更摘要（与 brief Decisions 一致）：
+- D1: 删除表单内独立「提交」按钮（旧 index.tsx 407-409 行）
+- D2: 复用 antd Modal 默认 footer，通过 `onOk={handleSubmit}`+`okText`+`okButtonProps`+`cancelText="取消"` 把默认「确定」改造为「提交」主按钮
+- D3-D4: textarea 非空校验保留；提交后行为（message.success/setActive(null)/refetch）保留
+- D5: 用户确认共享理解（2026-08-13）
+- D6: Build 阶段发现 `handleSubmit` 不传 childId 时后端返回 `VALIDATION_FAILED "childId is required"`。**解决方案**：不改前端请求体（保持与原始设计一致），改后端 `TaskReviewController.submitTask` 从 session JWT claim 派生 childId（与 PointsController、ExchangeController 和同 controller L172-L193 queryReviewHistory 既有模式一致）。这是更安全的设计：前端不暴露 childId，后端从可信 session 提取，防止越权。
+
+> 注：D6 在 Build 阶段最初计划「前端补 childId」，Verify 阶段反思后改为「后端从 session 派生」更符合鉴权最佳实践（前端不可信任用户身份字段）。这是 brief 范围内的实现决策，不是 scope 扩展。
+
+# Known limitations and risks
+
+- L1：后端 500 INTERNAL_ERROR 的根本原因（构建产物 stale 导致 Lombok `@Data` 未生效）通过 `mvn clean install -DskipTests` 全模块重建已修复。后端源码无相关修改。建议在 `scripts/start-dev.sh` 加 `mvn clean install -DskipTests` 步骤或禁用 spring-boot-devtools 增量编译，避免再次 stale。
+- L2：IDE LSP（VS Code Java 扩展）单文件扫描时未运行 Lombok 注解处理器，导致看到「undefined getter」「blank final field 未初始化」等假阳性错误。这些错误与运行时无关——Maven 编译产物（`mvn -pl task-review -am compile -q` 通过，`javap TaskAssignment.class` 显示 getter 存在）是事实真相。
+- L3：任务列表 refetch 在 Modal 关闭后异步触发，UI 状态变化可能有 100-200ms 延迟，不影响功能。
+
+# Conclusion
+
+6/6 acceptance criteria 全部通过：
+- 4 条关闭路径（取消/×/ESC/遮罩）正常关闭 Modal 并重置 textarea ✓
+- Modal 打开后只显示任务名 + textarea + footer（取消+提交），无冗余按钮 ✓
+- textarea 空时 footer 提交按钮 disabled ✓
+- REJECTED 任务 footer 主按钮文案为「重新提交」✓
+- agent-browser 真实浏览器点击 footer「提交」可正常完成提交 ✓
+- 输入 textarea 后点击 footer「提交」触发 POST `/task-review/submissions`，成功关闭 + refetch + 成功 toast ✓

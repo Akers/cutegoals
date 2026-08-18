@@ -1,0 +1,28 @@
+{
+  "schema": "comet.native.transaction.v2",
+  "id": "656bf583-08f4-4b79-8def-ad1bd2e687c4",
+  "kind": "archive",
+  "status": "committed",
+  "change": "kid-my-tasks-status-filter",
+  "createdAt": "2026-08-12T10:53:38.388Z",
+  "preflightHash": "d6c0b81ccb16306236e362986b5e0900d400eeb9c01e4258dfb5073f341013d8",
+  "operations": [
+    {
+      "id": "spec-1-child-page-migration",
+      "type": "write",
+      "target": "specs/child-page-migration/spec.md",
+      "staged": "runtime/transactions/656bf583-08f4-4b79-8def-ad1bd2e687c4/staged/specs/child-page-migration/spec.md",
+      "backup": "runtime/transactions/656bf583-08f4-4b79-8def-ad1bd2e687c4/backups/specs/child-page-migration/spec.md",
+      "expectedTargetHash": "d25c63dcd39bc3ad7fbc08e9deb027091690230cdc8697112944fb66a8c91430",
+      "stagedHash": "16b190484315715b0c245e13a3bafe96aae781adb86efa3f61ea7a858c6f7dca"
+    },
+    {
+      "id": "archive-change",
+      "type": "move",
+      "source": "changes/kid-my-tasks-status-filter",
+      "target": "archive/2026-08-12-kid-my-tasks-status-filter",
+      "expectedSourceHash": "a8ebebd950e29814a34d9424593e7fa421079162da56dfe02f4020fedc54bd8b",
+      "expectedTargetHash": null
+    }
+  ]
+}

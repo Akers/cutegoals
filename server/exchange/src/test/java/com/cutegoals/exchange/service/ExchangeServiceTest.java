@@ -1,5 +1,7 @@
 package com.cutegoals.exchange.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.cutegoals.auth.service.AuditService;
 import com.cutegoals.common.entity.exchange.Exchange;
 import com.cutegoals.common.entity.exchange.ExchangeSnapshot;
@@ -464,6 +466,119 @@ class ExchangeServiceTest {
     }
 
     // ========== Task 5.11: Cancellation ==========
+
+    // ========== Task: queryExchanges targetName denormalization ==========
+
+    @Test
+    void shouldQueryExchangesWithTargetNameFromSnapshot() {
+        Exchange direct = new Exchange();
+        direct.setId(1L);
+        direct.setChildId(childId);
+        direct.setFamilyId(familyId);
+        direct.setType("DIRECT");
+        direct.setStatus("PENDING_FULFILLMENT");
+        direct.setPrizeId(200L);
+        direct.setPoolId(null);
+        direct.setCostPoints(50);
+        direct.setCreatedAt(LocalDateTime.now());
+
+        Exchange blindBox = new Exchange();
+        blindBox.setId(2L);
+        blindBox.setChildId(childId);
+        blindBox.setFamilyId(familyId);
+        blindBox.setType("BLIND_BOX");
+        blindBox.setStatus("PENDING_FULFILLMENT");
+        blindBox.setPrizeId(null);
+        blindBox.setPoolId(300L);
+        blindBox.setCostPoints(100);
+        blindBox.setCreatedAt(LocalDateTime.now().minusHours(1));
+
+        Page<Exchange> page = new Page<>(1, 20);
+        page.setRecords(java.util.List.of(direct, blindBox));
+        page.setTotal(2);
+
+        when(exchangeMapper.selectPage(any(Page.class), any(LambdaQueryWrapper.class))).thenReturn(page);
+
+        ExchangeSnapshot directSnap = new ExchangeSnapshot();
+        directSnap.setExchangeId(1L);
+        directSnap.setPrizeName("直接奖品");
+        directSnap.setPointsCost(50);
+
+        ExchangeSnapshot blindBoxSnap = new ExchangeSnapshot();
+        blindBoxSnap.setExchangeId(2L);
+        blindBoxSnap.setPoolName("盲盒大礼包");
+        blindBoxSnap.setPointsCost(100);
+
+        when(exchangeSnapshotMapper.selectList(any(LambdaQueryWrapper.class)))
+                .thenReturn(java.util.List.of(directSnap, blindBoxSnap));
+
+        Map<String, Object> params = new LinkedHashMap<>();
+        params.put("childId", childId);
+
+        Map<String, Object> result = exchangeService.queryExchanges(params, familyId, childId);
+
+        @SuppressWarnings("unchecked")
+        List<Map<String, Object>> content = (List<Map<String, Object>>) result.get("content");
+        assertEquals(2, content.size());
+
+        Map<String, Object> directMap = content.get(0);
+        assertEquals("DIRECT", directMap.get("type"));
+        assertEquals("直接奖品", directMap.get("targetName"));
+
+        Map<String, Object> blindBoxMap = content.get(1);
+        assertEquals("BLIND_BOX", blindBoxMap.get("type"));
+        assertEquals("盲盒大礼包", blindBoxMap.get("targetName"));
+
+        // Page shape preserved
+        assertEquals(1, result.get("page"));
+        assertEquals(20, result.get("pageSize"));
+        assertEquals(2, result.get("totalElements"));
+        assertEquals(1, result.get("totalPages"));
+    }
+
+    @Test
+    void shouldFallbackToIdLabelWhenSnapshotMissing() {
+        Exchange direct = new Exchange();
+        direct.setId(1L);
+        direct.setChildId(childId);
+        direct.setFamilyId(familyId);
+        direct.setType("DIRECT");
+        direct.setStatus("PENDING_FULFILLMENT");
+        direct.setPrizeId(200L);
+        direct.setPoolId(null);
+        direct.setCostPoints(50);
+        direct.setCreatedAt(LocalDateTime.now());
+
+        Exchange blindBox = new Exchange();
+        blindBox.setId(2L);
+        blindBox.setChildId(childId);
+        blindBox.setFamilyId(familyId);
+        blindBox.setType("BLIND_BOX");
+        blindBox.setStatus("PENDING_FULFILLMENT");
+        blindBox.setPrizeId(null);
+        blindBox.setPoolId(300L);
+        blindBox.setCostPoints(100);
+        blindBox.setCreatedAt(LocalDateTime.now().minusHours(1));
+
+        Page<Exchange> page = new Page<>(1, 20);
+        page.setRecords(java.util.List.of(direct, blindBox));
+        page.setTotal(2);
+
+        when(exchangeMapper.selectPage(any(Page.class), any(LambdaQueryWrapper.class))).thenReturn(page);
+        when(exchangeSnapshotMapper.selectList(any(LambdaQueryWrapper.class)))
+                .thenReturn(java.util.Collections.emptyList());
+
+        Map<String, Object> params = new LinkedHashMap<>();
+        params.put("childId", childId);
+
+        Map<String, Object> result = exchangeService.queryExchanges(params, familyId, childId);
+
+        @SuppressWarnings("unchecked")
+        List<Map<String, Object>> content = (List<Map<String, Object>>) result.get("content");
+        assertEquals(2, content.size());
+        assertEquals("奖品 #200", content.get(0).get("targetName"));
+        assertEquals("盲盒 #300", content.get(1).get("targetName"));
+    }
 
     @Test
     void shouldCancelExchange() {

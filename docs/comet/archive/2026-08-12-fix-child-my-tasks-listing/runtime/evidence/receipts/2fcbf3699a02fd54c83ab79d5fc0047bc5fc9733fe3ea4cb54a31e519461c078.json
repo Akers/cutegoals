@@ -1,0 +1,56 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "automated-check",
+  "role": "acceptance-evidence",
+  "status": "blocked",
+  "bindings": {
+    "change": "fix-child-my-tasks-listing",
+    "sourceRevision": 5,
+    "contractHash": "6f6b2d3d823babe03f1a409ec3c4a338a48a8537caa7a341ce95a4b296f49455",
+    "scopeHash": "9081e3cffc525b259354aa7e9f683bc80b77aeb64840b9bf51a8050fbd94c6ba",
+    "snapshotHash": "0a1f88c237d3eaef165b8a1412a6e96d563856a458e5e164e8a7f989f84360bc",
+    "artifactHash": "92b840cabe3f2f11d914c030a78d3ceb2c6a37ecb9a89adcf53e42e388193aa0"
+  },
+  "acceptanceIds": [
+    "acceptance-0316fab6dc2fe5e455dcd009654a4a0e0ff70266aa3104ef798b6f4c3ad32ec8",
+    "acceptance-05ecb7b1eddc8857bcf1dbe815ca9a09c5494947a01ea80e2204ec4636d16b31",
+    "acceptance-54239b916796c20ebe644b941f9e5f1a2c822ee3cf8c40b89de66364cc08b44d",
+    "acceptance-61cd34ce07e38fe4b1cf432fb42ee8c075fd27a0be27701389059ed4741777a0",
+    "acceptance-7d11fe7b54929ba52ead4171e4f4b380934f3e059bd09fe18b54bfa950c9e86b",
+    "acceptance-7d7f19129cd7d60844782aaff20c97784dcc736a9492bcf8a134630dd3da5368",
+    "acceptance-b2e4c4b3b629cb666fccd343563d916123f5c8083d95994cd5ae468e16c5438a",
+    "acceptance-ec3eb68b16a705b0cf13f58040723a8a19948ffe9478dce3d522ad4c6681dbf3",
+    "acceptance-f8d42ecdb42581b5f6ee950e0152a558583c1b8f8a5b711b0357b5ac55af627d"
+  ],
+  "actor": "native-runtime:command:bash",
+  "issuedAt": "2026-08-12T08:20:40.093Z",
+  "evidence": {
+    "executable": "bash",
+    "args": [
+      "-c",
+      "cd /home/akers/projects/cutegoals/web && set -o pipefail && npx vitest run src/child 2>&1 | tail -12"
+    ],
+    "cwd": ".",
+    "exitCode": 0,
+    "signal": null,
+    "timedOut": false,
+    "timeoutMs": 180000,
+    "startedAt": "2026-08-12T08:20:38.326Z",
+    "endedAt": "2026-08-12T08:20:40.093Z",
+    "worktree": {
+      "provider": "git",
+      "root": ".",
+      "beforeCommit": "c6276393a352d4ecf9dbd0d57f433b6712efe4d2",
+      "afterCommit": "c6276393a352d4ecf9dbd0d57f433b6712efe4d2"
+    },
+    "afterFence": {
+      "snapshotHash": "ed39617607288249a49ec92e071a0eb08b3fe2c830f8c1a3c1d62a2cd8f62839",
+      "scopeHash": "9b341d67ba8caff78bdec792102736cb2a2410a6fe9eb3887a69d71950bbc8f1",
+      "matched": false
+    },
+    "outputHash": "d49ca28b65dc1d6287d2c11b5f68fc778474e8b311c4f1f11eb2996d8a5260ec",
+    "outputSummary": "RUN  v2.0.5 /home/akers/projects/cutegoals/web\n\n ✓ src/child/__tests__/App.test.tsx  (1 test) 100ms\n ✓ src/child/__tests__/pages.test.tsx  (4 tests) 215ms\n ✓ src/child/__tests__/auth.test.tsx  (5 tests) 367ms\n\n Test Files  3 passed (3)\n      Tests  10 passed (10)\n   Start at  16:20:38\n   Duration  1.45s (transform 126ms, setup 197ms, collect 2.06s, tests 682ms, environment 427ms, prepare 157ms)",
+    "outputTruncated": false
+  },
+  "receiptHash": "2fcbf3699a02fd54c83ab79d5fc0047bc5fc9733fe3ea4cb54a31e519461c078"
+}

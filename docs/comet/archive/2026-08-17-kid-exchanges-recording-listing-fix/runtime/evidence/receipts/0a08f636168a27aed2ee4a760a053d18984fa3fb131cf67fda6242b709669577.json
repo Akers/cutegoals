@@ -1,0 +1,28 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "manual-evidence",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "kid-exchanges-recording-listing-fix",
+    "sourceRevision": 3,
+    "contractHash": "e35657669235aa8f8810f237c2fdf7cd01debb40b4fb43e06d54f526b322d049",
+    "scopeHash": "f56fa83c9798da72d474129fa7240046d29477d4b4a0ba6f574ddfaa682eb36d",
+    "snapshotHash": "7fbe2a2636bc749ea2c2e59b561ce969d732d5f2ed6f09cfbe62b67178b9a7f0",
+    "artifactHash": "47076112d697fa39a677e81e5d3d02c2773e2260801493279406fe182df8823b"
+  },
+  "acceptanceIds": [
+    "acceptance-0569de067dfac3dc33e2b3e738a6531b26d7bb62320a3eeab8c415a95759358c"
+  ],
+  "actor": "native-runtime:manual-evidence",
+  "issuedAt": "2026-08-17T07:23:06.892Z",
+  "evidence": {
+    "steps": [
+      "检查错误状态处理"
+    ],
+    "observations": [
+      "ChildExchangesPage 使用 usePaginatedData<Exchange> 内部封装了 loading/error 状态并暴露 refetch；错误状态由 antd 的 StateHandler 风格组件统一渲染，与 parent 端一致。"
+    ]
+  },
+  "receiptHash": "0a08f636168a27aed2ee4a760a053d18984fa3fb131cf67fda6242b709669577"
+}

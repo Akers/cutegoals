@@ -1,0 +1,28 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "manual-evidence",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "kid-exchanges-path-vs-query-arg-fix",
+    "sourceRevision": 3,
+    "contractHash": "fbfc82ba51f808dc80bf3c7d72de26efbc25545d59b030c8ad764d485f90c671",
+    "scopeHash": "61dd0d5b9d1d19784a0e0211d74ddcea5775dc3c9e26edd35ad039f3a726799a",
+    "snapshotHash": "552172f482a7d78548ddbbab23e6317120e86f65caf1bb4ce18e4d1e6d7620f9",
+    "artifactHash": "21bafa1e1ada307053b43d5f455a4c866cf2c58db0455d42feed3bd4f6529ab5"
+  },
+  "acceptanceIds": [
+    "acceptance-08e3ac9875c61411809544c743429f77006e3b4136b874d42d4aa04b0111879b"
+  ],
+  "actor": "native-runtime:manual-evidence",
+  "issuedAt": "2026-08-18T01:53:24.254Z",
+  "evidence": {
+    "steps": [
+      "get-correct-url"
+    ],
+    "observations": [
+      "node URL simulation: helper now builds /exchanges?childId=2&page=1&pageSize=20 (matching spec shape)"
+    ]
+  },
+  "receiptHash": "fcf50a6d4e94543ee7b60ec19c896d7216fc4f7d650225cb575925c8bd23124c"
+}

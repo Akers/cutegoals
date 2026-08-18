@@ -1,0 +1,28 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "manual-evidence",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "kid-exchanges-path-vs-query-arg-fix",
+    "sourceRevision": 3,
+    "contractHash": "fbfc82ba51f808dc80bf3c7d72de26efbc25545d59b030c8ad764d485f90c671",
+    "scopeHash": "61dd0d5b9d1d19784a0e0211d74ddcea5775dc3c9e26edd35ad039f3a726799a",
+    "snapshotHash": "552172f482a7d78548ddbbab23e6317120e86f65caf1bb4ce18e4d1e6d7620f9",
+    "artifactHash": "21bafa1e1ada307053b43d5f455a4c866cf2c58db0455d42feed3bd4f6529ab5"
+  },
+  "acceptanceIds": [
+    "acceptance-f47245093f6f76340a0add710c0fda6c00821afd81b06d471564a4899e95c5fe"
+  ],
+  "actor": "native-runtime:manual-evidence",
+  "issuedAt": "2026-08-18T01:53:27.627Z",
+  "evidence": {
+    "steps": [
+      "empty-path-skip"
+    ],
+    "observations": [
+      "web/src/child/pages/index.tsx:735 passes empty string when childId undefined; useApi short-circuits on empty path"
+    ]
+  },
+  "receiptHash": "beb46d37817c63725a727496550d4e7b732c0de6a8cd5c46404c3d0fabd73e5b"
+}

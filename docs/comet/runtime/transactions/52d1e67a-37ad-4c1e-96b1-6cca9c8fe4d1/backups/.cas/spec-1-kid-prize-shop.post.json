@@ -1,0 +1,11 @@
+{
+  "schema": "comet.native.archive-cas.v1",
+  "operationId": "spec-1-kid-prize-shop",
+  "role": "post",
+  "hash": "0091049734e162378b8fa5dfc2a6353039061fa249be2e657cab8ff156e5a352",
+  "identity": {
+    "dev": 36,
+    "ino": 2565341,
+    "birthtimeMs": 1786936694875.2583
+  }
+}

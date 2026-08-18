@@ -1,0 +1,8 @@
+{"sequence":1,"timestamp":"2026-08-18T02:01:28.295Z","type":"prepared"}
+{"sequence":2,"timestamp":"2026-08-18T02:01:28.816Z","type":"operation-started","operationId":"spec-1-child-exchanges-listing"}
+{"sequence":3,"timestamp":"2026-08-18T02:01:28.898Z","type":"operation-completed","operationId":"spec-1-child-exchanges-listing"}
+{"sequence":4,"timestamp":"2026-08-18T02:01:29.325Z","type":"operation-started","operationId":"archive-change"}
+{"sequence":5,"timestamp":"2026-08-18T02:01:29.408Z","type":"operation-completed","operationId":"archive-change"}
+{"sequence":6,"timestamp":"2026-08-18T02:01:29.456Z","type":"archive-finalization-started"}
+{"sequence":7,"timestamp":"2026-08-18T02:01:29.532Z","type":"archive-finalized"}
+{"sequence":8,"timestamp":"2026-08-18T02:01:29.549Z","type":"commit"}

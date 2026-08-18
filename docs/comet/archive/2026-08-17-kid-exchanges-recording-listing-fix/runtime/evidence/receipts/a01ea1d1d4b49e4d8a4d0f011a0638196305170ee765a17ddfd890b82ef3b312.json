@@ -1,0 +1,28 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "manual-evidence",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "kid-exchanges-recording-listing-fix",
+    "sourceRevision": 3,
+    "contractHash": "e35657669235aa8f8810f237c2fdf7cd01debb40b4fb43e06d54f526b322d049",
+    "scopeHash": "f56fa83c9798da72d474129fa7240046d29477d4b4a0ba6f574ddfaa682eb36d",
+    "snapshotHash": "7fbe2a2636bc749ea2c2e59b561ce969d732d5f2ed6f09cfbe62b67178b9a7f0",
+    "artifactHash": "47076112d697fa39a677e81e5d3d02c2773e2260801493279406fe182df8823b"
+  },
+  "acceptanceIds": [
+    "acceptance-473d276b01bfb66ed9e3fb2a6242f6c9b221b42c6d40ed2db35f822ad7dcd598"
+  ],
+  "actor": "native-runtime:manual-evidence",
+  "issuedAt": "2026-08-17T07:23:08.720Z",
+  "evidence": {
+    "steps": [
+      "检查现有字段保留"
+    ],
+    "observations": [
+      "ExchangeRecord 列表中除新增 targetName 外，所有 id/childId/familyId/type/status/costPoints/prizeId/poolId/resultPrizeId/idempotencyKey/fulfilledAt/fulfilledBy/cancelledAt/cancelledBy/createdAt/updatedAt 字段全部保留。"
+    ]
+  },
+  "receiptHash": "a01ea1d1d4b49e4d8a4d0f011a0638196305170ee765a17ddfd890b82ef3b312"
+}

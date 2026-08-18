@@ -1,5 +1,7 @@
 package com.cutegoals.prize.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.cutegoals.auth.service.AuditService;
 import com.cutegoals.common.entity.prize.Prize;
 import com.cutegoals.common.exception.BusinessException;
@@ -13,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -243,5 +246,83 @@ class PrizeServiceTest {
 
         assertThrows(BusinessException.class,
                 () -> prizeService.getAvailablePrizeById(1L, familyId));
+    }
+
+    // ========== Task 5.x: queryAvailablePrizes (child shop listing) ==========
+
+    @Test
+    void shouldQueryAvailablePrizesWithDefaultPaging() {
+        Prize available = new Prize();
+        available.setId(1L);
+        available.setFamilyId(familyId);
+        available.setName("雪糕");
+        available.setPointsCost(50);
+        available.setStock(10);
+        available.setEnabled(true);
+        available.setDeleted(false);
+
+        when(prizeMapper.selectPage(any(Page.class), any(LambdaQueryWrapper.class))).thenAnswer(invocation -> {
+            Page<Prize> pageArg = invocation.getArgument(0);
+            pageArg.setRecords(List.of(available));
+            pageArg.setTotal(1);
+            return pageArg;
+        });
+
+        Map<String, Object> params = new LinkedHashMap<>();
+        Map<String, Object> result = prizeService.queryAvailablePrizes(params, familyId);
+
+        // Response shape (page-envelope)
+        assertNotNull(result.get("content"));
+        assertEquals(1, ((List<?>) result.get("content")).size());
+        assertEquals(1, result.get("page"));
+        assertEquals(20, result.get("pageSize"));
+        assertEquals(1, result.get("totalElements"));
+        assertEquals(1, result.get("totalPages"));
+
+        // Filter & ordering propagated via wrapper
+        @SuppressWarnings("unchecked")
+        ArgumentCaptor<LambdaQueryWrapper<Prize>> wrapperCaptor =
+                ArgumentCaptor.forClass(LambdaQueryWrapper.class);
+        verify(prizeMapper).selectPage(any(Page.class), wrapperCaptor.capture());
+        String sql = wrapperCaptor.getValue().getSqlSegment();
+        assertTrue(sql.contains("enabled"), "wrapper should filter enabled");
+        assertTrue(sql.contains("deleted"), "wrapper should filter deleted");
+        assertTrue(sql.contains("stock"), "wrapper should filter stock");
+        assertTrue(sql.contains("DESC"), "wrapper should order DESC");
+    }
+
+    @Test
+    void shouldQueryAvailablePrizesWithCustomPaging() {
+        when(prizeMapper.selectPage(any(Page.class), any(LambdaQueryWrapper.class))).thenAnswer(invocation -> {
+            Page<Prize> pageArg = invocation.getArgument(0);
+            pageArg.setRecords(List.of());
+            pageArg.setTotal(0);
+            return pageArg;
+        });
+
+        Map<String, Object> params = new LinkedHashMap<>();
+        params.put("page", 3);
+        params.put("pageSize", 5);
+        Map<String, Object> result = prizeService.queryAvailablePrizes(params, familyId);
+
+        ArgumentCaptor<Page<Prize>> pageCaptor = ArgumentCaptor.forClass(Page.class);
+        verify(prizeMapper).selectPage(pageCaptor.capture(), any(LambdaQueryWrapper.class));
+        Page<Prize> captured = pageCaptor.getValue();
+        assertEquals(3, captured.getCurrent());
+        assertEquals(5, captured.getSize());
+
+        assertEquals(3, result.get("page"));
+        assertEquals(5, result.get("pageSize"));
+        assertEquals(0, result.get("totalElements"));
+    }
+
+    @Test
+    void shouldThrowWhenAvailablePageSizeExceedsMax() {
+        Map<String, Object> params = new LinkedHashMap<>();
+        params.put("pageSize", 101);
+
+        BusinessException ex = assertThrows(BusinessException.class,
+                () -> prizeService.queryAvailablePrizes(params, familyId));
+        assertEquals(ErrorCode.VALIDATION_FAILED, ex.getErrorCode());
     }
 }

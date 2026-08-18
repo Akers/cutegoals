@@ -1,0 +1,28 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "manual-evidence",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "kid-exchange-status-i18n",
+    "sourceRevision": 3,
+    "contractHash": "c368a68e49408f3a02c4caf57954109c7ef6cfbd2c60651bc3e49f6eac01f5e5",
+    "scopeHash": "4e2a87cd0798dea56d0d806191bec5c8ac68ca35598054c3cdfcc193f4324732",
+    "snapshotHash": "df8d32f71d9db16f9e654e4c2b739572e7d29a29e1354612b95d397cdaf12efa",
+    "artifactHash": "21bafa1e1ada307053b43d5f455a4c866cf2c58db0455d42feed3bd4f6529ab5"
+  },
+  "acceptanceIds": [
+    "acceptance-5674ced63ed2069a38654d3b9abc0ee41c8b9195e16b7c019811ce3d0c6385b8"
+  ],
+  "actor": "native-runtime:manual-evidence",
+  "issuedAt": "2026-08-18T03:29:20.303Z",
+  "evidence": {
+    "steps": [
+      "[{\"command\": \"grep -n 'EXCHANGE_STATUS_META\\\\|exchangeStatusLabel\\\\|exchangeStatusColor\\\\|statusLabel(ex.status' web/src/child/pages/index.tsx\", \"observation\": \"grep confirms child page has new helpers at line 122-133, line 771 uses new helpers (was 756), 0 occurrences of old buggy line.\"}]"
+    ],
+    "observations": [
+      "[{\"note\": \"Manual review: 5674ced6 - mapping verified in web/src/child/pages/index.tsx (line 122-133, line 771); backend ExchangeStatus enum unchanged; parent page unchanged at line 260-265.\"}]"
+    ]
+  },
+  "receiptHash": "08a253b65f5abdb2f2c1e4805ede67dfedb3dcc64017f28d61f8ad5f5c1edd08"
+}

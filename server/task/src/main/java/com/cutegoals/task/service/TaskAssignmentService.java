@@ -462,14 +462,23 @@ public class TaskAssignmentService {
 
         Page<TaskAssignment> page = taskAssignmentMapper.selectPage(new Page<>(pageNum, pageSize), wrapper);
 
-        // Batch-fetch progress data for REPEAT assignments
-        Map<String, Long> progressMap = buildProgressMap(page.getRecords());
+        // Batch-fetch templates for D9 fallback (snapshot allowResubmit is NULL)
+        Set<Long> templateIdsNeedingFallback = page.getRecords().stream()
+                .filter(a -> a.getSnapshotTemplateAllowResubmit() == null)
+                .map(TaskAssignment::getTemplateId)
+                .collect(Collectors.toSet());
+        Map<Long, TaskTemplate> templateFallbackMap = templateIdsNeedingFallback.isEmpty()
+                ? Collections.emptyMap()
+                : batchFetchTemplates(templateIdsNeedingFallback);
+
+        // Batch-fetch progress data for all assignments that need max/cap checking
+        Map<String, Long> progressMap = buildProgressMap(page.getRecords(), templateFallbackMap);
 
         // Enrich with overdue info
         LocalDateTime now = LocalDateTime.now();
         List<Map<String, Object>> enrichedContent = new ArrayList<>();
         for (TaskAssignment assignment : page.getRecords()) {
-            enrichedContent.add(enrichAssignment(assignment, now, progressMap));
+            enrichedContent.add(enrichAssignment(assignment, now, progressMap, templateFallbackMap));
         }
 
         Map<String, Object> result = new LinkedHashMap<>();
@@ -714,14 +723,20 @@ public class TaskAssignmentService {
             throw new BusinessException(ErrorCode.TASK_ASSIGNMENT_FORBIDDEN);
         }
 
-        // For REPEAT assignments, fetch progress data
+        // For assignments needing max/cap checking, fetch progress data
         Map<String, Long> progressMap = Collections.emptyMap();
-        if ("REPEAT".equals(assignment.getSnapshotTemplateTaskType())) {
+        Map<Long, TaskTemplate> templateFallbackMap = Collections.emptyMap();
+        // First resolve D9 fallback if needed
+        if (assignment.getSnapshotTemplateAllowResubmit() == null) {
+            templateFallbackMap = batchFetchTemplates(Set.of(assignment.getTemplateId()));
+        }
+        // Check if this assignment needs resubmit checking
+        if (needsResubmitCheck(assignment, templateFallbackMap)) {
             List<TaskAssignment> singleList = List.of(assignment);
-            progressMap = buildProgressMap(singleList);
+            progressMap = buildProgressMap(singleList, templateFallbackMap);
         }
 
-        return enrichAssignment(assignment, LocalDateTime.now(), progressMap);
+        return enrichAssignment(assignment, LocalDateTime.now(), progressMap, templateFallbackMap);
     }
 
     // ========== Late Policy Management ==========
@@ -792,9 +807,8 @@ public class TaskAssignmentService {
                 && !"APPROVED".equals(assignment.getStatus());
         item.put("overdue", isOverdue);
 
-        // 可提交性（占位：后续由 TaskReviewService 实际计算）
-        item.put("canSubmit", true);
-        item.put("submissionBlockReason", null);
+        // canSubmit / submissionBlockReason are computed by the enrichAssignment
+        // overload with progressMap (spec: 任务分配响应携带可提交状态).
 
         // Progress fields (null for non-REPEAT)
         item.put("approvedSubmissionCount", null);
@@ -804,7 +818,8 @@ public class TaskAssignmentService {
     }
 
     private Map<String, Object> enrichAssignment(TaskAssignment assignment, LocalDateTime now,
-                                                 Map<String, Long> progressMap) {
+                                                 Map<String, Long> progressMap,
+                                                 Map<Long, TaskTemplate> templateFallbackMap) {
         Map<String, Object> item = enrichAssignment(assignment, now);
 
         if ("REPEAT".equals(assignment.getSnapshotTemplateTaskType()) && progressMap != null) {
@@ -815,21 +830,91 @@ public class TaskAssignmentService {
             item.put("earnedPoints", earnedPts != null ? earnedPts.intValue() : 0);
         }
 
+        // === canSubmit / submissionBlockReason computation ===
+        // D9 fallback MUST mirror ResubmissionPolicyEvaluator exactly: only when the
+        // snapshot allowResubmit is NULL (pre-V14 assignments), read allowResubmit /
+        // maxSubmissions / pointsCap from the current template as a whole. When the
+        // snapshot allowResubmit is present, snapshot max/cap are authoritative even
+        // if NULL (no per-field fallback), preserving snapshot semantics.
+        Boolean effectiveAllowResubmit = assignment.getSnapshotTemplateAllowResubmit();
+        Integer effectiveMax = assignment.getSnapshotTemplateMaxSubmissions();
+        Integer effectiveCap = assignment.getSnapshotTemplatePointsCap();
+        if (effectiveAllowResubmit == null) {
+            TaskTemplate fallbackTemplate = templateFallbackMap.get(assignment.getTemplateId());
+            if (fallbackTemplate != null) {
+                effectiveAllowResubmit = fallbackTemplate.getAllowResubmit();
+                effectiveMax = fallbackTemplate.getMaxSubmissions();
+                effectiveCap = fallbackTemplate.getPointsCap();
+            }
+        }
+        boolean allowResubmitEnabled = Boolean.TRUE.equals(effectiveAllowResubmit);
+
+        // Get progress values for this (childId, templateId)
+        String progressKey = assignment.getChildId() + ":" + assignment.getTemplateId();
+        long approvedCount = progressMap != null && progressMap.containsKey(progressKey + ":approved")
+                ? progressMap.get(progressKey + ":approved") : 0L;
+        long earnedPoints = progressMap != null && progressMap.containsKey(progressKey + ":earned")
+                ? progressMap.get(progressKey + ":earned") : 0L;
+
+        // Evaluate canSubmit conditions
+        boolean canSubmit = true;
+        String submissionBlockReason = null;
+
+        // Condition 1: status must be PENDING or REJECTED
+        if (!"PENDING".equals(assignment.getStatus()) && !"REJECTED".equals(assignment.getStatus())) {
+            canSubmit = false;
+        }
+
+        // Condition 2: not cancelled
+        if (canSubmit && Boolean.TRUE.equals(assignment.getCancelled())) {
+            canSubmit = false;
+        }
+
+        // Condition 3: not blocked by late policy (only when now > deadline AND latePolicy == "REJECT")
+        if (canSubmit && now.isAfter(assignment.getDeadline()) && "REJECT".equals(assignment.getLatePolicy())) {
+            canSubmit = false;
+        }
+
+        // Condition 4: maxSubmissions check (only when allowResubmit enabled and max > 0)
+        if (canSubmit && allowResubmitEnabled && effectiveMax != null && effectiveMax > 0) {
+            if (approvedCount >= effectiveMax) {
+                canSubmit = false;
+                submissionBlockReason = "MAX_REACHED";
+            }
+        }
+
+        // Condition 5: pointsCap check (only when allowResubmit enabled and cap > 0)
+        // Note: submissionBlockReason only changes if canSubmit is still true (max takes priority)
+        if (canSubmit && allowResubmitEnabled && effectiveCap != null && effectiveCap > 0) {
+            if (earnedPoints >= effectiveCap) {
+                canSubmit = false;
+                submissionBlockReason = "POINTS_CAP_REACHED";
+            }
+        }
+
+        item.put("canSubmit", canSubmit);
+        item.put("submissionBlockReason", submissionBlockReason);
+
         return item;
     }
 
     /**
-     * Batch-fetch approved count and earned points for REPEAT assignments.
+     * Batch-fetch approved count and earned points for ALL assignments that need max/cap checking.
+     * An assignment needs checking when:
+     * - snapshotTemplateAllowResubmit == true, OR
+     * - snapshotTemplateAllowResubmit == null AND template.allowResubmit == true (D9 fallback)
+     *
      * Key format: childId:templateId:approved / childId:templateId:earned
-     * Returns empty map if no REPEAT assignments in the list.
+     * Returns empty map if no assignments need checking.
      */
-    private Map<String, Long> buildProgressMap(List<TaskAssignment> assignments) {
+    private Map<String, Long> buildProgressMap(List<TaskAssignment> assignments,
+                                               Map<Long, TaskTemplate> templateFallbackMap) {
         Map<String, Long> progressMap = new HashMap<>();
 
-        // Group REPEAT assignments by childId
+        // Group ALL assignments (any task type) that need max/cap checking by childId
         Map<Long, List<Long>> byChild = new HashMap<>();
         for (TaskAssignment a : assignments) {
-            if ("REPEAT".equals(a.getSnapshotTemplateTaskType())) {
+            if (needsResubmitCheck(a, templateFallbackMap)) {
                 byChild.computeIfAbsent(a.getChildId(), k -> new ArrayList<>()).add(a.getTemplateId());
             }
         }
@@ -865,6 +950,37 @@ public class TaskAssignmentService {
         }
 
         return progressMap;
+    }
+
+    /**
+     * Determines if an assignment needs resubmit max/cap checking.
+     * Returns true if:
+     * - snapshotTemplateAllowResubmit == true, OR
+     * - snapshotTemplateAllowResubmit == null AND template.allowResubmit == true (D9 fallback)
+     */
+    private boolean needsResubmitCheck(TaskAssignment a, Map<Long, TaskTemplate> templateFallbackMap) {
+        // If snapshot allowResubmit is explicitly true → needs check
+        if (Boolean.TRUE.equals(a.getSnapshotTemplateAllowResubmit())) {
+            return true;
+        }
+        // If snapshot allowResubmit is null → D9 fallback case
+        if (a.getSnapshotTemplateAllowResubmit() == null) {
+            TaskTemplate template = templateFallbackMap.get(a.getTemplateId());
+            return template != null && Boolean.TRUE.equals(template.getAllowResubmit());
+        }
+        // snapshot allowResubmit is explicitly false → no check needed
+        return false;
+    }
+
+    /**
+     * Batch-fetch templates by IDs for D9 fallback resolution.
+     */
+    private Map<Long, TaskTemplate> batchFetchTemplates(Set<Long> templateIds) {
+        Map<Long, TaskTemplate> result = new HashMap<>();
+        for (Long templateId : templateIds) {
+            taskTemplateMapper.findById(templateId).ifPresent(t -> result.put(templateId, t));
+        }
+        return result;
     }
 
     private String getFamilyLatePolicy(Long familyId) {

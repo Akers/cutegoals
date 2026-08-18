@@ -1,0 +1,19 @@
+{
+  "schema": "comet.native.transaction.v2",
+  "id": "19014445-397f-46c1-8689-14063a5d3f86",
+  "kind": "archive",
+  "status": "committed",
+  "change": "fix-task-review-standing-pending-tests",
+  "createdAt": "2026-08-14T02:56:02.327Z",
+  "preflightHash": "e09458a35a491ac3b0f6f61fc2860496afcbf00481f3e10b234f5410c2088863",
+  "operations": [
+    {
+      "id": "archive-change",
+      "type": "move",
+      "source": "changes/fix-task-review-standing-pending-tests",
+      "target": "archive/2026-08-14-fix-task-review-standing-pending-tests",
+      "expectedSourceHash": "35f9d8628cdc80955a8cb4452bfe147ed43379f0bfcf6c5ebb66ec1b312bcf22",
+      "expectedTargetHash": null
+    }
+  ]
+}

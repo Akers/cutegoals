@@ -1,0 +1,53 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "automated-check",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "fix-task-review-standing-pending-tests",
+    "sourceRevision": 3,
+    "contractHash": "ac0d8af6de85bb42f8611b82caa43e3ea377b58dd78d709afa73638d1bd4efeb",
+    "scopeHash": "3f20f7b245ab9c17209341cff583c565a2446be76e726b9525080f9340297643",
+    "snapshotHash": "3b3bb00ac2a9b6fefe1673d7db9433373526c8bfdb0e9a9235c65df8a1f02a7b",
+    "artifactHash": "7b17328fbe23ed26867c84544ebdfdc09ee868ccf38a4e1ed036d56ba6130425"
+  },
+  "acceptanceIds": [
+    "acceptance-59875486d62e692481974716eb59f0aab97d581c6a137dcd358e2a4a4a6ffa52",
+    "acceptance-5e05e8c23aa1f4ddee62f771a159517a18a7b1d72c0e0f20cc1e9bbe03d7f3ea"
+  ],
+  "actor": "native-runtime:command:mvn",
+  "issuedAt": "2026-08-14T02:54:14.162Z",
+  "evidence": {
+    "executable": "mvn",
+    "args": [
+      "-f",
+      "/home/akers/projects/cutegoals/server/pom.xml",
+      "-pl",
+      "task-review",
+      "test",
+      "-q"
+    ],
+    "cwd": ".",
+    "exitCode": 0,
+    "signal": null,
+    "timedOut": false,
+    "timeoutMs": 300000,
+    "startedAt": "2026-08-14T02:54:11.798Z",
+    "endedAt": "2026-08-14T02:54:14.162Z",
+    "worktree": {
+      "provider": "git",
+      "root": ".",
+      "beforeCommit": "c6276393a352d4ecf9dbd0d57f433b6712efe4d2",
+      "afterCommit": "c6276393a352d4ecf9dbd0d57f433b6712efe4d2"
+    },
+    "afterFence": {
+      "snapshotHash": "3b3bb00ac2a9b6fefe1673d7db9433373526c8bfdb0e9a9235c65df8a1f02a7b",
+      "scopeHash": "3f20f7b245ab9c17209341cff583c565a2446be76e726b9525080f9340297643",
+      "matched": true
+    },
+    "outputHash": "a43836cd5ceb7011ec36a16d143528050ffb3fcef6c4db29f2adfe36d8186ae5",
+    "outputSummary": "WARNING: A Java agent has been loaded dynamically (/home/akers/.m2/repository/net/bytebuddy/byte-buddy-agent/1.14.13/byte-buddy-agent-1.14.13.jar)\nWARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning\nWARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information\nWARNING: Dynamic loading of agents will be disallowed by default in a future release\nOpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended\n10:54:14.025 [main] INFO com.cutegoals.taskreview.service.TaskReviewService -- Task submitted: assignmentId=50, childId=10, attempt=1, late=true\n10:54:14.036 [main] INFO com.cutegoals.taskreview.service.TaskReviewService -- Task submitted: assignmentId=50, childId=10, attempt=1, late=false\n10:54:14.042 [main] INFO com.cutegoals.taskreview.service.TaskReviewService -- STANDING task completed: assignmentId=50, submissions=5\n10:54:14.043 [main] INFO com.cutegoals.taskreview.service.TaskReviewService -- Task attempt approved: attemptId=200, assignmentId=50, reward=0\n10:54:14.053 [main] INFO com.cutegoals.taskreview.service.TaskReviewService -- Task submitted: assignmentId=50, childId=10, attempt=1, late=false\n10:54:14.055 [main] INFO com.cutegoals.taskreview.service.TaskReviewService -- Task attempt approved: attemptId=200, assignmentId=50, reward=0\n10:54:14.062 [main] INFO com.cutegoals.taskreview.service.TaskReviewService -- Task submitted: assignmentId=50, childId=10, attempt=1, late=false\n10:54:14.068 [main] INFO com.cutegoals.taskreview.service.TaskReviewService -- Task attempt approved: attemptId=200, assignmentId=50, reward=5\n10:54:14.099 [main] INFO com.cutegoals.taskreview.service.TaskReviewService -- REPEAT next period created: assignmentId=null, nextDate=2026-07-15, occurrenceKey=1_10_10_2026-07-15\n10:54:14.099 [main] INFO com.cutegoals.taskreview.service.TaskReviewService -- REPEAT task completed: assignmentId=50, nextTrigger=2026-07-15\n10:54:14.099 [main] INFO com.cutegoals.taskreview.service.TaskReviewService -- Task attempt approved: attemptId=200, assignmentId=50, reward=0\n10:54:14.104 [main] INFO com.cutegoals.taskreview.service.TaskReviewService -- Task attempt rejected: attemptId=200, assignmentId=50, reason=Need more details\n10:54:14.113 [main] INFO com.cutegoals.taskreview.service.TaskReviewService -- REPEAT task completed: assignmentId=50, nextTrigger=null\n10:54:14.113 [main] INFO com.cutegoals.taskreview.service.TaskReviewService -- Task attempt approved: attemptId=200, assignmentId=50, reward=0\n10:54:14.117 [main] INFO com.cutegoals.taskreview.service.TaskReviewService -- Task attempt approved: attemptId=200, assignmentId=50, reward=0\n10:54:14.118 [main] INFO com.cutegoals.taskreview.service.TaskReviewService -- Task submitted: assignmentId=50, childId=10, attempt=2, late=false",
+    "outputTruncated": false
+  },
+  "receiptHash": "7ee2bfb3d7efb7772b73b74bb4971254abeae4a089eebc88875965a5c13f66c5"
+}

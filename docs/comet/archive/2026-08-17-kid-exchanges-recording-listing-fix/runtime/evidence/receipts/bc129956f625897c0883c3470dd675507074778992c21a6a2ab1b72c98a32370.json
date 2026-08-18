@@ -1,0 +1,28 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "manual-evidence",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "kid-exchanges-recording-listing-fix",
+    "sourceRevision": 3,
+    "contractHash": "e35657669235aa8f8810f237c2fdf7cd01debb40b4fb43e06d54f526b322d049",
+    "scopeHash": "f56fa83c9798da72d474129fa7240046d29477d4b4a0ba6f574ddfaa682eb36d",
+    "snapshotHash": "7fbe2a2636bc749ea2c2e59b561ce969d732d5f2ed6f09cfbe62b67178b9a7f0",
+    "artifactHash": "47076112d697fa39a677e81e5d3d02c2773e2260801493279406fe182df8823b"
+  },
+  "acceptanceIds": [
+    "acceptance-f47245093f6f76340a0add710c0fda6c00821afd81b06d471564a4899e95c5fe"
+  ],
+  "actor": "native-runtime:manual-evidence",
+  "issuedAt": "2026-08-17T07:23:59.128Z",
+  "evidence": {
+    "steps": [
+      "检查 childId 缺省时不发请求"
+    ],
+    "observations": [
+      "ChildExchangesPage 调用 useChildId() (返回 account?.childId ?? account?.accountId)，childId 为 undefined 时 path 传空串，useApi 跳过请求。"
+    ]
+  },
+  "receiptHash": "bc129956f625897c0883c3470dd675507074778992c21a6a2ab1b72c98a32370"
+}

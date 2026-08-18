@@ -1,0 +1,48 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "automated-check",
+  "role": "acceptance-evidence",
+  "status": "failed",
+  "bindings": {
+    "change": "fix-task-review-standing-pending-tests",
+    "sourceRevision": 3,
+    "contractHash": "ac0d8af6de85bb42f8611b82caa43e3ea377b58dd78d709afa73638d1bd4efeb",
+    "scopeHash": "3f20f7b245ab9c17209341cff583c565a2446be76e726b9525080f9340297643",
+    "snapshotHash": "3b3bb00ac2a9b6fefe1673d7db9433373526c8bfdb0e9a9235c65df8a1f02a7b",
+    "artifactHash": "7b17328fbe23ed26867c84544ebdfdc09ee868ccf38a4e1ed036d56ba6130425"
+  },
+  "acceptanceIds": [
+    "acceptance-9638fb76e2825c8d6d86db18c2e109a84ff14a864cfd8c759972ad0e3cde2667"
+  ],
+  "actor": "native-runtime:command:bash",
+  "issuedAt": "2026-08-14T02:49:10.547Z",
+  "evidence": {
+    "executable": "bash",
+    "args": [
+      "-c",
+      "mvn -pl task-review test -Dtest=ResubmissionPolicyEvaluatorTest -Dsurefire.failIfNoSpecifiedTests=false"
+    ],
+    "cwd": ".",
+    "exitCode": 1,
+    "signal": null,
+    "timedOut": false,
+    "timeoutMs": 300000,
+    "startedAt": "2026-08-14T02:49:09.968Z",
+    "endedAt": "2026-08-14T02:49:10.547Z",
+    "worktree": {
+      "provider": "git",
+      "root": ".",
+      "beforeCommit": "c6276393a352d4ecf9dbd0d57f433b6712efe4d2",
+      "afterCommit": "c6276393a352d4ecf9dbd0d57f433b6712efe4d2"
+    },
+    "afterFence": {
+      "snapshotHash": "3b3bb00ac2a9b6fefe1673d7db9433373526c8bfdb0e9a9235c65df8a1f02a7b",
+      "scopeHash": "3f20f7b245ab9c17209341cff583c565a2446be76e726b9525080f9340297643",
+      "matched": true
+    },
+    "outputHash": "b8c1d5a578e3cf2d504326ff5e7b523ea471f2e917cc881ae9fcc78edc9a756b",
+    "outputSummary": "[INFO] Scanning for projects...\n[ERROR] [ERROR] Could not find the selected project in the reactor: task-review @ \n[ERROR] Could not find the selected project in the reactor: task-review -> [Help 1]\n[ERROR] \n[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.\n[ERROR] Re-run Maven using the -X switch to enable full debug logging.\n[ERROR] \n[ERROR] For more information about the errors and possible solutions, please read the following articles:\n[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MavenExecutionException",
+    "outputTruncated": false
+  },
+  "receiptHash": "3329b633e2b690d403c4407c05d7739aafd8904437f494bfda27d26c6d3d4194"
+}

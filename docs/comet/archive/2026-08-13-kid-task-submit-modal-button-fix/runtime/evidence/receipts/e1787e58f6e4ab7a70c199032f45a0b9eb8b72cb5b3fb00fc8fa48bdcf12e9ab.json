@@ -1,0 +1,52 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "automated-check",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "kid-task-submit-modal-button-fix",
+    "sourceRevision": 6,
+    "contractHash": "5e0f4e78e8b0eb027664d99bb97e69a5cf04d6ae8777a0088dbcdc5d21e03b5a",
+    "scopeHash": "dd90de0621ccb79e5a9e56ee582013a6039d5beba1b05806fbf75d13dbc6ea09",
+    "snapshotHash": "368e572c59f5eba870668ecce25dca864c0aa47e4e23deeea9890ad4948946c8",
+    "artifactHash": "44d1a9244dc653300168400624c53e20adc9437c7d68027ba27f37dc4ab3bdfe"
+  },
+  "acceptanceIds": [
+    "acceptance-0caf7d3936131c02669d3b0f2af364e30bfa73fda2fe23b0a15ada1014291785",
+    "acceptance-7e751cc568516af2b4b6cea30bea7ecf6351ea473ef09a99bc4316921a2683de",
+    "acceptance-908f02361067fad2b397d878642cde5d458f3f101184a229dd0b0ba98e93af32",
+    "acceptance-a4ab90c4bd2cb2f661588f5c5256290c4e9be6c887e5c0cccbab4eb56f88a153",
+    "acceptance-af507b1e96141a81f237a4193e9321ce33637e2844f3784f7485c4e12744a786"
+  ],
+  "actor": "native-runtime:command:bash",
+  "issuedAt": "2026-08-13T04:25:39.135Z",
+  "evidence": {
+    "executable": "bash",
+    "args": [
+      "-c",
+      "cd web && npx vitest run src/child/__tests__/pages.test.tsx"
+    ],
+    "cwd": ".",
+    "exitCode": 0,
+    "signal": null,
+    "timedOut": false,
+    "timeoutMs": 120000,
+    "startedAt": "2026-08-13T04:25:36.704Z",
+    "endedAt": "2026-08-13T04:25:39.135Z",
+    "worktree": {
+      "provider": "git",
+      "root": ".",
+      "beforeCommit": "c6276393a352d4ecf9dbd0d57f433b6712efe4d2",
+      "afterCommit": "c6276393a352d4ecf9dbd0d57f433b6712efe4d2"
+    },
+    "afterFence": {
+      "snapshotHash": "368e572c59f5eba870668ecce25dca864c0aa47e4e23deeea9890ad4948946c8",
+      "scopeHash": "dd90de0621ccb79e5a9e56ee582013a6039d5beba1b05806fbf75d13dbc6ea09",
+      "matched": true
+    },
+    "outputHash": "5e8117601c36b816ac7edfae7bc2ae6f9db5280b7669903da8c1b3bd1a3e1963",
+    "outputSummary": "RUN  v2.0.5 /home/akers/projects/cutegoals/web\n\n ✓ src/child/__tests__/pages.test.tsx  (20 tests) 1004ms\n\n Test Files  1 passed (1)\n      Tests  20 passed (20)\n   Start at  12:25:36\n   Duration  2.10s (transform 107ms, setup 71ms, collect 702ms, tests 1.00s, environment 143ms, prepare 65ms)",
+    "outputTruncated": false
+  },
+  "receiptHash": "e1787e58f6e4ab7a70c199032f45a0b9eb8b72cb5b3fb00fc8fa48bdcf12e9ab"
+}

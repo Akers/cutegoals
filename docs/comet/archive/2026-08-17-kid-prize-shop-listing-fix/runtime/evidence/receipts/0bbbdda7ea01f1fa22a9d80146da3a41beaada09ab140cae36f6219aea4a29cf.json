@@ -1,0 +1,28 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "manual-evidence",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "kid-prize-shop-listing-fix",
+    "sourceRevision": 3,
+    "contractHash": "309fb074447f218f564bc2798b79e33a94c524bec77b2e450dda8ef050e06e54",
+    "scopeHash": "b296a84cbd9027b36a45c20486faaaa99891474d710fd21c972a2e9c40be7584",
+    "snapshotHash": "ca1d3f5743642c0fc2be7d2767e5955a3c59afe8cc080bf5b40047f7a50f0aea",
+    "artifactHash": "dd0b7410116aca14e014987b1ac9bf379a0ffa4400f67c84d2900a21459e4b59"
+  },
+  "acceptanceIds": [
+    "acceptance-f59c23ad35048ff6f275c464e58c768c35958bea741449db2b0d7d18ab4c5e48"
+  ],
+  "actor": "native-runtime:manual-evidence",
+  "issuedAt": "2026-08-17T03:16:14.137Z",
+  "evidence": {
+    "steps": [
+      "Read kid-prize-shop — 孩子端积分商城奖品清单"
+    ],
+    "observations": [
+      "Verified via code inspection: 奖品按积分价升降序、分类筛选等孩子端排序 / 筛选交互。"
+    ]
+  },
+  "receiptHash": "0bbbdda7ea01f1fa22a9d80146da3a41beaada09ab140cae36f6219aea4a29cf"
+}

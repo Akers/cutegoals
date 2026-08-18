@@ -1,0 +1,80 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "automated-check",
+  "role": "acceptance-evidence",
+  "status": "failed",
+  "bindings": {
+    "change": "kid-my-tasks-status-filter",
+    "sourceRevision": 5,
+    "contractHash": "488bb14ff8e6b12813c4ab11bf6db3dfa19c89ceac3add82ef0e9c0ae711f10f",
+    "scopeHash": "5a8552a6ea145671beb142d6c0d9a3030e7c9dc9cce2bd3d275a945825ec6fad",
+    "snapshotHash": "c734e252591908d1ab8a6267d95cb76af8e53e1686901364bd2b01ae63a1f8cb",
+    "artifactHash": "e68c9ae4ca5f48bf79445235659bd37d567aa75b266a8c7b8f5f6e8eff9b7b37"
+  },
+  "acceptanceIds": [
+    "acceptance-0e9b6d4a2bcbb11c4be38b4830ae89c58b5e1b548e5a0009ab287026f1686db0",
+    "acceptance-13a59f61f07a6d3b34d9934108dccb3644772339b93bbd0e3dde6ef1bc7e35c5",
+    "acceptance-2db63d1ec61b3945ee0649d93cd1b6fef3b81d474e75b33a465d9afa53147a7a",
+    "acceptance-325538cff7d517cf8a0b779dd181f15ea5d8c40dc21d315e2a8c00993b0e3aa4",
+    "acceptance-403d20b1329a1432130ff5a3922a157203176bd3949121dc59196b0d427dcd29",
+    "acceptance-4391dd664a48f3bf996e0da1ed3c155ddf62468823bdba5b4c4408c450e342e6",
+    "acceptance-44fcc612d3d9942eeb7404c32eab24c17a51df3e703c76954aa62a2ebfb79bb5",
+    "acceptance-459f21e56a0123c655879f0eaf9a9e865c617d4e6a7253b3c7d3702f63ec8719",
+    "acceptance-47630edf93e6b727cc55dda06958a1259ac68255337ea8273def65684361d1ac",
+    "acceptance-66e12cc299bc1dfc995f8a22fef08c3d80730cd0ae3d875dec2a62a1bac6b035",
+    "acceptance-6e1ea77b403f886c9096ed12dafdb70acb7b20ab93a4d224c7cd56d0885a2477",
+    "acceptance-7836bc2c166359894d4f8e5aa2b12c871010903e6e58229f86476aad49a8470f",
+    "acceptance-866dcb2a6cb25ccf2b239c0b93de41901f53f56c9dbd53c7db4ebd7ae8bd9517",
+    "acceptance-869f01ec3b21bb6c65b3ab6336444ed6fef8125d4be2366558b19170130e4b21",
+    "acceptance-8a985631f55984a7517eac9d3268736ed0be2ad04879113d2a50ad05627cc086",
+    "acceptance-8fd34b1ea8ecafe988b6250eeea1103d494f9babc88db27837747fb57d272aa3",
+    "acceptance-9d5af79e17d0a82ee297ca8919f10423c0f8046006741190126eddf7bccb131e",
+    "acceptance-9dc8b0f05148a44cbbffb10f13810580969cd31ad4f35654937a08ec8898efb6",
+    "acceptance-9dfe6b5bb3454704b5b136392b3bb15b3af2191deda3bb5d59d5cf5fb5158d33",
+    "acceptance-9e33c0e6405d3d76d62915acb78fce9a0f5291de45b451aa85d74cb619796f0d",
+    "acceptance-a8bb8d15ea944770175842aad8918bcf898ef4e7b5ad1296475f97a79cd1b4f0",
+    "acceptance-bf94ac46dcafeacb4148a125897fd1b4333e5d7e405f2cbbc8d3d1bf6dddd012",
+    "acceptance-c76edc531fe5c3903d19a7a9da563d56487189cc75f13f1dcd192be3ae81e440",
+    "acceptance-cf83f053c916fa5a243a2de5ee151e4bfc31807d2231c3cd252e80c3974da717",
+    "acceptance-d24706b254bdf6b82e0b8de91914a33d4a77cda34909ec604209e48939fad82a",
+    "acceptance-dac9c2cb11caa2e5dcb625ca8fc7c5aff9b3b4f9f73e4d4c51584d3aaac8167e",
+    "acceptance-e22b24e2debd8bb45e23a45f729a7769db40954b78166cd50d80acdf899b6008",
+    "acceptance-eaeb9ac0b1f82c906735422db790a7a1285b909183d627d676061e8556bb2d64",
+    "acceptance-f0bc95cfbe546fef77b0c29877cdc0d7a33a1a7726b79670bbb30ae2903ccd52",
+    "acceptance-fab7656f9eb4c5e06dead7c66285dd278cf8164a89c85b63763046b11afa8873",
+    "acceptance-fc8492783a63de6512589b800f88592d4e3de7fd34da6bd7f0217606a0ffd456",
+    "acceptance-ff728f34f171a1b79f2f874334adcf791d527a832b4fc44d935e0f0ec24acb9e"
+  ],
+  "actor": "native-runtime:command:npx",
+  "issuedAt": "2026-08-12T10:46:37.063Z",
+  "evidence": {
+    "executable": "npx",
+    "args": [
+      "vitest",
+      "run",
+      "src/child"
+    ],
+    "cwd": ".",
+    "exitCode": 1,
+    "signal": null,
+    "timedOut": false,
+    "timeoutMs": 300000,
+    "startedAt": "2026-08-12T10:46:36.336Z",
+    "endedAt": "2026-08-12T10:46:37.063Z",
+    "worktree": {
+      "provider": "git",
+      "root": ".",
+      "beforeCommit": "c6276393a352d4ecf9dbd0d57f433b6712efe4d2",
+      "afterCommit": "c6276393a352d4ecf9dbd0d57f433b6712efe4d2"
+    },
+    "afterFence": {
+      "snapshotHash": "c734e252591908d1ab8a6267d95cb76af8e53e1686901364bd2b01ae63a1f8cb",
+      "scopeHash": "5a8552a6ea145671beb142d6c0d9a3030e7c9dc9cce2bd3d275a945825ec6fad",
+      "matched": true
+    },
+    "outputHash": "51ff36a24d13924a3d52c7965c5eb19f73c2bba27d74b6ad95dd0ce613e6c733",
+    "outputSummary": "RUN  v4.1.10 /home/akers/projects/cutegoals\n\n ❯ web/src/child/__tests__/App.test.tsx (0 test)\n ❯ web/src/child/__tests__/auth.test.tsx (0 test)\n ❯ web/src/child/__tests__/pages.test.tsx (0 test)\n\n⎯⎯⎯⎯⎯⎯ Failed Suites 3 ⎯⎯⎯⎯⎯⎯⎯\n\n FAIL  web/src/child/__tests__/App.test.tsx [ web/src/child/__tests__/App.test.tsx ]\nError: Cannot find package '@shared/auth/AuthGuard' imported from /home/akers/projects/cutegoals/web/src/child/App.tsx\n ❯ web/src/child/App.tsx:1:1\n      1| import { AuthGuard } from '@shared/auth/AuthGuard';\n       | ^\n      2| import { ChildHomePage } from './pages';\n      3|\n ❯ web/src/child/__tests__/App.test.tsx:3:1\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯\n\n FAIL  web/src/child/__tests__/auth.test.tsx [ web/src/child/__tests__/auth.test.tsx ]\nError: Cannot find package 'react-router-dom' imported from /home/akers/projects/cutegoals/web/src/child/__tests__/auth.test.tsx\n ❯ web/src/child/__tests__/auth.test.tsx:5:1\n      3| import userEvent from '@testing-library/user-event';\n      4| // @ts-ignore - MemoryRouter available as transitive dep of umi\n      5| import { MemoryRouter } from 'react-router-dom';\n       | ^\n      6| import { ChildBindPage } from '../pages/ChildBindPage';\n      7| import { ChildLoginPage } from '../pages/ChildLoginPage';\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯\n\n FAIL  web/src/child/__tests__/pages.test.tsx [ web/src/child/__tests__/pages.test.tsx ]\nError: Cannot find package '@shared/auth/AuthGuard' imported from /home/akers/projects/cutegoals/web/src/child/App.tsx\n ❯ web/src/child/App.tsx:1:1\n      1| import { AuthGuard } from '@shared/auth/AuthGuard';\n       | ^\n      2| import { ChildHomePage } from './pages';\n      3|\n ❯ web/src/child/__tests__/pages.test.tsx:4:1\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯\n\n\n Test Files  3 failed (3)\n      Tests  no tests\n   Start at  18:46:36\n   Duration  158ms (transform 89ms, setup 0ms, import 0ms, tests 0ms, environment 0ms)",
+    "outputTruncated": false
+  },
+  "receiptHash": "540475763e8a002798aed4cf65dcfcb5214e12bc61ba2b44379d61d40f24ce7f"
+}

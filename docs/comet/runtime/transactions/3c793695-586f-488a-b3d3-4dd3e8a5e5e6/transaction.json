@@ -1,0 +1,27 @@
+{
+  "schema": "comet.native.transaction.v2",
+  "id": "3c793695-586f-488a-b3d3-4dd3e8a5e5e6",
+  "kind": "archive",
+  "status": "committed",
+  "change": "recurring-task-status-display",
+  "createdAt": "2026-08-10T02:37:44.936Z",
+  "preflightHash": "fa60e0c5572a4372328b0eee9d00211216e13e90525fea113fa3760e82704717",
+  "operations": [
+    {
+      "id": "spec-1-task-assignment",
+      "type": "write",
+      "target": "specs/task-assignment/spec.md",
+      "staged": "runtime/transactions/3c793695-586f-488a-b3d3-4dd3e8a5e5e6/staged/specs/task-assignment/spec.md",
+      "expectedTargetHash": null,
+      "stagedHash": "3c277e32c905f8ece8d64e0cf2c112955048144db6110cdd831481b2b718c5da"
+    },
+    {
+      "id": "archive-change",
+      "type": "move",
+      "source": "changes/recurring-task-status-display",
+      "target": "archive/2026-08-10-recurring-task-status-display",
+      "expectedSourceHash": "a2d27d629da00748bf6063453322bf17a1f26b5b4c83ca5cff392c83938f9f67",
+      "expectedTargetHash": null
+    }
+  ]
+}

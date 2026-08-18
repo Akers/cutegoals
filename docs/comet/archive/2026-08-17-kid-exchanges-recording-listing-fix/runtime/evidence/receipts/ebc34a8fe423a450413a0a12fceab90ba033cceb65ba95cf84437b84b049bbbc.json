@@ -1,0 +1,28 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "manual-evidence",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "kid-exchanges-recording-listing-fix",
+    "sourceRevision": 3,
+    "contractHash": "e35657669235aa8f8810f237c2fdf7cd01debb40b4fb43e06d54f526b322d049",
+    "scopeHash": "f56fa83c9798da72d474129fa7240046d29477d4b4a0ba6f574ddfaa682eb36d",
+    "snapshotHash": "7fbe2a2636bc749ea2c2e59b561ce969d732d5f2ed6f09cfbe62b67178b9a7f0",
+    "artifactHash": "47076112d697fa39a677e81e5d3d02c2773e2260801493279406fe182df8823b"
+  },
+  "acceptanceIds": [
+    "acceptance-02a242d6a6f25d5fd62d41687ecf73a58e06366396363ed1265069724d5f1d90"
+  ],
+  "actor": "native-runtime:manual-evidence",
+  "issuedAt": "2026-08-17T07:23:06.447Z",
+  "evidence": {
+    "steps": [
+      "检查 Exchange 接口 status 字段类型"
+    ],
+    "observations": [
+      "web/src/child/pages/index.tsx Exchange 接口 status: 'PENDING_FULFILLMENT' | 'FULFILLED' | 'CANCELLED' | string，保留 string 兜底以兼容任意后端值。"
+    ]
+  },
+  "receiptHash": "ebc34a8fe423a450413a0a12fceab90ba033cceb65ba95cf84437b84b049bbbc"
+}

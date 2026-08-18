@@ -1,0 +1,27 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "static-inspection",
+  "role": "required-check",
+  "status": "passed",
+  "bindings": {
+    "change": "kid-exchange-status-i18n",
+    "sourceRevision": 3,
+    "contractHash": "c368a68e49408f3a02c4caf57954109c7ef6cfbd2c60651bc3e49f6eac01f5e5",
+    "scopeHash": "4e2a87cd0798dea56d0d806191bec5c8ac68ca35598054c3cdfcc193f4324732",
+    "snapshotHash": "df8d32f71d9db16f9e654e4c2b739572e7d29a29e1354612b95d397cdaf12efa",
+    "artifactHash": "21bafa1e1ada307053b43d5f455a4c866cf2c58db0455d42feed3bd4f6529ab5"
+  },
+  "acceptanceIds": [],
+  "actor": "native-runtime:scoped-text-safety",
+  "issuedAt": "2026-08-18T03:30:10.409Z",
+  "evidence": {
+    "subjects": [
+      "web/src/child/pages/index.tsx"
+    ],
+    "rule": "scoped-text-safety",
+    "resultSummary": "The built-in scoped inspection passed without skipped or blocking input.",
+    "checkReceiptRef": "runtime/evidence/check-receipts/e771a08260c7d44014ba945e9299a77e8d0703527e14e665c6acb563e62b78d5.json",
+    "checkReceiptHash": "e771a08260c7d44014ba945e9299a77e8d0703527e14e665c6acb563e62b78d5"
+  },
+  "receiptHash": "b31630bc15f23a6808ab1d56680fc10942e11e661419ddf3c95f7df4c9169975"
+}

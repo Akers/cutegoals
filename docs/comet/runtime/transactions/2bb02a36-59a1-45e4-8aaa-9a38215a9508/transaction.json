@@ -1,0 +1,27 @@
+{
+  "schema": "comet.native.transaction.v2",
+  "id": "2bb02a36-59a1-45e4-8aaa-9a38215a9508",
+  "kind": "archive",
+  "status": "committed",
+  "change": "kid-exchange-status-i18n",
+  "createdAt": "2026-08-18T03:30:20.742Z",
+  "preflightHash": "e261a8c42be7d00777b38d066f98f4c199b35329770c9ff2c30939aed0d85585",
+  "operations": [
+    {
+      "id": "spec-1-kid-exchange-status-i18n",
+      "type": "write",
+      "target": "specs/kid-exchange-status-i18n/spec.md",
+      "staged": "runtime/transactions/2bb02a36-59a1-45e4-8aaa-9a38215a9508/staged/specs/kid-exchange-status-i18n/spec.md",
+      "expectedTargetHash": null,
+      "stagedHash": "c1ba142ff07c1b1d134ef8ea5e40627ac6addaf54b13b1bf61387d953fda78d1"
+    },
+    {
+      "id": "archive-change",
+      "type": "move",
+      "source": "changes/kid-exchange-status-i18n",
+      "target": "archive/2026-08-18-kid-exchange-status-i18n",
+      "expectedSourceHash": "d01178df74fe76f349eded14c172f9f854d2bf9c1c709cfb0c5266257c4c8514",
+      "expectedTargetHash": null
+    }
+  ]
+}

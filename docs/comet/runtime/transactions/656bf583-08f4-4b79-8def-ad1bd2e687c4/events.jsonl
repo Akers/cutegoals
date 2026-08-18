@@ -1,0 +1,8 @@
+{"sequence":1,"timestamp":"2026-08-12T10:53:39.029Z","type":"prepared"}
+{"sequence":2,"timestamp":"2026-08-12T10:53:39.530Z","type":"operation-started","operationId":"spec-1-child-page-migration"}
+{"sequence":3,"timestamp":"2026-08-12T10:53:39.608Z","type":"operation-completed","operationId":"spec-1-child-page-migration"}
+{"sequence":4,"timestamp":"2026-08-12T10:53:40.000Z","type":"operation-started","operationId":"archive-change"}
+{"sequence":5,"timestamp":"2026-08-12T10:53:40.055Z","type":"operation-completed","operationId":"archive-change"}
+{"sequence":6,"timestamp":"2026-08-12T10:53:40.096Z","type":"archive-finalization-started"}
+{"sequence":7,"timestamp":"2026-08-12T10:53:40.170Z","type":"archive-finalized"}
+{"sequence":8,"timestamp":"2026-08-12T10:53:40.189Z","type":"commit"}

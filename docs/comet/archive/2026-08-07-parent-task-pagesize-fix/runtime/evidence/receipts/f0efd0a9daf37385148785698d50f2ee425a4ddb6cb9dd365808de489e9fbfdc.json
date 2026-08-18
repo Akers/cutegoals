@@ -1,0 +1,51 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "automated-check",
+  "role": "acceptance-evidence",
+  "status": "blocked",
+  "bindings": {
+    "change": "parent-task-pagesize-fix",
+    "sourceRevision": 3,
+    "contractHash": "7d22dae6799adb1fc42d84e050f197b7950f42187cac8854f221707749028d96",
+    "scopeHash": "5c7de840c2e8b5b24f318944d12d5c122a21b0e7f09c6b43b41ff95b7190c2df",
+    "snapshotHash": "da468dd4f2b43bb86f8d8f7ac874a91498259dd6bb179f263853d7342aa42940",
+    "artifactHash": "3a907b5a623512cee10ce9e14c144b23ca433676af1f0bdb2272f4a5a232ffd5"
+  },
+  "acceptanceIds": [
+    "acceptance-1879559a9303021f72efcaa9c772e749e7fd22f11b30523f991069dd64b12ddf",
+    "acceptance-3bd716fffe03d51c170e12e6407d9fa46b966b8722715cd01033ad1030103602",
+    "acceptance-4e52022c98fe66c7059b44987386af6563e1bfbba471e0c4a56ce138fe9d5e74",
+    "acceptance-d71bc63c690dfeb5fca464bcd570879d1b1a80b504254173926f2c8d7300a5be"
+  ],
+  "actor": "native-runtime:command:bash",
+  "issuedAt": "2026-08-07T02:23:03.618Z",
+  "evidence": {
+    "executable": "bash",
+    "args": [
+      "-c",
+      "cd web && npx vitest run src/parent/pages/__tests__/ParentTasksPage.test.tsx src/parent/components/__tests__/TaskCalendar.test.tsx"
+    ],
+    "cwd": ".",
+    "exitCode": 0,
+    "signal": null,
+    "timedOut": false,
+    "timeoutMs": 180000,
+    "startedAt": "2026-08-07T02:23:01.773Z",
+    "endedAt": "2026-08-07T02:23:03.618Z",
+    "worktree": {
+      "provider": "git",
+      "root": ".",
+      "beforeCommit": "ae41e86018d09d9372947b9baafe3923f57de912",
+      "afterCommit": "ae41e86018d09d9372947b9baafe3923f57de912"
+    },
+    "afterFence": {
+      "snapshotHash": "9a0e9e4e03203f5e61849fa6c433d295d80a332bfb1d86d2af9a3a3caa42b606",
+      "scopeHash": "d0c5804981565a4ced45ff46ca95c0db1f31c63af27070eed2773d3c79f8ee2d",
+      "matched": false
+    },
+    "outputHash": "4791defa330c73051337926daf0f37389ec7c5a6a24cc86b6fa9b2bfa75c400c",
+    "outputSummary": "RUN  v2.0.5 /home/akers/projects/cutegoals/web\n\n ✓ src/parent/components/__tests__/TaskCalendar.test.tsx  (30 tests) 209ms\n ✓ src/parent/pages/__tests__/ParentTasksPage.test.tsx  (35 tests) 413ms\n\n Test Files  2 passed (2)\n      Tests  65 passed (65)\n   Start at  10:23:02\n   Duration  1.52s (transform 176ms, setup 134ms, collect 814ms, tests 622ms, environment 288ms, prepare 108ms)",
+    "outputTruncated": false
+  },
+  "receiptHash": "f0efd0a9daf37385148785698d50f2ee425a4ddb6cb9dd365808de489e9fbfdc"
+}

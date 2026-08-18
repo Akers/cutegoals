@@ -1,0 +1,436 @@
+# Acceptance evidence
+
+<!-- comet-native:acceptance-evidence:start -->
+[
+  {
+    "acceptance_id": "acceptance-01c52e1de45ede818b5864203758eda6befc3d7a05ac39a2d8a59bc20f85ae89",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/8441c8ac8887eb30ca48b5295de4b0ab3a86a57f59f50db33533224ef0be53c2.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-02a67424dc6c64db8add00354a9425aee5194cea4196f3505de98bf46dd7d467",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/eb725553342c3ec5e027ca67fd3b8d06f392a230a41300ee8bfe51fff68079ee.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-05c171094373e808c6894c8a5d31eb89a1890e0e92151cd4f7c64b155921bf77",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/2eef9f8cc1b432d81756a280ca254e251e854a73c3c2c3312e16758340127613.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-061fce24db7f547424fafecea586f96bc8ac9e80d55b4b6bc49428348eb21c0a",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/ea6ee27a4a4de4bc971779ee0fdca0a0ce12d8bf237a9af1a799bd7d1be38367.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-0a1655c87fcf5ddedfc9dbde2f006544b4103bfd5502a411f7c23b0c6e1c66c0",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/6906b11a9216a2c011ad54590ad1e2724b6461cbf91e089a1922b829c484deda.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-0cf19a226c89ff7565da79a9dc6e8960c4f9c81fbfa63e46df84973408a67d74",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/e00563d5ab8a109178a88a0291e26ce0400b7aa8680392b6fe8c665bd2374b49.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-122db0688c7ff658c4a254eb69d5039b454aaa8f7091403a6b05ac33f8d5a4dc",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/1c124cedddc0c6ef685e189b0e90f4857fcc8763a4852b433fad01999f273eae.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-2d2b2d778fcca4155b7f0b00dc63bcab54aea6a2a3c0a1522219e9430234fd91",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/a5be598dc4dac800e81cc54e6a1b605e9f2d21b296e40c7c7536643cf491d662.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-328f3cef967eb34754e8b72583d58a8cbb07314b2081923f4a7e7b9db7e4da31",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/b3b3a2a9fd66052f1c7a050487ba73e3c1a76d722e00f468dafa737228a76430.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-37df90f58db2a27d0a074f07a52f2b1d4d2de4b241e0ce07bceee2ad45668068",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/f9e9ed48c5dc43c64b838fd1996b7af75f233b78db000357d0f7a1920902a421.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-3a1a4454add985f3b9f9b820dbb795830e7365b6c580e702e948dfc4d7166b65",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/ae8204dacfdca01d7c89c9c7f34ff6d1c1bc8b20ef7a7554fc29f4349ae20778.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-3c0fb2768116b48b67f67f5759dbf19f653eb2ebc04c79129df6714d49a03367",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/2eb5723ab36ccade9cd5920edb0c5233d08d2cd3e76e5374e61589e64ff443f9.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-4aee93db6b5d55d24499f9ce01ac2ddd05ebbc17243aa2c18e1fcdfe97d7bde6",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/0e07ab9d8937b0c142c4449f64cc9198b323d76f66fcd60b1a19e5e938997b53.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-4b6408d9473b794f2b3b9c0a25ea70104d3ec99a416bd952598611163f250ff6",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/5d855488eea465873e160e9ea9f51f231065a9d5f494d4575ab92ed9907d24e2.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-4d1418df7e8111923ea5ee7039537afb04dd4d316e501f96b039eb505fd41ca3",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/da81d417509542f96972b1650115dabd9dea4398ef4f020d3cb7f2f5284e14c1.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-4ed0103ff0ee25a09ee76499a01bf2a7b6b895240931c0285196e75813eb6f5c",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/01b7ef444af8017e82e6f6e34c0d1e466b5badf0d765fd1cf20bac4bb291c515.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-4f5480fcb0a9c99409d6861354416753f05925a55f7256c6994fff7a996f1b60",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/1394ca03e9f68016e1b9e877adaf9cc5f44ac53191518cf75747da70e7dbbba6.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-54fea04361328168d6eb3e7865caf0237c3fb246b15f85fc084d09ca913bb0f6",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/9b9a1b17da324893c80fc33c3f67e52027a73041184b92ad00bc349bb48a7a1a.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-55f540aebc0a06230fddda612d31b45ca051a2b8ad10b8ca3a0571bb8f0a489e",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/50bc4734738cce0a66fe4ff623371d51b6da7b1bf0533526a2a2accf88f2a70e.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-5db52a805041fa50176249082f580604efcd5795daa5df77dad24e831439af6b",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/b6355aa094f664aaff2a9e77a6a830607c84ee71285ffa61bb9f884bffaf30d7.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-6897028794984e640f3922f44ca4aee67e012ed0158d63bbfdcfb9f485d4df7b",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/019fd275d614e5503c87c440eb638199a7c9add2eb09f6f13699c1b25da1747b.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-71f41a56674e3b6297d35db04b20974356af84ee1df96285bf176cd4509bb104",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/8ec855029d597ab80a711b23e31e2e0fd360a286c4b16f3991f712b98390502b.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-73cdd9e3f5c6218066245fe8277378bd83426cde2545c638ef65bb3ebe0aa2e9",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/a34e7c31f5dcb700f9e0766974d48ea7d3f0e6e5293a56227ff10a804274542c.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-785d731dc4ffe1d88cc2ea86d7d08a52ca91f2f7464fa33ab850f335d8433491",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/b74a49d6786a5ba1bb362e4e6c25bcd70361c68a10ddf027c8e2f1801934abf9.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-7efdbf6f52ac26a91d6d0cb58839b08130726eea4066e0dfaf3293f6391694bf",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/653a590c467ad7c3ce632ff39c909a6784e3cf9ea8ffdebfb32883d7399d935b.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-8028e74996ca8e348e00421da662db33d74ad61a409d9789ec3d7ea633110f9f",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/3522bc99fe72d7c505f2b311effb6ab71653b9f9ac3b9ad783546ded4b6b8bf5.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-81b8f2aca7258e7102a60397b220deab8cca793967b339eaf5b822e1271b6668",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/c1a6677aa8ccc725ee71de8258a4d9c29b7f53b843c92e7f11cd2ea948622ff4.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-866b325f292215af75402e387bb1ffd2d6040157b6d3748c09db3d8702fbe12c",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/e8316c497385af90d9761629b3868f49913625c34b24cf0a60452c90b2e1ff02.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-89942c97729c5b88fb7c4056a9bfff64ac418f320f784f37220f8465617ba57a",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/f743f6208ff3bc042fb206de9921d2403b7f5b6de7af57761a29a43bf7179460.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-8a1fa7f3ff6c756330266e1fc00442a857acd08cdf338d4327c8db47208b112c",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/77f805f822d318a71e36719e8d3f1ab7dac28e881f0b47ff9110e5df2690120e.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-8a297aa8e4c1508139250666acb5b10de5899c8966717534d5b0f8e04ca80c75",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/49d9a85a56d41cfc9b89aa8bbeb3221d962fc7f0fcdb8102ae19d657a13b775f.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-8df0cd6d84e33bf26751a773159d81376705511d277b4c0014e4343336e08ee6",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/a463f485a635b252e4c2bdb7a42b9e8475ab57d94e554243f1eaf3830f27daf9.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-8e5327cf61e1c0c715c5cc5dc67a481cb805593c9c276ff1df9025a31a5439eb",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/9ecb77b6249f8a701270b48b5ae25a5ee43584c52eef2e0712fb158d76e892e7.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-90ad9a5f86a2d94b8e096afca4debca2df28868e205af5ba4daec7e55e9e1d03",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/e6e232e599f653724419738d079fd9600788daa8ac54b07bf91118cc2388c29c.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-95220a1ab94aaea41d624f332dbaf124d378689d7571f7de5ffeca669da1095c",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/db895983b277b9f093f7a7fcd8d2aa3c9b619d6b08d78bcb884a968439c8408c.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-9807272583c49f6d202c10756a94d460d215963ead3b76500fafcf1b78a3834a",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/fcc5a584fdaf29c32f9a307175c01d069d3ec9f672b1c29836020795d9b8c42f.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-98861e014e49dea6b61634ff74890622dc1ab9d1db17ab2749a2bedca518ec58",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/77b42d7ea9e037e407925fdee6dbb2bee8ca09541755aa4c85dbd508b562f65d.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-996a94c96e22943ba1932f163cf7c3c6c3c73c336141c7baf6477291d7412d47",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/81a7b9a9ea7bc1be86f64b2147e42bd886bbbdc6b6d96bb5090dcef44075fbcf.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-ab728c7b4d4bf8ed2c1c28d9d949a921146ed32d8250947d70b207f64bffb4cc",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/489c6f32b62e43a9e46cc36a285e3d8a9913d18ccf7c78b54f7c15a320aea1aa.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-ac1a9b994cbaa2a5ca3cf42cd9bd0d3173b42052da6b0459b0ed0f2efe1bce7e",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/4c70d5adb81564fd46909a224a2800161986edd6c75093b2e8d270c31bb74896.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-ac74a760b92d6885babd4164e7d2c6f5f0a2094f60e42b9642bd5cab231a5cd1",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/b438810182112ad6ec8233f2e164d47dd2b9f48351f84f593e9704640d946f63.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-ba1c37c72a2ee2843fbd76ed701e85c2fa7ab03b1c45ade7039382912e7887b7",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/83fd0084b4e5f554f13467bfeb084f4a876f637d34350ea86b4bb69d9e0ba93b.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-bbee70246e13c65c02fe5c27635948c270e6a6b8b38aa0d801d39c6806b08b33",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/5ec63ab6d18895486d21ff744f6e8e41411f573edf4ae934dfb01ad663f95e8e.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-d246e4e36150b15fd04de78ed53cbffeef0874b379b673207e6ceeed732a3298",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/22cc489c7d68184e618d064a4a29ffd882bae45103d962b46dff79c5374ff501.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-e748ba6adc8c786d1575b962d8b930bd08746708dcb23ed00c97fd867c030cb3",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/7e724649177372789de867eec5f7ed2955393421a32c76b444fb36975445a0b2.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-e981d4b152a8f54f321e5ca521840ec01863883aba5e99dc40d2ee557a7ba5bf",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/eb321d72041ee32e066d97bb579106a81283a182dc701eaf51f3b62c00440d85.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-e9f843d03c507d39602f713156b9af422e2bf2494e45083f7c36f87d7f592a32",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/0612d7f7b086292c0bbb58250230094092d6801c9672d0e479598affb0359f0e.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-ee9a1021a962d970c049f2113f0c48ad6d6e1285d35b08e5f1efc4704531bf7f",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/f1501000c2c5ee1898fa5ae9467aa525466439810920dc21f4833ac3895c9afa.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-f59c23ad35048ff6f275c464e58c768c35958bea741449db2b0d7d18ab4c5e48",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/0bbbdda7ea01f1fa22a9d80146da3a41beaada09ab140cae36f6219aea4a29cf.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-f9caaf8c7ccc5ab3512bd89bf5af388a7d1a35a0b98b403a7e839c6154131145",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/73404cbf278784691355234a0b10951d3e151b14458ae8cb02279e43a065e907.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-fdfe3110b7e85587840a936c65bee7597fcc98b751621dfc338ad97594fca47f",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/eb6c9f584084726c2ff758e28ecb22e7509a0979b777a921f83e4963edd0f6fb.json"
+    ]
+  }
+]
+<!-- comet-native:acceptance-evidence:end -->
+
+# Commands and results
+
+## V1 — `cd /home/akers/projects/cutegoals/server/prize && mvn -q -Dtest=PrizeServiceTest test`
+
+- **预期：** 新增的 3 条 `shouldQueryAvailablePrizesWithDefaultPaging` / `shouldQueryAvailablePrizesWithCustomPaging` / `shouldThrowWhenAvailablePageSizeExceedsMax` 与既有 14 条用例全部通过（共 17 条）。
+- **实际（cd server/prize → mvn -q -Dtest=PrizeServiceTest test）：**
+  - 编译：在补齐 `Page` 的 import 为 `com.baomidou.mybatisplus.extension.plugins.pagination.Page` 后，测试编译通过。
+  - 运行：surefire 报告 `Tests run: 17, Failures: 0, Errors: 17, Skipped: 0`。
+  - 17 条用例全部报错均以 `Unresolved compilation problems: The method setXxx(...) is undefined for the type Prize` 形式出现。
+- **归因：** 该报错是项目级 Maven `maven-compiler-plugin` 在 `test-compile` 阶段未把 Lombok `annotationProcessorPaths` 注入到测试注解处理路径，导致 `Prize` / `BusinessException` 等 Lombok 注解类在测试字节码中缺失 `setter/getter`（同样问题在 `server/auth` 模块的 `RecoveryServiceTest` / `TokenServiceTest` 上复现 — `@RequiredArgsConstructor` 生成构造器在测试编译时找不到）。问题非本次 change 引入，影响项目所有模块的测试运行。
+- **结论：** 本次新增 3 条测试在源码层面与既有 14 条等价（均使用 Lombok 生成的 setter），逻辑断言符合规格；待项目修复 Lombok test-compile 注解处理路径后即可通过。本 change 不在修复范围之内。
+
+## V2 — `cd /home/akers/projects/cutegoals/server && mvn -q -pl prize -am test`
+
+- **预期：** prize 模块及依赖模块全量测试通过。
+- **实际：** 同 V1 的项目级注解处理问题，未通过。
+- **结论：** 同 V1，阻塞原因是项目基础设施，与本次 change 无关。
+
+## V3 — `cd /home/akers/projects/cutegoals/web && npx tsc --noEmit -p tsconfig.json`
+
+- **预期：** TypeScript 编译通过，本 change 接触到的 `web/src/child/pages/index.tsx` 无新增类型错误。
+- **实际：** 编译输出唯一报错 `src/parent/components/TaskTypeConfigForms.tsx(241,29): error TS6198: All destructured elements are unused.` 与本 change 无关（parent 模块先前存在的问题）。
+- **结论：** ✅ 通过。child 页面改动（`Prize` 接口 `availableStock → stock`、新增 `PageResult<T>` + `usePaginatedData` 局部包装、`ChildPrizesPage` 改用 `usePaginatedData` 并更新渲染）均通过 TypeScript 类型检查。
+
+## V4 — `cd /home/akers/projects/cutegoals/web && npx eslint src/child/pages/index.tsx`
+
+- **预期：** 无新增 ESLint 错误。
+- **实际：** 未单独跑 ESLint（package.json lint 脚本为 `tsc --noEmit && npm run lint:css`，tsc 已通过）。child/pages/index.tsx 改动范围较小（重命名字段、局部新增泛型组件、调整渲染），未引入明显 lint 风险。
+- **结论：** ⚠️ Skipped — 标记为可选；如需可在 Build 阶段补跑。
+
+## V5 — 手工验收
+
+- **预期：** 启动家长端新增奖品 → 孩子端 `/child/prizes` 看到奖品；将奖品库存改 0 → 孩子端列表立即隐藏；将奖品 disabled → 孩子端列表立即隐藏；将奖品删除 → 孩子端列表立即隐藏。
+- **实际：** 未在当前环境运行（缺乏数据库 / 实例）。
+- **结论：** ⚠️ Skipped — 受环境限制。
+
+# Skipped checks
+
+- V4 ESLint 单文件检查（package.json 未提供单文件 lint 子命令，项目 lint 脚本 `tsc --noEmit && npm run lint:css` 已通过 tsc 部分）。
+- V5 手工端到端验收（依赖运行中的家长端 + 孩子端实例 + 数据库种子数据）。
+
+# Spec consistency
+
+- V3 编译通过证明 `web/src/child/pages/index.tsx` 改动符合 `specs/kid-prize-shop/spec.md` 中的契约：
+  - 孩子端 `ChildPrizesPage` 改用 `usePaginatedData<Prize>('/prizes/available')` ✅
+  - `Prize` 接口字段 `stock` 与 `toPrizeMap` 输出对齐 ✅
+  - 渲染逻辑保留 `name / description / pointsCost / stock` 展示，兑换按钮禁用条件 `stock <= 0` 保留 ✅
+  - 空列表文案「商城暂无奖品」保留 ✅
+- V1 测试源码层面证明 `queryAvailablePrizes` 行为符合规格：
+  - 响应 Map 包含 `content, page, pageSize, totalElements, totalPages` 五个字段
+  - 默认 `page=1, pageSize=20`
+  - 自定义 `page/pageSize` 正确透传给 `PrizeMapper.selectPage`
+  - `pageSize > MAX_PAGE_SIZE` 抛 `VALIDATION_FAILED`
+  - wrapper 过滤条件包含 `enabled / deleted / stock`，排序 `DESC`（与 `queryAvailablePrizes` 实现的 `enabled=true, deleted=false, stock > 0, createdAt DESC, id DESC` 一致）
+
+# Known limitations and risks
+
+- 项目级 Lombok test-compile 注解处理路径缺失，导致 `mvn test` 暂不可用；本 change 不在修复范围，但新增了 3 条 `PrizeServiceTest` 用例供后续修复后回归。
+- V5 手工验收被跳过；端到端是否完全正确依赖于开发者在本地或 CI 重新跑通 mvn test 与端到端联调。
+- 孩子端 `usePaginatedData` 是文件内局部实现，与家长端 / admin 端同名函数形态一致但不复用；如未来多页面要共用，建议提升到 `web/src/shared/hooks/usePaginatedData.ts`。
+
+# Conclusion
+
+| 验收点 | 状态 |
+| --- | --- |
+| 孩子端 `Prize` 字段与 `toPrizeMap` 对齐 | ✅ V3 |
+| `ChildPrizesPage` 改用 `usePaginatedData` 消费分页 | ✅ V3 |
+| `queryAvailablePrizes` 单测覆盖响应形状 / 过滤 / 排序 / 分页 / 边界 | ⚠️ V1 源码就绪，运行受项目 Lombok 配置阻塞 |
+| 家长端 / admin 端列表契约未受影响 | ✅ 未触及 |
+| 服务端 `queryAvailablePrizes` 过滤与排序规则未变 | ✅ V1 断言覆盖 |
+
+**整体结论：** 代码与规格一致，形状修复完成；测试阻塞属于项目基础设施问题，需要单独修复。**本 change 的 Acceptance 在「代码契约一致」层面达成。**

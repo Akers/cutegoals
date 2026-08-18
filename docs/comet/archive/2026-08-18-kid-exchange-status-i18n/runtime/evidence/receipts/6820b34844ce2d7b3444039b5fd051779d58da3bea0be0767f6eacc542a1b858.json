@@ -1,0 +1,28 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "manual-evidence",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "kid-exchange-status-i18n",
+    "sourceRevision": 3,
+    "contractHash": "c368a68e49408f3a02c4caf57954109c7ef6cfbd2c60651bc3e49f6eac01f5e5",
+    "scopeHash": "4e2a87cd0798dea56d0d806191bec5c8ac68ca35598054c3cdfcc193f4324732",
+    "snapshotHash": "df8d32f71d9db16f9e654e4c2b739572e7d29a29e1354612b95d397cdaf12efa",
+    "artifactHash": "21bafa1e1ada307053b43d5f455a4c866cf2c58db0455d42feed3bd4f6529ab5"
+  },
+  "acceptanceIds": [
+    "acceptance-072552bcd42ff768eec64a0e1c4ae6416b924f2f709279376090f5b8d608b5bb"
+  ],
+  "actor": "native-runtime:manual-evidence",
+  "issuedAt": "2026-08-18T03:28:50.083Z",
+  "evidence": {
+    "steps": [
+      "[{\"command\":\"grep EXCHANGE_STATUS_META web/src/child/pages/index.tsx\",\"observation\":\"found EXCHANGE_STATUS_META at line 122\"}]"
+    ],
+    "observations": [
+      "[{\"note\":\"manual review\"}]"
+    ]
+  },
+  "receiptHash": "6820b34844ce2d7b3444039b5fd051779d58da3bea0be0767f6eacc542a1b858"
+}

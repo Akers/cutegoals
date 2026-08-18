@@ -1,0 +1,74 @@
+# Acceptance evidence
+
+<!-- comet-native:acceptance-evidence:start -->
+[
+  {
+    "acceptance_id": "acceptance-59875486d62e692481974716eb59f0aab97d581c6a137dcd358e2a4a4a6ffa52",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/7ee2bfb3d7efb7772b73b74bb4971254abeae4a089eebc88875965a5c13f66c5.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-5e05e8c23aa1f4ddee62f771a159517a18a7b1d72c0e0f20cc1e9bbe03d7f3ea",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/7ee2bfb3d7efb7772b73b74bb4971254abeae4a089eebc88875965a5c13f66c5.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-9638fb76e2825c8d6d86db18c2e109a84ff14a864cfd8c759972ad0e3cde2667",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/1fa28b963b9c207b280c8ca02f80f1d76096a9b7b4366604f0266690dffff6a3.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-a3bc45d7cb20734e38f6f3fba08ede2683aac0c68e819fd1d718f72dd5866725",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/6ada00300ab6228853bc1ebd53aab8211c312180a0d50c382054b7470fc24144.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-b18836d3217a1ea9454a4bc4475ab0de4084f1a984fbc9ac6974ab3d815c12fb",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/38b4e1041bc9b4fca2e0aba4a7b29b115a31d1540e0adce3e0a26e8bb58b0797.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-e249df1629bead4681f7be1e90e6d457f87c0cb61c6b2fe7c7225180b93af95e",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/38b4e1041bc9b4fca2e0aba4a7b29b115a31d1540e0adce3e0a26e8bb58b0797.json"
+    ]
+  }
+]
+<!-- comet-native:acceptance-evidence:end -->
+
+# Commands and results
+
+- `mvn -f /home/akers/projects/cutegoals/server/pom.xml -pl task-review test -q`：52 tests run, 0 failures, 0 errors → BUILD SUCCESS
+- `mvn -f /home/akers/projects/cutegoals/server/pom.xml -pl task-review test -Dtest=ResubmissionPolicyEvaluatorTest -q`：19 tests run, 0 failures, 0 errors → BUILD SUCCESS
+- `bash -c "cd /home/akers/projects/cutegoals/server && mvn -pl web test -Dtest=TaskTypeIntegrationTest 2>&1 | grep -E 'Tests run|BUILD'"`：26 tests run, 0 failures, 0 errors → BUILD SUCCESS
+
+3 个 automated receipt 全部 status=passed（7ee2bfb3、38b4e104、1fa28b96、6ada0030）。
+
+# Skipped checks
+
+无 required-check receipt；verify report 嵌入了 acceptance-evidence section。
+
+# Spec consistency
+
+本次 change 不改 capability，无 spec delta。spec 与 brief 契约一致。
+
+# Known limitations and risks
+
+1. brief 文字"Tests run: 50"与实际 task-review 模块测试数（52）不一致，但 acceptance ID 由 brief 当前内容 hash 而定（包含 50），acceptance 实际未列举具体数字要求，只描述"通过率100%"与"应该通过 3 个具体测试方法"，因此不影响契约验证。
+2. receipt 命令不能从 cutegoals/ 顶层直接 `mvn -pl task-review test`（maven 找不到 reactor 子项目），必须用 `bash -c "cd server && mvn ..."` 或 `-f server/pom.xml`。这是环境性细节，不影响功能正确性。
+3. 早期失败的 receipt `3329b633...json`、`a3c586dd...json`、`c5d94518...json` 已留在证据目录，但未在 verification.md 的 acceptance-evidence block 中引用（每个 acceptance 只引用 1 个 passed receipt）。
+
+# Conclusion
+
+6/6 acceptance 全部 passed。修改：仅 `TaskReviewServiceTest.java` 4 处编辑（3 处 template 补 setter + 1 处错误码改期望），不涉及生产代码。

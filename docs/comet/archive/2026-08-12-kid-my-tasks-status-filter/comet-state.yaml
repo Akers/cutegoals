@@ -1,0 +1,23 @@
+schema: comet.native.v3
+minimum_runtime_version: 3
+revision: 7
+verification_protocol: legacy-v1
+name: kid-my-tasks-status-filter
+language: zh-CN
+phase: archive
+brief: brief.md
+approval: confirmed
+approved_contract_hash: 488bb14ff8e6b12813c4ab11bf6db3dfa19c89ceac3add82ef0e9c0ae711f10f
+spec_changes:
+  - capability: child-page-migration
+    operation: replace
+    source: specs/child-page-migration/spec.md
+    base_hash: d25c63dcd39bc3ad7fbc08e9deb027091690230cdc8697112944fb66a8c91430
+verification_result: pass
+verification_report: verification.md
+implementation_scope: runtime/evidence/scopes/5a8552a6ea145671beb142d6c0d9a3030e7c9dc9cce2bd3d275a945825ec6fad.json
+verification_evidence: runtime/evidence/verifications/0b07c2a702f75257b8659457913f9b2f2d95d5abec79f59f67dd4817c2737605.json
+partial_allowance: null
+archived: true
+created_at: 2026-08-12
+run_id: 9f989d05-de1b-41dc-95b1-2d3a7299232f

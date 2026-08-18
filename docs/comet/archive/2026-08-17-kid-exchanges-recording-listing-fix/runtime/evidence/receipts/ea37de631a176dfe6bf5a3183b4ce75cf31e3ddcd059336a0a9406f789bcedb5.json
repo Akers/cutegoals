@@ -1,0 +1,28 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "manual-evidence",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "kid-exchanges-recording-listing-fix",
+    "sourceRevision": 3,
+    "contractHash": "e35657669235aa8f8810f237c2fdf7cd01debb40b4fb43e06d54f526b322d049",
+    "scopeHash": "f56fa83c9798da72d474129fa7240046d29477d4b4a0ba6f574ddfaa682eb36d",
+    "snapshotHash": "7fbe2a2636bc749ea2c2e59b561ce969d732d5f2ed6f09cfbe62b67178b9a7f0",
+    "artifactHash": "47076112d697fa39a677e81e5d3d02c2773e2260801493279406fe182df8823b"
+  },
+  "acceptanceIds": [
+    "acceptance-f2207323f02b3d74eedd9764c673d1bca1d9227f2abed9741dd2685fc7805cce"
+  ],
+  "actor": "native-runtime:manual-evidence",
+  "issuedAt": "2026-08-17T07:25:44.934Z",
+  "evidence": {
+    "steps": [
+      "AC5: 前端渲染 2 张卡片"
+    ],
+    "observations": [
+      "ChildExchangesPage 在 usePaginatedData<Exchange> 返回 content 数组后，使用 .map 渲染每条 Exchange 为卡片；标题=ex.targetName，副标题=typeLabel·costPoints·createdAt，状态= statusLabel(ex.status)。代码逻辑可直接阅读，不需运行时验证。"
+    ]
+  },
+  "receiptHash": "ea37de631a176dfe6bf5a3183b4ce75cf31e3ddcd059336a0a9406f789bcedb5"
+}

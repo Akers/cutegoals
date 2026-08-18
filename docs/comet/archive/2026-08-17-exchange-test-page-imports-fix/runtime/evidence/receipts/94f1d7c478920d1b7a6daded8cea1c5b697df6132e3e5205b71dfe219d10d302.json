@@ -1,0 +1,28 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "manual-evidence",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "exchange-test-page-imports-fix",
+    "sourceRevision": 3,
+    "contractHash": "e318a60488678e13ee1338838e02628757d610a05e6829144050fb100e12b139",
+    "scopeHash": "33dc9233be70b3a5b42b318155725e7131f2c46bef7db17fca2cb0f42c23bef5",
+    "snapshotHash": "f582b638af0a87deb5ba68cd8228a25a59e68e83523c9601490da296024797e7",
+    "artifactHash": "12c09d453fe06f0a800765b1875720f941479f1460b4955b4d4926fe49c81e9e"
+  },
+  "acceptanceIds": [
+    "acceptance-51a7ea447c9e4c4cb3140be60ab15554784e38afbce6a815f5b6a770ccbd1da2"
+  ],
+  "actor": "native-runtime:manual-evidence",
+  "issuedAt": "2026-08-17T08:01:10.277Z",
+  "evidence": {
+    "steps": [
+      "Run V4: grep -c \"import com.baomidou.mybatisplus\" server/exchange/src/test/java/com/cutegoals/exchange/service/ExchangeServiceTest.java"
+    ],
+    "observations": [
+      "Output: 2 (LambdaQueryWrapper + Page). Imports match ExchangeService.java:3-4."
+    ]
+  },
+  "receiptHash": "94f1d7c478920d1b7a6daded8cea1c5b697df6132e3e5205b71dfe219d10d302"
+}

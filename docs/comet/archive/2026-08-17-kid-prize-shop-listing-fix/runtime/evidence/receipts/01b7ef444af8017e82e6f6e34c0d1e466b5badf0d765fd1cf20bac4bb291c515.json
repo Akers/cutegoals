@@ -1,0 +1,28 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "manual-evidence",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "kid-prize-shop-listing-fix",
+    "sourceRevision": 3,
+    "contractHash": "309fb074447f218f564bc2798b79e33a94c524bec77b2e450dda8ef050e06e54",
+    "scopeHash": "b296a84cbd9027b36a45c20486faaaa99891474d710fd21c972a2e9c40be7584",
+    "snapshotHash": "ca1d3f5743642c0fc2be7d2767e5955a3c59afe8cc080bf5b40047f7a50f0aea",
+    "artifactHash": "dd0b7410116aca14e014987b1ac9bf379a0ffa4400f67c84d2900a21459e4b59"
+  },
+  "acceptanceIds": [
+    "acceptance-4ed0103ff0ee25a09ee76499a01bf2a7b6b895240931c0285196e75813eb6f5c"
+  ],
+  "actor": "native-runtime:manual-evidence",
+  "issuedAt": "2026-08-17T03:16:08.025Z",
+  "evidence": {
+    "steps": [
+      "Read kid-prize-shop — 孩子端积分商城奖品清单"
+    ],
+    "observations": [
+      "Verified via code inspection: 分页参数（`page=1, pageSize=20`）正确传递给 `PrizeMapper.selectPage`。"
+    ]
+  },
+  "receiptHash": "01b7ef444af8017e82e6f6e34c0d1e466b5badf0d765fd1cf20bac4bb291c515"
+}

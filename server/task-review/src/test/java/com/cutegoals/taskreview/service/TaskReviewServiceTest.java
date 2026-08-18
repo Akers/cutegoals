@@ -3,6 +3,7 @@ package com.cutegoals.taskreview.service;
 import com.cutegoals.auth.mapper.FamilyMapper;
 import com.cutegoals.auth.service.AuditEvent;
 import com.cutegoals.auth.service.AuditService;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.cutegoals.common.entity.family.ChildProfile;
 import com.cutegoals.common.entity.family.Family;
 import com.cutegoals.common.entity.points.PointsBalance;
@@ -608,6 +609,8 @@ class TaskReviewServiceTest {
         assignment.setSnapshotDifficultyReward(0); // No points to avoid ledger mock
         TaskAttempt attempt = createSampleAttempt(1);
         TaskTemplate template = createSampleTemplate("STANDING", "{\"max_submissions\":5}");
+        template.setMaxSubmissions(5);
+        template.setAllowResubmit(true);
 
         when(taskAttemptMapper.findByIdForUpdate(attemptId)).thenReturn(Optional.of(attempt));
         when(taskAssignmentMapper.findById(attempt.getAssignmentId())).thenReturn(Optional.of(assignment));
@@ -631,6 +634,8 @@ class TaskReviewServiceTest {
         assignment.setSnapshotDifficultyReward(0); // No points to avoid ledger mock
         TaskAttempt attempt = createSampleAttempt(1);
         TaskTemplate template = createSampleTemplate("STANDING", "{\"max_submissions\":5}");
+        template.setMaxSubmissions(5);
+        template.setAllowResubmit(true);
 
         when(taskAttemptMapper.findByIdForUpdate(attemptId)).thenReturn(Optional.of(attempt));
         when(taskAssignmentMapper.findById(attempt.getAssignmentId())).thenReturn(Optional.of(assignment));
@@ -652,9 +657,12 @@ class TaskReviewServiceTest {
         TaskAssignment assignment = createSampleAssignment("PENDING", false);
         assignment.setSubmissionCount(5);
         TaskTemplate template = createSampleTemplate("STANDING", "{\"max_submissions\":5}");
+        template.setMaxSubmissions(5);
+        template.setAllowResubmit(true);
 
         when(taskAssignmentMapper.findByIdForUpdate(assignmentId)).thenReturn(Optional.of(assignment));
         when(taskTemplateMapper.findById(assignment.getTemplateId())).thenReturn(Optional.of(template));
+        when(taskReviewMapper.countApprovedByTemplateAndChild(childId, assignment.getTemplateId())).thenReturn(5L);
 
         Map<String, Object> request = new LinkedHashMap<>();
         request.put("assignmentId", assignmentId);
@@ -663,7 +671,7 @@ class TaskReviewServiceTest {
 
         BusinessException ex = assertThrows(BusinessException.class,
                 () -> taskReviewService.submitTask(request, childId, familyId, accountId));
-        assertEquals(ErrorCode.TASK_STANDING_LIMIT_REACHED, ex.getErrorCode());
+        assertEquals(ErrorCode.TASK_SUBMISSION_MAX_REACHED, ex.getErrorCode());
     }
 
     // ========== Task 11.3: LIMITED ==========
@@ -858,5 +866,83 @@ class TaskReviewServiceTest {
         r.setDecision(decision);
         r.setReason("Test reason");
         return r;
+    }
+
+    // ========== parent-task-review-list-fields-fix: additive flattened fields ==========
+
+    @Test
+    @org.junit.jupiter.api.DisplayName("queryPendingReviews 返回的 item 含 7 个新顶层字段且保留既有字段")
+    @SuppressWarnings("unchecked")
+    void shouldExposeFlattenedReviewItemFieldsInPendingReviews() {
+        TaskAssignment assignment = createSampleAssignment("SUBMITTED", false);
+        assignment.setSnapshotTemplateName("整理书桌");
+        // Deadline already passed → isOverdue should be true under the review-list
+        // (deadline<now) semantics agreed in brief.
+        assignment.setDeadline(LocalDateTime.now().minusDays(1));
+
+        TaskAttempt attempt = createSampleAttempt(1);
+        attempt.setContent("已经整理好了");
+
+        ChildProfile child = new ChildProfile();
+        child.setId(childId);
+        child.setNickname("小明");
+
+        when(taskAssignmentMapper.selectPage(any(), any())).thenAnswer(invocation -> {
+            Page<TaskAssignment> page = invocation.getArgument(0);
+            page.setRecords(java.util.List.of(assignment));
+            page.setTotal(1);
+            return page;
+        });
+        when(taskAttemptMapper.findByAssignmentId(assignmentId)).thenReturn(java.util.List.of(attempt));
+        when(taskReviewMapper.findByAttemptId(attemptId)).thenReturn(Optional.empty());
+        when(taskChildMapper.findById(childId)).thenReturn(Optional.of(child));
+
+        Map<String, Object> result = taskReviewService.queryPendingReviews(new HashMap<>(), familyId);
+
+        List<Map<String, Object>> content = (List<Map<String, Object>>) result.get("content");
+        assertEquals(1, content.size());
+        Map<String, Object> item = content.get(0);
+
+        // Existing nested fields preserved (additive change, non-breaking).
+        assertEquals(assignmentId, item.get("id"));
+        assertEquals("整理书桌", item.get("snapshotTemplateName"));
+        assertEquals("SUBMITTED", item.get("status"));
+        assertNotNull(item.get("attempts"));
+
+        // New flattened top-level fields consumed by web/src/parent ReviewItem.
+        assertEquals(assignmentId, item.get("assignmentId"));
+        assertEquals(attemptId, item.get("attemptId"));
+        assertEquals("整理书桌", item.get("templateTitle"));
+        assertEquals("小明", item.get("childNickname"));
+        assertEquals("已经整理好了", item.get("notes"));
+        assertNotNull(item.get("submittedAt"));
+        assertEquals(Boolean.TRUE, item.get("isOverdue"));
+    }
+
+    @Test
+    @org.junit.jupiter.api.DisplayName("queryPendingReviews: deadline 未过时 isOverdue 为 false")
+    @SuppressWarnings("unchecked")
+    void shouldReturnIsOverdueFalseWhenDeadlineNotPassed() {
+        TaskAssignment assignment = createSampleAssignment("SUBMITTED", false);
+        // Default createSampleAssignment sets deadline = now + 1 day → not overdue.
+        TaskAttempt attempt = createSampleAttempt(1);
+
+        when(taskAssignmentMapper.selectPage(any(), any())).thenAnswer(invocation -> {
+            Page<TaskAssignment> page = invocation.getArgument(0);
+            page.setRecords(java.util.List.of(assignment));
+            page.setTotal(1);
+            return page;
+        });
+        when(taskAttemptMapper.findByAssignmentId(assignmentId)).thenReturn(java.util.List.of(attempt));
+        when(taskReviewMapper.findByAttemptId(attemptId)).thenReturn(Optional.empty());
+        when(taskChildMapper.findById(childId)).thenReturn(Optional.empty());
+
+        Map<String, Object> result = taskReviewService.queryPendingReviews(new HashMap<>(), familyId);
+
+        List<Map<String, Object>> content = (List<Map<String, Object>>) result.get("content");
+        Map<String, Object> item = content.get(0);
+        assertEquals(Boolean.FALSE, item.get("isOverdue"));
+        // childNickname null when child not found — front-end tolerates null/undefined.
+        assertNull(item.get("childNickname"));
     }
 }

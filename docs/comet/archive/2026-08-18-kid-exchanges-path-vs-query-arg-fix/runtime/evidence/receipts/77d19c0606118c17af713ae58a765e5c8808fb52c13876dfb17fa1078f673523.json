@@ -1,0 +1,28 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "manual-evidence",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "kid-exchanges-path-vs-query-arg-fix",
+    "sourceRevision": 3,
+    "contractHash": "fbfc82ba51f808dc80bf3c7d72de26efbc25545d59b030c8ad764d485f90c671",
+    "scopeHash": "61dd0d5b9d1d19784a0e0211d74ddcea5775dc3c9e26edd35ad039f3a726799a",
+    "snapshotHash": "552172f482a7d78548ddbbab23e6317120e86f65caf1bb4ce18e4d1e6d7620f9",
+    "artifactHash": "21bafa1e1ada307053b43d5f455a4c866cf2c58db0455d42feed3bd4f6529ab5"
+  },
+  "acceptanceIds": [
+    "acceptance-bc4c4f2dfdea24fc6c0ec4c7af2ddc140fc92d9206e1ebccf6ad5dd7f56be490"
+  ],
+  "actor": "native-runtime:manual-evidence",
+  "issuedAt": "2026-08-18T01:53:27.259Z",
+  "evidence": {
+    "steps": [
+      "no-entity-migration-change"
+    ],
+    "observations": [
+      "git diff scope shows ExchangeService.java additions only; no Exchange entity / migration / db schema files modified"
+    ]
+  },
+  "receiptHash": "77d19c0606118c17af713ae58a765e5c8808fb52c13876dfb17fa1078f673523"
+}

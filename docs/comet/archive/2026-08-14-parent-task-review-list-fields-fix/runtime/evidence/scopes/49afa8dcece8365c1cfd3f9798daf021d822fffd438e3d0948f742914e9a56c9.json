@@ -1,0 +1,61 @@
+{
+  "schema": "comet.native.implementation-scope.v2",
+  "contractHash": "fcfb503dd405c313ff293b369c340eabe892b0e89b85982da95f3e607944ca88",
+  "baselineProjectionRef": "runtime/evidence/snapshots/a73c030426594c1c438e152c451361d1d1d02f9ed504d4fc1118bd4ed1eebcb7.json",
+  "baselineProjectionHash": "a73c030426594c1c438e152c451361d1d1d02f9ed504d4fc1118bd4ed1eebcb7",
+  "currentProjectionRef": "runtime/evidence/snapshots/4572c973b784faf3c6f4a423c11257093131a227b0b601465a2dfc44e2961db1.json",
+  "currentProjectionHash": "4572c973b784faf3c6f4a423c11257093131a227b0b601465a2dfc44e2961db1",
+  "complete": true,
+  "declaredArtifacts": [
+    {
+      "path": "server/task-review/src/main/java/com/cutegoals/taskreview/service/TaskReviewService.java",
+      "kind": "file"
+    },
+    {
+      "path": "server/task-review/src/test/java/com/cutegoals/taskreview/service/TaskReviewServiceTest.java",
+      "kind": "file"
+    }
+  ],
+  "changes": [
+    {
+      "path": "server/task-review/src/main/java/com/cutegoals/taskreview/service/TaskReviewService.java",
+      "kind": "modified",
+      "before": {
+        "hash": "c2b577cc9f8448868bc6ff77e0ee28ab9b691b8e9dbe9f63c7cbd3126a100270",
+        "size": 45411
+      },
+      "after": {
+        "hash": "dddd34c7a5a978a86dadfd01f94d96a0a835d68343412fb446ef4f8867078776",
+        "size": 46853
+      },
+      "attributedTo": [
+        {
+          "path": "server/task-review/src/main/java/com/cutegoals/taskreview/service/TaskReviewService.java",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "server/task-review/src/test/java/com/cutegoals/taskreview/service/TaskReviewServiceTest.java",
+      "kind": "modified",
+      "before": {
+        "hash": "228b111d796fe5a317c80aa32e60d91390cafaaaa90702224163b3f99a4425bd",
+        "size": 40897
+      },
+      "after": {
+        "hash": "874c2a1a71810892ae78864278afdc8d9088b8581231ea6019163450792379c3",
+        "size": 44946
+      },
+      "attributedTo": [
+        {
+          "path": "server/task-review/src/test/java/com/cutegoals/taskreview/service/TaskReviewServiceTest.java",
+          "kind": "file"
+        }
+      ]
+    }
+  ],
+  "unattributed": [],
+  "unresolvedScopes": [],
+  "noCodeReason": null,
+  "scopeHash": "49afa8dcece8365c1cfd3f9798daf021d822fffd438e3d0948f742914e9a56c9"
+}

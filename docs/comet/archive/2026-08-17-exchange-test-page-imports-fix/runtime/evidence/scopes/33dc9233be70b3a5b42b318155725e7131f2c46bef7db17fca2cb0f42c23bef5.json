@@ -1,0 +1,39 @@
+{
+  "schema": "comet.native.implementation-scope.v2",
+  "contractHash": "e318a60488678e13ee1338838e02628757d610a05e6829144050fb100e12b139",
+  "baselineProjectionRef": "runtime/evidence/snapshots/ae830c31174c9ca66467018c3558852e2b3c27b73597ab3435b595d40cb370df.json",
+  "baselineProjectionHash": "ae830c31174c9ca66467018c3558852e2b3c27b73597ab3435b595d40cb370df",
+  "currentProjectionRef": "runtime/evidence/snapshots/f582b638af0a87deb5ba68cd8228a25a59e68e83523c9601490da296024797e7.json",
+  "currentProjectionHash": "f582b638af0a87deb5ba68cd8228a25a59e68e83523c9601490da296024797e7",
+  "complete": true,
+  "declaredArtifacts": [
+    {
+      "path": "server/exchange/src/test/java/com/cutegoals/exchange/service/ExchangeServiceTest.java",
+      "kind": "file"
+    }
+  ],
+  "changes": [
+    {
+      "path": "server/exchange/src/test/java/com/cutegoals/exchange/service/ExchangeServiceTest.java",
+      "kind": "modified",
+      "before": {
+        "hash": "4a41045ef0113f79673e11352a8fcce73d4bd9ee4d9fd2604410a6704a6b0220",
+        "size": 28814
+      },
+      "after": {
+        "hash": "de1ac60cd92c42ef99f7774c7b5aef1c630f67cba9f4a6e35697bc4e0d6e0663",
+        "size": 28955
+      },
+      "attributedTo": [
+        {
+          "path": "server/exchange/src/test/java/com/cutegoals/exchange/service/ExchangeServiceTest.java",
+          "kind": "file"
+        }
+      ]
+    }
+  ],
+  "unattributed": [],
+  "unresolvedScopes": [],
+  "noCodeReason": null,
+  "scopeHash": "33dc9233be70b3a5b42b318155725e7131f2c46bef7db17fca2cb0f42c23bef5"
+}

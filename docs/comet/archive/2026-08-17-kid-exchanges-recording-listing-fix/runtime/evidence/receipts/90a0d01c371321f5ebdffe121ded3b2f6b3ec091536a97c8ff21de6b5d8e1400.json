@@ -1,0 +1,28 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "manual-evidence",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "kid-exchanges-recording-listing-fix",
+    "sourceRevision": 3,
+    "contractHash": "e35657669235aa8f8810f237c2fdf7cd01debb40b4fb43e06d54f526b322d049",
+    "scopeHash": "f56fa83c9798da72d474129fa7240046d29477d4b4a0ba6f574ddfaa682eb36d",
+    "snapshotHash": "7fbe2a2636bc749ea2c2e59b561ce969d732d5f2ed6f09cfbe62b67178b9a7f0",
+    "artifactHash": "47076112d697fa39a677e81e5d3d02c2773e2260801493279406fe182df8823b"
+  },
+  "acceptanceIds": [
+    "acceptance-976c69ff2492e34f2ef3ec873dc2fa8d1d9a427507d304cefb040d588b207c6e"
+  ],
+  "actor": "native-runtime:manual-evidence",
+  "issuedAt": "2026-08-17T07:23:57.522Z",
+  "evidence": {
+    "steps": [
+      "检查批量取快照使用 WHERE IN"
+    ],
+    "observations": [
+      "ExchangeService.queryExchanges 在拿到 Page<Exchange> 后调用 exchangeSnapshotMapper.selectList(new LambdaQueryWrapper<ExchangeSnapshot>().in(ExchangeSnapshot::getExchangeId, exchangeIds))，单次查询 N 条快照，无 N+1 循环。"
+    ]
+  },
+  "receiptHash": "90a0d01c371321f5ebdffe121ded3b2f6b3ec091536a97c8ff21de6b5d8e1400"
+}

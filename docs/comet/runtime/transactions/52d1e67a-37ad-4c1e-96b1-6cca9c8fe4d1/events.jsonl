@@ -1,0 +1,8 @@
+{"sequence":1,"timestamp":"2026-08-17T03:18:14.361Z","type":"prepared"}
+{"sequence":2,"timestamp":"2026-08-17T03:18:14.860Z","type":"operation-started","operationId":"spec-1-kid-prize-shop"}
+{"sequence":3,"timestamp":"2026-08-17T03:18:14.909Z","type":"operation-completed","operationId":"spec-1-kid-prize-shop"}
+{"sequence":4,"timestamp":"2026-08-17T03:18:15.304Z","type":"operation-started","operationId":"archive-change"}
+{"sequence":5,"timestamp":"2026-08-17T03:18:15.415Z","type":"operation-completed","operationId":"archive-change"}
+{"sequence":6,"timestamp":"2026-08-17T03:18:15.478Z","type":"archive-finalization-started"}
+{"sequence":7,"timestamp":"2026-08-17T03:18:15.548Z","type":"archive-finalized"}
+{"sequence":8,"timestamp":"2026-08-17T03:18:15.565Z","type":"commit"}

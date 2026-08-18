@@ -1,0 +1,52 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "automated-check",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "kid-task-submit-modal-button-fix",
+    "sourceRevision": 3,
+    "contractHash": "4cb6eb2ff31de9a98f3cdaa92ddcb565167429e1f36ecd3b043f1e62f61c0ac4",
+    "scopeHash": "c7f4cf178405705b3af492b6af8aafdcf1c6539af7aaabfd334af2c7c91fbf95",
+    "snapshotHash": "7a2d843c8c46a0f1320b443ef8ad420ff417646da7cc9f671dbb4cbe474de771",
+    "artifactHash": "92b840cabe3f2f11d914c030a78d3ceb2c6a37ecb9a89adcf53e42e388193aa0"
+  },
+  "acceptanceIds": [
+    "acceptance-0caf7d3936131c02669d3b0f2af364e30bfa73fda2fe23b0a15ada1014291785",
+    "acceptance-7e751cc568516af2b4b6cea30bea7ecf6351ea473ef09a99bc4316921a2683de",
+    "acceptance-908f02361067fad2b397d878642cde5d458f3f101184a229dd0b0ba98e93af32",
+    "acceptance-a4ab90c4bd2cb2f661588f5c5256290c4e9be6c887e5c0cccbab4eb56f88a153",
+    "acceptance-af507b1e96141a81f237a4193e9321ce33637e2844f3784f7485c4e12744a786"
+  ],
+  "actor": "native-runtime:command:bash",
+  "issuedAt": "2026-08-13T03:35:58.928Z",
+  "evidence": {
+    "executable": "bash",
+    "args": [
+      "-c",
+      "cd web && npx vitest run src/child/__tests__/pages.test.tsx -t 'Modal footer' 2>&1"
+    ],
+    "cwd": ".",
+    "exitCode": 0,
+    "signal": null,
+    "timedOut": false,
+    "timeoutMs": 120000,
+    "startedAt": "2026-08-13T03:35:57.152Z",
+    "endedAt": "2026-08-13T03:35:58.928Z",
+    "worktree": {
+      "provider": "git",
+      "root": ".",
+      "beforeCommit": "c6276393a352d4ecf9dbd0d57f433b6712efe4d2",
+      "afterCommit": "c6276393a352d4ecf9dbd0d57f433b6712efe4d2"
+    },
+    "afterFence": {
+      "snapshotHash": "7a2d843c8c46a0f1320b443ef8ad420ff417646da7cc9f671dbb4cbe474de771",
+      "scopeHash": "c7f4cf178405705b3af492b6af8aafdcf1c6539af7aaabfd334af2c7c91fbf95",
+      "matched": true
+    },
+    "outputHash": "fbff4ae0deaa5bf53feb241e22187bdd9d9f0acbd2f49dd2cfc607fef40f580d",
+    "outputSummary": "RUN  v2.0.5 /home/akers/projects/cutegoals/web\n\n ✓ src/child/__tests__/pages.test.tsx  (20 tests | 17 skipped) 338ms\n\n Test Files  1 passed (1)\n      Tests  3 passed | 17 skipped (20)\n   Start at  11:35:57\n   Duration  1.44s (transform 100ms, setup 70ms, collect 688ms, tests 338ms, environment 144ms, prepare 51ms)",
+    "outputTruncated": false
+  },
+  "receiptHash": "201029032b8d4dda835cdc2f18fb979e14d80315deebe33f2e8625d08ef8b735"
+}

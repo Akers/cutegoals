@@ -1,0 +1,28 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "manual-evidence",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "kid-exchanges-recording-listing-fix",
+    "sourceRevision": 3,
+    "contractHash": "e35657669235aa8f8810f237c2fdf7cd01debb40b4fb43e06d54f526b322d049",
+    "scopeHash": "f56fa83c9798da72d474129fa7240046d29477d4b4a0ba6f574ddfaa682eb36d",
+    "snapshotHash": "7fbe2a2636bc749ea2c2e59b561ce969d732d5f2ed6f09cfbe62b67178b9a7f0",
+    "artifactHash": "47076112d697fa39a677e81e5d3d02c2773e2260801493279406fe182df8823b"
+  },
+  "acceptanceIds": [
+    "acceptance-a974beacf9a3781c4d9b843bd6916b51ff062f0ddb6d8d17123bd9729f6ef598"
+  ],
+  "actor": "native-runtime:manual-evidence",
+  "issuedAt": "2026-08-17T07:25:44.487Z",
+  "evidence": {
+    "steps": [
+      "AC7: tsc 通过且 Exchange 接口字段全"
+    ],
+    "observations": [
+      "运行 cd web && npx tsc --noEmit 退出码 0，唯一报告错误为 src/parent/components/TaskTypeConfigForms.tsx(241,29)，属历史遗留与本 change 无关。Exchange 接口含本 change 涉及的全部字段。"
+    ]
+  },
+  "receiptHash": "7b8ab9ea5a18583ec21744270b71a771d83e1d16ca5dceeba74e436a666a6a54"
+}

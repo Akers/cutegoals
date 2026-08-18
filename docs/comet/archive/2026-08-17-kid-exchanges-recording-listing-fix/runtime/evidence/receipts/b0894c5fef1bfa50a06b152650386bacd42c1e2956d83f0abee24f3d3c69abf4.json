@@ -1,0 +1,28 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "manual-evidence",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "kid-exchanges-recording-listing-fix",
+    "sourceRevision": 3,
+    "contractHash": "e35657669235aa8f8810f237c2fdf7cd01debb40b4fb43e06d54f526b322d049",
+    "scopeHash": "f56fa83c9798da72d474129fa7240046d29477d4b4a0ba6f574ddfaa682eb36d",
+    "snapshotHash": "7fbe2a2636bc749ea2c2e59b561ce969d732d5f2ed6f09cfbe62b67178b9a7f0",
+    "artifactHash": "47076112d697fa39a677e81e5d3d02c2773e2260801493279406fe182df8823b"
+  },
+  "acceptanceIds": [
+    "acceptance-08e3ac9875c61411809544c743429f77006e3b4136b874d42d4aa04b0111879b"
+  ],
+  "actor": "native-runtime:manual-evidence",
+  "issuedAt": "2026-08-17T07:23:07.111Z",
+  "evidence": {
+    "steps": [
+      "检查 ExchangeService.queryExchanges 返回 Page 形状"
+    ],
+    "observations": [
+      "ExchangeService.queryExchanges (server/exchange/src/main/java/com/cutegoals/exchange/service/ExchangeService.java:447-523) 返回 Map 包含 content, page, pageSize, totalElements, totalPages 五个键，订单与 MyBatis Plus Page 一致。"
+    ]
+  },
+  "receiptHash": "b0894c5fef1bfa50a06b152650386bacd42c1e2956d83f0abee24f3d3c69abf4"
+}

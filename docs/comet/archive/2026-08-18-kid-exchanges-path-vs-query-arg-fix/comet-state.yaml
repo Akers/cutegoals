@@ -1,0 +1,23 @@
+schema: comet.native.v3
+minimum_runtime_version: 3
+revision: 5
+verification_protocol: legacy-v1
+name: kid-exchanges-path-vs-query-arg-fix
+language: zh-CN
+phase: archive
+brief: brief.md
+approval: confirmed
+approved_contract_hash: fbfc82ba51f808dc80bf3c7d72de26efbc25545d59b030c8ad764d485f90c671
+spec_changes:
+  - capability: child-exchanges-listing
+    operation: replace
+    source: specs/child-exchanges-listing/spec.md
+    base_hash: d6cccb0868a9ab2018d3e19996c495ab7456cd5d9b42455d9e5d0539bce041d9
+verification_result: pass
+verification_report: verification.md
+implementation_scope: runtime/evidence/scopes/61dd0d5b9d1d19784a0e0211d74ddcea5775dc3c9e26edd35ad039f3a726799a.json
+verification_evidence: runtime/evidence/verifications/a9129e9e19399af555082f40a3c7e93544d593e82f3ca530c12bdd6b00d6e566.json
+partial_allowance: null
+archived: true
+created_at: 2026-08-18
+run_id: 163f8fa9-971e-4958-8c6c-f918aa946771

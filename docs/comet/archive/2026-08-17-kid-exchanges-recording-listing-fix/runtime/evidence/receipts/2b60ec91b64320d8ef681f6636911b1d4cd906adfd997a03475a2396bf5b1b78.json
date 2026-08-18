@@ -1,0 +1,28 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "manual-evidence",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "kid-exchanges-recording-listing-fix",
+    "sourceRevision": 3,
+    "contractHash": "e35657669235aa8f8810f237c2fdf7cd01debb40b4fb43e06d54f526b322d049",
+    "scopeHash": "f56fa83c9798da72d474129fa7240046d29477d4b4a0ba6f574ddfaa682eb36d",
+    "snapshotHash": "7fbe2a2636bc749ea2c2e59b561ce969d732d5f2ed6f09cfbe62b67178b9a7f0",
+    "artifactHash": "47076112d697fa39a677e81e5d3d02c2773e2260801493279406fe182df8823b"
+  },
+  "acceptanceIds": [
+    "acceptance-029556fe05058f5d3a0e54e8fd4b0ad9f45aa084085f6cd5bab969d49c831c0b"
+  ],
+  "actor": "native-runtime:manual-evidence",
+  "issuedAt": "2026-08-17T07:23:06.220Z",
+  "evidence": {
+    "steps": [
+      "检查 ChildExchangesPage 空状态渲染"
+    ],
+    "observations": [
+      "web/src/child/pages/index.tsx 中 ChildExchangesPage 在 exchanges.length === 0 时渲染 <Empty description='还没有兑换记录' />（与 parent 端相同的 Antd Empty 组件）。"
+    ]
+  },
+  "receiptHash": "2b60ec91b64320d8ef681f6636911b1d4cd906adfd997a03475a2396bf5b1b78"
+}

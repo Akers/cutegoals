@@ -29,6 +29,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -474,13 +476,68 @@ public class ExchangeService {
 
         Page<Exchange> page = exchangeMapper.selectPage(new Page<>(pageNum, pageSize), wrapper);
 
+        List<Exchange> records = page.getRecords();
+
+        // Batch-fetch snapshots for targetName (avoid N+1)
+        Map<Long, ExchangeSnapshot> snapshotByExchangeId = new HashMap<>();
+        if (!records.isEmpty()) {
+            List<Long> exchangeIds = records.stream().map(Exchange::getId).toList();
+            LambdaQueryWrapper<ExchangeSnapshot> snapshotWrapper = new LambdaQueryWrapper<>();
+            snapshotWrapper.in(ExchangeSnapshot::getExchangeId, exchangeIds);
+            List<ExchangeSnapshot> snapshots = exchangeSnapshotMapper.selectList(snapshotWrapper);
+            for (ExchangeSnapshot s : snapshots) {
+                snapshotByExchangeId.put(s.getExchangeId(), s);
+            }
+        }
+
+        List<Map<String, Object>> content = new ArrayList<>(records.size());
+        for (Exchange ex : records) {
+            Map<String, Object> item = new LinkedHashMap<>();
+            item.put("id", ex.getId());
+            item.put("childId", ex.getChildId());
+            item.put("familyId", ex.getFamilyId());
+            item.put("type", ex.getType());
+            item.put("status", ex.getStatus());
+            item.put("costPoints", ex.getCostPoints());
+            item.put("prizeId", ex.getPrizeId());
+            item.put("poolId", ex.getPoolId());
+            item.put("resultPrizeId", ex.getResultPrizeId());
+            item.put("idempotencyKey", ex.getIdempotencyKey());
+            item.put("fulfilledAt", ex.getFulfilledAt());
+            item.put("fulfilledBy", ex.getFulfilledBy());
+            item.put("cancelledAt", ex.getCancelledAt());
+            item.put("cancelledBy", ex.getCancelledBy());
+            item.put("createdAt", ex.getCreatedAt());
+            item.put("updatedAt", ex.getUpdatedAt());
+            item.put("targetName", resolveTargetName(ex, snapshotByExchangeId.get(ex.getId())));
+            content.add(item);
+        }
+
         Map<String, Object> result = new LinkedHashMap<>();
-        result.put("content", page.getRecords());
+        result.put("content", content);
         result.put("page", page.getCurrent());
         result.put("pageSize", page.getSize());
         result.put("totalElements", page.getTotal());
         result.put("totalPages", page.getPages());
         return result;
+    }
+
+    /**
+     * Resolve targetName for an exchange list entry.
+     * DIRECT → snapshot.prizeName; BLIND_BOX → snapshot.poolName.
+     * Defensive fallback when snapshot is missing: "奖品 #{prizeId}" / "盲盒 #{poolId}".
+     */
+    private String resolveTargetName(Exchange ex, ExchangeSnapshot snapshot) {
+        if (snapshot == null) {
+            if ("BLIND_BOX".equals(ex.getType())) {
+                return "盲盒 #" + (ex.getPoolId() != null ? ex.getPoolId() : "?");
+            }
+            return "奖品 #" + (ex.getPrizeId() != null ? ex.getPrizeId() : "?");
+        }
+        if ("BLIND_BOX".equals(ex.getType())) {
+            return snapshot.getPoolName();
+        }
+        return snapshot.getPrizeName();
     }
 
     // ========== Helpers ==========

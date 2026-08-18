@@ -1,0 +1,19 @@
+{
+  "schema": "comet.native.transaction.v2",
+  "id": "9a8e5293-cc69-4f3d-aaa9-40f3355c6219",
+  "kind": "archive",
+  "status": "committed",
+  "change": "exchange-test-page-imports-fix",
+  "createdAt": "2026-08-17T08:04:25.548Z",
+  "preflightHash": "ff357b817035e96b401805d60d7d18cf84c2473f4608e9c350876971b931a164",
+  "operations": [
+    {
+      "id": "archive-change",
+      "type": "move",
+      "source": "changes/exchange-test-page-imports-fix",
+      "target": "archive/2026-08-17-exchange-test-page-imports-fix",
+      "expectedSourceHash": "b757d538ea3049b3a6b60297a9bd7f7a98e72e0de7f7a97e1a7d113209bb0360",
+      "expectedTargetHash": null
+    }
+  ]
+}

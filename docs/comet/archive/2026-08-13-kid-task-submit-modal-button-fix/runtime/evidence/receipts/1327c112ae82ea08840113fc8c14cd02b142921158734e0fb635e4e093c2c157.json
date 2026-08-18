@@ -1,0 +1,28 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "manual-evidence",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "kid-task-submit-modal-button-fix",
+    "sourceRevision": 6,
+    "contractHash": "5e0f4e78e8b0eb027664d99bb97e69a5cf04d6ae8777a0088dbcdc5d21e03b5a",
+    "scopeHash": "dd90de0621ccb79e5a9e56ee582013a6039d5beba1b05806fbf75d13dbc6ea09",
+    "snapshotHash": "368e572c59f5eba870668ecce25dca864c0aa47e4e23deeea9890ad4948946c8",
+    "artifactHash": "44d1a9244dc653300168400624c53e20adc9437c7d68027ba27f37dc4ab3bdfe"
+  },
+  "acceptanceIds": [
+    "acceptance-a9bfa4c5480d5ed2de65ea24f7246175f68e6712c84a629397202310e7eda415"
+  ],
+  "actor": "native-runtime:manual-evidence",
+  "issuedAt": "2026-08-13T04:25:45.604Z",
+  "evidence": {
+    "steps": [
+      "agent-browser 在 http://localhost:8000/child/tasks 加载 cici 会话；切「已逾期」tab 看到任务卡片；click 卡片入口「提交」按钮打开 Modal；snapshot 确认 Modal 内仅含 textarea+footer(取消+提交)，无表单内独立提交按钮；fill textarea 后 click footer「提交」按钮；performance.getEntriesByType('resource') 显示 POST /api/task-review/submissions (duration 37.9ms) 与 GET /api/task-assignments (列表刷新)；Modal 关闭。"
+    ],
+    "observations": [
+      "agent-browser snapshot 在 click footer 提交后不再含 .ant-modal；performance timeline 含 POST /api/task-review/submissions + GET /api/task-assignments；直接 fetch 验证同 assignment 不带 childId body 返回 200 SUCCESS，childId=2 由后端从 session 派生；GET /api/task-review/child/2/history 显示对应 assignmentId status=SUBMITTED，attemptNumber=1，submittedAt=2026-08-13T11:52:20Z。"
+    ]
+  },
+  "receiptHash": "1327c112ae82ea08840113fc8c14cd02b142921158734e0fb635e4e093c2c157"
+}

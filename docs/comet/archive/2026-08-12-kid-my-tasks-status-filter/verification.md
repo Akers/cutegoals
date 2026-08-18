@@ -1,0 +1,271 @@
+# Acceptance evidence
+
+<!-- comet-native:acceptance-evidence:start -->
+[
+  {
+    "acceptance_id": "acceptance-0e9b6d4a2bcbb11c4be38b4830ae89c58b5e1b548e5a0009ab287026f1686db0",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/a7fb9ee7366c35cab299955a541d3a9b4bc33dada33068da3c0ab342a4761196.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-13a59f61f07a6d3b34d9934108dccb3644772339b93bbd0e3dde6ef1bc7e35c5",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/a7fb9ee7366c35cab299955a541d3a9b4bc33dada33068da3c0ab342a4761196.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-2db63d1ec61b3945ee0649d93cd1b6fef3b81d474e75b33a465d9afa53147a7a",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/a7fb9ee7366c35cab299955a541d3a9b4bc33dada33068da3c0ab342a4761196.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-325538cff7d517cf8a0b779dd181f15ea5d8c40dc21d315e2a8c00993b0e3aa4",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/a7fb9ee7366c35cab299955a541d3a9b4bc33dada33068da3c0ab342a4761196.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-403d20b1329a1432130ff5a3922a157203176bd3949121dc59196b0d427dcd29",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/a7fb9ee7366c35cab299955a541d3a9b4bc33dada33068da3c0ab342a4761196.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-4391dd664a48f3bf996e0da1ed3c155ddf62468823bdba5b4c4408c450e342e6",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/a7fb9ee7366c35cab299955a541d3a9b4bc33dada33068da3c0ab342a4761196.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-44fcc612d3d9942eeb7404c32eab24c17a51df3e703c76954aa62a2ebfb79bb5",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/a7fb9ee7366c35cab299955a541d3a9b4bc33dada33068da3c0ab342a4761196.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-459f21e56a0123c655879f0eaf9a9e865c617d4e6a7253b3c7d3702f63ec8719",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/a7fb9ee7366c35cab299955a541d3a9b4bc33dada33068da3c0ab342a4761196.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-47630edf93e6b727cc55dda06958a1259ac68255337ea8273def65684361d1ac",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/a7fb9ee7366c35cab299955a541d3a9b4bc33dada33068da3c0ab342a4761196.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-66e12cc299bc1dfc995f8a22fef08c3d80730cd0ae3d875dec2a62a1bac6b035",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/a7fb9ee7366c35cab299955a541d3a9b4bc33dada33068da3c0ab342a4761196.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-6e1ea77b403f886c9096ed12dafdb70acb7b20ab93a4d224c7cd56d0885a2477",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/a7fb9ee7366c35cab299955a541d3a9b4bc33dada33068da3c0ab342a4761196.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-7836bc2c166359894d4f8e5aa2b12c871010903e6e58229f86476aad49a8470f",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/a7fb9ee7366c35cab299955a541d3a9b4bc33dada33068da3c0ab342a4761196.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-866dcb2a6cb25ccf2b239c0b93de41901f53f56c9dbd53c7db4ebd7ae8bd9517",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/a7fb9ee7366c35cab299955a541d3a9b4bc33dada33068da3c0ab342a4761196.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-869f01ec3b21bb6c65b3ab6336444ed6fef8125d4be2366558b19170130e4b21",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/a7fb9ee7366c35cab299955a541d3a9b4bc33dada33068da3c0ab342a4761196.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-8a985631f55984a7517eac9d3268736ed0be2ad04879113d2a50ad05627cc086",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/a7fb9ee7366c35cab299955a541d3a9b4bc33dada33068da3c0ab342a4761196.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-8fd34b1ea8ecafe988b6250eeea1103d494f9babc88db27837747fb57d272aa3",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/a7fb9ee7366c35cab299955a541d3a9b4bc33dada33068da3c0ab342a4761196.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-9d5af79e17d0a82ee297ca8919f10423c0f8046006741190126eddf7bccb131e",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/a7fb9ee7366c35cab299955a541d3a9b4bc33dada33068da3c0ab342a4761196.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-9dc8b0f05148a44cbbffb10f13810580969cd31ad4f35654937a08ec8898efb6",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/a7fb9ee7366c35cab299955a541d3a9b4bc33dada33068da3c0ab342a4761196.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-9dfe6b5bb3454704b5b136392b3bb15b3af2191deda3bb5d59d5cf5fb5158d33",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/a7fb9ee7366c35cab299955a541d3a9b4bc33dada33068da3c0ab342a4761196.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-9e33c0e6405d3d76d62915acb78fce9a0f5291de45b451aa85d74cb619796f0d",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/a7fb9ee7366c35cab299955a541d3a9b4bc33dada33068da3c0ab342a4761196.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-a8bb8d15ea944770175842aad8918bcf898ef4e7b5ad1296475f97a79cd1b4f0",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/a7fb9ee7366c35cab299955a541d3a9b4bc33dada33068da3c0ab342a4761196.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-bf94ac46dcafeacb4148a125897fd1b4333e5d7e405f2cbbc8d3d1bf6dddd012",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/a7fb9ee7366c35cab299955a541d3a9b4bc33dada33068da3c0ab342a4761196.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-c76edc531fe5c3903d19a7a9da563d56487189cc75f13f1dcd192be3ae81e440",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/a7fb9ee7366c35cab299955a541d3a9b4bc33dada33068da3c0ab342a4761196.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-cf83f053c916fa5a243a2de5ee151e4bfc31807d2231c3cd252e80c3974da717",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/a7fb9ee7366c35cab299955a541d3a9b4bc33dada33068da3c0ab342a4761196.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-d24706b254bdf6b82e0b8de91914a33d4a77cda34909ec604209e48939fad82a",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/a7fb9ee7366c35cab299955a541d3a9b4bc33dada33068da3c0ab342a4761196.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-dac9c2cb11caa2e5dcb625ca8fc7c5aff9b3b4f9f73e4d4c51584d3aaac8167e",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/a7fb9ee7366c35cab299955a541d3a9b4bc33dada33068da3c0ab342a4761196.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-dcc7e7189dd2ede285189a38482b3f71152bd65692967c98e9791aed844f3892",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/bae4cc69a293155baad8ec372bc4eb7b6a79bdd70045e9c1353d7ae29e2114a2.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-e22b24e2debd8bb45e23a45f729a7769db40954b78166cd50d80acdf899b6008",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/a7fb9ee7366c35cab299955a541d3a9b4bc33dada33068da3c0ab342a4761196.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-eaeb9ac0b1f82c906735422db790a7a1285b909183d627d676061e8556bb2d64",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/a7fb9ee7366c35cab299955a541d3a9b4bc33dada33068da3c0ab342a4761196.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-f0bc95cfbe546fef77b0c29877cdc0d7a33a1a7726b79670bbb30ae2903ccd52",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/a7fb9ee7366c35cab299955a541d3a9b4bc33dada33068da3c0ab342a4761196.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-fab7656f9eb4c5e06dead7c66285dd278cf8164a89c85b63763046b11afa8873",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/a7fb9ee7366c35cab299955a541d3a9b4bc33dada33068da3c0ab342a4761196.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-fc8492783a63de6512589b800f88592d4e3de7fd34da6bd7f0217606a0ffd456",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/a7fb9ee7366c35cab299955a541d3a9b4bc33dada33068da3c0ab342a4761196.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-ff728f34f171a1b79f2f874334adcf791d527a832b4fc44d935e0f0ec24acb9e",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/a7fb9ee7366c35cab299955a541d3a9b4bc33dada33068da3c0ab342a4761196.json"
+    ]
+  }
+]
+<!-- comet-native:acceptance-evidence:end -->
+
+# Commands and results
+
+1. 前端验收测试（receipt a7fb9ee7…，automated，exit 0）：`bash -c 'cd web && npx vitest run src/child'`
+   - 结果：Test Files 3 passed (3)；Tests 23 passed (23)。
+   - 覆盖 ChildTasksPage 五分类筛选全部场景：默认选中「进行中」；五分类互斥归类（优先级 已取消 > 已完成 > 已提交 > 已逾期 > 进行中）；SUBMITTED 且截止已过只在「已提交」；REPEAT 截止已过留在「进行中」；REJECTED 未逾期归「进行中」、逾期归「已逾期」；未来任务排末尾、灰色「未开始」、按钮禁用；MAX_REACHED/POINTS_CAP_REACHED 时原按钮位置显示「该任务已达最大提交次数」且无按钮；canSubmit=false 且 reason=null 时按钮禁用无文案；空分类空态；content 字段数据契约（页面与首页今日任务卡片均读取 content）。
+2. 后端验收测试（receipt bae4cc69…，automated，exit 0）：`bash -c 'cd server/task && mvn -B -ntp clean test -Dtest=TaskAssignmentServiceTest'`
+   - 结果：Tests run: 48, Failures: 0, Errors: 0；BUILD SUCCESS。
+   - 覆盖 canSubmit/submissionBlockReason 规格契约：状态限 PENDING/REJECTED、未取消、迟交策略 REJECT 截止后禁交、allowResubmit+maxSubmissions 的 MAX_REACHED、allowResubmit+pointsCap 的 POINTS_CAP_REACHED（max 优先）、D9 模板回退（snapshot allowResubmit=NULL 时整体读模板当前值）、聚合口径按 childId+templateId 跨 assignment（task_review APPROVED 计数、points_ledger EARN 求和）、STANDING/LIMITED/REPEAT 各类型。
+3. 全模块回归（编排者执行，非 receipt）：`cd server/task && mvn clean test`
+   - 结果：Tests run: 159, Failures: 4 —— 4 个失败均在 TaskTemplateServiceTest（STANDING maxSubmissions 校验期望 TASK_TEMPLATE_VALIDATION_FAILED 实得 INTERNAL_ERROR）。
+   - 预存性验证：`git stash` 还原本变更两个后端文件至基线后重跑 TaskTemplateServiceTest，基线同样 4 失败（Tests run: 72, Failures: 4），确认与本变更无关。
+4. 前端类型检查（编排者执行，非 receipt）：`cd web && npm run lint`（tsc --noEmit）
+   - 结果：仅 1 个预存错误 src/parent/components/TaskTypeConfigForms.tsx(241,29) TS6198；该文件无本变更改动，错误来自既有提交 1914bc8。
+
+# Skipped checks
+
+- 真实环境端到端（孩子登录真机操作）：本变更 Verification expectations 未要求；用户可见行为已由 vitest 在 mock API 下逐项覆盖，后端契约由单元测试覆盖。
+
+# Spec consistency
+
+- 完整目标规格（specs/child-page-migration/spec.md）按 D16 修正并经用户确认：替换对象为 Native canonical 的「我的任务列表数据契约与展示规则」要求；保留 content 字段数据契约；旧展示规则（REPEAT ∪ 日期≤今天、已取消与未来任务不展示）由五分类归类规则取代；新增提交受限展示要求。
+- canSubmit/submissionBlockReason 计算与 openspec/specs/task-review/spec.md「任务分配响应携带可提交状态」契约一致（D15：max/cap 判定复用提交端 ResubmissionPolicyEvaluator 语义，列表与提交接口双写一致；提交接口本身未改动）。
+- 前端筛选为纯客户端分类，列表接口请求除既有 pageSize=100 外未新增参数，不改变后端列表接口契约。
+
+# Known limitations and risks
+
+- task 模块存在 4 个预存测试失败（TaskTemplateServiceTest，STANDING maxSubmissions 校验错误码），与本变更无关，未修复。
+- web 存在 1 个预存 TS 错误（TaskTypeConfigForms.tsx TS6198），与本变更无关，未修复。
+- D9 模板回退仅影响 V14 之前的遗留 NULL-snapshot 分配；batchFetchTemplates 按去重 templateId 逐个查询，上限为单页（≤100）且仅遗留数据触发。
+
+# Conclusion
+
+pass。33 项验收全部通过：前端 32 项由 vitest 23/23（receipt a7fb9ee7…）覆盖，后端 canSubmit 契约 1 项由 TaskAssignmentServiceTest 48/48（receipt bae4cc69…）覆盖。实现满足 brief 与完整目标规格：孩子端「我的任务」五分类状态筛选（默认进行中、互斥归类、未来任务灰色未开始且按钮禁用）与 max/cap 提交受限文案「该任务已达最大提交次数」；后端列表接口按既有规格契约真实计算 canSubmit/submissionBlockReason。

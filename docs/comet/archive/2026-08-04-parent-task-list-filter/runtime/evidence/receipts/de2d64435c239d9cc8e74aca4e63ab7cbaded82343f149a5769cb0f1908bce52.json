@@ -1,0 +1,59 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "automated-check",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "parent-task-list-filter",
+    "sourceRevision": 3,
+    "contractHash": "27051f9890efd33e03caa2552bce8367592605538524449fa202d957faaa55e8",
+    "scopeHash": "da50328f155bb7d9f4576fbf1544336c50caf9edfa22ad0bfdae9c8834a5a321",
+    "snapshotHash": "2dcaff142742765209c1d194402e1736a9579b0bc49c060e0b4a546080cc2731",
+    "artifactHash": "4d2ed8d6d0d748b1a47af9ae81744246adb121be016380cc1aedf0d01f328bef"
+  },
+  "acceptanceIds": [
+    "acceptance-0fd8dc6335eb7c6f0517fd87e0df51cb495de4f660b6990e9c8e65e8c1ed3100",
+    "acceptance-112e58a95444c33574aac89fef15988cffee448051415cc9d6a4fd39567c71df",
+    "acceptance-755c625bd321499571f65422ec2b8ce0b54f17b75280cc8b0c056948e23486b0",
+    "acceptance-8afae9346fc7726dd78601c5058062346e4d8a6d0196643a55079ffc9f468fd7",
+    "acceptance-a324e5f8168c070e3ed69188f4882f4ff276005a7fed40b44248c2bed882f26f",
+    "acceptance-c00580bf2f23f83b72dbbf022296d26c1fd797321101ad399635418d1db364da",
+    "acceptance-d0ba91fe8ab9f101a59c2454c94176837765e65d5c6bacbdf7b7abb5ab46e421"
+  ],
+  "actor": "native-runtime:command:pnpm",
+  "issuedAt": "2026-08-04T08:50:22.394Z",
+  "evidence": {
+    "executable": "pnpm",
+    "args": [
+      "--filter",
+      "web",
+      "exec",
+      "vitest",
+      "run",
+      "src/parent/pages/__tests__/ParentTasksPage.test.tsx",
+      "src/parent/components/__tests__/TaskCalendar.test.tsx"
+    ],
+    "cwd": ".",
+    "exitCode": 0,
+    "signal": null,
+    "timedOut": false,
+    "timeoutMs": 120000,
+    "startedAt": "2026-08-04T08:50:20.212Z",
+    "endedAt": "2026-08-04T08:50:22.394Z",
+    "worktree": {
+      "provider": "git",
+      "root": ".",
+      "beforeCommit": "ae41e86018d09d9372947b9baafe3923f57de912",
+      "afterCommit": "ae41e86018d09d9372947b9baafe3923f57de912"
+    },
+    "afterFence": {
+      "snapshotHash": "2dcaff142742765209c1d194402e1736a9579b0bc49c060e0b4a546080cc2731",
+      "scopeHash": "da50328f155bb7d9f4576fbf1544336c50caf9edfa22ad0bfdae9c8834a5a321",
+      "matched": true
+    },
+    "outputHash": "1c8566c060134073a4fdbee5e088df271cbe4a52b51acbad22949d342f420b57",
+    "outputSummary": "Already up to date\nDone in 203ms using pnpm v11.15.1\n\n RUN  v2.0.5 /home/akers/projects/cutegoals/web\n\n ✓ src/parent/components/__tests__/TaskCalendar.test.tsx  (30 tests) 194ms\n ✓ src/parent/pages/__tests__/ParentTasksPage.test.tsx  (31 tests) 407ms\n\n Test Files  2 passed (2)\n      Tests  61 passed (61)\n   Start at  16:50:20\n   Duration  1.52s (transform 198ms, setup 139ms, collect 823ms, tests 601ms, environment 296ms, prepare 112ms)",
+    "outputTruncated": false
+  },
+  "receiptHash": "de2d64435c239d9cc8e74aca4e63ab7cbaded82343f149a5769cb0f1908bce52"
+}

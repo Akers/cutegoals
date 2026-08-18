@@ -1,0 +1,32 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "manual-evidence",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "kid-task-filter-active-highlight",
+    "sourceRevision": 3,
+    "contractHash": "e31c947996fea374ba6927ea67727b0905c2557e198acf7b3602c8126918febc",
+    "scopeHash": "e7362bf50783fe9f6c81f04c26441869b71ff89db0524fdca1b4f2238e85f555",
+    "snapshotHash": "63d4a7a3282c07476ca70e2e18dfbfa9373e534b087a382b28ad42043dbe1911",
+    "artifactHash": "adc77ee58936c24fdc0a4df749339b53a2e687820595ea68af13457e92d4f99c"
+  },
+  "acceptanceIds": [
+    "acceptance-118834ef672f655dd501f7db2c973f014690eef0b56bde3d1828e160e3594087",
+    "acceptance-59251c27cf3bc9e74f30ea0e12974369c9bd0546a4794b8a2d432a611e4e33b0",
+    "acceptance-a7353c6d9782c3ac8c9d6221ce2fb542bd310133d9fe92f536a3a927e2731e1c",
+    "acceptance-e93e51e49125473f8e906c51b1bf59dea1c6a3dea9fcfa46bbd17117ac1ae78b",
+    "acceptance-ef7312865e6ef65ca2d8107ef37ba6920825e4e11991e582a9967c9210061900"
+  ],
+  "actor": "native-runtime:manual-evidence",
+  "issuedAt": "2026-08-13T01:57:17.519Z",
+  "evidence": {
+    "steps": [
+      "核对 themes.ts：childTheme.components.Segmented 注入 itemSelectedBg=#0284c7（colorPrimary）、itemSelectedColor=#ffffff、itemHoverBg=#e0f2fe、itemActiveBg=#bae6fd。ChildLayout 已用 childTheme 的 ConfigProvider，Segmented 自动应用。默认 useState<TaskFilter>('进行中')，初次渲染即带 ant-segmented-item-selected 类。切换 onChange 时 antd Segmented 更新选中态类，token 派生样式立即生效。WCAG AA 白字+#0284c7 对比度 ≈ 6.10:1。改动仅 themes.ts 13 行；filter state、TaskFilter、getFilteredTasks、renderTaskCard、openSubmit/submitDisabled/isBlockedMax/showSubmitButton 均未触。"
+    ],
+    "observations": [
+      "git diff --stat web/src/styles/themes.ts：1 file changed, 13 insertions(+), 0 deletions(-)。vitest src/child 23/23 通过（含「默认选中进行中」、「「进行中」只显示进行中任务」、「按分类筛选」等覆盖切换高亮跟随）。tsc --noEmit 仅剩预存 parent TS6198。themes.ts 高亮 token 实测：渲染 ChildTasksPage 后 .ant-segmented-item-selected 元素由 antd Segmented 自动应用 theme.derived itemSelectedBg/itemSelectedColor。"
+    ]
+  },
+  "receiptHash": "547ecfafc0c8fd8ab1d217b440afbd2420cf857956a39b3a0fce0bd47225d3ce"
+}

@@ -1,0 +1,19 @@
+{
+  "schema": "comet.native.transaction.v2",
+  "id": "eda873c2-f3b2-4bf9-9d89-3ed40ebc590c",
+  "kind": "archive",
+  "status": "committed",
+  "change": "parent-task-list-filter",
+  "createdAt": "2026-08-04T08:51:45.238Z",
+  "preflightHash": "8eeccb33d81e627bcbbd3abea6d831929e9bb9f09498b7c13670673b9552dfde",
+  "operations": [
+    {
+      "id": "archive-change",
+      "type": "move",
+      "source": "changes/parent-task-list-filter",
+      "target": "archive/2026-08-04-parent-task-list-filter",
+      "expectedSourceHash": "66e0d00ed9cd8bf9bd35b11a118d168b72f8aacb2f024c0d0b59c9463db069b7",
+      "expectedTargetHash": null
+    }
+  ]
+}

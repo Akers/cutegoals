@@ -1,0 +1,83 @@
+{
+  "schema": "comet.native.implementation-scope.v2",
+  "contractHash": "27051f9890efd33e03caa2552bce8367592605538524449fa202d957faaa55e8",
+  "baselineProjectionRef": "runtime/evidence/snapshots/6288bc52493b54c39059a076758d5af37cda1af2ed927c14b88b5405e0ea9db7.json",
+  "baselineProjectionHash": "6288bc52493b54c39059a076758d5af37cda1af2ed927c14b88b5405e0ea9db7",
+  "currentProjectionRef": "runtime/evidence/snapshots/2dcaff142742765209c1d194402e1736a9579b0bc49c060e0b4a546080cc2731.json",
+  "currentProjectionHash": "2dcaff142742765209c1d194402e1736a9579b0bc49c060e0b4a546080cc2731",
+  "complete": true,
+  "declaredArtifacts": [
+    {
+      "path": "web/src/parent/components/TaskCalendar.tsx",
+      "kind": "file"
+    },
+    {
+      "path": "web/src/parent/pages/__tests__/ParentTasksPage.test.tsx",
+      "kind": "file"
+    },
+    {
+      "path": "web/src/parent/pages/index.tsx",
+      "kind": "file"
+    }
+  ],
+  "changes": [
+    {
+      "path": "web/src/parent/components/TaskCalendar.tsx",
+      "kind": "modified",
+      "before": {
+        "hash": "d428667935356fd484c963245f8bcf6d89ad40f9609782f6c07e7089529aea96",
+        "size": 14418
+      },
+      "after": {
+        "hash": "3c0a63691c2a57113fa777276431c34da23ec3ccfb87812025594f48422673bf",
+        "size": 14728
+      },
+      "attributedTo": [
+        {
+          "path": "web/src/parent/components/TaskCalendar.tsx",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "web/src/parent/pages/__tests__/ParentTasksPage.test.tsx",
+      "kind": "modified",
+      "before": {
+        "hash": "52b91fbb6ebdd0ea3f24c81b64fcd918b12f371070610b93e7127971ee2e78c0",
+        "size": 13911
+      },
+      "after": {
+        "hash": "794d9b0ad7dd8faf022361c611f27c401418c6d89b7dffc8cb24d7e137a6022d",
+        "size": 19908
+      },
+      "attributedTo": [
+        {
+          "path": "web/src/parent/pages/__tests__/ParentTasksPage.test.tsx",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "web/src/parent/pages/index.tsx",
+      "kind": "modified",
+      "before": {
+        "hash": "a5cf8f59316d89fa65f194929065d23b3795e87a55001b4b54a0855e0eb21f15",
+        "size": 90190
+      },
+      "after": {
+        "hash": "dc20e74238f8e7ba763700ac436a0a92b38eff0b62f42b471dbeaa7a957d4ae1",
+        "size": 91142
+      },
+      "attributedTo": [
+        {
+          "path": "web/src/parent/pages/index.tsx",
+          "kind": "file"
+        }
+      ]
+    }
+  ],
+  "unattributed": [],
+  "unresolvedScopes": [],
+  "noCodeReason": null,
+  "scopeHash": "da50328f155bb7d9f4576fbf1544336c50caf9edfa22ad0bfdae9c8834a5a321"
+}

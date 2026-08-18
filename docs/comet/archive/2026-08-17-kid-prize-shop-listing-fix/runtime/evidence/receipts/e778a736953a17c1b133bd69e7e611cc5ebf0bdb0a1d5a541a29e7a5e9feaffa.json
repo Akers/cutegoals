@@ -1,0 +1,28 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "manual-evidence",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "kid-prize-shop-listing-fix",
+    "sourceRevision": 3,
+    "contractHash": "309fb074447f218f564bc2798b79e33a94c524bec77b2e450dda8ef050e06e54",
+    "scopeHash": "b296a84cbd9027b36a45c20486faaaa99891474d710fd21c972a2e9c40be7584",
+    "snapshotHash": "ca1d3f5743642c0fc2be7d2767e5955a3c59afe8cc080bf5b40047f7a50f0aea",
+    "artifactHash": "dd0b7410116aca14e014987b1ac9bf379a0ffa4400f67c84d2900a21459e4b59"
+  },
+  "acceptanceIds": [
+    "acceptance-0a1655c87fcf5ddedfc9dbde2f006544b4103bfd5502a411f7c23b0c6e1c66c0"
+  ],
+  "actor": "native-runtime:manual-evidence",
+  "issuedAt": "2026-08-17T03:02:58.492Z",
+  "evidence": {
+    "steps": [
+      "Read PrizeController.java:233-239"
+    ],
+    "observations": [
+      "getSingleFamilyId() unchanged from existing implementation."
+    ]
+  },
+  "receiptHash": "e778a736953a17c1b133bd69e7e611cc5ebf0bdb0a1d5a541a29e7a5e9feaffa"
+}

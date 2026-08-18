@@ -1,0 +1,28 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "manual-evidence",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "kid-exchanges-recording-listing-fix",
+    "sourceRevision": 3,
+    "contractHash": "e35657669235aa8f8810f237c2fdf7cd01debb40b4fb43e06d54f526b322d049",
+    "scopeHash": "f56fa83c9798da72d474129fa7240046d29477d4b4a0ba6f574ddfaa682eb36d",
+    "snapshotHash": "7fbe2a2636bc749ea2c2e59b561ce969d732d5f2ed6f09cfbe62b67178b9a7f0",
+    "artifactHash": "47076112d697fa39a677e81e5d3d02c2773e2260801493279406fe182df8823b"
+  },
+  "acceptanceIds": [
+    "acceptance-9bd483cfb84bf282d67328c61161365af06a0a7fcce2dfc8094c35d7a4a0f426"
+  ],
+  "actor": "native-runtime:manual-evidence",
+  "issuedAt": "2026-08-17T07:23:57.761Z",
+  "evidence": {
+    "steps": [
+      "检查创建时间渲染"
+    ],
+    "observations": [
+      "ChildExchangesPage 渲染 ex.createdAt (ISO 字符串) 作为卡片副标题中的时间。"
+    ]
+  },
+  "receiptHash": "89ce56bcdf8ad1ef573a8490980ed5f98e6a2ccbd7c1d9ea3f371878bd84c286"
+}

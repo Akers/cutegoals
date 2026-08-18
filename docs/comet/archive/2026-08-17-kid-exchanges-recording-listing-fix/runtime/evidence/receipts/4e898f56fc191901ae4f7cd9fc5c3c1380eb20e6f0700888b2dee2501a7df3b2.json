@@ -1,0 +1,28 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "manual-evidence",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "kid-exchanges-recording-listing-fix",
+    "sourceRevision": 3,
+    "contractHash": "e35657669235aa8f8810f237c2fdf7cd01debb40b4fb43e06d54f526b322d049",
+    "scopeHash": "f56fa83c9798da72d474129fa7240046d29477d4b4a0ba6f574ddfaa682eb36d",
+    "snapshotHash": "7fbe2a2636bc749ea2c2e59b561ce969d732d5f2ed6f09cfbe62b67178b9a7f0",
+    "artifactHash": "47076112d697fa39a677e81e5d3d02c2773e2260801493279406fe182df8823b"
+  },
+  "acceptanceIds": [
+    "acceptance-1affb58ddbf031e6a79a96c5dca3b0f44aff5df636756f520c09ef4163fabef5"
+  ],
+  "actor": "native-runtime:manual-evidence",
+  "issuedAt": "2026-08-17T07:25:43.600Z",
+  "evidence": {
+    "steps": [
+      "AC2: 盲盒兑换列表展示"
+    ],
+    "observations": [
+      "ExchangeService.queryExchanges 对 type=BLIND_BOX 记录取 snapshot.poolName 作为 targetName；新增单元测试 shouldQueryExchangesWithTargetNameFromSnapshot 覆盖 DIRECT+BLIND_BOX 两类记录，断言盲盒 targetName 等于 poolName='盲盒大礼包'、type==='BLIND_BOX'、costPoints=100。代码运行受项目级 Lombok 阻塞，未能运行实际后端。"
+    ]
+  },
+  "receiptHash": "4e898f56fc191901ae4f7cd9fc5c3c1380eb20e6f0700888b2dee2501a7df3b2"
+}

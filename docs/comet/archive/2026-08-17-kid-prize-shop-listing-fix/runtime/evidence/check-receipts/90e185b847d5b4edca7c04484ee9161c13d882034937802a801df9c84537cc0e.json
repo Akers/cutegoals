@@ -1,0 +1,44 @@
+{
+  "schema": "comet.native.check-receipt.v1",
+  "change": "kid-prize-shop-listing-fix",
+  "sourceRevision": 3,
+  "checker": {
+    "policy": "scoped-text-safety",
+    "version": 1,
+    "hash": "859ac9d93d19ac346e5e0c6dfca376112da6b0c9caeb9d7d7aa68393c73e0eaf",
+    "limits": {
+      "maxFiles": 256,
+      "maxFileBytes": 2097152,
+      "maxTotalBytes": 8388608,
+      "maxIssues": 128
+    }
+  },
+  "inputHash": "c9559910f42ea5c6290740307dbe27b4505cb3647cf30c3ae1352d08e4c9810e",
+  "status": "passed",
+  "startedAt": "2026-08-17T03:17:42.246Z",
+  "endedAt": "2026-08-17T03:17:42.502Z",
+  "contract": {
+    "expectedHash": "309fb074447f218f564bc2798b79e33a94c524bec77b2e450dda8ef050e06e54",
+    "beforeHash": "309fb074447f218f564bc2798b79e33a94c524bec77b2e450dda8ef050e06e54",
+    "afterHash": "309fb074447f218f564bc2798b79e33a94c524bec77b2e450dda8ef050e06e54"
+  },
+  "implementation": {
+    "scopeHash": "b296a84cbd9027b36a45c20486faaaa99891474d710fd21c972a2e9c40be7584",
+    "expectedSnapshotHash": "ca1d3f5743642c0fc2be7d2767e5955a3c59afe8cc080bf5b40047f7a50f0aea",
+    "beforeSnapshotHash": "ca1d3f5743642c0fc2be7d2767e5955a3c59afe8cc080bf5b40047f7a50f0aea",
+    "afterSnapshotHash": "ca1d3f5743642c0fc2be7d2767e5955a3c59afe8cc080bf5b40047f7a50f0aea"
+  },
+  "counts": {
+    "filesSelected": 2,
+    "filesScanned": 2,
+    "binaryFilesSkipped": 0,
+    "bytesScanned": 39922,
+    "issueCount": 0,
+    "recordedIssueCount": 0
+  },
+  "issues": [],
+  "issuesTruncated": false,
+  "stale": false,
+  "staleReasons": [],
+  "receiptHash": "90e185b847d5b4edca7c04484ee9161c13d882034937802a801df9c84537cc0e"
+}

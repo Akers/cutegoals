@@ -1,0 +1,15 @@
+{
+  "schema": "comet.native.progress-checkpoint.v1",
+  "id": "773ccc9d-42c2-4ffe-8ec5-da33d75ae17e",
+  "change": "kid-task-submit-modal-button-fix",
+  "phase": "verify",
+  "previousRevision": 3,
+  "stateRevision": 4,
+  "summary": "Build 阶段后续修复：handleSubmit 添加 childId 字段（POST /task-review/submissions 必需），与 D6 决策一致；后端 ResubmissionPolicyEvaluator 编译错误通过 mvn clean install -DskipTests 重建修复（无源码变更）。实现 scope 已更新，需要重新生成 verify contract。",
+  "nextAction": "重新提交 verify pass，引用 verification.md",
+  "inputHash": "27aff9c09aeb10f5ba655c8a30827a5cad67b67286de8966c2f2c98322a17724",
+  "manifestHash": "90c89bc29387ceb23bb268db0a64453aa8b809d5474fc2e8b839cf246ab159e5",
+  "manifestRef": "runtime/checkpoints/manifests/90c89bc29387ceb23bb268db0a64453aa8b809d5474fc2e8b839cf246ab159e5.json",
+  "artifactCount": 2,
+  "createdAt": "2026-08-13T03:59:16.678Z"
+}

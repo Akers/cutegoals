@@ -1,0 +1,28 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "manual-evidence",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "kid-task-submit-modal-button-fix",
+    "sourceRevision": 3,
+    "contractHash": "4cb6eb2ff31de9a98f3cdaa92ddcb565167429e1f36ecd3b043f1e62f61c0ac4",
+    "scopeHash": "c7f4cf178405705b3af492b6af8aafdcf1c6539af7aaabfd334af2c7c91fbf95",
+    "snapshotHash": "7a2d843c8c46a0f1320b443ef8ad420ff417646da7cc9f671dbb4cbe474de771",
+    "artifactHash": "92b840cabe3f2f11d914c030a78d3ceb2c6a37ecb9a89adcf53e42e388193aa0"
+  },
+  "acceptanceIds": [
+    "acceptance-a9bfa4c5480d5ed2de65ea24f7246175f68e6712c84a629397202310e7eda415"
+  ],
+  "actor": "native-runtime:manual-evidence",
+  "issuedAt": "2026-08-13T03:36:11.786Z",
+  "evidence": {
+    "steps": [
+      "启动 umi dev server (port 8000) 后用 agent-browser 打开 http://localhost:8000/child/"
+    ],
+    "observations": [
+      "后端 java 服务（port 8080）当前未运行：curl http://localhost:8080/actuator/health 返回 000；通过 umi proxy 调用 /api/v1/auth/login 返回 504 proxy error。因此无法在真实浏览器中获得登录会话、生成可提交的 PENDING 任务并完成端到端点击。agent-browser 浏览器侧已确认：umi dev server 渲染孩子端 shell 与导航正常；但 /api/v1/task-assignments 返回 401（需要 cookie session），所以无法进入「我的任务」并打开提交 Modal 进行真实点击验证。此项需后端 8080 就绪后由用户在真实浏览器中复核。"
+    ]
+  },
+  "receiptHash": "86054e8a1d8c93793cb9289572348be8e517331560343a43117193e3e56d04e3"
+}

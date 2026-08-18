@@ -1,0 +1,28 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "manual-evidence",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "kid-exchanges-path-vs-query-arg-fix",
+    "sourceRevision": 3,
+    "contractHash": "fbfc82ba51f808dc80bf3c7d72de26efbc25545d59b030c8ad764d485f90c671",
+    "scopeHash": "61dd0d5b9d1d19784a0e0211d74ddcea5775dc3c9e26edd35ad039f3a726799a",
+    "snapshotHash": "552172f482a7d78548ddbbab23e6317120e86f65caf1bb4ce18e4d1e6d7620f9",
+    "artifactHash": "21bafa1e1ada307053b43d5f455a4c866cf2c58db0455d42feed3bd4f6529ab5"
+  },
+  "acceptanceIds": [
+    "acceptance-36d606afc7bda10e50606009d15ba0f34763c75a3bcbf30c09118de7819096ae"
+  ],
+  "actor": "native-runtime:manual-evidence",
+  "issuedAt": "2026-08-18T01:53:25.180Z",
+  "evidence": {
+    "steps": [
+      "targetname-source"
+    ],
+    "observations": [
+      "ExchangeService.resolveTargetName line 530-541 returns snapshot.prizeName for DIRECT and snapshot.poolName for BLIND_BOX"
+    ]
+  },
+  "receiptHash": "34a17675b06870a417558f29da6059c35e5317bfaec81042fcc404a363f2ed3b"
+}

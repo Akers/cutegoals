@@ -1,0 +1,47 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "automated-check",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "kid-exchanges-path-vs-query-arg-fix",
+    "sourceRevision": 3,
+    "contractHash": "fbfc82ba51f808dc80bf3c7d72de26efbc25545d59b030c8ad764d485f90c671",
+    "scopeHash": "61dd0d5b9d1d19784a0e0211d74ddcea5775dc3c9e26edd35ad039f3a726799a",
+    "snapshotHash": "552172f482a7d78548ddbbab23e6317120e86f65caf1bb4ce18e4d1e6d7620f9",
+    "artifactHash": "21bafa1e1ada307053b43d5f455a4c866cf2c58db0455d42feed3bd4f6529ab5"
+  },
+  "acceptanceIds": [
+    "acceptance-ee6697adf064b2ade0e15b8107893bee10cec9d4900542e3a80c2be6beaec1f6"
+  ],
+  "actor": "native-runtime:command:node",
+  "issuedAt": "2026-08-18T01:53:22.119Z",
+  "evidence": {
+    "executable": "node",
+    "args": [
+      "/tmp/url-test.mjs"
+    ],
+    "cwd": ".",
+    "exitCode": 0,
+    "signal": null,
+    "timedOut": false,
+    "timeoutMs": 120000,
+    "startedAt": "2026-08-18T01:53:22.101Z",
+    "endedAt": "2026-08-18T01:53:22.119Z",
+    "worktree": {
+      "provider": "git",
+      "root": ".",
+      "beforeCommit": "c6276393a352d4ecf9dbd0d57f433b6712efe4d2",
+      "afterCommit": "c6276393a352d4ecf9dbd0d57f433b6712efe4d2"
+    },
+    "afterFence": {
+      "snapshotHash": "552172f482a7d78548ddbbab23e6317120e86f65caf1bb4ce18e4d1e6d7620f9",
+      "scopeHash": "61dd0d5b9d1d19784a0e0211d74ddcea5775dc3c9e26edd35ad039f3a726799a",
+      "matched": true
+    },
+    "outputHash": "722893c9ceb963e7343e05033f5d871a0dd8ca96de5778d40faf5cdd012441b8",
+    "outputSummary": "PASS: \"/exchanges?childId=2\" -> \"/exchanges?childId=2&page=1&pageSize=20\" (expected: \"/exchanges?childId=2&page=1&pageSize=20\")\nPASS: \"/prizes/available\" -> \"/prizes/available?page=1&pageSize=20\" (expected: \"/prizes/available?page=1&pageSize=20\")\nPASS: \"\" -> \"?page=1&pageSize=20\" (expected: \"?page=1&pageSize=20\")\n\nResult: 3/3 passed",
+    "outputTruncated": false
+  },
+  "receiptHash": "13dd9691ed380883dab28942152ff1af74ae5c8adb50bffbb4cd37c61f5ada61"
+}

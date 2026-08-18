@@ -1,0 +1,61 @@
+{
+  "schema": "comet.native.implementation-scope.v2",
+  "contractHash": "6f6b2d3d823babe03f1a409ec3c4a338a48a8537caa7a341ce95a4b296f49455",
+  "baselineProjectionRef": "runtime/evidence/snapshots/0a1594fb05837d0fc836df37e409c35d64f6782297600737b3a729d63c69bf8a.json",
+  "baselineProjectionHash": "0a1594fb05837d0fc836df37e409c35d64f6782297600737b3a729d63c69bf8a",
+  "currentProjectionRef": "runtime/evidence/snapshots/0a1f88c237d3eaef165b8a1412a6e96d563856a458e5e164e8a7f989f84360bc.json",
+  "currentProjectionHash": "0a1f88c237d3eaef165b8a1412a6e96d563856a458e5e164e8a7f989f84360bc",
+  "complete": true,
+  "declaredArtifacts": [
+    {
+      "path": "web/src/child/__tests__/pages.test.tsx",
+      "kind": "file"
+    },
+    {
+      "path": "web/src/child/pages/index.tsx",
+      "kind": "file"
+    }
+  ],
+  "changes": [
+    {
+      "path": "web/src/child/__tests__/pages.test.tsx",
+      "kind": "modified",
+      "before": {
+        "hash": "0748c3e1510d38f58e9f382de33ecc2d23e30a18d9b3aa9477578172a1e6ba08",
+        "size": 2527
+      },
+      "after": {
+        "hash": "13463ef04f631f2a14a6231c0ee4df38477a581babbf3f10e2eb27e52a426f57",
+        "size": 8417
+      },
+      "attributedTo": [
+        {
+          "path": "web/src/child/__tests__/pages.test.tsx",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "web/src/child/pages/index.tsx",
+      "kind": "modified",
+      "before": {
+        "hash": "af500ca46ebcd234ed9c457dd1d4cb3cb02248f67faebbb6a5458e36fc938bcc",
+        "size": 23797
+      },
+      "after": {
+        "hash": "6f6ee8e3de0bfe3e374ccdfd0d5a4ee76d48eca58ae290fb3f3160bffcfe53f9",
+        "size": 24063
+      },
+      "attributedTo": [
+        {
+          "path": "web/src/child/pages/index.tsx",
+          "kind": "file"
+        }
+      ]
+    }
+  ],
+  "unattributed": [],
+  "unresolvedScopes": [],
+  "noCodeReason": null,
+  "scopeHash": "9081e3cffc525b259354aa7e9f683bc80b77aeb64840b9bf51a8050fbd94c6ba"
+}

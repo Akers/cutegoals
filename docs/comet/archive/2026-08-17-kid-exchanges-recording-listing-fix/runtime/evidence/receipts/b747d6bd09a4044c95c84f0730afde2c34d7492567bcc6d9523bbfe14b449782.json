@@ -1,0 +1,28 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "manual-evidence",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "kid-exchanges-recording-listing-fix",
+    "sourceRevision": 3,
+    "contractHash": "e35657669235aa8f8810f237c2fdf7cd01debb40b4fb43e06d54f526b322d049",
+    "scopeHash": "f56fa83c9798da72d474129fa7240046d29477d4b4a0ba6f574ddfaa682eb36d",
+    "snapshotHash": "7fbe2a2636bc749ea2c2e59b561ce969d732d5f2ed6f09cfbe62b67178b9a7f0",
+    "artifactHash": "47076112d697fa39a677e81e5d3d02c2773e2260801493279406fe182df8823b"
+  },
+  "acceptanceIds": [
+    "acceptance-24dec2e9e378003e1c38977516b9d5528a191b7c143d67a121f6f820e4188208"
+  ],
+  "actor": "native-runtime:manual-evidence",
+  "issuedAt": "2026-08-17T07:23:07.753Z",
+  "evidence": {
+    "steps": [
+      "检查查询范围覆盖直接与盲盒"
+    ],
+    "observations": [
+      "ExchangeService.queryExchanges 不依据 type 字段过滤，返回 familyId + childId 范围内的全部 DIRECT 与 BLIND_BOX 记录。"
+    ]
+  },
+  "receiptHash": "b747d6bd09a4044c95c84f0730afde2c34d7492567bcc6d9523bbfe14b449782"
+}

@@ -1,0 +1,61 @@
+{
+  "schema": "comet.native.implementation-scope.v2",
+  "contractHash": "309fb074447f218f564bc2798b79e33a94c524bec77b2e450dda8ef050e06e54",
+  "baselineProjectionRef": "runtime/evidence/snapshots/1cbb216447a5128348e2d5c9a2496ebbd9eedc596f3f850e08b330c1251dbf11.json",
+  "baselineProjectionHash": "1cbb216447a5128348e2d5c9a2496ebbd9eedc596f3f850e08b330c1251dbf11",
+  "currentProjectionRef": "runtime/evidence/snapshots/ca1d3f5743642c0fc2be7d2767e5955a3c59afe8cc080bf5b40047f7a50f0aea.json",
+  "currentProjectionHash": "ca1d3f5743642c0fc2be7d2767e5955a3c59afe8cc080bf5b40047f7a50f0aea",
+  "complete": true,
+  "declaredArtifacts": [
+    {
+      "path": "server/prize/src/test/java/com/cutegoals/prize/service/PrizeServiceTest.java",
+      "kind": "file"
+    },
+    {
+      "path": "web/src/child/pages/index.tsx",
+      "kind": "file"
+    }
+  ],
+  "changes": [
+    {
+      "path": "server/prize/src/test/java/com/cutegoals/prize/service/PrizeServiceTest.java",
+      "kind": "modified",
+      "before": {
+        "hash": "7f605ce54c76ec13bd9c719fa6da8e2d81c1136cd9ebd64e1718497ad48c0f7a",
+        "size": 8697
+      },
+      "after": {
+        "hash": "93640dbcc9c09f3e299d02e71ddb3a2f42946603e703e376d4c6433c3a75bcc5",
+        "size": 12223
+      },
+      "attributedTo": [
+        {
+          "path": "server/prize/src/test/java/com/cutegoals/prize/service/PrizeServiceTest.java",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "web/src/child/pages/index.tsx",
+      "kind": "modified",
+      "before": {
+        "hash": "a947283b0b6202dc31db81fcf14e930a3de9e4059ab8f1c7c7a9b1ea576ee63e",
+        "size": 27170
+      },
+      "after": {
+        "hash": "588fd2cd5f03bbc383541b0cf44587858c42e652b59d44a65aa43289c16577b9",
+        "size": 27699
+      },
+      "attributedTo": [
+        {
+          "path": "web/src/child/pages/index.tsx",
+          "kind": "file"
+        }
+      ]
+    }
+  ],
+  "unattributed": [],
+  "unresolvedScopes": [],
+  "noCodeReason": null,
+  "scopeHash": "b296a84cbd9027b36a45c20486faaaa99891474d710fd21c972a2e9c40be7584"
+}

@@ -1,0 +1,28 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "manual-evidence",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "kid-exchanges-path-vs-query-arg-fix",
+    "sourceRevision": 3,
+    "contractHash": "fbfc82ba51f808dc80bf3c7d72de26efbc25545d59b030c8ad764d485f90c671",
+    "scopeHash": "61dd0d5b9d1d19784a0e0211d74ddcea5775dc3c9e26edd35ad039f3a726799a",
+    "snapshotHash": "552172f482a7d78548ddbbab23e6317120e86f65caf1bb4ce18e4d1e6d7620f9",
+    "artifactHash": "21bafa1e1ada307053b43d5f455a4c866cf2c58db0455d42feed3bd4f6529ab5"
+  },
+  "acceptanceIds": [
+    "acceptance-02a242d6a6f25d5fd62d41687ecf73a58e06366396363ed1265069724d5f1d90"
+  ],
+  "actor": "native-runtime:manual-evidence",
+  "issuedAt": "2026-08-18T01:53:23.624Z",
+  "evidence": {
+    "steps": [
+      "status-string-fallback"
+    ],
+    "observations": [
+      "web/src/child/pages/index.tsx:82 declares 'status: string' (after union of literal types)"
+    ]
+  },
+  "receiptHash": "2a554b42fac73868b5a3bbb6fb4bd3e045b62d827b8c21e5bd492555161b84fd"
+}

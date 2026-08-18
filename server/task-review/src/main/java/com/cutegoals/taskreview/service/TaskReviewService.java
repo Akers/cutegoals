@@ -877,6 +877,26 @@ public class TaskReviewService {
         }
         item.put("attempts", attemptData);
 
+        // ===== Frontend ReviewItem contract: top-level flattened fields =====
+        // attemptNumber ASC ordering in findByAssignmentId → latest = last element.
+        TaskAttempt latestAttempt = attempts.isEmpty() ? null : attempts.get(attempts.size() - 1);
+        item.put("assignmentId", assignment.getId());
+        item.put("attemptId", latestAttempt != null ? latestAttempt.getId() : null);
+        item.put("templateTitle", assignment.getSnapshotTemplateName());
+        // Use findById (no status filter) so historical submitters' nicknames remain
+        // visible in the review list even after the child profile is deactivated.
+        String childNickname = taskChildMapper.findById(assignment.getChildId())
+                .map(ChildProfile::getNickname)
+                .orElse(null);
+        item.put("childNickname", childNickname);
+        item.put("submittedAt", latestAttempt != null ? latestAttempt.getSubmittedAt() : null);
+        item.put("notes", latestAttempt != null ? latestAttempt.getContent() : null);
+        // Review-list semantics: any submission whose deadline has passed is "overdue",
+        // reminding the parent to review promptly. This differs from the task-list
+        // isOverdue rule in child-page-migration spec (which keys on status).
+        LocalDateTime deadline = assignment.getDeadline();
+        item.put("isOverdue", deadline != null && deadline.isBefore(LocalDateTime.now()));
+
         return item;
     }
 

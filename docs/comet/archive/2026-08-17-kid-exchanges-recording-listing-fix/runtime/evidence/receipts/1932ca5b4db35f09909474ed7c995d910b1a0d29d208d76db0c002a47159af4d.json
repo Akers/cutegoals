@@ -1,0 +1,28 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "manual-evidence",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "kid-exchanges-recording-listing-fix",
+    "sourceRevision": 3,
+    "contractHash": "e35657669235aa8f8810f237c2fdf7cd01debb40b4fb43e06d54f526b322d049",
+    "scopeHash": "f56fa83c9798da72d474129fa7240046d29477d4b4a0ba6f574ddfaa682eb36d",
+    "snapshotHash": "7fbe2a2636bc749ea2c2e59b561ce969d732d5f2ed6f09cfbe62b67178b9a7f0",
+    "artifactHash": "47076112d697fa39a677e81e5d3d02c2773e2260801493279406fe182df8823b"
+  },
+  "acceptanceIds": [
+    "acceptance-014a2c56c89a6ec094ebe81b57d69413acdb84db58c328a80b850aedcc26b53a"
+  ],
+  "actor": "native-runtime:manual-evidence",
+  "issuedAt": "2026-08-17T07:23:05.995Z",
+  "evidence": {
+    "steps": [
+      "检查 ExchangeController.queryExchanges 中孩子权限校验"
+    ],
+    "observations": [
+      "ExchangeController.queryExchanges (server/exchange/src/main/java/com/cutegoals/exchange/controller/ExchangeController.java:174-188) 保留既有 sessionChildId 与 childId 不匹配时抛 FORBIDDEN 的逻辑；本次未修改 controller，CHILD 角色仅查自己所属 childId 的契约不变。"
+    ]
+  },
+  "receiptHash": "1932ca5b4db35f09909474ed7c995d910b1a0d29d208d76db0c002a47159af4d"
+}

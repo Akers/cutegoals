@@ -1,0 +1,83 @@
+{
+  "schema": "comet.native.implementation-scope.v2",
+  "contractHash": "5e0f4e78e8b0eb027664d99bb97e69a5cf04d6ae8777a0088dbcdc5d21e03b5a",
+  "baselineProjectionRef": "runtime/evidence/snapshots/71da247d06e7c8e432afb9c12979653ccedbc67772e4b1c457f481cd2ac6fb90.json",
+  "baselineProjectionHash": "71da247d06e7c8e432afb9c12979653ccedbc67772e4b1c457f481cd2ac6fb90",
+  "currentProjectionRef": "runtime/evidence/snapshots/368e572c59f5eba870668ecce25dca864c0aa47e4e23deeea9890ad4948946c8.json",
+  "currentProjectionHash": "368e572c59f5eba870668ecce25dca864c0aa47e4e23deeea9890ad4948946c8",
+  "complete": true,
+  "declaredArtifacts": [
+    {
+      "path": "server/task-review/src/main/java/com/cutegoals/taskreview/controller/TaskReviewController.java",
+      "kind": "file"
+    },
+    {
+      "path": "web/src/child/__tests__/pages.test.tsx",
+      "kind": "file"
+    },
+    {
+      "path": "web/src/child/pages/index.tsx",
+      "kind": "file"
+    }
+  ],
+  "changes": [
+    {
+      "path": "server/task-review/src/main/java/com/cutegoals/taskreview/controller/TaskReviewController.java",
+      "kind": "modified",
+      "before": {
+        "hash": "68c353b42fc75dcd58c3484f84403c113ba08b12f0071ee8673b19fd67bfa065",
+        "size": 12241
+      },
+      "after": {
+        "hash": "00ca9fafe2d06b72c7431e88ac3b163a292ab6fd62a476d7ee978e636a8b83c6",
+        "size": 13167
+      },
+      "attributedTo": [
+        {
+          "path": "server/task-review/src/main/java/com/cutegoals/taskreview/controller/TaskReviewController.java",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "web/src/child/__tests__/pages.test.tsx",
+      "kind": "modified",
+      "before": {
+        "hash": "05ac0c62008b6cdc2e52d40475923cbbdd01d7a15847c8ba8e3ec1f5d9a0e9da",
+        "size": 22542
+      },
+      "after": {
+        "hash": "7d64c0ad901837d51cf72c11a4af9bec0261dc3667e2334b671bb46621e754bc",
+        "size": 28247
+      },
+      "attributedTo": [
+        {
+          "path": "web/src/child/__tests__/pages.test.tsx",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "web/src/child/pages/index.tsx",
+      "kind": "modified",
+      "before": {
+        "hash": "1b4e8754d2ce1532b4fafd71f08ded7796bed579072c4f91f690f74bafe624f4",
+        "size": 27146
+      },
+      "after": {
+        "hash": "a947283b0b6202dc31db81fcf14e930a3de9e4059ab8f1c7c7a9b1ea576ee63e",
+        "size": 27170
+      },
+      "attributedTo": [
+        {
+          "path": "web/src/child/pages/index.tsx",
+          "kind": "file"
+        }
+      ]
+    }
+  ],
+  "unattributed": [],
+  "unresolvedScopes": [],
+  "noCodeReason": null,
+  "scopeHash": "dd90de0621ccb79e5a9e56ee582013a6039d5beba1b05806fbf75d13dbc6ea09"
+}

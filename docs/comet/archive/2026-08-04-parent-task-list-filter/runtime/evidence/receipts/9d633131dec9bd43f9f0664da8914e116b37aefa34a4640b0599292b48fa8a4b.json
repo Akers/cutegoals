@@ -1,0 +1,29 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "static-inspection",
+  "role": "required-check",
+  "status": "passed",
+  "bindings": {
+    "change": "parent-task-list-filter",
+    "sourceRevision": 3,
+    "contractHash": "27051f9890efd33e03caa2552bce8367592605538524449fa202d957faaa55e8",
+    "scopeHash": "da50328f155bb7d9f4576fbf1544336c50caf9edfa22ad0bfdae9c8834a5a321",
+    "snapshotHash": "2dcaff142742765209c1d194402e1736a9579b0bc49c060e0b4a546080cc2731",
+    "artifactHash": "4d2ed8d6d0d748b1a47af9ae81744246adb121be016380cc1aedf0d01f328bef"
+  },
+  "acceptanceIds": [],
+  "actor": "native-runtime:scoped-text-safety",
+  "issuedAt": "2026-08-04T08:51:30.754Z",
+  "evidence": {
+    "subjects": [
+      "web/src/parent/components/TaskCalendar.tsx",
+      "web/src/parent/pages/__tests__/ParentTasksPage.test.tsx",
+      "web/src/parent/pages/index.tsx"
+    ],
+    "rule": "scoped-text-safety",
+    "resultSummary": "The built-in scoped inspection passed without skipped or blocking input.",
+    "checkReceiptRef": "runtime/evidence/check-receipts/a0f8de61a157784bf141ca036898ef42e46f31136367fc2a1718efab2638b5dd.json",
+    "checkReceiptHash": "a0f8de61a157784bf141ca036898ef42e46f31136367fc2a1718efab2638b5dd"
+  },
+  "receiptHash": "9d633131dec9bd43f9f0664da8914e116b37aefa34a4640b0599292b48fa8a4b"
+}

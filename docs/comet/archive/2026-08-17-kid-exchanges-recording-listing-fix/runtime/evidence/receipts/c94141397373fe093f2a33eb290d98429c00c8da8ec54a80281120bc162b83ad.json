@@ -1,0 +1,28 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "manual-evidence",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "kid-exchanges-recording-listing-fix",
+    "sourceRevision": 3,
+    "contractHash": "e35657669235aa8f8810f237c2fdf7cd01debb40b4fb43e06d54f526b322d049",
+    "scopeHash": "f56fa83c9798da72d474129fa7240046d29477d4b4a0ba6f574ddfaa682eb36d",
+    "snapshotHash": "7fbe2a2636bc749ea2c2e59b561ce969d732d5f2ed6f09cfbe62b67178b9a7f0",
+    "artifactHash": "47076112d697fa39a677e81e5d3d02c2773e2260801493279406fe182df8823b"
+  },
+  "acceptanceIds": [
+    "acceptance-a4aaff9c506d9f7be93f61cc7bf03bbe450ef2bb3bc01e3d54f1608aac42214c"
+  ],
+  "actor": "native-runtime:manual-evidence",
+  "issuedAt": "2026-08-17T07:25:44.261Z",
+  "evidence": {
+    "steps": [
+      "AC3: 缺快照降级"
+    ],
+    "observations": [
+      "新增单元测试 shouldFallbackToIdLabelWhenSnapshotMissing 验证 snapshot 为空时 DIRECT 记录 targetName='奖品 #200'、BLIND_BOX 记录 targetName='盲盒 #300'。代码运行受项目级 Lombok 阻塞，未能运行实际后端。"
+    ]
+  },
+  "receiptHash": "c94141397373fe093f2a33eb290d98429c00c8da8ec54a80281120bc162b83ad"
+}

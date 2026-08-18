@@ -1,0 +1,28 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "manual-evidence",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "kid-exchanges-recording-listing-fix",
+    "sourceRevision": 3,
+    "contractHash": "e35657669235aa8f8810f237c2fdf7cd01debb40b4fb43e06d54f526b322d049",
+    "scopeHash": "f56fa83c9798da72d474129fa7240046d29477d4b4a0ba6f574ddfaa682eb36d",
+    "snapshotHash": "7fbe2a2636bc749ea2c2e59b561ce969d732d5f2ed6f09cfbe62b67178b9a7f0",
+    "artifactHash": "47076112d697fa39a677e81e5d3d02c2773e2260801493279406fe182df8823b"
+  },
+  "acceptanceIds": [
+    "acceptance-36d606afc7bda10e50606009d15ba0f34763c75a3bcbf30c09118de7819096ae"
+  ],
+  "actor": "native-runtime:manual-evidence",
+  "issuedAt": "2026-08-17T07:23:08.141Z",
+  "evidence": {
+    "steps": [
+      "检查 targetName 取值来源"
+    ],
+    "observations": [
+      "ExchangeService.resolveTargetName (ExchangeService.java:530-540) 对 DIRECT 取 snapshot.prizeName，对 BLIND_BOX 取 snapshot.poolName。"
+    ]
+  },
+  "receiptHash": "e042360f4de9c1a3b9efcd4e3157c25845caed28f8034d7a420fa049f7d252a5"
+}

@@ -1,0 +1,28 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "manual-evidence",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "exchange-test-page-imports-fix",
+    "sourceRevision": 3,
+    "contractHash": "e318a60488678e13ee1338838e02628757d610a05e6829144050fb100e12b139",
+    "scopeHash": "33dc9233be70b3a5b42b318155725e7131f2c46bef7db17fca2cb0f42c23bef5",
+    "snapshotHash": "f582b638af0a87deb5ba68cd8228a25a59e68e83523c9601490da296024797e7",
+    "artifactHash": "12c09d453fe06f0a800765b1875720f941479f1460b4955b4d4926fe49c81e9e"
+  },
+  "acceptanceIds": [
+    "acceptance-2f9b9873a3252b46a175fe1fa5927348b98c94e3ed2e348cb0bbb4cee45a65e9"
+  ],
+  "actor": "native-runtime:manual-evidence",
+  "issuedAt": "2026-08-17T07:59:36.986Z",
+  "evidence": {
+    "steps": [
+      "Run V1: cd server/exchange && mvn test-compile -q"
+    ],
+    "observations": [
+      "Silent success, exit code 0. No '找不到符号 Page' or '找不到符号 LambdaQueryWrapper' in output."
+    ]
+  },
+  "receiptHash": "1a7dbcbe5d29bb7a2d13894596270a575bd32c05c432d5c90b25f61c9085f6cd"
+}

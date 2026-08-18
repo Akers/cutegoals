@@ -1,0 +1,27 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "static-inspection",
+  "role": "required-check",
+  "status": "passed",
+  "bindings": {
+    "change": "fix-task-review-standing-pending-tests",
+    "sourceRevision": 3,
+    "contractHash": "ac0d8af6de85bb42f8611b82caa43e3ea377b58dd78d709afa73638d1bd4efeb",
+    "scopeHash": "3f20f7b245ab9c17209341cff583c565a2446be76e726b9525080f9340297643",
+    "snapshotHash": "3b3bb00ac2a9b6fefe1673d7db9433373526c8bfdb0e9a9235c65df8a1f02a7b",
+    "artifactHash": "7b17328fbe23ed26867c84544ebdfdc09ee868ccf38a4e1ed036d56ba6130425"
+  },
+  "acceptanceIds": [],
+  "actor": "native-runtime:scoped-text-safety",
+  "issuedAt": "2026-08-14T02:55:53.221Z",
+  "evidence": {
+    "subjects": [
+      "server/task-review/src/test/java/com/cutegoals/taskreview/service/TaskReviewServiceTest.java"
+    ],
+    "rule": "scoped-text-safety",
+    "resultSummary": "The built-in scoped inspection passed without skipped or blocking input.",
+    "checkReceiptRef": "runtime/evidence/check-receipts/e410aa59e21ebbc6a4be44c48761b180002ab1c7bdec1570fde507ca2c418816.json",
+    "checkReceiptHash": "e410aa59e21ebbc6a4be44c48761b180002ab1c7bdec1570fde507ca2c418816"
+  },
+  "receiptHash": "14d108f4d6f1f24ffbcb8120e11b219fd9227f05550576bfa5b31f8431bec100"
+}

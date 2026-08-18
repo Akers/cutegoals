@@ -1,0 +1,23 @@
+schema: comet.native.v3
+minimum_runtime_version: 3
+revision: 5
+verification_protocol: legacy-v1
+name: kid-exchange-status-i18n
+language: zh-CN
+phase: archive
+brief: brief.md
+approval: confirmed
+approved_contract_hash: c368a68e49408f3a02c4caf57954109c7ef6cfbd2c60651bc3e49f6eac01f5e5
+spec_changes:
+  - capability: kid-exchange-status-i18n
+    operation: create
+    source: specs/kid-exchange-status-i18n/spec.md
+    base_hash: null
+verification_result: pass
+verification_report: verification.md
+implementation_scope: runtime/evidence/scopes/4e2a87cd0798dea56d0d806191bec5c8ac68ca35598054c3cdfcc193f4324732.json
+verification_evidence: runtime/evidence/verifications/7d038cfeff5672b4e6ca071dba56c03acc1f515176042ad13fa1f16e0b347fec.json
+partial_allowance: null
+archived: true
+created_at: 2026-08-18
+run_id: dd471620-c49e-4191-bd18-de2909466d33

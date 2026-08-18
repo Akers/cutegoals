@@ -1,0 +1,23 @@
+schema: comet.native.v3
+minimum_runtime_version: 3
+revision: 5
+verification_protocol: legacy-v1
+name: kid-task-filter-active-highlight
+language: zh-CN
+phase: archive
+brief: brief.md
+approval: confirmed
+approved_contract_hash: e31c947996fea374ba6927ea67727b0905c2557e198acf7b3602c8126918febc
+spec_changes:
+  - capability: child-page-migration
+    operation: replace
+    source: specs/child-page-migration/spec.md
+    base_hash: 16b190484315715b0c245e13a3bafe96aae781adb86efa3f61ea7a858c6f7dca
+verification_result: pass
+verification_report: verification.md
+implementation_scope: runtime/evidence/scopes/e7362bf50783fe9f6c81f04c26441869b71ff89db0524fdca1b4f2238e85f555.json
+verification_evidence: runtime/evidence/verifications/056ecff74878a7ba915b3a141e2b84c33c0f8a1d2612d67b3c4932730a440c6e.json
+partial_allowance: null
+archived: true
+created_at: 2026-08-13
+run_id: 3887e1a5-4b4b-438e-bec7-ad006141fdb9

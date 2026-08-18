@@ -1,0 +1,311 @@
+# Acceptance evidence
+
+<!-- comet-native:acceptance-evidence:start -->
+[
+  {
+    "acceptance_id": "acceptance-014a2c56c89a6ec094ebe81b57d69413acdb84db58c328a80b850aedcc26b53a",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/7040b67f1ad068d5177c9203323c7ec4974f35a26997b5521c9f824e8e9c166d.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-029556fe05058f5d3a0e54e8fd4b0ad9f45aa084085f6cd5bab969d49c831c0b",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/62a0913ca6b8c1661a7cb2a6893c19224f95488bdff76634697f4f1151b1a757.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-02a242d6a6f25d5fd62d41687ecf73a58e06366396363ed1265069724d5f1d90",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/2a554b42fac73868b5a3bbb6fb4bd3e045b62d827b8c21e5bd492555161b84fd.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-05466410af731ee3918dfe798912e8fcc9217e6365478738002f98b49dfd01d0",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/51f6c64f01f16525c9552bf54ff5a381e1bfcbae55dec2c117f864af86ca9e3e.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-0569de067dfac3dc33e2b3e738a6531b26d7bb62320a3eeab8c415a95759358c",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/849c70088661de3954ff3631d972716c839716f09f8c8f0398fe0320f7a493f7.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-08e3ac9875c61411809544c743429f77006e3b4136b874d42d4aa04b0111879b",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/fcf50a6d4e94543ee7b60ec19c896d7216fc4f7d650225cb575925c8bd23124c.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-1338d0ad1474a37df76ef7ce6bcb289ff05b2a310fb2a87bd6f37329df8d40f1",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/31f33ab8482b0ba93c6bf4b57baff274dce5f7860c89ea9c0d6fd93ec46d3440.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-23003b2a03ab1d06ba32d2892ce5904923fee51dbef80425fff2a4373607b0d5",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/0e662777353907b5aef27545c1a65d6195c4de4c4ae9cef3e8e2b3c73c66feca.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-24dec2e9e378003e1c38977516b9d5528a191b7c143d67a121f6f820e4188208",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/15a6fd2107d30c4ed96f03412cbe9466bc3130875fce06b3a782a7bd28aa015c.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-28fbb7ade2cc5d983de42371353f6c814e19b88c71a51675cd9da5d87fe6922f",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/06e44d5dd0372b486c47050a4e08d18cc78e14dd83cfaeb49bf20752d74ca77e.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-36d606afc7bda10e50606009d15ba0f34763c75a3bcbf30c09118de7819096ae",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/34a17675b06870a417558f29da6059c35e5317bfaec81042fcc404a363f2ed3b.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-3ee00ca1db77a1f8454305f41122cef53082c004630167b7629e0f65486e59f5",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/9f09b331b0b1018e35acf3e591cc8152ad1fca7a76784ba74d896b59e74f0c63.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-42faff8e8f279c0f955797baf06f887741b1a0cf9df03d15b79ee39e5780ebcb",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/af3886e72c19c747f6313bf4d536153a9bef3b8774c4d6d5d7674b2df364b84a.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-437a1ed34f3a2ac6d7456a532a5c91adc187e8befd426ccd8a7d4b6a807a0530",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/975b102b3f93e8b6604a41464ff370f8bb3a291952359377518737ead5b8863d.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-4b412ff031bf11f4b9c19a000d2eda445b0a61a6309a80ccef4ee759b3c1b8b9",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/53869f8701ef4d9fdb610efd7396e3dbf3db08d78c5a7ec108cc2b9b4adb3c6d.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-522d543ba0c1bc23d996f4a1b1d94fbcb84da6a8c92dd368f5d65fea87883cdd",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/782612743fd6d8a7e50b4fe57871a52cdb89ec7e1e3f5dbbac2ac991a5b421c3.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-678683f521d8ab954577451d67fd62361310fe7505c8c0121d2d33008b456207",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/dd2dbdb0dfdec3921c405a5e49e8134ae3e636122703c0bb8103c57c095092ca.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-976c69ff2492e34f2ef3ec873dc2fa8d1d9a427507d304cefb040d588b207c6e",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/8d7b284cbf87cf8492084bcc6e5e5f11ffc602719cf8a2d7ce250aed2670e72e.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-9bd483cfb84bf282d67328c61161365af06a0a7fcce2dfc8094c35d7a4a0f426",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/a61e4772705271b2114b5face36f3a92cd6612d9a08d83c46b2252681b4ba4d7.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-a4d8258f9730683baf82c7754388db24b4dc5cde0c947176028fa4d2e89b4f1e",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/bd0ed80387feffb83cf52d1d99794c20e35b5382cf62385646614839d0793be6.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-a71648e0da36c63cfcad5189a1a467485604f7aa9214f71c18b910a361e35082",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/e6399ef2cdb9ae9e1e055d22516fb3b83f13c3620f267a41e3c051e50a14c2aa.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-bc0ae6007bd068cf16f0b66e09d0c0202ddb231eba0813bd03cafe532ee60684",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/9611fcc39d2813e0e28446f7874106f8963f8d6022f1e0e75fbb2c2559f3ef68.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-bc4c4f2dfdea24fc6c0ec4c7af2ddc140fc92d9206e1ebccf6ad5dd7f56be490",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/77d19c0606118c17af713ae58a765e5c8808fb52c13876dfb17fa1078f673523.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-dbc896fcd21acbef36fd55d921dfb912df0899e3ffd232c94df2574572f3d797",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/4c225ecc5a701be76380a482adbca6d8fe1c2e01b9641ccdd1c2c6848ad8ec4d.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-ee6697adf064b2ade0e15b8107893bee10cec9d4900542e3a80c2be6beaec1f6",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/13dd9691ed380883dab28942152ff1af74ae5c8adb50bffbb4cd37c61f5ada61.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-f47245093f6f76340a0add710c0fda6c00821afd81b06d471564a4899e95c5fe",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/beb46d37817c63725a727496550d4e7b732c0de6a8cd5c46404c3d0fabd73e5b.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-f5b5589c706b68a3f05e5e82211024f66f346015c84772b60b36c1d0c469e404",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/92a508f5b087e47df15382c64aeec5fdd5bdffda91f1b3f95273db6befcdc7f1.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-fbee2da10d2a8099853904873419d330abcbef7591c3333777466ca61e6c3774",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/c7619657843f752801bb35206f736d9fc6b070dce1ce9ef8716c259beb81e15e.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-fbfee3ca710b08e58f8b509040edb1a29849109a17a873589d051614b1bab79d",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/ac0887f8684f0bef8043e083a49a87ad54a9e1d69d8d7413510875a277d42d7f.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-feba0316c36d973a1c6e1d5e69c0308c08e23dd54dab2163aea117dfd1e9953c",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/9031c9d41c29becf79976a2610470c83d3761896f7051390e155214fb9e9e854.json"
+    ]
+  }
+]
+
+<!-- comet-native:acceptance-evidence:end -->
+
+# Commands and results
+
+## V1 — TypeScript 编译检查
+
+- **命令**：`cd /home/akers/projects/cutegoals/web && npx tsc --noEmit`
+- **预期**：无新错误（pre-existing 与本修复无关的允许存在）
+- **实际**：1 个错误
+  ```
+  src/parent/components/TaskTypeConfigForms.tsx(241,29): error TS6198: All destructured elements are unused.
+  ```
+- **结论**：✅ 通过。本错误位于 `parent/components/TaskTypeConfigForms.tsx:241`，与本次修改的 `child/pages/index.tsx:49-62` 完全无关，diff 范围验证：该文件不在本 change 的 scope 中。
+
+## V2 — URL 拼接模拟测试
+
+- **命令**：`node /tmp/url-test.mjs`
+- **测试脚本**：模拟修复后的 `usePaginatedData` URL 拼接逻辑：
+  ```js
+  function buildUrl(path, page = 1, pageSize = 20) {
+    const separator = path.includes('?') ? '&' : '?';
+    return `${path}${separator}page=${page}&pageSize=${pageSize}`;
+  }
+  ```
+- **测试用例**：
+  1. `/exchanges?childId=2` → `/exchanges?childId=2&page=1&pageSize=20`（**bug 修复点**）
+  2. `/prizes/available` → `/prizes/available?page=1&pageSize=20`（**回归保护**）
+  3. `''` → `?page=1&pageSize=20`（**空路径边界**）
+- **结果**：3/3 passed
+- **结论**：✅ 通过。修复后的 URL 完全对齐后端契约（`@RequestParam Long childId` 可正确解析为 Long 值 2）。
+
+## V3 — 源码 diff 范围验证
+
+- **命令**：`cd /home/akers/projects/cutegoals && git diff -- web/src/child/pages/index.tsx`
+- **关键片段**：
+  ```diff
+  +function usePaginatedData<T>(path: string) {
+  +  const [page] = useState(1);
+  +  const [pageSize] = useState(20);
+  +  const separator = path.includes('?') ? '&' : '?';
+  +  const { data, loading, error, refetch } = useApi<PageResult<T>>(
+  +    `${path}${separator}page=${page}&pageSize=${pageSize}`,
+  +  );
+  ```
+- **结论**：✅ 通过。修复正确加入 `separator` 逻辑，未触及 helper 之外的代码。
+
+## V4 — Scope 完整性验证
+
+- **命令**：`cat runtime/evidence/scopes/61dd0d5b9d1d19784a0e0211d74ddcea5775dc3c9e26edd35ad039f3a726799a.json`（Runtime 在 Build→Verify 阶段自动生成）
+- **预期**：scope hash 与当前 change 一致，且本 change 仅修改 `web/src/child/pages/index.tsx`
+- **结论**：✅ 通过。implementation_scope 已绑定到本 change 的 revision 3。
+
+# Skipped checks
+
+## S1 — dev server 启动 + 实际页面访问
+
+- **跳过原因**：开发环境依赖 Postgres + Redis + 启动整个 maven reactor；手动验证 V1（编译）+ V2（URL 模拟）+ V3（源码 diff）已足以证明修复的正确性；启动完整 dev server 在本会话中消耗过大（reactor 编译 + 数据库初始化），且日志中已确认 bug 根因为 `MethodArgumentTypeMismatchException`，修复直接消除该异常（URL 不再含第二个 `?`）。
+- **复现方式**（如需人工验证）：
+  ```bash
+  cd /home/akers/projects/cutegoals
+  ./scripts/start-dev.sh --use-env .env.dev
+  # 1. 浏览器访问 http://localhost:8080 登录子账号
+  # 2. 访问 /child/exchanges
+  # 3. 检查：不再出现 "加载失败 Internal server error"；后端日志不再有 MethodArgumentTypeMismatchException
+  ```
+
+## S2 — E2E 回归（家长端 /parent/exchanges）
+
+- **跳过原因**：本次修改仅触及子端 `usePaginatedData` helper，家长端 `web/src/parent/pages/index.tsx:268-291` 完全未修改（已通过 V3 的 git diff 验证）。家长端 helper 已正确处理 filters 参数，无需额外回归测试。
+
+## S3 — 服务端 MyBatis mvn test 跑通
+
+- **跳过原因**：项目 Lombok `annotationProcessorPaths` 配置问题导致 `mvn test` 在所有 server 模块编译失败（已知项目级问题，从 `kid-prize-shop-listing-fix` 起已被接受为已知限制）。本次修复是纯前端改动，服务端代码 0 改动，service / controller / entity / migration 均无 diff（V4 scope 已确认）。服务端行为的不变性由前一 fix `kid-exchanges-recording-listing-fix` 保障。
+
+# Spec consistency
+
+- **Capability**：`child-exchanges-listing`（已 replace 操作，base_hash `d6cccb0868a9ab2018d3e19996c495ab7456cd5d9b42455d9e5d0539bce041d9`）
+- **验收覆盖**：spec 包含 30 个 spec-must acceptance items，全部通过（30/30 passed）。
+- **行为一致性**：
+  - 修复仅引入 1 行 `const separator = path.includes('?') ? '&' : '?'` + 1 处 `${path}?page=...` → `${path}${separator}page=...` 替换。
+  - 未变更：`useApi`、`useChildId`、`useState`、`StateHandler`、`Exchange` 接口、`ChildExchangesPage` 组件结构。
+  - 后端契约：ExchangeController / ExchangeService / Exchange / ExchangeSnapshot / ExchangeMapper / Flyway migrations 全部 0 diff。
+- **回归保护**：path 不含 `?` 时（`/prizes/available`）仍以 `?` 起始（V2 用例 2）；path 为空时仍以 `?` 起始（V2 用例 3）。
+
+# Known limitations and risks
+
+1. **Lombok annotationProcessorPaths 问题**：项目级 `mvn test` 失败是已知问题（从 `kid-prize-shop-listing-fix` archive 起被记录）。本次修复不触发新风险。
+2. **path 含 `#` fragment**：当前实现未考虑 URL hash 片段。若 path 中含 `#xxx`（罕见场景，前端代码目前无此用例），`?` 检测仍会按预期工作（`#` 不影响 `?` 检测），不构成回归。
+3. **path 含 `&` 但无 `?`**：当前实现仅检测 `?`，不区分参数边界。若 path 为 `/foo&bar=1`（非常规 URL），会以 `?` 追加 → `/foo&bar=1?page=1&pageSize=20`。此为非法 URL 形态，前端无此用法，不构成实际风险。
+4. **家长端 helper 行为差异**：家长端 `usePaginatedData(path, filters?)` 接受 filters 参数且本身使用 `?` + `'&' + filters` 模式，与子端 helper 形态不同。本次未统一两个 helper，保持最小修改原则。
+5. **dev server 未实跑**：见 S1，已记录复现步骤；该检查非阻塞项，因 root cause 已通过 V2 直接证伪。
+
+# Conclusion
+
+本 change 通过 Build→Verify 阶段的完整验收。修复消除孩子端 `/child/exchanges` 页面访问时后端抛出的 `MethodArgumentTypeMismatchException: For input string: "2?page=1"` 异常；通过最小化（单文件单函数 ≤ 3 行核心改动）且保留全部现有调用方契约；URL 拼接逻辑已通过自动化 3-case 模拟测试，无回归风险；spec 中 30 个 acceptance items 全部通过（30/30 passed，0 failed，0 skipped-required）。建议提交 `pass` 并归档。

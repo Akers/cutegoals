@@ -2,12 +2,12 @@ import { useState } from 'react';
 import { Link, history } from 'umi';
 import { getClient } from '@shared/api';
 import { useAuth } from '@shared/auth';
-import { App, Button, Card, Col, Empty, Input, Modal, Result, Row, Space, Spin, Tag, Tooltip, Typography } from 'antd';
+import { App, Button, Card, Col, Empty, Input, Modal, Result, Row, Segmented, Space, Spin, Tag, Tooltip, Typography } from 'antd';
 const { TextArea } = Input;
 import { useApi, useFormField } from '@shared/hooks/useApi';
 import { useLowPerformance, useOnline, useReducedMotion } from '@shared/theme';
 
-interface ChildAssignment {
+export interface ChildAssignment {
   id: number;
   childId: number;
   templateId: number;
@@ -22,6 +22,7 @@ interface ChildAssignment {
   rejectionReason?: string;
   version?: number;
   canSubmit: boolean;
+  cancelled: boolean;
   submissionBlockReason: 'MAX_REACHED' | 'POINTS_CAP_REACHED' | null;
   snapshotTemplateAllowResubmit: boolean | null;
   snapshotTemplateMaxSubmissions: number | null;
@@ -33,7 +34,32 @@ interface Prize {
   name: string;
   description: string;
   pointsCost: number;
-  availableStock: number;
+  stock: number;
+}
+
+interface PageResult<T> {
+  content: T[];
+  page: number;
+  pageSize: number;
+  totalElements: number;
+  totalPages: number;
+}
+
+/** 与家长端 usePaginatedData 等价的分页消费包装：从 {content,...} 中读取 items。 */
+function usePaginatedData<T>(path: string) {
+  const [page] = useState(1);
+  const [pageSize] = useState(20);
+  const separator = path.includes('?') ? '&' : '?';
+  const { data, loading, error, refetch } = useApi<PageResult<T>>(
+    `${path}${separator}page=${page}&pageSize=${pageSize}`,
+  );
+  return {
+    items: data?.content ?? [],
+    total: data?.totalElements ?? 0,
+    loading,
+    error,
+    refetch,
+  };
 }
 
 interface BlindBox {
@@ -51,11 +77,22 @@ interface BlindBoxCandidate {
 
 interface Exchange {
   id: number;
-  type: 'PRIZE' | 'BLIND_BOX';
-  targetName: string;
-  pointsCost: number;
+  childId: number;
+  familyId: number;
+  type: 'DIRECT' | 'BLIND_BOX';
   status: string;
+  costPoints: number;
+  idempotencyKey: string;
+  prizeId: number | null;
+  poolId: number | null;
+  resultPrizeId: number | null;
+  fulfilledAt: string | null;
+  fulfilledBy: number | null;
+  cancelledAt: string | null;
+  cancelledBy: number | null;
   createdAt: string;
+  updatedAt: string;
+  targetName: string;
 }
 
 interface BlindBoxResult {
@@ -79,6 +116,21 @@ function statusLabel(s: string): string {
     submitted: '已提交',
   };
   return map[s?.toLowerCase()] ?? s;
+}
+
+/** 兑换状态 → 中文标签 + Tag 颜色（与家长端保持一致） */
+const EXCHANGE_STATUS_META: Record<string, { label: string; color: string }> = {
+  PENDING_FULFILLMENT: { label: '待核销', color: 'orange' },
+  FULFILLED: { label: '已核销', color: 'green' },
+  CANCELLED: { label: '已取消', color: 'default' },
+};
+
+function exchangeStatusLabel(status: string): string {
+  return EXCHANGE_STATUS_META[status]?.label ?? status;
+}
+
+function exchangeStatusColor(status: string): string | undefined {
+  return EXCHANGE_STATUS_META[status]?.color;
 }
 
 function useChildId(): number | undefined {
@@ -113,7 +165,7 @@ export function ChildHomePage() {
     loading: assignmentsLoading,
     error: assignmentsError,
     refetch: refetchAssignments,
-  } = useApi<{ items: ChildAssignment[] }>(childId ? `/task-assignments?childId=${childId}` : '');
+  } = useApi<{ content: ChildAssignment[] }>(childId ? `/task-assignments?childId=${childId}&pageSize=100` : '');
   const {
     data: balance,
     loading: balanceLoading,
@@ -122,7 +174,7 @@ export function ChildHomePage() {
   } = useApi<{ balance: number }>(childId ? `/points/balance/${childId}` : '');
 
   const today = new Date().toISOString().split('T')[0];
-  const todayTasks = (assignments?.items ?? []).filter((a) => a.deadline.startsWith(today));
+  const todayTasks = (assignments?.content ?? []).filter((a) => a.deadline.startsWith(today));
 
   return (
     <Space direction="vertical" size="large" style={{ width: '100%' }}>
@@ -198,6 +250,28 @@ function getBlockReasonText(reason: 'MAX_REACHED' | 'POINTS_CAP_REACHED' | null 
   return undefined;
 }
 
+type TaskFilter = '进行中' | '已逾期' | '已提交' | '已完成' | '已取消';
+
+function isFutureTask(deadline: string): boolean {
+  const today = new Date().toISOString().split('T')[0];
+  return deadline.slice(0, 10) > today;
+}
+
+/**
+ * 仅作用于 ChildTasksPage 的 Segmented 选中态高亮：
+ * 主题色背景 (#0284c7) + 白字。通过作用域 className 限制影响范围，
+ * 避免全局 childTheme.components.Segmented token 导致的渲染回归。
+ */
+const childTaskSegmentedCss = `
+.child-task-segmented .ant-segmented-item-selected {
+  background-color: #0284c7;
+  color: #ffffff;
+}
+.child-task-segmented .ant-segmented-item-selected .ant-segmented-item-label {
+  color: #ffffff;
+}
+`;
+
 export function ChildTasksPage() {
   const childId = useChildId();
   const { message } = App.useApp();
@@ -206,11 +280,50 @@ export function ChildTasksPage() {
     loading,
     error,
     refetch,
-  } = useApi<{ items: ChildAssignment[] }>(childId ? `/task-assignments?childId=${childId}` : '');
+  } = useApi<{ content: ChildAssignment[] }>(childId ? `/task-assignments?childId=${childId}&pageSize=100` : '');
   const [submittingId, setSubmittingId] = useState<number | null>(null);
   const [active, setActive] = useState<ChildAssignment | null>(null);
   const notes = useFormField();
   const [submitting, setSubmitting] = useState(false);
+  const [filter, setFilter] = useState<TaskFilter>('进行中');
+
+  const allTasks = assignments?.content ?? [];
+
+  /** 五分类：优先级从高到低 */
+  const cancelledTasks = allTasks.filter((a) => a.cancelled);
+  const completedTasks = allTasks.filter((a) => !a.cancelled && (a.status === 'APPROVED' || a.status === 'COMPLETED'));
+  const submittedTasks = allTasks.filter((a) => !a.cancelled && a.status === 'SUBMITTED');
+  const overdueTasks = allTasks.filter((a) =>
+    !a.cancelled && a.status !== 'APPROVED' && a.status !== 'COMPLETED' && a.status !== 'SUBMITTED' && a.overdue && a.snapshotTemplateTaskType !== 'REPEAT',
+  );
+  const activeTasks = allTasks.filter((a) => {
+    if (a.cancelled) return false;
+    if (a.status === 'APPROVED' || a.status === 'COMPLETED') return false;
+    if (a.status === 'SUBMITTED') return false;
+    // 非 REPEAT 任务的逾期归入「已逾期」，REPEAT 任务留在进行中
+    if (a.overdue && a.snapshotTemplateTaskType !== 'REPEAT') return false;
+    return true;
+  });
+
+  /** 进行中分类：截止日期升序，未来任务排末尾 */
+  const sortedActiveTasks = [...activeTasks].sort((a, b) => {
+    const aFuture = isFutureTask(a.deadline);
+    const bFuture = isFutureTask(b.deadline);
+    if (aFuture !== bFuture) return aFuture ? 1 : -1;
+    return a.deadline.localeCompare(b.deadline);
+  });
+
+  const getFilteredTasks = (f: TaskFilter) => {
+    switch (f) {
+      case '已取消': return cancelledTasks;
+      case '已完成': return completedTasks;
+      case '已提交': return submittedTasks;
+      case '已逾期': return overdueTasks;
+      case '进行中': return sortedActiveTasks;
+    }
+  };
+
+  const filteredTasks = getFilteredTasks(filter);
 
   const openSubmit = (task: ChildAssignment) => {
     setActive(task);
@@ -237,62 +350,89 @@ export function ChildTasksPage() {
     }
   };
 
+  /** 渲染单个任务卡片 */
+  const renderTaskCard = (task: ChildAssignment) => {
+    const future = isFutureTask(task.deadline);
+    const isBlockedMax = !task.canSubmit && (task.submissionBlockReason === 'MAX_REACHED' || task.submissionBlockReason === 'POINTS_CAP_REACHED');
+    const showSubmitButton = (task.status === 'PENDING' || task.status === 'REJECTED') && !isBlockedMax;
+    const submitDisabled = future ? true : !task.canSubmit;
+
+    return (
+      <Card key={task.id} size="small" style={
+        task.overdue
+          ? { borderLeft: '4px solid #faad14' }
+          : !task.canSubmit
+            ? { borderLeft: '4px solid #d9d9d9' }
+            : {}
+      }>
+        <Row justify="space-between" align="top">
+          <div style={{ flex: 1 }}>
+            <Typography.Text strong>{task.snapshotTemplateName}</Typography.Text>
+            <br />
+            <Typography.Text type="secondary" style={{ fontSize: 12 }}>截止 {task.deadline}</Typography.Text>
+            {future && filter === '进行中' && (
+              <div style={{ marginTop: 2 }}>
+                <Typography.Text style={{ fontSize: 12, color: '#999' }}>未开始</Typography.Text>
+              </div>
+            )}
+            <div style={{ marginTop: 4 }}>
+              <Space size={8}>
+                <Tag>{statusLabel(task.status.toLowerCase())}</Tag>
+                <Typography.Text type="secondary" style={{ fontSize: 12 }}>+{task.snapshotDifficultyReward} 积分</Typography.Text>
+              </Space>
+            </div>
+            {task.rejectionReason && (
+              <div style={{ marginTop: 8, padding: 8, background: '#fffbe6', borderRadius: 6, fontSize: 12, color: '#ad6800' }}>
+                驳回原因：{task.rejectionReason}
+              </div>
+            )}
+          </div>
+          <div style={{ marginLeft: 8 }}>
+            {isBlockedMax ? (
+              <Typography.Text type="secondary" style={{ fontSize: 12 }}>该任务已达最大提交次数</Typography.Text>
+            ) : showSubmitButton ? (
+              <Space direction="vertical" size="small">
+                {task.status === 'PENDING' && (
+                  <Tooltip title={!task.canSubmit ? getBlockReasonText(task.submissionBlockReason) : undefined}>
+                    <Button size="small" onClick={() => openSubmit(task)} loading={submittingId === task.id}
+                      disabled={submitDisabled}>
+                      提交
+                    </Button>
+                  </Tooltip>
+                )}
+                {task.status === 'REJECTED' && (
+                  <Tooltip title={!task.canSubmit ? getBlockReasonText(task.submissionBlockReason) : undefined}>
+                    <Button size="small" onClick={() => openSubmit(task)} loading={submittingId === task.id}
+                      disabled={submitDisabled}>
+                      重新提交
+                    </Button>
+                  </Tooltip>
+                )}
+              </Space>
+            ) : null}
+          </div>
+        </Row>
+      </Card>
+    );
+  };
+
   return (
     <Space direction="vertical" size="large" style={{ width: '100%' }}>
       <Typography.Title level={4} style={{ margin: 0 }}>我的任务</Typography.Title>
+      <style>{childTaskSegmentedCss}</style>
+      <Segmented
+        className="child-task-segmented"
+        options={['进行中', '已逾期', '已提交', '已完成', '已取消']}
+        value={filter}
+        onChange={(v) => setFilter(v as TaskFilter)}
+        block
+      />
       <StateHandler loading={loading} error={error} onRetry={refetch}>
-        {(assignments?.items ?? []).length === 0 ? (
+        {filteredTasks.length === 0 ? (
           <Empty description="暂无任务" />
         ) : (
           <Space direction="vertical" size="middle" style={{ width: '100%' }}>
-            {(assignments?.items ?? []).map((task) => (
-              <Card key={task.id} size="small" style={
-                task.overdue
-                  ? { borderLeft: '4px solid #faad14' }
-                  : !task.canSubmit
-                    ? { borderLeft: '4px solid #d9d9d9' }
-                    : {}
-              }>
-                <Row justify="space-between" align="top">
-                  <div style={{ flex: 1 }}>
-                    <Typography.Text strong>{task.snapshotTemplateName}</Typography.Text>
-                    <br />
-                    <Typography.Text type="secondary" style={{ fontSize: 12 }}>截止 {task.deadline}</Typography.Text>
-                    <div style={{ marginTop: 4 }}>
-                      <Space size={8}>
-                        <Tag>{statusLabel(task.status.toLowerCase())}</Tag>
-                        <Typography.Text type="secondary" style={{ fontSize: 12 }}>+{task.snapshotDifficultyReward} 积分</Typography.Text>
-                      </Space>
-                    </div>
-                    {task.rejectionReason && (
-                      <div style={{ marginTop: 8, padding: 8, background: '#fffbe6', borderRadius: 6, fontSize: 12, color: '#ad6800' }}>
-                        驳回原因：{task.rejectionReason}
-                      </div>
-                    )}
-                  </div>
-                  <div style={{ marginLeft: 8 }}>
-                    <Space direction="vertical" size="small">
-                      {task.status === 'PENDING' && (
-                        <Tooltip title={!task.canSubmit ? getBlockReasonText(task.submissionBlockReason) : undefined}>
-                          <Button size="small" onClick={() => openSubmit(task)} loading={submittingId === task.id}
-                            disabled={!task.canSubmit}>
-                            提交
-                          </Button>
-                        </Tooltip>
-                      )}
-                      {task.status === 'REJECTED' && (
-                        <Tooltip title={!task.canSubmit ? getBlockReasonText(task.submissionBlockReason) : undefined}>
-                          <Button size="small" onClick={() => openSubmit(task)} loading={submittingId === task.id}
-                            disabled={!task.canSubmit}>
-                            重新提交
-                          </Button>
-                        </Tooltip>
-                      )}
-                    </Space>
-                  </div>
-                </Row>
-              </Card>
-            ))}
+            {filteredTasks.map(renderTaskCard)}
           </Space>
         )}
       </StateHandler>
@@ -304,6 +444,10 @@ export function ChildTasksPage() {
           notes.reset();
         }}
         title={active?.status === 'REJECTED' ? '重新提交任务' : '提交任务'}
+        okText={active?.status === 'REJECTED' ? '重新提交' : '提交'}
+        cancelText="取消"
+        okButtonProps={{ loading: submitting, disabled: !notes.value.trim() }}
+        onOk={handleSubmit}
       >
         <Space direction="vertical" size="middle" style={{ width: '100%' }}>
           <Typography.Text>{active?.snapshotTemplateName}</Typography.Text>
@@ -315,9 +459,6 @@ export function ChildTasksPage() {
               {...notes.inputProps}
             />
           </div>
-          <Button onClick={handleSubmit} loading={submitting} disabled={!notes.value.trim()}>
-            {active?.status === 'REJECTED' ? '重新提交' : '提交'}
-          </Button>
         </Space>
       </Modal>
     </Space>
@@ -334,11 +475,11 @@ export function ChildPrizesPage() {
     refetch: refetchBalance,
   } = useApi<{ balance: number }>(childId ? `/points/balance/${childId}` : '');
   const {
-    data: prizes,
+    items: prizes,
     loading: prizesLoading,
     error: prizesError,
     refetch: refetchPrizes,
-  } = useApi<{ items: Prize[] }>('/prizes/available');
+  } = usePaginatedData<Prize>('/prizes/available');
   const [selected, setSelected] = useState<Prize | null>(null);
   const [exchanging, setExchanging] = useState(false);
 
@@ -378,11 +519,11 @@ export function ChildPrizesPage() {
         </Row>
       </Card>
       <StateHandler loading={prizesLoading || balanceLoading} error={prizesError ?? balanceError} onRetry={refetchPrizes}>
-        {(prizes?.items ?? []).length === 0 ? (
+        {prizes.length === 0 ? (
           <Empty description="商城暂无奖品" />
         ) : (
           <Space direction="vertical" size="middle" style={{ width: '100%' }}>
-            {(prizes?.items ?? []).map((prize) => (
+            {prizes.map((prize) => (
               <Card key={prize.id} size="small">
                 <Row justify="space-between" align="top">
                   <div>
@@ -391,12 +532,12 @@ export function ChildPrizesPage() {
                     <Typography.Text type="secondary" style={{ fontSize: 12 }}>{prize.description}</Typography.Text>
                     <br />
                     <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-                      {prize.pointsCost} 积分 · 库存 {prize.availableStock}
+                      {prize.pointsCost} 积分 · 库存 {prize.stock}
                     </Typography.Text>
                   </div>
                   <Button
                     size="small"
-                    disabled={!canAfford(prize) || prize.availableStock <= 0}
+                    disabled={!canAfford(prize) || prize.stock <= 0}
                     onClick={() => setSelected(prize)}
                   >
                     兑换
@@ -603,31 +744,31 @@ export function ChildBlindBoxesPage() {
 export function ChildExchangesPage() {
   const childId = useChildId();
   const {
-    data: exchanges,
+    items: exchanges,
     loading,
     error,
     refetch,
-  } = useApi<{ items: Exchange[] }>(childId ? `/exchanges?childId=${childId}` : '');
+  } = usePaginatedData<Exchange>(childId ? `/exchanges?childId=${childId}` : '');
 
   return (
     <Space direction="vertical" size="large" style={{ width: '100%' }}>
       <Typography.Title level={4} style={{ margin: 0 }}>兑换历史</Typography.Title>
       <StateHandler loading={loading} error={error} onRetry={refetch}>
-        {(exchanges?.items ?? []).length === 0 ? (
+        {exchanges.length === 0 ? (
           <Empty description="还没有兑换记录" />
         ) : (
           <Space direction="vertical" size="middle" style={{ width: '100%' }}>
-            {(exchanges?.items ?? []).map((ex) => (
+            {exchanges.map((ex) => (
               <Card key={ex.id} size="small">
                 <Row justify="space-between" align="top">
                   <div>
                     <Typography.Text strong>{ex.targetName}</Typography.Text>
                     <br />
                     <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-                      {ex.type === 'BLIND_BOX' ? '盲盒' : '奖品'} · {ex.pointsCost} 积分 · {ex.createdAt}
+                      {ex.type === 'BLIND_BOX' ? '盲盒' : '奖品'} · {ex.costPoints} 积分 · {ex.createdAt}
                     </Typography.Text>
                     <div style={{ marginTop: 4 }}>
-                      <Tag>{statusLabel(ex.status.toLowerCase())}</Tag>
+                      <Tag color={exchangeStatusColor(ex.status)}>{exchangeStatusLabel(ex.status)}</Tag>
                     </div>
                   </div>
                 </Row>

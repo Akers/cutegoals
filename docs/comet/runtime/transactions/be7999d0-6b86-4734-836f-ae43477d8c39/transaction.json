@@ -1,0 +1,27 @@
+{
+  "schema": "comet.native.transaction.v2",
+  "id": "be7999d0-6b86-4734-836f-ae43477d8c39",
+  "kind": "archive",
+  "status": "committed",
+  "change": "fix-child-my-tasks-listing",
+  "createdAt": "2026-08-12T08:25:19.812Z",
+  "preflightHash": "f9d499413d1ec55fefe1431af71272b2178d0a358e39a65f3aaac7a02fd67828",
+  "operations": [
+    {
+      "id": "spec-1-child-page-migration",
+      "type": "write",
+      "target": "specs/child-page-migration/spec.md",
+      "staged": "runtime/transactions/be7999d0-6b86-4734-836f-ae43477d8c39/staged/specs/child-page-migration/spec.md",
+      "expectedTargetHash": null,
+      "stagedHash": "d25c63dcd39bc3ad7fbc08e9deb027091690230cdc8697112944fb66a8c91430"
+    },
+    {
+      "id": "archive-change",
+      "type": "move",
+      "source": "changes/fix-child-my-tasks-listing",
+      "target": "archive/2026-08-12-fix-child-my-tasks-listing",
+      "expectedSourceHash": "56008a4fada7c0abfccb15d462ce5dfb8f57b534f7c0114f474a95e910ba7088",
+      "expectedTargetHash": null
+    }
+  ]
+}

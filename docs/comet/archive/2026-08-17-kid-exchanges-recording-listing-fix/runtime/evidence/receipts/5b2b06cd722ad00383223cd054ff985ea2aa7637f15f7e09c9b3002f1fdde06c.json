@@ -1,0 +1,28 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "manual-evidence",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "kid-exchanges-recording-listing-fix",
+    "sourceRevision": 3,
+    "contractHash": "e35657669235aa8f8810f237c2fdf7cd01debb40b4fb43e06d54f526b322d049",
+    "scopeHash": "f56fa83c9798da72d474129fa7240046d29477d4b4a0ba6f574ddfaa682eb36d",
+    "snapshotHash": "7fbe2a2636bc749ea2c2e59b561ce969d732d5f2ed6f09cfbe62b67178b9a7f0",
+    "artifactHash": "47076112d697fa39a677e81e5d3d02c2773e2260801493279406fe182df8823b"
+  },
+  "acceptanceIds": [
+    "acceptance-08d970f4247bbb8d2ec3fb23f6356d881a182b5edc22a5e097020180f6250d84"
+  ],
+  "actor": "native-runtime:manual-evidence",
+  "issuedAt": "2026-08-17T07:25:45.157Z",
+  "evidence": {
+    "steps": [
+      "AC4: 顶层 Page 形状保留"
+    ],
+    "observations": [
+      "ExchangeService.queryExchanges 返回 Map 5 个键分别为 content, page, pageSize, totalElements, totalPages；契约与改前一致。仅在 content 项中新增 targetName 字段。"
+    ]
+  },
+  "receiptHash": "5b2b06cd722ad00383223cd054ff985ea2aa7637f15f7e09c9b3002f1fdde06c"
+}

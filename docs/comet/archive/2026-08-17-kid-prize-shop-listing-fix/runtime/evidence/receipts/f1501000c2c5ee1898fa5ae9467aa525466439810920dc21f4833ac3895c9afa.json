@@ -1,0 +1,28 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "manual-evidence",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "kid-prize-shop-listing-fix",
+    "sourceRevision": 3,
+    "contractHash": "309fb074447f218f564bc2798b79e33a94c524bec77b2e450dda8ef050e06e54",
+    "scopeHash": "b296a84cbd9027b36a45c20486faaaa99891474d710fd21c972a2e9c40be7584",
+    "snapshotHash": "ca1d3f5743642c0fc2be7d2767e5955a3c59afe8cc080bf5b40047f7a50f0aea",
+    "artifactHash": "dd0b7410116aca14e014987b1ac9bf379a0ffa4400f67c84d2900a21459e4b59"
+  },
+  "acceptanceIds": [
+    "acceptance-ee9a1021a962d970c049f2113f0c48ad6d6e1285d35b08e5f1efc4704531bf7f"
+  ],
+  "actor": "native-runtime:manual-evidence",
+  "issuedAt": "2026-08-17T03:16:13.947Z",
+  "evidence": {
+    "steps": [
+      "Read kid-prize-shop — 孩子端积分商城奖品清单"
+    ],
+    "observations": [
+      "Verified via code inspection: **排序规则（不变）：** `createdAt DESC, id DESC`。"
+    ]
+  },
+  "receiptHash": "f1501000c2c5ee1898fa5ae9467aa525466439810920dc21f4833ac3895c9afa"
+}

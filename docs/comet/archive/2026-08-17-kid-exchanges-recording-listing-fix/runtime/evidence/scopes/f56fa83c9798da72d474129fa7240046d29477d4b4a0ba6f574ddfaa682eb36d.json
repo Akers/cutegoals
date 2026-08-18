@@ -1,0 +1,83 @@
+{
+  "schema": "comet.native.implementation-scope.v2",
+  "contractHash": "e35657669235aa8f8810f237c2fdf7cd01debb40b4fb43e06d54f526b322d049",
+  "baselineProjectionRef": "runtime/evidence/snapshots/32c16563473e3e2e6db8e8165e006ccc3f6a756d0485460352ad9f563db60eff.json",
+  "baselineProjectionHash": "32c16563473e3e2e6db8e8165e006ccc3f6a756d0485460352ad9f563db60eff",
+  "currentProjectionRef": "runtime/evidence/snapshots/7fbe2a2636bc749ea2c2e59b561ce969d732d5f2ed6f09cfbe62b67178b9a7f0.json",
+  "currentProjectionHash": "7fbe2a2636bc749ea2c2e59b561ce969d732d5f2ed6f09cfbe62b67178b9a7f0",
+  "complete": true,
+  "declaredArtifacts": [
+    {
+      "path": "server/exchange/src/main/java/com/cutegoals/exchange/service/ExchangeService.java",
+      "kind": "file"
+    },
+    {
+      "path": "server/exchange/src/test/java/com/cutegoals/exchange/service/ExchangeServiceTest.java",
+      "kind": "file"
+    },
+    {
+      "path": "web/src/child/pages/index.tsx",
+      "kind": "file"
+    }
+  ],
+  "changes": [
+    {
+      "path": "server/exchange/src/main/java/com/cutegoals/exchange/service/ExchangeService.java",
+      "kind": "modified",
+      "before": {
+        "hash": "0a9e1d7ec3aff94013b41b18c036805f96cb3ab0427dba6d0d24ecce0840d79f",
+        "size": 22352
+      },
+      "after": {
+        "hash": "115965275560e4786bed2a69790ce1db66d41485e94f8f5aa9c7c7e945c774e2",
+        "size": 25024
+      },
+      "attributedTo": [
+        {
+          "path": "server/exchange/src/main/java/com/cutegoals/exchange/service/ExchangeService.java",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "server/exchange/src/test/java/com/cutegoals/exchange/service/ExchangeServiceTest.java",
+      "kind": "modified",
+      "before": {
+        "hash": "ec8fd495c3c3ba469660bd1374ab4fb1757b9143cfea9a2bda114ce74c174203",
+        "size": 24345
+      },
+      "after": {
+        "hash": "4a41045ef0113f79673e11352a8fcce73d4bd9ee4d9fd2604410a6704a6b0220",
+        "size": 28814
+      },
+      "attributedTo": [
+        {
+          "path": "server/exchange/src/test/java/com/cutegoals/exchange/service/ExchangeServiceTest.java",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "web/src/child/pages/index.tsx",
+      "kind": "modified",
+      "before": {
+        "hash": "588fd2cd5f03bbc383541b0cf44587858c42e652b59d44a65aa43289c16577b9",
+        "size": 27699
+      },
+      "after": {
+        "hash": "b1f7e96642281b514e93deecffdf76d2253d394189f063e22042dcad0b3388fb",
+        "size": 27957
+      },
+      "attributedTo": [
+        {
+          "path": "web/src/child/pages/index.tsx",
+          "kind": "file"
+        }
+      ]
+    }
+  ],
+  "unattributed": [],
+  "unresolvedScopes": [],
+  "noCodeReason": null,
+  "scopeHash": "f56fa83c9798da72d474129fa7240046d29477d4b4a0ba6f574ddfaa682eb36d"
+}

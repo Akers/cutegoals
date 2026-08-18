@@ -877,6 +877,7 @@ class TaskAssignmentServiceTest {
         repeat.setDeadline(LocalDateTime.now().minusDays(1)); // deadline passed
         repeat.setStatus("PENDING");
         repeat.setCancelled(false);
+        repeat.setSnapshotTemplateAllowResubmit(true); // required for progress query inclusion
 
         Page<TaskAssignment> page = new Page<>(1, 20, 1);
         page.setRecords(List.of(repeat));
@@ -961,6 +962,7 @@ class TaskAssignmentServiceTest {
         repeat.setDeadline(LocalDateTime.now().minusDays(1));
         repeat.setStatus("PENDING");
         repeat.setCancelled(false);
+        repeat.setSnapshotTemplateAllowResubmit(true); // required for progress query inclusion
 
         Page<TaskAssignment> page = new Page<>(1, 20, 1);
         page.setRecords(List.of(repeat));
@@ -1026,6 +1028,7 @@ class TaskAssignmentServiceTest {
         repeat.setDeadline(LocalDateTime.now().minusDays(1));
         repeat.setStatus("PENDING");
         repeat.setCancelled(false);
+        repeat.setSnapshotTemplateAllowResubmit(true); // required for progress query inclusion
 
         when(taskAssignmentMapper.findById(1L)).thenReturn(Optional.of(repeat));
         when(taskAssignmentMapper.countApprovedBatch(eq(childId), eq(List.of(templateId))))
@@ -1038,6 +1041,398 @@ class TaskAssignmentServiceTest {
         assertEquals(false, result.get("overdue"));
         assertEquals(3, ((Number) result.get("approvedSubmissionCount")).intValue());
         assertEquals(45, ((Number) result.get("earnedPoints")).intValue());
+    }
+
+    // ========== canSubmit / submissionBlockReason ==========
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void shouldReturnCanSubmitFalseWithMaxReached() {
+        // PENDING + allowResubmit=true + approvedCount >= max → canSubmit=false, MAX_REACHED
+        TaskAssignment assignment = createSampleAssignment();
+        assignment.setId(1L);
+        assignment.setStatus("PENDING");
+        assignment.setSnapshotTemplateTaskType("REPEAT");
+        assignment.setSnapshotTemplateAllowResubmit(true);
+        assignment.setSnapshotTemplateMaxSubmissions(3);
+        assignment.setSnapshotTemplatePointsCap(null);
+        assignment.setDeadline(LocalDateTime.now().plusDays(1)); // not overdue
+        assignment.setCancelled(false);
+
+        Page<TaskAssignment> page = new Page<>(1, 20, 1);
+        page.setRecords(List.of(assignment));
+
+        when(taskAssignmentMapper.selectPage(any(Page.class), any(LambdaQueryWrapper.class)))
+                .thenReturn(page);
+        // approvedCount = 3 (equals max)
+        when(taskAssignmentMapper.countApprovedBatch(eq(childId), eq(List.of(templateId))))
+                .thenReturn(List.of(Map.of("templateId", templateId, "approvedCount", 3L)));
+        when(taskAssignmentMapper.sumEarnBatch(eq(childId), eq(List.of(templateId))))
+                .thenReturn(List.of());
+
+        Map<String, Object> result = taskAssignmentService.queryAssignments(new LinkedHashMap<>(), familyId, null);
+        List<Map<String, Object>> content = (List<Map<String, Object>>) result.get("content");
+
+        assertEquals(1, content.size());
+        Map<String, Object> item = content.get(0);
+        assertEquals(false, item.get("canSubmit"));
+        assertEquals("MAX_REACHED", item.get("submissionBlockReason"));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void shouldReturnCanSubmitFalseWithPointsCapReached() {
+        // PENDING + allowResubmit=true + earnedPoints >= cap (but approvedCount < max) → canSubmit=false, POINTS_CAP_REACHED
+        TaskAssignment assignment = createSampleAssignment();
+        assignment.setId(1L);
+        assignment.setStatus("PENDING");
+        assignment.setSnapshotTemplateTaskType("STANDING");
+        assignment.setSnapshotTemplateAllowResubmit(true);
+        assignment.setSnapshotTemplateMaxSubmissions(10);
+        assignment.setSnapshotTemplatePointsCap(50);
+        assignment.setDeadline(LocalDateTime.now().plusDays(1)); // not overdue
+        assignment.setCancelled(false);
+
+        Page<TaskAssignment> page = new Page<>(1, 20, 1);
+        page.setRecords(List.of(assignment));
+
+        when(taskAssignmentMapper.selectPage(any(Page.class), any(LambdaQueryWrapper.class)))
+                .thenReturn(page);
+        when(taskAssignmentMapper.countApprovedBatch(eq(childId), eq(List.of(templateId))))
+                .thenReturn(List.of(Map.of("templateId", templateId, "approvedCount", 2L))); // under max
+        when(taskAssignmentMapper.sumEarnBatch(eq(childId), eq(List.of(templateId))))
+                .thenReturn(List.of(Map.of("templateId", templateId, "earnedPoints", 50L))); // at cap
+
+        Map<String, Object> result = taskAssignmentService.queryAssignments(new LinkedHashMap<>(), familyId, null);
+        List<Map<String, Object>> content = (List<Map<String, Object>>) result.get("content");
+
+        assertEquals(1, content.size());
+        Map<String, Object> item = content.get(0);
+        assertEquals(false, item.get("canSubmit"));
+        assertEquals("POINTS_CAP_REACHED", item.get("submissionBlockReason"));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void shouldReturnCanSubmitTrueWhenUnderLimits() {
+        // PENDING + allowResubmit=true + under both limits → canSubmit=true, null
+        TaskAssignment assignment = createSampleAssignment();
+        assignment.setId(1L);
+        assignment.setStatus("PENDING");
+        assignment.setSnapshotTemplateTaskType("REPEAT");
+        assignment.setSnapshotTemplateAllowResubmit(true);
+        assignment.setSnapshotTemplateMaxSubmissions(5);
+        assignment.setSnapshotTemplatePointsCap(100);
+        assignment.setDeadline(LocalDateTime.now().plusDays(1));
+        assignment.setCancelled(false);
+
+        Page<TaskAssignment> page = new Page<>(1, 20, 1);
+        page.setRecords(List.of(assignment));
+
+        when(taskAssignmentMapper.selectPage(any(Page.class), any(LambdaQueryWrapper.class)))
+                .thenReturn(page);
+        when(taskAssignmentMapper.countApprovedBatch(eq(childId), eq(List.of(templateId))))
+                .thenReturn(List.of(Map.of("templateId", templateId, "approvedCount", 2L)));
+        when(taskAssignmentMapper.sumEarnBatch(eq(childId), eq(List.of(templateId))))
+                .thenReturn(List.of(Map.of("templateId", templateId, "earnedPoints", 30L)));
+
+        Map<String, Object> result = taskAssignmentService.queryAssignments(new LinkedHashMap<>(), familyId, null);
+        List<Map<String, Object>> content = (List<Map<String, Object>>) result.get("content");
+
+        assertEquals(1, content.size());
+        Map<String, Object> item = content.get(0);
+        assertEquals(true, item.get("canSubmit"));
+        assertNull(item.get("submissionBlockReason"));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void shouldReturnCanSubmitTrueWhenAllowResubmitFalse() {
+        // PENDING + allowResubmit=false → canSubmit=true, null (no max/cap check)
+        TaskAssignment assignment = createSampleAssignment();
+        assignment.setId(1L);
+        assignment.setStatus("PENDING");
+        assignment.setSnapshotTemplateTaskType("LIMITED");
+        assignment.setSnapshotTemplateAllowResubmit(false);
+        assignment.setSnapshotTemplateMaxSubmissions(null);
+        assignment.setSnapshotTemplatePointsCap(null);
+        assignment.setDeadline(LocalDateTime.now().plusDays(1));
+        assignment.setCancelled(false);
+
+        Page<TaskAssignment> page = new Page<>(1, 20, 1);
+        page.setRecords(List.of(assignment));
+
+        when(taskAssignmentMapper.selectPage(any(Page.class), any(LambdaQueryWrapper.class)))
+                .thenReturn(page);
+
+        Map<String, Object> result = taskAssignmentService.queryAssignments(new LinkedHashMap<>(), familyId, null);
+        List<Map<String, Object>> content = (List<Map<String, Object>>) result.get("content");
+
+        assertEquals(1, content.size());
+        Map<String, Object> item = content.get(0);
+        assertEquals(true, item.get("canSubmit"));
+        assertNull(item.get("submissionBlockReason"));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void shouldReturnCanSubmitFalseForApprovedStatus() {
+        // APPROVED status → canSubmit=false, null (even if not at max)
+        TaskAssignment assignment = createSampleAssignment();
+        assignment.setId(1L);
+        assignment.setStatus("APPROVED");
+        assignment.setSnapshotTemplateTaskType("REPEAT");
+        assignment.setSnapshotTemplateAllowResubmit(true);
+        assignment.setSnapshotTemplateMaxSubmissions(5);
+        assignment.setSnapshotTemplatePointsCap(100);
+        assignment.setDeadline(LocalDateTime.now().plusDays(1));
+        assignment.setCancelled(false);
+
+        Page<TaskAssignment> page = new Page<>(1, 20, 1);
+        page.setRecords(List.of(assignment));
+
+        when(taskAssignmentMapper.selectPage(any(Page.class), any(LambdaQueryWrapper.class)))
+                .thenReturn(page);
+        when(taskAssignmentMapper.countApprovedBatch(eq(childId), eq(List.of(templateId))))
+                .thenReturn(List.of(Map.of("templateId", templateId, "approvedCount", 2L)));
+        when(taskAssignmentMapper.sumEarnBatch(eq(childId), eq(List.of(templateId))))
+                .thenReturn(List.of(Map.of("templateId", templateId, "earnedPoints", 30L)));
+
+        Map<String, Object> result = taskAssignmentService.queryAssignments(new LinkedHashMap<>(), familyId, null);
+        List<Map<String, Object>> content = (List<Map<String, Object>>) result.get("content");
+
+        assertEquals(1, content.size());
+        Map<String, Object> item = content.get(0);
+        assertEquals(false, item.get("canSubmit"));
+        assertNull(item.get("submissionBlockReason"));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void shouldReturnCanSubmitFalseForCancelledAssignment() {
+        // cancelled=true → canSubmit=false, null
+        TaskAssignment assignment = createSampleAssignment();
+        assignment.setId(1L);
+        assignment.setStatus("PENDING");
+        assignment.setSnapshotTemplateTaskType("REPEAT");
+        assignment.setSnapshotTemplateAllowResubmit(true);
+        assignment.setSnapshotTemplateMaxSubmissions(5);
+        assignment.setSnapshotTemplatePointsCap(100);
+        assignment.setDeadline(LocalDateTime.now().plusDays(1));
+        assignment.setCancelled(true);
+
+        Page<TaskAssignment> page = new Page<>(1, 20, 1);
+        page.setRecords(List.of(assignment));
+
+        when(taskAssignmentMapper.selectPage(any(Page.class), any(LambdaQueryWrapper.class)))
+                .thenReturn(page);
+
+        Map<String, Object> result = taskAssignmentService.queryAssignments(new LinkedHashMap<>(), familyId, null);
+        List<Map<String, Object>> content = (List<Map<String, Object>>) result.get("content");
+
+        assertEquals(1, content.size());
+        Map<String, Object> item = content.get(0);
+        assertEquals(false, item.get("canSubmit"));
+        assertNull(item.get("submissionBlockReason"));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void shouldReturnCanSubmitFalseWhenLatePolicyRejects() {
+        // now > deadline + latePolicy = REJECT → canSubmit=false, null
+        TaskAssignment assignment = createSampleAssignment();
+        assignment.setId(1L);
+        assignment.setStatus("PENDING");
+        assignment.setSnapshotTemplateTaskType("LIMITED");
+        assignment.setSnapshotTemplateAllowResubmit(true);
+        assignment.setSnapshotTemplateMaxSubmissions(5);
+        assignment.setSnapshotTemplatePointsCap(100);
+        assignment.setDeadline(LocalDateTime.now().minusDays(1)); // deadline passed
+        assignment.setLatePolicy("REJECT");
+        assignment.setCancelled(false);
+
+        Page<TaskAssignment> page = new Page<>(1, 20, 1);
+        page.setRecords(List.of(assignment));
+
+        when(taskAssignmentMapper.selectPage(any(Page.class), any(LambdaQueryWrapper.class)))
+                .thenReturn(page);
+
+        Map<String, Object> result = taskAssignmentService.queryAssignments(new LinkedHashMap<>(), familyId, null);
+        List<Map<String, Object>> content = (List<Map<String, Object>>) result.get("content");
+
+        assertEquals(1, content.size());
+        Map<String, Object> item = content.get(0);
+        assertEquals(false, item.get("canSubmit"));
+        assertNull(item.get("submissionBlockReason"));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void shouldReturnCanSubmitTrueWhenLatePolicyAllows() {
+        // now > deadline + latePolicy = ALLOW → canSubmit=true
+        TaskAssignment assignment = createSampleAssignment();
+        assignment.setId(1L);
+        assignment.setStatus("PENDING");
+        assignment.setSnapshotTemplateTaskType("LIMITED");
+        assignment.setSnapshotTemplateAllowResubmit(true);
+        assignment.setSnapshotTemplateMaxSubmissions(5);
+        assignment.setSnapshotTemplatePointsCap(100);
+        assignment.setDeadline(LocalDateTime.now().minusDays(1)); // deadline passed
+        assignment.setLatePolicy("ALLOW");
+        assignment.setCancelled(false);
+
+        Page<TaskAssignment> page = new Page<>(1, 20, 1);
+        page.setRecords(List.of(assignment));
+
+        when(taskAssignmentMapper.selectPage(any(Page.class), any(LambdaQueryWrapper.class)))
+                .thenReturn(page);
+
+        Map<String, Object> result = taskAssignmentService.queryAssignments(new LinkedHashMap<>(), familyId, null);
+        List<Map<String, Object>> content = (List<Map<String, Object>>) result.get("content");
+
+        assertEquals(1, content.size());
+        Map<String, Object> item = content.get(0);
+        assertEquals(true, item.get("canSubmit"));
+        assertNull(item.get("submissionBlockReason"));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void shouldReturnCanSubmitFalseForRejectedStatusWithMaxReached() {
+        // REJECTED + approvedCount >= max → canSubmit=false, MAX_REACHED
+        TaskAssignment assignment = createSampleAssignment();
+        assignment.setId(1L);
+        assignment.setStatus("REJECTED");
+        assignment.setSnapshotTemplateTaskType("STANDING");
+        assignment.setSnapshotTemplateAllowResubmit(true);
+        assignment.setSnapshotTemplateMaxSubmissions(3);
+        assignment.setSnapshotTemplatePointsCap(null);
+        assignment.setDeadline(LocalDateTime.now().plusDays(1));
+        assignment.setCancelled(false);
+
+        Page<TaskAssignment> page = new Page<>(1, 20, 1);
+        page.setRecords(List.of(assignment));
+
+        when(taskAssignmentMapper.selectPage(any(Page.class), any(LambdaQueryWrapper.class)))
+                .thenReturn(page);
+        when(taskAssignmentMapper.countApprovedBatch(eq(childId), eq(List.of(templateId))))
+                .thenReturn(List.of(Map.of("templateId", templateId, "approvedCount", 3L)));
+        when(taskAssignmentMapper.sumEarnBatch(eq(childId), eq(List.of(templateId))))
+                .thenReturn(List.of());
+
+        Map<String, Object> result = taskAssignmentService.queryAssignments(new LinkedHashMap<>(), familyId, null);
+        List<Map<String, Object>> content = (List<Map<String, Object>>) result.get("content");
+
+        assertEquals(1, content.size());
+        Map<String, Object> item = content.get(0);
+        assertEquals(false, item.get("canSubmit"));
+        assertEquals("MAX_REACHED", item.get("submissionBlockReason"));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void shouldIncludeStandingInProgressAggregation() {
+        // STANDING task participates in aggregation and is correctly evaluated
+        TaskAssignment assignment = createSampleAssignment();
+        assignment.setId(1L);
+        assignment.setStatus("PENDING");
+        assignment.setSnapshotTemplateTaskType("STANDING");
+        assignment.setSnapshotTemplateAllowResubmit(true);
+        assignment.setSnapshotTemplateMaxSubmissions(10);
+        assignment.setSnapshotTemplatePointsCap(100);
+        assignment.setDeadline(LocalDateTime.now().plusDays(1));
+        assignment.setCancelled(false);
+
+        Page<TaskAssignment> page = new Page<>(1, 20, 1);
+        page.setRecords(List.of(assignment));
+
+        when(taskAssignmentMapper.selectPage(any(Page.class), any(LambdaQueryWrapper.class)))
+                .thenReturn(page);
+        when(taskAssignmentMapper.countApprovedBatch(eq(childId), eq(List.of(templateId))))
+                .thenReturn(List.of(Map.of("templateId", templateId, "approvedCount", 5L)));
+        when(taskAssignmentMapper.sumEarnBatch(eq(childId), eq(List.of(templateId))))
+                .thenReturn(List.of(Map.of("templateId", templateId, "earnedPoints", 50L)));
+
+        Map<String, Object> result = taskAssignmentService.queryAssignments(new LinkedHashMap<>(), familyId, null);
+        List<Map<String, Object>> content = (List<Map<String, Object>>) result.get("content");
+
+        assertEquals(1, content.size());
+        Map<String, Object> item = content.get(0);
+        // Under limits
+        assertEquals(true, item.get("canSubmit"));
+        assertNull(item.get("submissionBlockReason"));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void shouldFallbackToTemplateAllowResubmitWhenSnapshotNull() {
+        // D9: snapshot allowResubmit=NULL + template.allowResubmit=true → uses template values
+        TaskAssignment assignment = createSampleAssignment();
+        assignment.setId(1L);
+        assignment.setStatus("PENDING");
+        assignment.setSnapshotTemplateTaskType("LIMITED");
+        assignment.setSnapshotTemplateAllowResubmit(null); // D9: snapshot NULL
+        assignment.setSnapshotTemplateMaxSubmissions(null); // D9: snapshot NULL, should fall back to template
+        assignment.setSnapshotTemplatePointsCap(null);
+        assignment.setDeadline(LocalDateTime.now().plusDays(1));
+        assignment.setCancelled(false);
+
+        TaskTemplate template = createSampleTemplate();
+        template.setAllowResubmit(true);
+        template.setMaxSubmissions(5);
+        template.setPointsCap(100);
+
+        Page<TaskAssignment> page = new Page<>(1, 20, 1);
+        page.setRecords(List.of(assignment));
+
+        when(taskAssignmentMapper.selectPage(any(Page.class), any(LambdaQueryWrapper.class)))
+                .thenReturn(page);
+        when(taskTemplateMapper.findById(templateId)).thenReturn(Optional.of(template));
+        when(taskAssignmentMapper.countApprovedBatch(eq(childId), eq(List.of(templateId))))
+                .thenReturn(List.of(Map.of("templateId", templateId, "approvedCount", 2L)));
+        when(taskAssignmentMapper.sumEarnBatch(eq(childId), eq(List.of(templateId))))
+                .thenReturn(List.of(Map.of("templateId", templateId, "earnedPoints", 30L)));
+
+        Map<String, Object> result = taskAssignmentService.queryAssignments(new LinkedHashMap<>(), familyId, null);
+        List<Map<String, Object>> content = (List<Map<String, Object>>) result.get("content");
+
+        assertEquals(1, content.size());
+        Map<String, Object> item = content.get(0);
+        assertEquals(true, item.get("canSubmit"));
+        assertNull(item.get("submissionBlockReason"));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void shouldNotCheckResubmitWhenTemplateAllowResubmitIsFalse() {
+        // D9: snapshot allowResubmit=NULL + template.allowResubmit=false → canSubmit=true, no max/cap check
+        TaskAssignment assignment = createSampleAssignment();
+        assignment.setId(1L);
+        assignment.setStatus("PENDING");
+        assignment.setSnapshotTemplateTaskType("LIMITED");
+        assignment.setSnapshotTemplateAllowResubmit(null);
+        assignment.setDeadline(LocalDateTime.now().plusDays(1));
+        assignment.setCancelled(false);
+
+        TaskTemplate template = createSampleTemplate();
+        template.setAllowResubmit(false);
+        template.setMaxSubmissions(5);
+        template.setPointsCap(100);
+
+        Page<TaskAssignment> page = new Page<>(1, 20, 1);
+        page.setRecords(List.of(assignment));
+
+        when(taskAssignmentMapper.selectPage(any(Page.class), any(LambdaQueryWrapper.class)))
+                .thenReturn(page);
+        when(taskTemplateMapper.findById(templateId)).thenReturn(Optional.of(template));
+
+        Map<String, Object> result = taskAssignmentService.queryAssignments(new LinkedHashMap<>(), familyId, null);
+        List<Map<String, Object>> content = (List<Map<String, Object>>) result.get("content");
+
+        assertEquals(1, content.size());
+        Map<String, Object> item = content.get(0);
+        assertEquals(true, item.get("canSubmit"));
+        assertNull(item.get("submissionBlockReason"));
     }
 
     // ========== Helpers ==========

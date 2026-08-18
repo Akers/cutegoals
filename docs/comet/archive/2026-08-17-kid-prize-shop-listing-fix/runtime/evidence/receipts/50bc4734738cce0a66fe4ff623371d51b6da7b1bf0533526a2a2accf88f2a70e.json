@@ -1,0 +1,28 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "manual-evidence",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "kid-prize-shop-listing-fix",
+    "sourceRevision": 3,
+    "contractHash": "309fb074447f218f564bc2798b79e33a94c524bec77b2e450dda8ef050e06e54",
+    "scopeHash": "b296a84cbd9027b36a45c20486faaaa99891474d710fd21c972a2e9c40be7584",
+    "snapshotHash": "ca1d3f5743642c0fc2be7d2767e5955a3c59afe8cc080bf5b40047f7a50f0aea",
+    "artifactHash": "dd0b7410116aca14e014987b1ac9bf379a0ffa4400f67c84d2900a21459e4b59"
+  },
+  "acceptanceIds": [
+    "acceptance-55f540aebc0a06230fddda612d31b45ca051a2b8ad10b8ca3a0571bb8f0a489e"
+  ],
+  "actor": "native-runtime:manual-evidence",
+  "issuedAt": "2026-08-17T03:16:08.575Z",
+  "evidence": {
+    "steps": [
+      "Read kid-prize-shop — 孩子端积分商城奖品清单"
+    ],
+    "observations": [
+      "Verified via code inspection: `server/prize/src/test/java/com/cutegoals/prize/service/PrizeServiceTest.java` 新增 `shouldQueryAvaila"
+    ]
+  },
+  "receiptHash": "50bc4734738cce0a66fe4ff623371d51b6da7b1bf0533526a2a2accf88f2a70e"
+}

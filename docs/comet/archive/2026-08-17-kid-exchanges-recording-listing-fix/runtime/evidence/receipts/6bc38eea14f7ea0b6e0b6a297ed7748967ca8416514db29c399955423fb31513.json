@@ -1,0 +1,28 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "manual-evidence",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "kid-exchanges-recording-listing-fix",
+    "sourceRevision": 3,
+    "contractHash": "e35657669235aa8f8810f237c2fdf7cd01debb40b4fb43e06d54f526b322d049",
+    "scopeHash": "f56fa83c9798da72d474129fa7240046d29477d4b4a0ba6f574ddfaa682eb36d",
+    "snapshotHash": "7fbe2a2636bc749ea2c2e59b561ce969d732d5f2ed6f09cfbe62b67178b9a7f0",
+    "artifactHash": "47076112d697fa39a677e81e5d3d02c2773e2260801493279406fe182df8823b"
+  },
+  "acceptanceIds": [
+    "acceptance-c32ec88160eaff04e57b71370bbdb9ff3f3f703b5cf56522d404cf630d000da3"
+  ],
+  "actor": "native-runtime:manual-evidence",
+  "issuedAt": "2026-08-17T07:26:48.672Z",
+  "evidence": {
+    "steps": [
+      "AC8: 新测试覆盖原有断言无影响"
+    ],
+    "observations": [
+      "ExchangeServiceTest.java 中已有 19 个 @Test 保留不变；新增 2 个 case (shouldQueryExchangesWithTargetNameFromSnapshot 与 shouldFallbackToIdLabelWhenSnapshotMissing) 仅添加新断言，不修改任何现有断言或测试方法。"
+    ]
+  },
+  "receiptHash": "6bc38eea14f7ea0b6e0b6a297ed7748967ca8416514db29c399955423fb31513"
+}

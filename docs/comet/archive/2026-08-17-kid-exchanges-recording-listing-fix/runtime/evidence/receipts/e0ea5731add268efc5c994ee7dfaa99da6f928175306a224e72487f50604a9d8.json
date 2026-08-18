@@ -1,0 +1,28 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "manual-evidence",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "kid-exchanges-recording-listing-fix",
+    "sourceRevision": 3,
+    "contractHash": "e35657669235aa8f8810f237c2fdf7cd01debb40b4fb43e06d54f526b322d049",
+    "scopeHash": "f56fa83c9798da72d474129fa7240046d29477d4b4a0ba6f574ddfaa682eb36d",
+    "snapshotHash": "7fbe2a2636bc749ea2c2e59b561ce969d732d5f2ed6f09cfbe62b67178b9a7f0",
+    "artifactHash": "47076112d697fa39a677e81e5d3d02c2773e2260801493279406fe182df8823b"
+  },
+  "acceptanceIds": [
+    "acceptance-1bafdd9fe741a858bb67b84b9a9c751ea51f860778b6df75e00a3d41ce9d5a0d"
+  ],
+  "actor": "native-runtime:manual-evidence",
+  "issuedAt": "2026-08-17T07:25:43.820Z",
+  "evidence": {
+    "steps": [
+      "AC1: 直接兑换列表展示"
+    ],
+    "observations": [
+      "ExchangeService.queryExchanges 对 type=DIRECT 记录取 snapshot.prizeName 作为 targetName；新增单元测试 shouldQueryExchangesWithTargetNameFromSnapshot 断言 DIRECT 记录的 targetName 等于 '直接奖品'、type==='DIRECT'、costPoints=50。代码运行受项目级 Lombok 阻塞，未能运行实际后端。"
+    ]
+  },
+  "receiptHash": "e0ea5731add268efc5c994ee7dfaa99da6f928175306a224e72487f50604a9d8"
+}

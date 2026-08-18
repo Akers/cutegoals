@@ -1,0 +1,28 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "manual-evidence",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "kid-prize-shop-listing-fix",
+    "sourceRevision": 3,
+    "contractHash": "309fb074447f218f564bc2798b79e33a94c524bec77b2e450dda8ef050e06e54",
+    "scopeHash": "b296a84cbd9027b36a45c20486faaaa99891474d710fd21c972a2e9c40be7584",
+    "snapshotHash": "ca1d3f5743642c0fc2be7d2767e5955a3c59afe8cc080bf5b40047f7a50f0aea",
+    "artifactHash": "dd0b7410116aca14e014987b1ac9bf379a0ffa4400f67c84d2900a21459e4b59"
+  },
+  "acceptanceIds": [
+    "acceptance-01c52e1de45ede818b5864203758eda6befc3d7a05ac39a2d8a59bc20f85ae89"
+  ],
+  "actor": "native-runtime:manual-evidence",
+  "issuedAt": "2026-08-17T03:16:04.943Z",
+  "evidence": {
+    "steps": [
+      "Read web/src/child/pages/index.tsx:417-540"
+    ],
+    "observations": [
+      "Exchange success flow: refetchPrizes + refetchBalance + navigate('/child/exchanges')."
+    ]
+  },
+  "receiptHash": "8441c8ac8887eb30ca48b5295de4b0ab3a86a57f59f50db33533224ef0be53c2"
+}

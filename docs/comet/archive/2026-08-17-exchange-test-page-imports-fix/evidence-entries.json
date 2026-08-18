@@ -1,0 +1,30 @@
+[
+  {
+    "acceptance_id": "acceptance-2f9b9873a3252b46a175fe1fa5927348b98c94e3ed2e348cb0bbb4cee45a65e9",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/1a7dbcbe5d29bb7a2d13894596270a575bd32c05c432d5c90b25f61c9085f6cd.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-629980ee5498f1c748c529e1268c8bcff8be7377a2b0ab89f7c96143a63d1e5e",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/4fe9936d25089677020d70820d5ac0c1b8aaa2402ba6779a8bf2054fcdb5a6ef.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-c5d9f795960b85ff5066bc4fa210d1602ab7f20aad1c4b66c4d73cf881872dbc",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/0f0a7891867f7407b6e8ec5814e0dd66a32a234fe252e6cd6855b6e7292e7ad4.json"
+    ]
+  },
+  {
+    "acceptance_id": "acceptance-51a7ea447c9e4c4cb3140be60ab15554784e38afbce6a815f5b6a770ccbd1da2",
+    "status": "passed",
+    "evidence_refs": [
+      "runtime/evidence/receipts/94f1d7c478920d1b7a6daded8cea1c5b697df6132e3e5205b71dfe219d10d302.json"
+    ]
+  }
+]

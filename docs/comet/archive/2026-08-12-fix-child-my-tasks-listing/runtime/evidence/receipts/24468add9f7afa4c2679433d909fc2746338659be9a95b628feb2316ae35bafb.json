@@ -1,0 +1,50 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "automated-check",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "fix-child-my-tasks-listing",
+    "sourceRevision": 7,
+    "contractHash": "6f6b2d3d823babe03f1a409ec3c4a338a48a8537caa7a341ce95a4b296f49455",
+    "scopeHash": "9b341d67ba8caff78bdec792102736cb2a2410a6fe9eb3887a69d71950bbc8f1",
+    "snapshotHash": "ed39617607288249a49ec92e071a0eb08b3fe2c830f8c1a3c1d62a2cd8f62839",
+    "artifactHash": "92b840cabe3f2f11d914c030a78d3ceb2c6a37ecb9a89adcf53e42e388193aa0"
+  },
+  "acceptanceIds": [
+    "acceptance-54239b916796c20ebe644b941f9e5f1a2c822ee3cf8c40b89de66364cc08b44d",
+    "acceptance-b2e4c4b3b629cb666fccd343563d916123f5c8083d95994cd5ae468e16c5438a",
+    "acceptance-d4ce6d57314389f89c5ebc39a7cebafc181a5a13ab07a00e2689ec3c4397c66b"
+  ],
+  "actor": "native-runtime:command:bash",
+  "issuedAt": "2026-08-12T08:22:53.356Z",
+  "evidence": {
+    "executable": "bash",
+    "args": [
+      "-c",
+      "set -o pipefail; python3 /tmp/opencode/cici-live-check.py 2>&1 | tail -20"
+    ],
+    "cwd": ".",
+    "exitCode": 0,
+    "signal": null,
+    "timedOut": false,
+    "timeoutMs": 60000,
+    "startedAt": "2026-08-12T08:22:53.084Z",
+    "endedAt": "2026-08-12T08:22:53.356Z",
+    "worktree": {
+      "provider": "git",
+      "root": ".",
+      "beforeCommit": "c6276393a352d4ecf9dbd0d57f433b6712efe4d2",
+      "afterCommit": "c6276393a352d4ecf9dbd0d57f433b6712efe4d2"
+    },
+    "afterFence": {
+      "snapshotHash": "ed39617607288249a49ec92e071a0eb08b3fe2c830f8c1a3c1d62a2cd8f62839",
+      "scopeHash": "9b341d67ba8caff78bdec792102736cb2a2410a6fe9eb3887a69d71950bbc8f1",
+      "matched": true
+    },
+    "outputHash": "6b68742f5bca90d37866cea59be06a7deef26035edffb41db3e22502a830837d",
+    "outputSummary": "login OK: nickname=cici, childId=2\nAPI returned content: 12 assignments (totalElements=12)\ntoday=2026-08-12\nvisible=11 ids=[1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 12]\nhidden=[(3, 'cancelled')]\nvisible REPEAT count=2\nPASS: cici「我的任务」应列出 11 条（排除 1 条已取消），含 2 条 REPEAT",
+    "outputTruncated": false
+  },
+  "receiptHash": "24468add9f7afa4c2679433d909fc2746338659be9a95b628feb2316ae35bafb"
+}

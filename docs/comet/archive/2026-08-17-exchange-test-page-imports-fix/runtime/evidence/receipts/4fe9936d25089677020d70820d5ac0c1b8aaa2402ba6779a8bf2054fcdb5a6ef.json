@@ -1,0 +1,28 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "manual-evidence",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "exchange-test-page-imports-fix",
+    "sourceRevision": 3,
+    "contractHash": "e318a60488678e13ee1338838e02628757d610a05e6829144050fb100e12b139",
+    "scopeHash": "33dc9233be70b3a5b42b318155725e7131f2c46bef7db17fca2cb0f42c23bef5",
+    "snapshotHash": "f582b638af0a87deb5ba68cd8228a25a59e68e83523c9601490da296024797e7",
+    "artifactHash": "12c09d453fe06f0a800765b1875720f941479f1460b4955b4d4926fe49c81e9e"
+  },
+  "acceptanceIds": [
+    "acceptance-629980ee5498f1c748c529e1268c8bcff8be7377a2b0ab89f7c96143a63d1e5e"
+  ],
+  "actor": "native-runtime:manual-evidence",
+  "issuedAt": "2026-08-17T08:00:01.561Z",
+  "evidence": {
+    "steps": [
+      "Run V2: cd server && mvn -pl exchange -am test-compile -q"
+    ],
+    "observations": [
+      "Exit code 0. Reactor SUCCESS for common/auth/task/points/family/task-review/prize/exchange (no error output under -q flag)."
+    ]
+  },
+  "receiptHash": "4fe9936d25089677020d70820d5ac0c1b8aaa2402ba6779a8bf2054fcdb5a6ef"
+}

@@ -1,0 +1,69 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "automated-check",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "kid-task-filter-active-highlight",
+    "sourceRevision": 3,
+    "contractHash": "e31c947996fea374ba6927ea67727b0905c2557e198acf7b3602c8126918febc",
+    "scopeHash": "e7362bf50783fe9f6c81f04c26441869b71ff89db0524fdca1b4f2238e85f555",
+    "snapshotHash": "63d4a7a3282c07476ca70e2e18dfbfa9373e534b087a382b28ad42043dbe1911",
+    "artifactHash": "adc77ee58936c24fdc0a4df749339b53a2e687820595ea68af13457e92d4f99c"
+  },
+  "acceptanceIds": [
+    "acceptance-0e9b6d4a2bcbb11c4be38b4830ae89c58b5e1b548e5a0009ab287026f1686db0",
+    "acceptance-13a59f61f07a6d3b34d9934108dccb3644772339b93bbd0e3dde6ef1bc7e35c5",
+    "acceptance-24c83f03764cebf5999fff17b3f0b12565de779fe1ca6386b15bbc378059a511",
+    "acceptance-2db63d1ec61b3945ee0649d93cd1b6fef3b81d474e75b33a465d9afa53147a7a",
+    "acceptance-403d20b1329a1432130ff5a3922a157203176bd3949121dc59196b0d427dcd29",
+    "acceptance-4391dd664a48f3bf996e0da1ed3c155ddf62468823bdba5b4c4408c450e342e6",
+    "acceptance-44fcc612d3d9942eeb7404c32eab24c17a51df3e703c76954aa62a2ebfb79bb5",
+    "acceptance-459f21e56a0123c655879f0eaf9a9e865c617d4e6a7253b3c7d3702f63ec8719",
+    "acceptance-47630edf93e6b727cc55dda06958a1259ac68255337ea8273def65684361d1ac",
+    "acceptance-66e12cc299bc1dfc995f8a22fef08c3d80730cd0ae3d875dec2a62a1bac6b035",
+    "acceptance-866dcb2a6cb25ccf2b239c0b93de41901f53f56c9dbd53c7db4ebd7ae8bd9517",
+    "acceptance-869f01ec3b21bb6c65b3ab6336444ed6fef8125d4be2366558b19170130e4b21",
+    "acceptance-9dfe6b5bb3454704b5b136392b3bb15b3af2191deda3bb5d59d5cf5fb5158d33",
+    "acceptance-9e33c0e6405d3d76d62915acb78fce9a0f5291de45b451aa85d74cb619796f0d",
+    "acceptance-a8bb8d15ea944770175842aad8918bcf898ef4e7b5ad1296475f97a79cd1b4f0",
+    "acceptance-c76edc531fe5c3903d19a7a9da563d56487189cc75f13f1dcd192be3ae81e440",
+    "acceptance-d24706b254bdf6b82e0b8de91914a33d4a77cda34909ec604209e48939fad82a",
+    "acceptance-dac9c2cb11caa2e5dcb625ca8fc7c5aff9b3b4f9f73e4d4c51584d3aaac8167e",
+    "acceptance-eaeb9ac0b1f82c906735422db790a7a1285b909183d627d676061e8556bb2d64",
+    "acceptance-f0bc95cfbe546fef77b0c29877cdc0d7a33a1a7726b79670bbb30ae2903ccd52",
+    "acceptance-fab7656f9eb4c5e06dead7c66285dd278cf8164a89c85b63763046b11afa8873",
+    "acceptance-ff728f34f171a1b79f2f874334adcf791d527a832b4fc44d935e0f0ec24acb9e"
+  ],
+  "actor": "native-runtime:command:bash",
+  "issuedAt": "2026-08-13T01:57:33.357Z",
+  "evidence": {
+    "executable": "bash",
+    "args": [
+      "-c",
+      "cd web && npx vitest run src/child"
+    ],
+    "cwd": ".",
+    "exitCode": 0,
+    "signal": null,
+    "timedOut": false,
+    "timeoutMs": 300000,
+    "startedAt": "2026-08-13T01:57:31.103Z",
+    "endedAt": "2026-08-13T01:57:33.357Z",
+    "worktree": {
+      "provider": "git",
+      "root": ".",
+      "beforeCommit": "c6276393a352d4ecf9dbd0d57f433b6712efe4d2",
+      "afterCommit": "c6276393a352d4ecf9dbd0d57f433b6712efe4d2"
+    },
+    "afterFence": {
+      "snapshotHash": "63d4a7a3282c07476ca70e2e18dfbfa9373e534b087a382b28ad42043dbe1911",
+      "scopeHash": "e7362bf50783fe9f6c81f04c26441869b71ff89db0524fdca1b4f2238e85f555",
+      "matched": true
+    },
+    "outputHash": "89757d25dda7d219b72b5fe32974a5afcbecc9a8c7dffa92683d6ce1b1119ad6",
+    "outputSummary": "RUN  v2.0.5 /home/akers/projects/cutegoals/web\n\n ✓ src/child/__tests__/App.test.tsx  (1 test) 127ms\n ✓ src/child/__tests__/auth.test.tsx  (5 tests) 389ms\n ✓ src/child/__tests__/pages.test.tsx  (17 tests) 770ms\n\n Test Files  3 passed (3)\n      Tests  23 passed (23)\n   Start at  09:57:31\n   Duration  1.91s (transform 131ms, setup 220ms, collect 2.13s, tests 1.29s, environment 452ms, prepare 147ms)",
+    "outputTruncated": false
+  },
+  "receiptHash": "cf21c8ad5253fcd7be087b7d050ec0e76b80be26d66120257bb4409f41ba08fa"
+}

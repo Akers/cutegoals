@@ -1,0 +1,27 @@
+{
+  "schema": "comet.native.transaction.v2",
+  "id": "52d1e67a-37ad-4c1e-96b1-6cca9c8fe4d1",
+  "kind": "archive",
+  "status": "committed",
+  "change": "kid-prize-shop-listing-fix",
+  "createdAt": "2026-08-17T03:18:13.763Z",
+  "preflightHash": "f20647167c7e9478d3864acc0541de5cb6f861333c71e28601c9c68cf48596b9",
+  "operations": [
+    {
+      "id": "spec-1-kid-prize-shop",
+      "type": "write",
+      "target": "specs/kid-prize-shop/spec.md",
+      "staged": "runtime/transactions/52d1e67a-37ad-4c1e-96b1-6cca9c8fe4d1/staged/specs/kid-prize-shop/spec.md",
+      "expectedTargetHash": null,
+      "stagedHash": "0091049734e162378b8fa5dfc2a6353039061fa249be2e657cab8ff156e5a352"
+    },
+    {
+      "id": "archive-change",
+      "type": "move",
+      "source": "changes/kid-prize-shop-listing-fix",
+      "target": "archive/2026-08-17-kid-prize-shop-listing-fix",
+      "expectedSourceHash": "47ddec4a3a5dc7ba914ddf71fe18a36d99f4e5de38e60ab69693ed9f8df31211",
+      "expectedTargetHash": null
+    }
+  ]
+}

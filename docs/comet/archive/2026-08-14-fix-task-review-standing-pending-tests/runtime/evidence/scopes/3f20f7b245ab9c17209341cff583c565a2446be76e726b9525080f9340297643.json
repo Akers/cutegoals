@@ -1,0 +1,39 @@
+{
+  "schema": "comet.native.implementation-scope.v2",
+  "contractHash": "ac0d8af6de85bb42f8611b82caa43e3ea377b58dd78d709afa73638d1bd4efeb",
+  "baselineProjectionRef": "runtime/evidence/snapshots/30e7cd22b379c8d81f2c3977cf8e45a9fc1923763ad4bceb7108ad3962177af0.json",
+  "baselineProjectionHash": "30e7cd22b379c8d81f2c3977cf8e45a9fc1923763ad4bceb7108ad3962177af0",
+  "currentProjectionRef": "runtime/evidence/snapshots/3b3bb00ac2a9b6fefe1673d7db9433373526c8bfdb0e9a9235c65df8a1f02a7b.json",
+  "currentProjectionHash": "3b3bb00ac2a9b6fefe1673d7db9433373526c8bfdb0e9a9235c65df8a1f02a7b",
+  "complete": true,
+  "declaredArtifacts": [
+    {
+      "path": "server/task-review/src/test/java/com/cutegoals/taskreview/service/TaskReviewServiceTest.java",
+      "kind": "file"
+    }
+  ],
+  "changes": [
+    {
+      "path": "server/task-review/src/test/java/com/cutegoals/taskreview/service/TaskReviewServiceTest.java",
+      "kind": "modified",
+      "before": {
+        "hash": "874c2a1a71810892ae78864278afdc8d9088b8581231ea6019163450792379c3",
+        "size": 44946
+      },
+      "after": {
+        "hash": "2b4e8bf99effcce758228fed7e0d9afb5d82d55d054b92a0960b77087fcfb026",
+        "size": 45302
+      },
+      "attributedTo": [
+        {
+          "path": "server/task-review/src/test/java/com/cutegoals/taskreview/service/TaskReviewServiceTest.java",
+          "kind": "file"
+        }
+      ]
+    }
+  ],
+  "unattributed": [],
+  "unresolvedScopes": [],
+  "noCodeReason": null,
+  "scopeHash": "3f20f7b245ab9c17209341cff583c565a2446be76e726b9525080f9340297643"
+}

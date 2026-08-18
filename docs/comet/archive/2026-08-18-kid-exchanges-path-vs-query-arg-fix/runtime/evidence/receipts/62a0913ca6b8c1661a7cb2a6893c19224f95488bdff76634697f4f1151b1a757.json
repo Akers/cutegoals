@@ -1,0 +1,28 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "manual-evidence",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "kid-exchanges-path-vs-query-arg-fix",
+    "sourceRevision": 3,
+    "contractHash": "fbfc82ba51f808dc80bf3c7d72de26efbc25545d59b030c8ad764d485f90c671",
+    "scopeHash": "61dd0d5b9d1d19784a0e0211d74ddcea5775dc3c9e26edd35ad039f3a726799a",
+    "snapshotHash": "552172f482a7d78548ddbbab23e6317120e86f65caf1bb4ce18e4d1e6d7620f9",
+    "artifactHash": "21bafa1e1ada307053b43d5f455a4c866cf2c58db0455d42feed3bd4f6529ab5"
+  },
+  "acceptanceIds": [
+    "acceptance-029556fe05058f5d3a0e54e8fd4b0ad9f45aa084085f6cd5bab969d49c831c0b"
+  ],
+  "actor": "native-runtime:manual-evidence",
+  "issuedAt": "2026-08-18T01:53:23.406Z",
+  "evidence": {
+    "steps": [
+      "empty-state-render"
+    ],
+    "observations": [
+      "web/src/child/pages/index.tsx:742 contains '<Empty description=\"还没有兑换记录\" />'"
+    ]
+  },
+  "receiptHash": "62a0913ca6b8c1661a7cb2a6893c19224f95488bdff76634697f4f1151b1a757"
+}

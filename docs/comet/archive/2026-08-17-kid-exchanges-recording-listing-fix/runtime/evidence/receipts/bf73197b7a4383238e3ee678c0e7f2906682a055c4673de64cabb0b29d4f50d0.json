@@ -1,0 +1,29 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "static-inspection",
+  "role": "required-check",
+  "status": "passed",
+  "bindings": {
+    "change": "kid-exchanges-recording-listing-fix",
+    "sourceRevision": 3,
+    "contractHash": "e35657669235aa8f8810f237c2fdf7cd01debb40b4fb43e06d54f526b322d049",
+    "scopeHash": "f56fa83c9798da72d474129fa7240046d29477d4b4a0ba6f574ddfaa682eb36d",
+    "snapshotHash": "7fbe2a2636bc749ea2c2e59b561ce969d732d5f2ed6f09cfbe62b67178b9a7f0",
+    "artifactHash": "47076112d697fa39a677e81e5d3d02c2773e2260801493279406fe182df8823b"
+  },
+  "acceptanceIds": [],
+  "actor": "native-runtime:scoped-text-safety",
+  "issuedAt": "2026-08-17T07:39:19.421Z",
+  "evidence": {
+    "subjects": [
+      "server/exchange/src/main/java/com/cutegoals/exchange/service/ExchangeService.java",
+      "server/exchange/src/test/java/com/cutegoals/exchange/service/ExchangeServiceTest.java",
+      "web/src/child/pages/index.tsx"
+    ],
+    "rule": "scoped-text-safety",
+    "resultSummary": "The built-in scoped inspection passed without skipped or blocking input.",
+    "checkReceiptRef": "runtime/evidence/check-receipts/36f6da6a712323a92ad938dce35d17bef888f6215825d725b6bf51f1fc46615e.json",
+    "checkReceiptHash": "36f6da6a712323a92ad938dce35d17bef888f6215825d725b6bf51f1fc46615e"
+  },
+  "receiptHash": "bf73197b7a4383238e3ee678c0e7f2906682a055c4673de64cabb0b29d4f50d0"
+}

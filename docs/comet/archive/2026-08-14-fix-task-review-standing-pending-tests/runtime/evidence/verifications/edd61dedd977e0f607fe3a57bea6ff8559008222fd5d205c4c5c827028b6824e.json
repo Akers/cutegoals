@@ -1,0 +1,97 @@
+{
+  "schema": "comet.native.verification-evidence.v2",
+  "change": "fix-task-review-standing-pending-tests",
+  "sourceRevision": 3,
+  "result": "pass",
+  "freshness": "complete",
+  "contractHash": "ac0d8af6de85bb42f8611b82caa43e3ea377b58dd78d709afa73638d1bd4efeb",
+  "acceptanceCriteriaHash": "f1fc31f0583922964250bc49bf8b6266b0d113e3addc1948ccc7a92c5e9b287b",
+  "implementationScopeRef": "runtime/evidence/scopes/3f20f7b245ab9c17209341cff583c565a2446be76e726b9525080f9340297643.json",
+  "implementationScopeHash": "3f20f7b245ab9c17209341cff583c565a2446be76e726b9525080f9340297643",
+  "reportRef": "verification.md",
+  "reportHash": "2a55a927dd3c23b5f80c5d79fb1a6b75aa7ac8baddee6d7cbe101fc23ff07e1d",
+  "acceptanceTrace": {
+    "schema": "comet.native.acceptance-trace.v2",
+    "nativeRootRef": "docs/comet",
+    "criteriaHash": "f1fc31f0583922964250bc49bf8b6266b0d113e3addc1948ccc7a92c5e9b287b",
+    "total": 6,
+    "evidenced": 6,
+    "skipped": 0,
+    "entries": [
+      {
+        "acceptanceId": "acceptance-59875486d62e692481974716eb59f0aab97d581c6a137dcd358e2a4a4a6ffa52",
+        "status": "passed",
+        "kind": "brief-example",
+        "source": "brief.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/7ee2bfb3d7efb7772b73b74bb4971254abeae4a089eebc88875965a5c13f66c5.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-5e05e8c23aa1f4ddee62f771a159517a18a7b1d72c0e0f20cc1e9bbe03d7f3ea",
+        "status": "passed",
+        "kind": "brief-example",
+        "source": "brief.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/7ee2bfb3d7efb7772b73b74bb4971254abeae4a089eebc88875965a5c13f66c5.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-9638fb76e2825c8d6d86db18c2e109a84ff14a864cfd8c759972ad0e3cde2667",
+        "status": "passed",
+        "kind": "brief-example",
+        "source": "brief.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/1fa28b963b9c207b280c8ca02f80f1d76096a9b7b4366604f0266690dffff6a3.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-a3bc45d7cb20734e38f6f3fba08ede2683aac0c68e819fd1d718f72dd5866725",
+        "status": "passed",
+        "kind": "brief-example",
+        "source": "brief.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/6ada00300ab6228853bc1ebd53aab8211c312180a0d50c382054b7470fc24144.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-b18836d3217a1ea9454a4bc4475ab0de4084f1a984fbc9ac6974ab3d815c12fb",
+        "status": "passed",
+        "kind": "brief-example",
+        "source": "brief.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/38b4e1041bc9b4fca2e0aba4a7b29b115a31d1540e0adce3e0a26e8bb58b0797.json"
+        ],
+        "skippedReason": null
+      },
+      {
+        "acceptanceId": "acceptance-e249df1629bead4681f7be1e90e6d457f87c0cb61c6b2fe7c7225180b93af95e",
+        "status": "passed",
+        "kind": "brief-example",
+        "source": "brief.md",
+        "evidenceRefs": [
+          "runtime/evidence/receipts/38b4e1041bc9b4fca2e0aba4a7b29b115a31d1540e0adce3e0a26e8bb58b0797.json"
+        ],
+        "skippedReason": null
+      }
+    ],
+    "traceHash": "7fba4855c661b5e7226ea8c7880537b7489d132315a1d57edd1eaa7d7389c430"
+  },
+  "partialAllowanceRef": null,
+  "partialAllowanceHash": null,
+  "requiredReceiptRefs": [
+    "runtime/evidence/receipts/14d108f4d6f1f24ffbcb8120e11b219fd9227f05550576bfa5b31f8431bec100.json"
+  ],
+  "receiptRefs": [
+    "runtime/evidence/receipts/1fa28b963b9c207b280c8ca02f80f1d76096a9b7b4366604f0266690dffff6a3.json",
+    "runtime/evidence/receipts/38b4e1041bc9b4fca2e0aba4a7b29b115a31d1540e0adce3e0a26e8bb58b0797.json",
+    "runtime/evidence/receipts/6ada00300ab6228853bc1ebd53aab8211c312180a0d50c382054b7470fc24144.json",
+    "runtime/evidence/receipts/7ee2bfb3d7efb7772b73b74bb4971254abeae4a089eebc88875965a5c13f66c5.json"
+  ],
+  "createdAt": "2026-08-14T02:55:53.675Z",
+  "envelopeHash": "edd61dedd977e0f607fe3a57bea6ff8559008222fd5d205c4c5c827028b6824e"
+}

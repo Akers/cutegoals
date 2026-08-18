@@ -1,0 +1,17 @@
+{
+  "schema": "comet.native.checkpoint-manifest.v1",
+  "change": "kid-task-submit-modal-button-fix",
+  "artifacts": [
+    {
+      "path": "web/src/child/__tests__/pages.test.tsx",
+      "hash": "3d67d7deef6c1309b007d162886c79b44bdc333ad07039aee441289cfdd208b5",
+      "size": 28283
+    },
+    {
+      "path": "web/src/child/pages/index.tsx",
+      "hash": "044c0769b09be8c2d44beee62488bcf28ba200275c4fb01b260dfd949f22e18b",
+      "size": 27185
+    }
+  ],
+  "totalBytes": 55468
+}

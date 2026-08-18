@@ -1,0 +1,49 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "automated-check",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "fix-child-my-tasks-listing",
+    "sourceRevision": 7,
+    "contractHash": "6f6b2d3d823babe03f1a409ec3c4a338a48a8537caa7a341ce95a4b296f49455",
+    "scopeHash": "9b341d67ba8caff78bdec792102736cb2a2410a6fe9eb3887a69d71950bbc8f1",
+    "snapshotHash": "ed39617607288249a49ec92e071a0eb08b3fe2c830f8c1a3c1d62a2cd8f62839",
+    "artifactHash": "92b840cabe3f2f11d914c030a78d3ceb2c6a37ecb9a89adcf53e42e388193aa0"
+  },
+  "acceptanceIds": [
+    "acceptance-54239b916796c20ebe644b941f9e5f1a2c822ee3cf8c40b89de66364cc08b44d",
+    "acceptance-afea6e22a6d1f8ba70b9440e60359d5ad6eb4996688ed3759e09520f2f1ab6b9"
+  ],
+  "actor": "native-runtime:command:bash",
+  "issuedAt": "2026-08-12T08:23:05.021Z",
+  "evidence": {
+    "executable": "bash",
+    "args": [
+      "-c",
+      "cd /home/akers/projects/cutegoals/web && set -o pipefail && npx vitest run 2>&1 | tail -8"
+    ],
+    "cwd": ".",
+    "exitCode": 0,
+    "signal": null,
+    "timedOut": false,
+    "timeoutMs": 300000,
+    "startedAt": "2026-08-12T08:23:02.052Z",
+    "endedAt": "2026-08-12T08:23:05.021Z",
+    "worktree": {
+      "provider": "git",
+      "root": ".",
+      "beforeCommit": "c6276393a352d4ecf9dbd0d57f433b6712efe4d2",
+      "afterCommit": "c6276393a352d4ecf9dbd0d57f433b6712efe4d2"
+    },
+    "afterFence": {
+      "snapshotHash": "ed39617607288249a49ec92e071a0eb08b3fe2c830f8c1a3c1d62a2cd8f62839",
+      "scopeHash": "9b341d67ba8caff78bdec792102736cb2a2410a6fe9eb3887a69d71950bbc8f1",
+      "matched": true
+    },
+    "outputHash": "90d7f35bc59f1724496052cf45fa84a8ca5ba7784e5764ba5d71c9a2eb14c7a0",
+    "outputSummary": "✓ src/parent/components/__tests__/TaskTypeConfigForms.test.tsx  (27 tests) 793ms\n ✓ src/shared/auth/__tests__/auth-pages.test.tsx  (4 tests) 536ms\n\n Test Files  18 passed (18)\n      Tests  187 passed (187)\n   Start at  16:23:02\n   Duration  2.64s (transform 1.29s, setup 1.73s, collect 14.40s, tests 5.42s, environment 4.12s, prepare 1.07s)",
+    "outputTruncated": false
+  },
+  "receiptHash": "fb93ae13e71f9f30482efe99c533e60bdd8937629fef13a9450a59c031b27d57"
+}

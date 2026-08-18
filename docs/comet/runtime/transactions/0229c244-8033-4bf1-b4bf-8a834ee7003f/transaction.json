@@ -1,0 +1,28 @@
+{
+  "schema": "comet.native.transaction.v2",
+  "id": "0229c244-8033-4bf1-b4bf-8a834ee7003f",
+  "kind": "archive",
+  "status": "committed",
+  "change": "kid-task-filter-active-highlight",
+  "createdAt": "2026-08-13T01:58:16.864Z",
+  "preflightHash": "17dc97a3a93465503c8042ece3a113a596293aa55fbda84e733043499ca16c34",
+  "operations": [
+    {
+      "id": "spec-1-child-page-migration",
+      "type": "write",
+      "target": "specs/child-page-migration/spec.md",
+      "staged": "runtime/transactions/0229c244-8033-4bf1-b4bf-8a834ee7003f/staged/specs/child-page-migration/spec.md",
+      "backup": "runtime/transactions/0229c244-8033-4bf1-b4bf-8a834ee7003f/backups/specs/child-page-migration/spec.md",
+      "expectedTargetHash": "16b190484315715b0c245e13a3bafe96aae781adb86efa3f61ea7a858c6f7dca",
+      "stagedHash": "c26e8416aca68b9712eab7332566c575905129e45f2ea91d9bd6edea7b83c4ca"
+    },
+    {
+      "id": "archive-change",
+      "type": "move",
+      "source": "changes/kid-task-filter-active-highlight",
+      "target": "archive/2026-08-13-kid-task-filter-active-highlight",
+      "expectedSourceHash": "d82759faf14facdedbecac89a79dfad83462c38efc7725644158f29d61975d3e",
+      "expectedTargetHash": null
+    }
+  ]
+}

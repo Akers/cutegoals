@@ -1,0 +1,27 @@
+{
+  "schema": "comet.native.transaction.v2",
+  "id": "78fd4f3c-7e61-483b-99a8-d6bb58e6f816",
+  "kind": "archive",
+  "status": "committed",
+  "change": "kid-exchanges-recording-listing-fix",
+  "createdAt": "2026-08-17T07:40:00.457Z",
+  "preflightHash": "a2a7afb26fbec6fca2ad1e3f7c8e546d23575e765f048282f3a4c9f88923cbd7",
+  "operations": [
+    {
+      "id": "spec-1-child-exchanges-listing",
+      "type": "write",
+      "target": "specs/child-exchanges-listing/spec.md",
+      "staged": "runtime/transactions/78fd4f3c-7e61-483b-99a8-d6bb58e6f816/staged/specs/child-exchanges-listing/spec.md",
+      "expectedTargetHash": null,
+      "stagedHash": "d6cccb0868a9ab2018d3e19996c495ab7456cd5d9b42455d9e5d0539bce041d9"
+    },
+    {
+      "id": "archive-change",
+      "type": "move",
+      "source": "changes/kid-exchanges-recording-listing-fix",
+      "target": "archive/2026-08-17-kid-exchanges-recording-listing-fix",
+      "expectedSourceHash": "bb72028e27d3e2d48c0d3cd6e35951d9f0ed0a72e6f912c696a0fc0a3bac974f",
+      "expectedTargetHash": null
+    }
+  ]
+}

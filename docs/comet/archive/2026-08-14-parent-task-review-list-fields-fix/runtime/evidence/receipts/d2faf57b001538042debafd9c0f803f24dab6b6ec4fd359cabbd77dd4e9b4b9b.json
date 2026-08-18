@@ -1,0 +1,28 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "manual-evidence",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "parent-task-review-list-fields-fix",
+    "sourceRevision": 3,
+    "contractHash": "fcfb503dd405c313ff293b369c340eabe892b0e89b85982da95f3e607944ca88",
+    "scopeHash": "49afa8dcece8365c1cfd3f9798daf021d822fffd438e3d0948f742914e9a56c9",
+    "snapshotHash": "4572c973b784faf3c6f4a423c11257093131a227b0b601465a2dfc44e2961db1",
+    "artifactHash": "6e5b9655f228ee623c8c1f2429f9cb5f7c1bc026c020eaaec202358eb7f5d835"
+  },
+  "acceptanceIds": [
+    "acceptance-f0890bfd7ca13b14964af82210de3d03a14af56e4cebd61daf410418e4c5d416"
+  ],
+  "actor": "native-runtime:manual-evidence",
+  "issuedAt": "2026-08-13T06:06:03.354Z",
+  "evidence": {
+    "steps": [
+      "审查前端渲染代码 web/src/parent/pages/index.tsx:1863 的任务名行。"
+    ],
+    "observations": [
+      "前端在 index.tsx:1863 渲染 `<Typography.Text strong>{item.templateTitle}</Typography.Text>`（strong 表示强显示）。本 change 通过后端 enrichAssignmentWithAttempts 已为每个 item 顶层补齐 templateTitle（= assignment.getSnapshotTemplateName()，本例为\"整理书桌\"）。templateTitle 非 undefined 后该处渲染为加粗的\"整理书桌\"，符合 acceptance 中\"任务名（强显示）：如 整理书桌\"要求。"
+    ]
+  },
+  "receiptHash": "d2faf57b001538042debafd9c0f803f24dab6b6ec4fd359cabbd77dd4e9b4b9b"
+}

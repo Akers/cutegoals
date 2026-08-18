@@ -1,0 +1,28 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "manual-evidence",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "kid-exchanges-recording-listing-fix",
+    "sourceRevision": 3,
+    "contractHash": "e35657669235aa8f8810f237c2fdf7cd01debb40b4fb43e06d54f526b322d049",
+    "scopeHash": "f56fa83c9798da72d474129fa7240046d29477d4b4a0ba6f574ddfaa682eb36d",
+    "snapshotHash": "7fbe2a2636bc749ea2c2e59b561ce969d732d5f2ed6f09cfbe62b67178b9a7f0",
+    "artifactHash": "47076112d697fa39a677e81e5d3d02c2773e2260801493279406fe182df8823b"
+  },
+  "acceptanceIds": [
+    "acceptance-05466410af731ee3918dfe798912e8fcc9217e6365478738002f98b49dfd01d0"
+  ],
+  "actor": "native-runtime:manual-evidence",
+  "issuedAt": "2026-08-17T07:23:06.667Z",
+  "evidence": {
+    "steps": [
+      "检查 DIRECT 类型标签渲染"
+    ],
+    "observations": [
+      "ChildExchangesPage 中 type === 'DIRECT'（含历史 PRIZE）通过 typeLabel 渲染 '奖品' 标签（与 type 'PRIZE' 同义）。"
+    ]
+  },
+  "receiptHash": "97094fc458fdd4e079ebdb194ccfab14d7bb9a6e9bbd2549285453da59cdcfe0"
+}

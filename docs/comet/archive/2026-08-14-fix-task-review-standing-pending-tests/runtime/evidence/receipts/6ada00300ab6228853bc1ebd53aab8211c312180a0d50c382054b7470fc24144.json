@@ -1,0 +1,48 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "automated-check",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "fix-task-review-standing-pending-tests",
+    "sourceRevision": 3,
+    "contractHash": "ac0d8af6de85bb42f8611b82caa43e3ea377b58dd78d709afa73638d1bd4efeb",
+    "scopeHash": "3f20f7b245ab9c17209341cff583c565a2446be76e726b9525080f9340297643",
+    "snapshotHash": "3b3bb00ac2a9b6fefe1673d7db9433373526c8bfdb0e9a9235c65df8a1f02a7b",
+    "artifactHash": "7b17328fbe23ed26867c84544ebdfdc09ee868ccf38a4e1ed036d56ba6130425"
+  },
+  "acceptanceIds": [
+    "acceptance-a3bc45d7cb20734e38f6f3fba08ede2683aac0c68e819fd1d718f72dd5866725"
+  ],
+  "actor": "native-runtime:command:bash",
+  "issuedAt": "2026-08-14T02:50:46.546Z",
+  "evidence": {
+    "executable": "bash",
+    "args": [
+      "-c",
+      "cd /home/akers/projects/cutegoals/server && mvn -pl web test -Dtest=TaskTypeIntegrationTest 2>&1 | grep -E 'Tests run|BUILD'"
+    ],
+    "cwd": ".",
+    "exitCode": 0,
+    "signal": null,
+    "timedOut": false,
+    "timeoutMs": 300000,
+    "startedAt": "2026-08-14T02:50:42.299Z",
+    "endedAt": "2026-08-14T02:50:46.546Z",
+    "worktree": {
+      "provider": "git",
+      "root": ".",
+      "beforeCommit": "c6276393a352d4ecf9dbd0d57f433b6712efe4d2",
+      "afterCommit": "c6276393a352d4ecf9dbd0d57f433b6712efe4d2"
+    },
+    "afterFence": {
+      "snapshotHash": "3b3bb00ac2a9b6fefe1673d7db9433373526c8bfdb0e9a9235c65df8a1f02a7b",
+      "scopeHash": "3f20f7b245ab9c17209341cff583c565a2446be76e726b9525080f9340297643",
+      "matched": true
+    },
+    "outputHash": "6b1b6fc8e7dec2f65c0977998a21eb920eefd99990f941c715af8a6cdb7d300f",
+    "outputSummary": "[INFO] Tests run: 26, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.809 s -- in Task Type — 集成测试 (LIMITED/REPEAT/STANDING)\n[INFO] Tests run: 26, Failures: 0, Errors: 0, Skipped: 0\n[INFO] BUILD SUCCESS",
+    "outputTruncated": false
+  },
+  "receiptHash": "6ada00300ab6228853bc1ebd53aab8211c312180a0d50c382054b7470fc24144"
+}

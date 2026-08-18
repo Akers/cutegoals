@@ -1,0 +1,23 @@
+schema: comet.native.v3
+minimum_runtime_version: 3
+revision: 5
+verification_protocol: legacy-v1
+name: kid-exchanges-recording-listing-fix
+language: zh-CN
+phase: archive
+brief: brief.md
+approval: confirmed
+approved_contract_hash: e35657669235aa8f8810f237c2fdf7cd01debb40b4fb43e06d54f526b322d049
+spec_changes:
+  - capability: child-exchanges-listing
+    operation: create
+    source: specs/child-exchanges-listing/spec.md
+    base_hash: null
+verification_result: pass
+verification_report: verification.md
+implementation_scope: runtime/evidence/scopes/f56fa83c9798da72d474129fa7240046d29477d4b4a0ba6f574ddfaa682eb36d.json
+verification_evidence: runtime/evidence/verifications/1cdefa67e0cf58415c2d8d70bbe6424318673095c0c2d7088baabc98a4280948.json
+partial_allowance: null
+archived: true
+created_at: 2026-08-17
+run_id: c04b4063-5365-49a7-89fc-92bd70dcd5ed

@@ -1,0 +1,28 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "manual-evidence",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "kid-exchanges-recording-listing-fix",
+    "sourceRevision": 3,
+    "contractHash": "e35657669235aa8f8810f237c2fdf7cd01debb40b4fb43e06d54f526b322d049",
+    "scopeHash": "f56fa83c9798da72d474129fa7240046d29477d4b4a0ba6f574ddfaa682eb36d",
+    "snapshotHash": "7fbe2a2636bc749ea2c2e59b561ce969d732d5f2ed6f09cfbe62b67178b9a7f0",
+    "artifactHash": "47076112d697fa39a677e81e5d3d02c2773e2260801493279406fe182df8823b"
+  },
+  "acceptanceIds": [
+    "acceptance-4b412ff031bf11f4b9c19a000d2eda445b0a61a6309a80ccef4ee759b3c1b8b9"
+  ],
+  "actor": "native-runtime:manual-evidence",
+  "issuedAt": "2026-08-17T07:23:08.912Z",
+  "evidence": {
+    "steps": [
+      "检查 statusLabel 中文映射"
+    ],
+    "observations": [
+      "ChildExchangesPage 调用 statusLabel(ex.status.toLowerCase()) 映射 PENDING_FULFILLMENT → 待发放 等中文状态。"
+    ]
+  },
+  "receiptHash": "cc26050b9edd272b974f75b0c763bf4f7f413d5a98280d9d2121b6ceee7e917c"
+}

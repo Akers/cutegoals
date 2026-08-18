@@ -1,0 +1,105 @@
+{
+  "schema": "comet.native.implementation-scope.v2",
+  "contractHash": "488bb14ff8e6b12813c4ab11bf6db3dfa19c89ceac3add82ef0e9c0ae711f10f",
+  "baselineProjectionRef": "runtime/evidence/snapshots/b6edf05f99ffb6105ab5a33e897abe3ea6aca92d82ac6b9ea2a8640224d8264d.json",
+  "baselineProjectionHash": "b6edf05f99ffb6105ab5a33e897abe3ea6aca92d82ac6b9ea2a8640224d8264d",
+  "currentProjectionRef": "runtime/evidence/snapshots/c734e252591908d1ab8a6267d95cb76af8e53e1686901364bd2b01ae63a1f8cb.json",
+  "currentProjectionHash": "c734e252591908d1ab8a6267d95cb76af8e53e1686901364bd2b01ae63a1f8cb",
+  "complete": true,
+  "declaredArtifacts": [
+    {
+      "path": "server/task/src/main/java/com/cutegoals/task/service/TaskAssignmentService.java",
+      "kind": "file"
+    },
+    {
+      "path": "server/task/src/test/java/com/cutegoals/task/service/TaskAssignmentServiceTest.java",
+      "kind": "file"
+    },
+    {
+      "path": "web/src/child/__tests__/pages.test.tsx",
+      "kind": "file"
+    },
+    {
+      "path": "web/src/child/pages/index.tsx",
+      "kind": "file"
+    }
+  ],
+  "changes": [
+    {
+      "path": "server/task/src/main/java/com/cutegoals/task/service/TaskAssignmentService.java",
+      "kind": "modified",
+      "before": {
+        "hash": "1ddb88b81d78c367e60cc870ad91c8b6a5d06cf607792f98064d0dcca67d350d",
+        "size": 45972
+      },
+      "after": {
+        "hash": "a68c30c1de7ba0a902722e0daf50563bd652daa15815c4160898954905b74cc2",
+        "size": 52125
+      },
+      "attributedTo": [
+        {
+          "path": "server/task/src/main/java/com/cutegoals/task/service/TaskAssignmentService.java",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "server/task/src/test/java/com/cutegoals/task/service/TaskAssignmentServiceTest.java",
+      "kind": "modified",
+      "before": {
+        "hash": "d8e6629e8d7281d50806fa795d54366e10040f372d999a42f368e40f5ae20017",
+        "size": 51150
+      },
+      "after": {
+        "hash": "4faf10a86ebe11bbb162409c3f00cf13d135b397c2f3924eb7657518e19bb256",
+        "size": 70487
+      },
+      "attributedTo": [
+        {
+          "path": "server/task/src/test/java/com/cutegoals/task/service/TaskAssignmentServiceTest.java",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "web/src/child/__tests__/pages.test.tsx",
+      "kind": "modified",
+      "before": {
+        "hash": "d2619dfbb1805449e0c6fd2b3ec36f0299acec334de17560cf8f43896c7500f7",
+        "size": 8945
+      },
+      "after": {
+        "hash": "05ac0c62008b6cdc2e52d40475923cbbdd01d7a15847c8ba8e3ec1f5d9a0e9da",
+        "size": 22542
+      },
+      "attributedTo": [
+        {
+          "path": "web/src/child/__tests__/pages.test.tsx",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "web/src/child/pages/index.tsx",
+      "kind": "modified",
+      "before": {
+        "hash": "6f6ee8e3de0bfe3e374ccdfd0d5a4ee76d48eca58ae290fb3f3160bffcfe53f9",
+        "size": 24063
+      },
+      "after": {
+        "hash": "762d2bfdd400ff03a7b7aef6362570163ed1732d586b519c5d3e9332f1e34f38",
+        "size": 26584
+      },
+      "attributedTo": [
+        {
+          "path": "web/src/child/pages/index.tsx",
+          "kind": "file"
+        }
+      ]
+    }
+  ],
+  "unattributed": [],
+  "unresolvedScopes": [],
+  "noCodeReason": null,
+  "scopeHash": "5a8552a6ea145671beb142d6c0d9a3030e7c9dc9cce2bd3d275a945825ec6fad"
+}

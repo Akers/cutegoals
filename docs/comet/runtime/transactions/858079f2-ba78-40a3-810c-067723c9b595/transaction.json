@@ -1,0 +1,19 @@
+{
+  "schema": "comet.native.transaction.v2",
+  "id": "858079f2-ba78-40a3-810c-067723c9b595",
+  "kind": "archive",
+  "status": "committed",
+  "change": "kid-task-submit-modal-button-fix",
+  "createdAt": "2026-08-13T04:26:27.904Z",
+  "preflightHash": "1a32a15eaa7336a4a4c9f41fa7a2af773a2838c7b2761bcdff4d4dc63f27a213",
+  "operations": [
+    {
+      "id": "archive-change",
+      "type": "move",
+      "source": "changes/kid-task-submit-modal-button-fix",
+      "target": "archive/2026-08-13-kid-task-submit-modal-button-fix",
+      "expectedSourceHash": "9c5439c6ee1ae1c8e079d5a2fb2b0a599e820d446fd054236d221b5637dbbaea",
+      "expectedTargetHash": null
+    }
+  ]
+}

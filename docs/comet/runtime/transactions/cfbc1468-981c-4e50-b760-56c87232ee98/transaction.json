@@ -1,0 +1,28 @@
+{
+  "schema": "comet.native.transaction.v2",
+  "id": "cfbc1468-981c-4e50-b760-56c87232ee98",
+  "kind": "archive",
+  "status": "committed",
+  "change": "kid-exchanges-path-vs-query-arg-fix",
+  "createdAt": "2026-08-18T02:01:27.676Z",
+  "preflightHash": "af245c0b5aab4831a1ff4d837bcedf6a592735631ad9c38c97a640c2ab2bdeaf",
+  "operations": [
+    {
+      "id": "spec-1-child-exchanges-listing",
+      "type": "write",
+      "target": "specs/child-exchanges-listing/spec.md",
+      "staged": "runtime/transactions/cfbc1468-981c-4e50-b760-56c87232ee98/staged/specs/child-exchanges-listing/spec.md",
+      "backup": "runtime/transactions/cfbc1468-981c-4e50-b760-56c87232ee98/backups/specs/child-exchanges-listing/spec.md",
+      "expectedTargetHash": "d6cccb0868a9ab2018d3e19996c495ab7456cd5d9b42455d9e5d0539bce041d9",
+      "stagedHash": "deb4d26f0e58389cadbbef7063de2de028f77bb87c3af5a765b3ae5099612dc3"
+    },
+    {
+      "id": "archive-change",
+      "type": "move",
+      "source": "changes/kid-exchanges-path-vs-query-arg-fix",
+      "target": "archive/2026-08-18-kid-exchanges-path-vs-query-arg-fix",
+      "expectedSourceHash": "59bf06cb7996133600bd77a8d694ede2ae8ef29d30159adbb0414cb573aa8740",
+      "expectedTargetHash": null
+    }
+  ]
+}

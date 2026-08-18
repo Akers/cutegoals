@@ -1,0 +1,23 @@
+schema: comet.native.v3
+minimum_runtime_version: 3
+revision: 5
+verification_protocol: legacy-v1
+name: kid-prize-shop-listing-fix
+language: zh-CN
+phase: archive
+brief: brief.md
+approval: confirmed
+approved_contract_hash: 309fb074447f218f564bc2798b79e33a94c524bec77b2e450dda8ef050e06e54
+spec_changes:
+  - capability: kid-prize-shop
+    operation: create
+    source: specs/kid-prize-shop/spec.md
+    base_hash: null
+verification_result: pass
+verification_report: verification.md
+implementation_scope: runtime/evidence/scopes/b296a84cbd9027b36a45c20486faaaa99891474d710fd21c972a2e9c40be7584.json
+verification_evidence: runtime/evidence/verifications/6071c1735de22c697f7bf872295f2846d63e114e8e25bc068cbd40332963e4c9.json
+partial_allowance: null
+archived: true
+created_at: 2026-08-17
+run_id: c353acd3-6d47-4aa2-85c6-68ad96899935

@@ -1,0 +1,28 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "manual-evidence",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "kid-exchanges-recording-listing-fix",
+    "sourceRevision": 3,
+    "contractHash": "e35657669235aa8f8810f237c2fdf7cd01debb40b4fb43e06d54f526b322d049",
+    "scopeHash": "f56fa83c9798da72d474129fa7240046d29477d4b4a0ba6f574ddfaa682eb36d",
+    "snapshotHash": "7fbe2a2636bc749ea2c2e59b561ce969d732d5f2ed6f09cfbe62b67178b9a7f0",
+    "artifactHash": "47076112d697fa39a677e81e5d3d02c2773e2260801493279406fe182df8823b"
+  },
+  "acceptanceIds": [
+    "acceptance-fbee2da10d2a8099853904873419d330abcbef7591c3333777466ca61e6c3774"
+  ],
+  "actor": "native-runtime:manual-evidence",
+  "issuedAt": "2026-08-17T07:23:59.567Z",
+  "evidence": {
+    "steps": [
+      "检查积分字段读取"
+    ],
+    "observations": [
+      "ChildExchangesPage 读取 ex.costPoints（与后端 Exchange.costPoints 字段对齐），不再读取错误的 ex.pointsCost。"
+    ]
+  },
+  "receiptHash": "e2ed84afc9d3c3ab7c379bdd79219016eaf0ccf53af528acfe6d66e7865a058f"
+}

@@ -1,0 +1,23 @@
+schema: comet.native.v3
+minimum_runtime_version: 3
+revision: 9
+verification_protocol: legacy-v1
+name: fix-child-my-tasks-listing
+language: zh-CN
+phase: archive
+brief: brief.md
+approval: confirmed
+approved_contract_hash: 6f6b2d3d823babe03f1a409ec3c4a338a48a8537caa7a341ce95a4b296f49455
+spec_changes:
+  - capability: child-page-migration
+    operation: create
+    source: specs/child-page-migration/spec.md
+    base_hash: null
+verification_result: pass
+verification_report: verification.md
+implementation_scope: runtime/evidence/scopes/9b341d67ba8caff78bdec792102736cb2a2410a6fe9eb3887a69d71950bbc8f1.json
+verification_evidence: runtime/evidence/verifications/eb320ab1e21c699324f8940c27ea00ccf0003860f59e92176a608c266e28a763.json
+partial_allowance: null
+archived: true
+created_at: 2026-08-12
+run_id: db58bc5d-fb13-4685-aa46-77d64bb6ba80

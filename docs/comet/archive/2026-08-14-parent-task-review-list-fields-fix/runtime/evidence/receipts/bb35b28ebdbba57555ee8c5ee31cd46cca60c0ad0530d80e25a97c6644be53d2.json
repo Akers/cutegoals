@@ -1,0 +1,28 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "manual-evidence",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "parent-task-review-list-fields-fix",
+    "sourceRevision": 3,
+    "contractHash": "fcfb503dd405c313ff293b369c340eabe892b0e89b85982da95f3e607944ca88",
+    "scopeHash": "49afa8dcece8365c1cfd3f9798daf021d822fffd438e3d0948f742914e9a56c9",
+    "snapshotHash": "4572c973b784faf3c6f4a423c11257093131a227b0b601465a2dfc44e2961db1",
+    "artifactHash": "6e5b9655f228ee623c8c1f2429f9cb5f7c1bc026c020eaaec202358eb7f5d835"
+  },
+  "acceptanceIds": [
+    "acceptance-d9be0d0889061e19a544f623119fb57c05627810c47cccdb237d2d750750ed75"
+  ],
+  "actor": "native-runtime:manual-evidence",
+  "issuedAt": "2026-08-13T06:06:03.223Z",
+  "evidence": {
+    "steps": [
+      "审查前端渲染代码 web/src/parent/pages/index.tsx:1855-1895 的二级文本行 L1864-1866。"
+    ],
+    "observations": [
+      "前端在 index.tsx:1865 渲染 `{item.childNickname} · {item.submittedAt}`。本 change 通过后端 enrichAssignmentWithAttempts 已为每个 item 顶层补齐 childNickname（taskChildMapper.findById(...).getNickname()，本例为\"小明\"）和 submittedAt（latestAttempt.getSubmittedAt()，本例为\"2026-08-12T10:00:00\"），二者非 undefined 后该模板字符串渲染为\"小明 · 2026-08-12T10:00:00\"，符合 acceptance。前端 JSX 模板字符串分隔符 ' · ' 与 brief 中\"昵称 · 时间\"格式一致。"
+    ]
+  },
+  "receiptHash": "bb35b28ebdbba57555ee8c5ee31cd46cca60c0ad0530d80e25a97c6644be53d2"
+}

@@ -1,0 +1,61 @@
+{
+  "schema": "comet.native.implementation-scope.v2",
+  "contractHash": "7d22dae6799adb1fc42d84e050f197b7950f42187cac8854f221707749028d96",
+  "baselineProjectionRef": "runtime/evidence/snapshots/17536d00393e5d1b42c75caaf79124987d9788f22f5962b01fb535acf5e13656.json",
+  "baselineProjectionHash": "17536d00393e5d1b42c75caaf79124987d9788f22f5962b01fb535acf5e13656",
+  "currentProjectionRef": "runtime/evidence/snapshots/9a0e9e4e03203f5e61849fa6c433d295d80a332bfb1d86d2af9a3a3caa42b606.json",
+  "currentProjectionHash": "9a0e9e4e03203f5e61849fa6c433d295d80a332bfb1d86d2af9a3a3caa42b606",
+  "complete": true,
+  "declaredArtifacts": [
+    {
+      "path": "web/src/parent/pages/__tests__/ParentTasksPage.test.tsx",
+      "kind": "file"
+    },
+    {
+      "path": "web/src/parent/pages/index.tsx",
+      "kind": "file"
+    }
+  ],
+  "changes": [
+    {
+      "path": "web/src/parent/pages/__tests__/ParentTasksPage.test.tsx",
+      "kind": "modified",
+      "before": {
+        "hash": "794d9b0ad7dd8faf022361c611f27c401418c6d89b7dffc8cb24d7e137a6022d",
+        "size": 19908
+      },
+      "after": {
+        "hash": "747b71fbe194c54ebd8d5e6e02d28aba1f827e6766f2ee36d090ecbd4a07493e",
+        "size": 22037
+      },
+      "attributedTo": [
+        {
+          "path": "web/src/parent/pages/__tests__/ParentTasksPage.test.tsx",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "web/src/parent/pages/index.tsx",
+      "kind": "modified",
+      "before": {
+        "hash": "dc20e74238f8e7ba763700ac436a0a92b38eff0b62f42b471dbeaa7a957d4ae1",
+        "size": 91142
+      },
+      "after": {
+        "hash": "0fd95e19c4a6d98be3518dde1c496ab97e148a8c36084acbdbbe2f42c4f77a93",
+        "size": 91142
+      },
+      "attributedTo": [
+        {
+          "path": "web/src/parent/pages/index.tsx",
+          "kind": "file"
+        }
+      ]
+    }
+  ],
+  "unattributed": [],
+  "unresolvedScopes": [],
+  "noCodeReason": null,
+  "scopeHash": "d0c5804981565a4ced45ff46ca95c0db1f31c63af27070eed2773d3c79f8ee2d"
+}

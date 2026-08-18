@@ -1,0 +1,51 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "automated-check",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "parent-task-review-list-fields-fix",
+    "sourceRevision": 3,
+    "contractHash": "fcfb503dd405c313ff293b369c340eabe892b0e89b85982da95f3e607944ca88",
+    "scopeHash": "49afa8dcece8365c1cfd3f9798daf021d822fffd438e3d0948f742914e9a56c9",
+    "snapshotHash": "4572c973b784faf3c6f4a423c11257093131a227b0b601465a2dfc44e2961db1",
+    "artifactHash": "6e5b9655f228ee623c8c1f2429f9cb5f7c1bc026c020eaaec202358eb7f5d835"
+  },
+  "acceptanceIds": [
+    "acceptance-271d9621b2b87954e09ee9a2521acb3b8b877d5a0ca25caf772cffd5d40c5e9d",
+    "acceptance-4bc0895743bc5bc3cc3ce312e2072b6494fba68737a8294926352d4119c2781d",
+    "acceptance-88f659e74807b47f7acfe659a271044003947f6f34348fe97a079ba1ca6b7e1c",
+    "acceptance-cfd4040fe1209aa8ee7b2e15e0f5c50d69f3b118f9109007bffc2d663144b059"
+  ],
+  "actor": "native-runtime:command:bash",
+  "issuedAt": "2026-08-13T06:05:43.494Z",
+  "evidence": {
+    "executable": "bash",
+    "args": [
+      "-c",
+      "cd server && mvn -pl task-review clean test -Dtest=TaskReviewServiceTest#shouldExposeFlattenedReviewItemFieldsInPendingReviews+shouldReturnIsOverdueFalseWhenDeadlineNotPassed -Dsurefire.failIfNoSpecifiedTests=false 2>&1 | tail -8"
+    ],
+    "cwd": ".",
+    "exitCode": 0,
+    "signal": null,
+    "timedOut": false,
+    "timeoutMs": 300000,
+    "startedAt": "2026-08-13T06:05:39.942Z",
+    "endedAt": "2026-08-13T06:05:43.494Z",
+    "worktree": {
+      "provider": "git",
+      "root": ".",
+      "beforeCommit": "c6276393a352d4ecf9dbd0d57f433b6712efe4d2",
+      "afterCommit": "c6276393a352d4ecf9dbd0d57f433b6712efe4d2"
+    },
+    "afterFence": {
+      "snapshotHash": "4572c973b784faf3c6f4a423c11257093131a227b0b601465a2dfc44e2961db1",
+      "scopeHash": "49afa8dcece8365c1cfd3f9798daf021d822fffd438e3d0948f742914e9a56c9",
+      "matched": true
+    },
+    "outputHash": "42c8f77f36819a8fd6af371873ba881dc84a2c67117bbb91b363e1ef05ecf162",
+    "outputSummary": "[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0\n[INFO] \n[INFO] ------------------------------------------------------------------------\n[INFO] BUILD SUCCESS\n[INFO] ------------------------------------------------------------------------\n[INFO] Total time:  2.970 s\n[INFO] Finished at: 2026-08-13T14:05:43+08:00\n[INFO] ------------------------------------------------------------------------",
+    "outputTruncated": false
+  },
+  "receiptHash": "9bc2d05163320a4b731a37a71e36f35b53d08a1f902815938caf9ec8142bbe42"
+}

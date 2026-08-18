@@ -1,0 +1,11 @@
+{
+  "schema": "comet.native.archive-cas.v1",
+  "operationId": "spec-1-kid-exchange-status-i18n",
+  "role": "post",
+  "hash": "c1ba142ff07c1b1d134ef8ea5e40627ac6addaf54b13b1bf61387d953fda78d1",
+  "identity": {
+    "dev": 36,
+    "ino": 2861189,
+    "birthtimeMs": 1787023821862.4236
+  }
+}

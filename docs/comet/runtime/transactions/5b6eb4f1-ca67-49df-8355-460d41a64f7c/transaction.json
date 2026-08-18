@@ -1,0 +1,19 @@
+{
+  "schema": "comet.native.transaction.v2",
+  "id": "5b6eb4f1-ca67-49df-8355-460d41a64f7c",
+  "kind": "archive",
+  "status": "committed",
+  "change": "parent-task-pagesize-fix",
+  "createdAt": "2026-08-07T02:36:17.400Z",
+  "preflightHash": "8859a267c54d18c3b9725778cd97081ddff1f28bc3d5430d0916cf1de5809343",
+  "operations": [
+    {
+      "id": "archive-change",
+      "type": "move",
+      "source": "changes/parent-task-pagesize-fix",
+      "target": "archive/2026-08-07-parent-task-pagesize-fix",
+      "expectedSourceHash": "03b010cabb06cbb31d481864feeb21085aa56b9bda8e10ceb850e3c79009cc4c",
+      "expectedTargetHash": null
+    }
+  ]
+}

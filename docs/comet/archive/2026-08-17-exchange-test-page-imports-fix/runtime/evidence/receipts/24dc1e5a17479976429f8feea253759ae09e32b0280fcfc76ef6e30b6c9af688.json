@@ -1,0 +1,27 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "static-inspection",
+  "role": "required-check",
+  "status": "passed",
+  "bindings": {
+    "change": "exchange-test-page-imports-fix",
+    "sourceRevision": 3,
+    "contractHash": "e318a60488678e13ee1338838e02628757d610a05e6829144050fb100e12b139",
+    "scopeHash": "33dc9233be70b3a5b42b318155725e7131f2c46bef7db17fca2cb0f42c23bef5",
+    "snapshotHash": "f582b638af0a87deb5ba68cd8228a25a59e68e83523c9601490da296024797e7",
+    "artifactHash": "12c09d453fe06f0a800765b1875720f941479f1460b4955b4d4926fe49c81e9e"
+  },
+  "acceptanceIds": [],
+  "actor": "native-runtime:scoped-text-safety",
+  "issuedAt": "2026-08-17T08:03:53.137Z",
+  "evidence": {
+    "subjects": [
+      "server/exchange/src/test/java/com/cutegoals/exchange/service/ExchangeServiceTest.java"
+    ],
+    "rule": "scoped-text-safety",
+    "resultSummary": "The built-in scoped inspection passed without skipped or blocking input.",
+    "checkReceiptRef": "runtime/evidence/check-receipts/4265438a60fd4221cc419e6c52021c4c376978c8398189ffb475c2dcdd4a874f.json",
+    "checkReceiptHash": "4265438a60fd4221cc419e6c52021c4c376978c8398189ffb475c2dcdd4a874f"
+  },
+  "receiptHash": "24dc1e5a17479976429f8feea253759ae09e32b0280fcfc76ef6e30b6c9af688"
+}

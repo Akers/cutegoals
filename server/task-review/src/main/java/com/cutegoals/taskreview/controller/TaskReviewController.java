@@ -55,11 +55,8 @@ public class TaskReviewController {
         Long accountId = getAccountId(httpRequest);
         Long familyId = taskReviewService.getSingleFamilyId();
 
-        // For child role, extract childId from assignment context
-        Long childId = taskReviewService.extractLong(request, "childId");
-        if (childId == null) {
-            throw new BusinessException(ErrorCode.VALIDATION_FAILED, "childId is required");
-        }
+        // For child role, derive childId from authenticated session (JWT claim → request attribute)
+        Long childId = resolveChildIdFromSession(httpRequest);
 
         TaskAttempt attempt = taskReviewService.submitTask(request, childId, familyId, accountId);
 
@@ -259,6 +256,25 @@ public ResponseEntity<ApiResponse<Map<String, Object>>> queryChildHistory(
 
     private String generateRequestId() {
         return UUID.randomUUID().toString().replace("-", "").substring(0, 16);
+    }
+
+    /**
+     * Derive childId from authenticated session (JWT claim → request attribute),
+     * falling back to account-id-based lookup for parent-acting-as-child flows.
+     * Pattern matches PointsController#resolveChildIdFromSession and the
+     * queryChildHistory logic at L172-L193.
+     */
+    private Long resolveChildIdFromSession(HttpServletRequest httpRequest) {
+        Long childSessionId = (Long) httpRequest.getAttribute(AuthConstants.ATTR_CHILD_ID);
+        if (childSessionId != null) {
+            taskChildMapper.findActiveById(childSessionId)
+                    .orElseThrow(() -> new BusinessException(ErrorCode.TASK_REVIEW_FORBIDDEN, "Child profile not found or inactive"));
+            return childSessionId;
+        }
+        Long accountId = getAccountId(httpRequest);
+        return taskChildMapper.findByAccountId(accountId)
+                .map(ChildProfile::getId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.TASK_REVIEW_FORBIDDEN, "No child profile found for session"));
     }
 
     private Long getAccountId(HttpServletRequest request) {

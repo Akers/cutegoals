@@ -1,0 +1,28 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "manual-evidence",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "exchange-test-page-imports-fix",
+    "sourceRevision": 3,
+    "contractHash": "e318a60488678e13ee1338838e02628757d610a05e6829144050fb100e12b139",
+    "scopeHash": "33dc9233be70b3a5b42b318155725e7131f2c46bef7db17fca2cb0f42c23bef5",
+    "snapshotHash": "f582b638af0a87deb5ba68cd8228a25a59e68e83523c9601490da296024797e7",
+    "artifactHash": "12c09d453fe06f0a800765b1875720f941479f1460b4955b4d4926fe49c81e9e"
+  },
+  "acceptanceIds": [
+    "acceptance-c5d9f795960b85ff5066bc4fa210d1602ab7f20aad1c4b66c4d73cf881872dbc"
+  ],
+  "actor": "native-runtime:manual-evidence",
+  "issuedAt": "2026-08-17T08:00:44.413Z",
+  "evidence": {
+    "steps": [
+      "Run V3: grep -c \"@Test\" server/exchange/src/test/java/com/cutegoals/exchange/service/ExchangeServiceTest.java"
+    ],
+    "observations": [
+      "Output: 21. Matches expected count (19 pre-existing + 2 new from kid-exchanges-recording-listing-fix). No tests removed."
+    ]
+  },
+  "receiptHash": "0f0a7891867f7407b6e8ec5814e0dd66a32a234fe252e6cd6855b6e7292e7ad4"
+}

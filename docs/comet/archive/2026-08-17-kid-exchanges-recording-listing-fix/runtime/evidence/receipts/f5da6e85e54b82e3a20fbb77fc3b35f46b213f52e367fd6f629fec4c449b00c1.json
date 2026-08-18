@@ -1,0 +1,28 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "manual-evidence",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "kid-exchanges-recording-listing-fix",
+    "sourceRevision": 3,
+    "contractHash": "e35657669235aa8f8810f237c2fdf7cd01debb40b4fb43e06d54f526b322d049",
+    "scopeHash": "f56fa83c9798da72d474129fa7240046d29477d4b4a0ba6f574ddfaa682eb36d",
+    "snapshotHash": "7fbe2a2636bc749ea2c2e59b561ce969d732d5f2ed6f09cfbe62b67178b9a7f0",
+    "artifactHash": "47076112d697fa39a677e81e5d3d02c2773e2260801493279406fe182df8823b"
+  },
+  "acceptanceIds": [
+    "acceptance-dbc896fcd21acbef36fd55d921dfb912df0899e3ffd232c94df2574572f3d797"
+  ],
+  "actor": "native-runtime:manual-evidence",
+  "issuedAt": "2026-08-17T07:23:58.906Z",
+  "evidence": {
+    "steps": [
+      "检查 targetName 新字段"
+    ],
+    "observations": [
+      "ExchangeService.queryExchanges 返回的每条 content 项新增 targetName: string 字段（根据 type + snapshot 拼接）。"
+    ]
+  },
+  "receiptHash": "f5da6e85e54b82e3a20fbb77fc3b35f46b213f52e367fd6f629fec4c449b00c1"
+}
