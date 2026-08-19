@@ -1,0 +1,51 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "automated-check",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "frontend-split-child-mobile-first",
+    "sourceRevision": 15,
+    "contractHash": "9972f95eb0ee48cedba0fd0a9165a9b310aacff57c376823f227a1073f467fe1",
+    "scopeHash": "049b1731cdc16b9cc2e33620d8cb86cac3a60aaf0a8948ef97e8fc5c00c5a478",
+    "snapshotHash": "beb2510fba4745f73aef928089847f70cd7275741b2fe4ead18891b401b11c36",
+    "artifactHash": "d7bcbce0d87c05c11ee7eb5338887346c2051136f0b94684a512300ff8ba93e7"
+  },
+  "acceptanceIds": [
+    "acceptance-1d29b2a7e1d75fe35f425ea4d91e8ce8e3a75be2b63bc7574e4973c43fa6a37e",
+    "acceptance-2a9ecea62d91a3837eeae1d8da1aaf16395cc887a48bd5b0fe3d2d0d5d2a167c",
+    "acceptance-3cfd0d776288492a04b4720f7f78cbfd9bac362fe2c5f7da3256892fe9aa201c",
+    "acceptance-b7691ef31029d54d728d358c2d0449ffaa84b49af8c3f863050f53ead4b68a33",
+    "acceptance-bfc28a327549fcb2494dbaf2059c5767735c81e342c531e32b7f20370c373eee"
+  ],
+  "actor": "native-runtime:command:bash",
+  "issuedAt": "2026-08-19T06:54:23.060Z",
+  "evidence": {
+    "executable": "bash",
+    "args": [
+      "/tmp/verify-build-isolation.sh"
+    ],
+    "cwd": ".",
+    "exitCode": 0,
+    "signal": null,
+    "timedOut": false,
+    "timeoutMs": 120000,
+    "startedAt": "2026-08-19T06:54:10.015Z",
+    "endedAt": "2026-08-19T06:54:23.060Z",
+    "worktree": {
+      "provider": "git",
+      "root": ".",
+      "beforeCommit": "a057c11ab7df043504b62bf8696f4b208a178ccf",
+      "afterCommit": "a057c11ab7df043504b62bf8696f4b208a178ccf"
+    },
+    "afterFence": {
+      "snapshotHash": "beb2510fba4745f73aef928089847f70cd7275741b2fe4ead18891b401b11c36",
+      "scopeHash": "049b1731cdc16b9cc2e33620d8cb86cac3a60aaf0a8948ef97e8fc5c00c5a478",
+      "matched": true
+    },
+    "outputHash": "23860927f47a2f8e9eb82e123d0a6b596e7550f48fe0157e63e5cf0fc18ab7f0",
+    "outputSummary": "== 构建 console ==\nconsole build OK\n== 构建 kid ==\nkid build OK\n== kid 产物不得含家长/管理端页面符号 ==\nOK\n== kid 产物不得含 console 布局/组件标记 ==\nOK\n== console 产物不得含 kid 组件/页面标记 ==\nOK\n== kid 产物 API baseURL 必须为 /child/api ==\nOK\n== kid 产物资源前缀 /child/ ==\nOK\n== console 产物含家长/管理端页面 ==\nOK\nALL BUILD+ISOLATION CHECKS PASS",
+    "outputTruncated": false
+  },
+  "receiptHash": "3547265f4e85219375555c5e7cf4e777222ac32f445d15b0626081531ae78dba"
+}

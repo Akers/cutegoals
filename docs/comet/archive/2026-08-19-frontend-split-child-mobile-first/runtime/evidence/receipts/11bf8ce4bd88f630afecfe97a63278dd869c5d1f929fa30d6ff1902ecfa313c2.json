@@ -1,0 +1,28 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "manual-evidence",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "frontend-split-child-mobile-first",
+    "sourceRevision": 15,
+    "contractHash": "9972f95eb0ee48cedba0fd0a9165a9b310aacff57c376823f227a1073f467fe1",
+    "scopeHash": "049b1731cdc16b9cc2e33620d8cb86cac3a60aaf0a8948ef97e8fc5c00c5a478",
+    "snapshotHash": "beb2510fba4745f73aef928089847f70cd7275741b2fe4ead18891b401b11c36",
+    "artifactHash": "d7bcbce0d87c05c11ee7eb5338887346c2051136f0b94684a512300ff8ba93e7"
+  },
+  "acceptanceIds": [
+    "acceptance-34e14423ff7a5b0581607993e8c2f70aa2424e0c3a41f9e65564ceaff87328dc"
+  ],
+  "actor": "native-runtime:manual-evidence",
+  "issuedAt": "2026-08-19T06:54:31.202Z",
+  "evidence": {
+    "steps": [
+      "review"
+    ],
+    "observations": [
+      "design/tokens.css bright candy palette (sky #0284c7 + peach/mint/lemon accents, 16-20px radius, system rounded font stack); self-drawn components (BottomTabBar/KidCard/KidButton/ChipGroup/KidModal bottom sheet); R5 31/31 browser assertions pass at 375/834/1280"
+    ]
+  },
+  "receiptHash": "11bf8ce4bd88f630afecfe97a63278dd869c5d1f929fa30d6ff1902ecfa313c2"
+}

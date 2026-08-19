@@ -1,0 +1,13 @@
+{
+  "schema": "comet.native.partial-allowance.v1",
+  "change": "frontend-split-child-mobile-first",
+  "scopeHash": "f5f607071424d3581b825b3103fe4805ba375a873f135f313535dc151f60e33f",
+  "scopeIds": [
+    "scope:adc445abfeb319db489caf9650731d2cfeeb42ab4676b7368ae6e1b5b76119e4"
+  ],
+  "reason": "大型前端重构文件迁移明细超出预算以汇总 hash 记录；用户已批准该方式",
+  "confirmedSummary": "重捕 scope（清理 GUI 工件后）进入 Verify",
+  "sourceRevision": 10,
+  "confirmedAt": "2026-08-19T06:27:31.896Z",
+  "allowanceHash": "1825dcda116e36cbda204c58b6dd24cfbf511b2e975cb94dc7bde1c34b166adc"
+}

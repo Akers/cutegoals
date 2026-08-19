@@ -1,0 +1,17 @@
+{
+  "schema": "comet.native.partial-allowance.v1",
+  "change": "frontend-split-child-mobile-first",
+  "scopeHash": "9409adee031ad6ae89dd505b7144c294cf0e8d63f9c79491c025f3cc5a2209b7",
+  "scopeIds": [
+    "scope:1a63ece17b767847a895a3d8ee00215b7faa35e97eff8c457e7268b9fed404b8",
+    "scope:21a49c86037fe2425a3945f7c713ba8c8e638b26a594c42238885a19663f4d1c",
+    "scope:54cdebc1b2490229ab374d28fb212bc6e357cb491ae237c3953d77477694b4ee",
+    "scope:5debbc25d4ff558a3449d1389a1b03ea411546675cddb36b83dadce74e0ef600",
+    "scope:808294d391108d25e8eba3e153223ffacc64ad7a19f733dd960ef958595cb0ba"
+  ],
+  "reason": "大型前端重构：web/src 单工程迁移为 apps/packages 双端结构，109 条路径明细超出 scope 明细预算，以汇总 hash 记录；用户已知晓并接受审计粒度变粗",
+  "confirmedSummary": "用户再确认契约并接受 partial scope（文件迁移明细以 hash 汇总，变更归属声明产物）。Build 完成：双前端 pnpm workspace、compose 双 frontend 容器 + 网关分流、kid API 白名单、孩子端移动优先童趣重构；205 测试全绿、lint 全绿、双构建通过、bundle 双向隔离验证通过、浏览器截图验证",
+  "sourceRevision": 2,
+  "confirmedAt": "2026-08-19T04:14:01.911Z",
+  "allowanceHash": "a4100ee7b58af4b827550b435040203be9176ae30902b9f60facd310c3811d54"
+}

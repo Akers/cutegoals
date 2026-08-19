@@ -1,0 +1,55 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "automated-check",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "frontend-split-child-mobile-first",
+    "sourceRevision": 15,
+    "contractHash": "9972f95eb0ee48cedba0fd0a9165a9b310aacff57c376823f227a1073f467fe1",
+    "scopeHash": "049b1731cdc16b9cc2e33620d8cb86cac3a60aaf0a8948ef97e8fc5c00c5a478",
+    "snapshotHash": "beb2510fba4745f73aef928089847f70cd7275741b2fe4ead18891b401b11c36",
+    "artifactHash": "d7bcbce0d87c05c11ee7eb5338887346c2051136f0b94684a512300ff8ba93e7"
+  },
+  "acceptanceIds": [
+    "acceptance-0458972df8199bcec0ac1fb58f966ba7994137da0ea9398f8e82373d090b40e7",
+    "acceptance-2c9346c6049e3a1449d8098eb2c2192014135b2c5edea1fa62ad03d6a691f8c6",
+    "acceptance-7366c3884416e9f85073606d3c4f7c06309bc35d59a632d5fbdb400a39eeaeda",
+    "acceptance-ce130f25fb24f76b0a593e75d0fd2df5567b17811fa4e5ba410a3dbc752deff0",
+    "acceptance-f635305e02f5c1c7e136eb5de76d777ec4a4e6ca50142ccb4711c5d3ee9bce39"
+  ],
+  "actor": "native-runtime:command:pnpm",
+  "issuedAt": "2026-08-19T06:54:05.345Z",
+  "evidence": {
+    "executable": "pnpm",
+    "args": [
+      "--dir",
+      "web",
+      "-r",
+      "run",
+      "test"
+    ],
+    "cwd": ".",
+    "exitCode": 0,
+    "signal": null,
+    "timedOut": false,
+    "timeoutMs": 120000,
+    "startedAt": "2026-08-19T06:54:00.891Z",
+    "endedAt": "2026-08-19T06:54:05.345Z",
+    "worktree": {
+      "provider": "git",
+      "root": ".",
+      "beforeCommit": "a057c11ab7df043504b62bf8696f4b208a178ccf",
+      "afterCommit": "a057c11ab7df043504b62bf8696f4b208a178ccf"
+    },
+    "afterFence": {
+      "snapshotHash": "beb2510fba4745f73aef928089847f70cd7275741b2fe4ead18891b401b11c36",
+      "scopeHash": "049b1731cdc16b9cc2e33620d8cb86cac3a60aaf0a8948ef97e8fc5c00c5a478",
+      "matched": true
+    },
+    "outputHash": "ac7b1c2b1634a21ae7a33ca4200b29e287e9a862339d10dba1c1a2731b382afe",
+    "outputSummary": "Scope: 3 of 4 workspace projects\npackages/shared test$ vitest run\npackages/shared test:  RUN  v2.0.5 /home/akers/projects/cutegoals/web/packages/shared\npackages/shared test:  ✓ src/__tests__/dayjs.test.ts  (5 tests) 4ms\npackages/shared test:  ✓ src/__tests__/role.test.ts  (4 tests) 2ms\npackages/shared test:  ✓ src/__tests__/api/client.test.ts  (39 tests) 341ms\npackages/shared test:  ✓ src/components/__tests__/components.test.tsx  (5 tests) 121ms\npackages/shared test:  Test Files  4 passed (4)\npackages/shared test:       Tests  53 passed (53)\npackages/shared test:    Start at  14:54:01\npackages/shared test:    Duration  1.17s (transform 86ms, setup 268ms, collect 717ms, tests 468ms, environment 586ms, prepare 211ms)\npackages/shared test: Done\napps/console test$ vitest run\napps/kid test$ vitest run\napps/kid test:  RUN  v2.0.5 /home/akers/projects/cutegoals/web/apps/kid\napps/console test:  RUN  v2.0.5 /home/akers/projects/cutegoals/web/apps/console\napps/console test:  ✓ src/__tests__/placeholder.test.ts  (1 test) 2ms\napps/console test:  ✓ src/parent/components/__tests__/TaskCalendar.test.tsx  (30 tests) 311ms\napps/kid test:  ✓ src/__tests__/AuthGuard.test.tsx  (3 tests) 99ms\napps/console test:  ✓ src/wrappers/__tests__/AuthGuard.test.tsx  (3 tests) 95ms\napps/console test:  ✓ src/parent/__tests__/App.test.tsx  (1 test) 119ms\napps/console test:  ✓ src/admin/__tests__/App.test.tsx  (1 test) 128ms\napps/console test:  ✓ src/parent/components/__tests__/TaskTypeFilter.test.tsx  (8 tests) 222ms\napps/console test:  ✓ src/__tests__/admin-config-page.test.tsx  (2 tests) 221ms\napps/kid test:  ✓ src/__tests__/auth.test.tsx  (5 tests) 410ms\napps/kid test:  ✓ src/__tests__/pages.test.tsx  (20 tests) 500ms\napps/kid test:  Test Files  3 passed (3)\napps/kid test:       Tests  28 passed (28)\napps/kid test:    Start at  14:54:02\napps/kid test:    Duration  1.98s (transform 164ms, setup 229ms, collect 2.76s, tests 1.01s, environment 635ms, prepare 265ms)\napps/kid test: Done\napps/console test:  ✓ src/parent/pages/__tests__/ParentTasksPage.test.tsx  (42 tests) 608ms\napps/console test:  ✓ src/__tests__/parent-save-dialogs.test.tsx  (5 tests) 577ms\napps/console test:  ✓ src/parent/components/__tests__/TaskTypeConfigForms.test.tsx  (27 tests) 727ms\napps/console test:  ✓ src/__tests__/auth-pages.test.tsx  (4 tests) 506ms\napps/console test:  Test Files  11 passed (11)\napps/console test:       Tests  124 passed (124)\napps/console test:    Start at  14:54:02\napps/console test:    Duration  2.65s (transform 947ms, setup 986ms, collect 9.98s, tests 3.52s, environment 2.24s, prepare 838ms)\napps/console test: Done",
+    "outputTruncated": false
+  },
+  "receiptHash": "66ba50699b35eb18c84d8176253f4971057c0b2b004220c9abcb10d2b284165b"
+}

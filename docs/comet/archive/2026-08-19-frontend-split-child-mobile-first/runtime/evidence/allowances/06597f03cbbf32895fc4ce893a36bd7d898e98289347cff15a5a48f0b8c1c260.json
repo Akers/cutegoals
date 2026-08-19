@@ -1,0 +1,14 @@
+{
+  "schema": "comet.native.partial-allowance.v1",
+  "change": "frontend-split-child-mobile-first",
+  "scopeHash": "65fc039b8026e199859bb58a229e93b91f1eeb412c8130074a107adaf67c7c6e",
+  "scopeIds": [
+    "scope:23ca7a654273bf49bd4140bad073567e1fb8e73c7e08999c57c8888f023679e4",
+    "scope:32378c1534d374f4199c8ed1f62f40a170913dadf9292bd6f686605275f3f09f"
+  ],
+  "reason": "partial scope approved",
+  "confirmedSummary": "transition with e2e script in scope",
+  "sourceRevision": 12,
+  "confirmedAt": "2026-08-19T06:48:46.141Z",
+  "allowanceHash": "06597f03cbbf32895fc4ce893a36bd7d898e98289347cff15a5a48f0b8c1c260"
+}

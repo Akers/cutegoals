@@ -1,0 +1,28 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "manual-evidence",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "frontend-split-child-mobile-first",
+    "sourceRevision": 15,
+    "contractHash": "9972f95eb0ee48cedba0fd0a9165a9b310aacff57c376823f227a1073f467fe1",
+    "scopeHash": "049b1731cdc16b9cc2e33620d8cb86cac3a60aaf0a8948ef97e8fc5c00c5a478",
+    "snapshotHash": "beb2510fba4745f73aef928089847f70cd7275741b2fe4ead18891b401b11c36",
+    "artifactHash": "d7bcbce0d87c05c11ee7eb5338887346c2051136f0b94684a512300ff8ba93e7"
+  },
+  "acceptanceIds": [
+    "acceptance-eb0ffa90b5d2da11b5f3ea5999768f160b92b145a0810c9ae63e6998ce611ea1"
+  ],
+  "actor": "native-runtime:manual-evidence",
+  "issuedAt": "2026-08-19T06:54:31.612Z",
+  "evidence": {
+    "steps": [
+      "review"
+    ],
+    "observations": [
+      "build-web pnpm commands verified R3; build-docker two frontend images verified by podman equivalent: mit-modelide-core-console:verify and mit-modelide-core-kid:verify both built (node:22-alpine + pnpm@11.15.1); docker daemon unavailable locally, compose up not run (see Skipped)"
+    ]
+  },
+  "receiptHash": "48176e89b8bb8d7edaaf7751359cf4ccbf3518651fce86ca7fc2b7114fee4bc7"
+}

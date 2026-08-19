@@ -1,0 +1,53 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "automated-check",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "frontend-split-child-mobile-first",
+    "sourceRevision": 15,
+    "contractHash": "9972f95eb0ee48cedba0fd0a9165a9b310aacff57c376823f227a1073f467fe1",
+    "scopeHash": "049b1731cdc16b9cc2e33620d8cb86cac3a60aaf0a8948ef97e8fc5c00c5a478",
+    "snapshotHash": "beb2510fba4745f73aef928089847f70cd7275741b2fe4ead18891b401b11c36",
+    "artifactHash": "d7bcbce0d87c05c11ee7eb5338887346c2051136f0b94684a512300ff8ba93e7"
+  },
+  "acceptanceIds": [
+    "acceptance-06bdfbb3e610491da989ff156599f0fdb608d6d6dcaf274017d4fd11c491109c",
+    "acceptance-0eafba30744bc78728034d8572caad4e68bd4d1a7d2ea9ea1269eb99e8bb6200",
+    "acceptance-41bb3fcc35e73f9446666b44d26ad5f3b8b075060ed6b2bf6f75462b907ca5d8",
+    "acceptance-6dcb0bcab22e38a4052ec4c62d428670c1ccb9a1c889d9e745c755de7fc9f16f",
+    "acceptance-76f816825d23f49b9a74ec49bd1b2ca780cd3d15394d8682dc82fec09b904ec8",
+    "acceptance-8055ae686f9f47b6519b41c89e40130291421c99bb6f6f73fe04e7d6499ea7ce",
+    "acceptance-9674d4017312543d4e293ab51d829ca437f4de309b8276fef01683f8422a465a"
+  ],
+  "actor": "native-runtime:command:node",
+  "issuedAt": "2026-08-19T06:55:04.553Z",
+  "evidence": {
+    "executable": "node",
+    "args": [
+      "e2e/.kid-browser-verify.cjs"
+    ],
+    "cwd": ".",
+    "exitCode": 0,
+    "signal": null,
+    "timedOut": false,
+    "timeoutMs": 120000,
+    "startedAt": "2026-08-19T06:55:02.323Z",
+    "endedAt": "2026-08-19T06:55:04.553Z",
+    "worktree": {
+      "provider": "git",
+      "root": ".",
+      "beforeCommit": "a057c11ab7df043504b62bf8696f4b208a178ccf",
+      "afterCommit": "a057c11ab7df043504b62bf8696f4b208a178ccf"
+    },
+    "afterFence": {
+      "snapshotHash": "beb2510fba4745f73aef928089847f70cd7275741b2fe4ead18891b401b11c36",
+      "scopeHash": "049b1731cdc16b9cc2e33620d8cb86cac3a60aaf0a8948ef97e8fc5c00c5a478",
+      "matched": true
+    },
+    "outputHash": "3ac7fba70cb322e5051090a127586f26c8343401b9ca1bb58402afa5abd8aa1a",
+    "outputSummary": "PASS | mobile-375 底部Tab可见\nPASS | mobile-375 默认选中进行中\nPASS | mobile-375 Chip=主题色背景 | rgb(2, 132, 199)\nPASS | mobile-375 Chip=白字 | rgb(255, 255, 255)\nPASS | mobile-375 无横向滚动\nPASS | mobile-375 Chip触控>=44px\nPASS | mobile-375 Tab触控>=44px\nPASS | mobile-375 未开始显示\nPASS | mobile-375 切换已提交过滤\nPASS | tablet-834 底部Tab可见\nPASS | tablet-834 默认选中进行中\nPASS | tablet-834 Chip=主题色背景 | rgb(2, 132, 199)\nPASS | tablet-834 Chip=白字 | rgb(255, 255, 255)\nPASS | tablet-834 无横向滚动\nPASS | tablet-834 Chip触控>=44px\nPASS | tablet-834 Tab触控>=44px\nPASS | tablet-834 未开始显示\nPASS | tablet-834 切换已提交过滤\nPASS | pc-1280 底部Tab可见\nPASS | pc-1280 默认选中进行中\nPASS | pc-1280 Chip=主题色背景 | rgb(2, 132, 199)\nPASS | pc-1280 Chip=白字 | rgb(255, 255, 255)\nPASS | pc-1280 无横向滚动\nPASS | pc-1280 Chip触控>=44px\nPASS | pc-1280 Tab触控>=44px\nPASS | pc-1280 未开始显示\nPASS | pc-1280 切换已提交过滤\nPASS | pc-1280 内容受限(<=620) | w=560\nPASS | pc-1280 内容居中 | x=360\n\nRESULT: ALL PASS",
+    "outputTruncated": false
+  },
+  "receiptHash": "48aa90698212884c463344503fe9a8ee313c5492b5b440e84f0388364547e216"
+}

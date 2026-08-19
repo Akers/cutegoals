@@ -1,0 +1,19 @@
+{
+  "schema": "comet.native.partial-allowance.v1",
+  "change": "frontend-split-child-mobile-first",
+  "scopeHash": "8d5bb4299976bc5ef94bc8a29ad2a1e6788ff0a04df826f4952da7d7363f8605",
+  "scopeIds": [
+    "scope:1a63ece17b767847a895a3d8ee00215b7faa35e97eff8c457e7268b9fed404b8",
+    "scope:4ac172fcd72c18bd440142361937cd44bb135d8e48ece1d516e9a627f8345536",
+    "scope:4f1728987b90d5e3b2278cc7bc7685eea0ec0b1653489d147038ca32bad5dd38",
+    "scope:54cdebc1b2490229ab374d28fb212bc6e357cb491ae237c3953d77477694b4ee",
+    "scope:5debbc25d4ff558a3449d1389a1b03ea411546675cddb36b83dadce74e0ef600",
+    "scope:808294d391108d25e8eba3e153223ffacc64ad7a19f733dd960ef958595cb0ba",
+    "scope:cc2266a4b1e3108d3b0331caf03b61b63561c93f249e61754dc1c3acaa32892b"
+  ],
+  "reason": "大型前端重构文件迁移明细超出预算以汇总 hash 记录；用户已批准该方式",
+  "confirmedSummary": "最终 scope 捕获（含 Dockerfile 修正）进入 Verify；partial scope 情形与用户批准一致",
+  "sourceRevision": 6,
+  "confirmedAt": "2026-08-19T04:42:19.737Z",
+  "allowanceHash": "16521e634e8358a0d7cb640fd2b97a397744f2cde5babc3187499b8d8e4cc0b7"
+}

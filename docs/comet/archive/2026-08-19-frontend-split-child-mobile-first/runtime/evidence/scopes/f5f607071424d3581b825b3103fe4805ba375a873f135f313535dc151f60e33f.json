@@ -1,0 +1,1988 @@
+{
+  "schema": "comet.native.implementation-scope.v2",
+  "contractHash": "9972f95eb0ee48cedba0fd0a9165a9b310aacff57c376823f227a1073f467fe1",
+  "baselineProjectionRef": "runtime/evidence/snapshots/eace1572501b20e0a9e48365fd53cbb952dff668d3b506e38b0e77fe5369d7e2.json",
+  "baselineProjectionHash": "eace1572501b20e0a9e48365fd53cbb952dff668d3b506e38b0e77fe5369d7e2",
+  "currentProjectionRef": "runtime/evidence/snapshots/29e81df7b60d79e510cb1a9ca76fa5da799906e2168be3e72ce1fbb0969a7418.json",
+  "currentProjectionHash": "29e81df7b60d79e510cb1a9ca76fa5da799906e2168be3e72ce1fbb0969a7418",
+  "complete": false,
+  "declaredArtifacts": [
+    {
+      "path": "README.md",
+      "kind": "file"
+    },
+    {
+      "path": "deploy",
+      "kind": "directory"
+    },
+    {
+      "path": "package.json",
+      "kind": "file"
+    },
+    {
+      "path": "web",
+      "kind": "directory"
+    }
+  ],
+  "changes": [
+    {
+      "path": "README.md",
+      "kind": "modified",
+      "before": {
+        "hash": "f1c22fd2a24d460e94b527b1f9010e2fda4f270198242c27dc9682506715434b",
+        "size": 11165
+      },
+      "after": {
+        "hash": "896fd4412eece5473044fc4de5f909c697ae4dcb3281228ddc742a8e82116821",
+        "size": 12002
+      },
+      "attributedTo": [
+        {
+          "path": "README.md",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "deploy/README.md",
+      "kind": "modified",
+      "before": {
+        "hash": "93ab23a0dbcbf8505d5368b85a51c449e0f41b836fd7c6e98d7447ec85031d2f",
+        "size": 12745
+      },
+      "after": {
+        "hash": "94895658cb127b8e149252f120f2777ee6c2639398e800e7cda47e67491f0c7b",
+        "size": 13959
+      },
+      "attributedTo": [
+        {
+          "path": "deploy",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "deploy/build.sh",
+      "kind": "modified",
+      "before": {
+        "hash": "aaf0c16f5965ca8cb9ded24b15f175b5e1513cb664d96b1c3a9d75cbd530585c",
+        "size": 15424
+      },
+      "after": {
+        "hash": "5afcc30d5972ff52a770e6ab50ef451f37c0789a35b97e60a9cfd6942e552c06",
+        "size": 16169
+      },
+      "attributedTo": [
+        {
+          "path": "deploy",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "deploy/docker-compose.dev.yml",
+      "kind": "modified",
+      "before": {
+        "hash": "300752dc2ac7c050fa311e97f1281e1816ced12482cb0a545fed9c4080b874f8",
+        "size": 2295
+      },
+      "after": {
+        "hash": "d773244ba446dd29db84ac42d2adedc6cc19d8945494ec2519d36c5dde0958b0",
+        "size": 2648
+      },
+      "attributedTo": [
+        {
+          "path": "deploy",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "deploy/docker-compose.yml",
+      "kind": "modified",
+      "before": {
+        "hash": "ff393e79ba598e0dcd1c067bfb84e8a646183b08762be68a2c46581e556c5086",
+        "size": 6434
+      },
+      "after": {
+        "hash": "561338200d0fc68fa1820bb725cdf1c1d83bbf3f924d7918e1cc78ee320ad315",
+        "size": 7811
+      },
+      "attributedTo": [
+        {
+          "path": "deploy",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "deploy/nginx.conf",
+      "kind": "modified",
+      "before": {
+        "hash": "48af8b40398394890124da028071d29952fd19a3d6bffbc19dfa65472ee82642",
+        "size": 3570
+      },
+      "after": {
+        "hash": "980ff529d2a759765bb71a8423ee8a965633b05c2c5310d8423a86a8f4b45e10",
+        "size": 4894
+      },
+      "attributedTo": [
+        {
+          "path": "deploy",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "deploy/nginx.dev.conf",
+      "kind": "modified",
+      "before": {
+        "hash": "1803d1d653292dab02a5ba6b5fc3b38e8c50d7532932f89c5c94501f3acd993e",
+        "size": 2642
+      },
+      "after": {
+        "hash": "1642789096acf1951e23674ef0d91ec9552c4649ff1c2cf80fd5ac6eae3700e8",
+        "size": 3729
+      },
+      "attributedTo": [
+        {
+          "path": "deploy",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "package.json",
+      "kind": "modified",
+      "before": {
+        "hash": "7a12e4c667e46330dab1eaac416348dad4f20c5e85f70f96f8574975b962786c",
+        "size": 239
+      },
+      "after": {
+        "hash": "300662de35d178aebaf3d49542afb2d9c658ba021685593bff9855d98453fec2",
+        "size": 274
+      },
+      "attributedTo": [
+        {
+          "path": "package.json",
+          "kind": "file"
+        }
+      ]
+    },
+    {
+      "path": "web/.dockerignore",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "fcb3a5dbd50967330b04e28046a3c02e93ec64df69f453f406eb5ca29ae09f4f",
+        "size": 83
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/Dockerfile",
+      "kind": "removed",
+      "before": {
+        "hash": "1c325180f3fa4354fa9459dfaae2c22d96374a0bcf01851592179a109dace953",
+        "size": 1073
+      },
+      "after": null,
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/console/Dockerfile",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "77f587e4e903879af9b7b1e45fe43efee3bb9eb54cbed6723649d60b6a28d7d8",
+        "size": 1663
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/console/config/config.ts",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "db17106ff890152ee530eff96ef04c0fe70606ce55499f6da53de7b48713d7cd",
+        "size": 768
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/console/config/routes.ts",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "7714383f5e750d67a654f25246cc665e1dfb7e471c7e8ae3888c778027081b3b",
+        "size": 2289
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/console/nginx.conf",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "f36dcdd21497556ef13f6314528dfc42aace72528f2b19aec5b2144d3bd93e95",
+        "size": 1050
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/console/package.json",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "9a065561628339a39b1ea4a9b7f9879dd3f0b119a9c9baa364ba64491c31436d",
+        "size": 1079
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/console/scripts/check-css-loads.mjs",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "669fefa676fd615a33e04f6f1a6480264a36dc8a7a67b1bfcbf6bece81e40544",
+        "size": 3319
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/console/src/__tests__/admin-config-page.test.tsx",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "1abd67f917b5d5f97b2a6e1a67337c80eab4683e74c6f94a1d046a35b18403b2",
+        "size": 2682
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/console/src/__tests__/auth-pages.test.tsx",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "69513c08cd2a51b88509542fe76871ac959a14505919d2b11b9fde6e88945b1e",
+        "size": 3847
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/console/src/__tests__/parent-save-dialogs.test.tsx",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "1e12702d27171f71cf842a48b81893791161cc5333f8ca6f14f597041bf8356d",
+        "size": 5349
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/console/src/__tests__/placeholder.test.ts",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "d5d0e3bcbb6ca85b62113c3e1df7152a99e3df01cdbc9869a723306792902e25",
+        "size": 172
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/console/src/access.ts",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "609245126307ac2576cc82a32d3ab4fd89fde01d2946bf8ea101374b72e7e2bf",
+        "size": 880
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/console/src/admin/App.tsx",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "4381f823d7a8ce4a7ad2d0d8f2ec907a98ff2f5503718d1283a30574f97e049d",
+        "size": 225
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/console/src/admin/__tests__/App.test.tsx",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "dc238579830a38ddd92545661c30b294348393e597be4ff9e432f918bb8fb24e",
+        "size": 1183
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/console/src/admin/pages/AdminAccountsPage.tsx",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "6b960bb33e32afe92d93e1af5a75f6984723a1c9c5d710d7c4dc131e084696c4",
+        "size": 56
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/console/src/admin/pages/AdminAuditPage.tsx",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "f5d53919c0c1e8797afd4fcd783b60bd9d7e56b7636bc1ebb12568e9029206a7",
+        "size": 53
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/console/src/admin/pages/AdminConfigPage.tsx",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "8b03b3e36545e643cd5d161095b04da7c5e3062e849be1eb9b36e8b2e950fb3f",
+        "size": 54
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/console/src/admin/pages/AdminHealthPage.tsx",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "3b9b9a17f13a0e8035b77345cacce8c26a40a38fa3101de10565a6ca02640da9",
+        "size": 54
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/console/src/admin/pages/AdminInitPage.tsx",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "8b3c3a58106daa4c821e8894311612b3d6d927bf8935df16ecdc335be898ad73",
+        "size": 3721
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/console/src/admin/pages/AdminLoginPage.tsx",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "137b55cd34e35792fee5f0c97cb89731fb9e9535fe7544903f07cf02a65f7b53",
+        "size": 3036
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/console/src/admin/pages/AdminOverviewPage.tsx",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "b8783f70f159907d8a41699a5089dd1f8a400a950299b387b9bb92720732967c",
+        "size": 56
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/console/src/admin/pages/index.tsx",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "a0b3717164ab7b0dbc07eb8fe12b37f7f443d92a6e29ab942e25a4590e3a3909",
+        "size": 14176
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/console/src/app.tsx",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "7fc08ecb7cd5b5590dd84932bf43dc06b1a9d6dc231b2fda98d44b9937e292e5",
+        "size": 1699
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/console/src/layouts/AdminLayout.tsx",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "3c78cdce33b77e7a5bb8e3ff2cf12ff5c9faf28b8c2f93b26603769428d7dc04",
+        "size": 1964
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/console/src/layouts/ParentLayout.tsx",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "5461078069759b82021e05f001d1d12cdee3e3f0459a544596c6f6f5d4c8110e",
+        "size": 2619
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/console/src/parent/App.tsx",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "6d6249c33184825da986b76d876f87ee0110c8c18df379c3ebe1e28938b271c6",
+        "size": 221
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/console/src/parent/__tests__/App.test.tsx",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "ce6f6bc18e711114cf72e26541cff3980a6cab2ce9ec13f491f3be0814d25688",
+        "size": 1464
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/console/src/parent/components/PrizeTypeConfigForms.tsx",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "47ee3123d5aa02b0a617a26be89b607ac439c7b9de03592688fd6579ba8d18be",
+        "size": 12346
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/console/src/parent/components/TaskCalendar.tsx",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "3c0a63691c2a57113fa777276431c34da23ec3ccfb87812025594f48422673bf",
+        "size": 14728
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/console/src/parent/components/TaskTypeConfigForms.tsx",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "a21155e5f94db81b8b2751ea4da5374769adf85f1cbd338e30b3c01fe9813e20",
+        "size": 10732
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/console/src/parent/components/TaskTypeFilter.tsx",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "8cd8dbc1b75219f80a865b3b95a8acf3a2752e8e03dce5befd34e76f01a68019",
+        "size": 1161
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/console/src/parent/components/__tests__/TaskCalendar.test.tsx",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "174c0f9816cf225657a1b9ae2315161250f155d0c8ad5a444a2e498195257475",
+        "size": 21701
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/console/src/parent/components/__tests__/TaskTypeConfigForms.test.tsx",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "7071ec5161d36e005742da45ec42a9c3ab114b8d678e85b844d95df06bd5b379",
+        "size": 13635
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/console/src/parent/components/__tests__/TaskTypeFilter.test.tsx",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "a1eaf28fe745424726a3f44dab340648ae8147933ea8c5018e1be2fb06ec2e96",
+        "size": 3669
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/console/src/parent/pages/HomePage.tsx",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "c4399e89b15f8dec3adc06e0a773b914d1ed1cbef94473266035432d52a2b2b4",
+        "size": 53
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/console/src/parent/pages/ParentBlindBoxesPage.tsx",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "f5dab52879e01bcdfb0fb0ebec74f22d2fa2bb4c3997aa47753e45c7924585eb",
+        "size": 59
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/console/src/parent/pages/ParentChildrenPage.tsx",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "c994da389d961584c8385eaa0ead08404f590e699681573f8f42a9ff5af0dee9",
+        "size": 57
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/console/src/parent/pages/ParentDevicesPage.tsx",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "46dd477dd955093a1e985456bd1fa4011d9713a97c80f9a70489e4e678ac407d",
+        "size": 56
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/console/src/parent/pages/ParentExchangesPage.tsx",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "49613a5823884fa531141b9d2d8aec204344fd8afac6502c3eaa8222f37661b5",
+        "size": 58
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/console/src/parent/pages/ParentFamilyPage.tsx",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "39067a23ade1ee26ac6d74dca5f0a9bab86c33e6b511ab45e44c367b128736ed",
+        "size": 55
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/console/src/parent/pages/ParentLoginPage.tsx",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "1642920d8d96b08c86cc85d5925e47d097477e9e65f146584482d505d9526133",
+        "size": 3120
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/console/src/parent/pages/ParentPointsPage.tsx",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "bec4835d049bdd95c39a3bc9d7656fe873c86d05dfa32001153e47bfb8a6559f",
+        "size": 55
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/console/src/parent/pages/ParentPrizesPage.tsx",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "dd89e24c93046931e581abf2a48f7cc4fc3211de2b9f1d3fdb78532dd4d29ed9",
+        "size": 55
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/console/src/parent/pages/ParentReviewsPage.tsx",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "e43467a52cbb59ec6126a704bee8059661a61f8d2df6a731e1e9adf89997bf27",
+        "size": 56
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/console/src/parent/pages/ParentTasksPage.tsx",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "53cf5fb1846be0bf7d4335c3b8dbfe033086f61c33e8eb3e1b78c12014dec6a3",
+        "size": 54
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/console/src/parent/pages/ParentTemplatesPage.tsx",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "04623a84ba0d2f41e69326a6468774053ad8a3b0855f0c5df86791fb47849354",
+        "size": 58
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/console/src/parent/pages/__tests__/ParentTasksPage.test.tsx",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "23d47203200756b58cd7e232b3876295f6a2a082a3dda63bbec77a8bc3166cd5",
+        "size": 28360
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/console/src/parent/pages/index.tsx",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "6880223750ab34ecb6dca13e2e10947f9d0c64cdb14bd7dcd6c08db7c6579563",
+        "size": 92274
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/console/src/styles/index.css",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "f900e5caabb3dce89feb0efea2cdcb4d610fe8e9257bbcd8549a1ad846103f93",
+        "size": 5473
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/console/src/styles/themes.css",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "f2af0ca1578c92c5df9dd955131c5e6050d016b05f214519cfa662ab913d2876",
+        "size": 4384
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/console/src/styles/themes.ts",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "109aa7ca65d3a46b75a3043665a6d9429532a772f65a475d03803e421a335020",
+        "size": 856
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/console/src/test/setup.ts",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "fec87963a8ad1f752f6ef7059f8ae6cf5b8dca4696fdf174d286f3e0e1b1ea0a",
+        "size": 3005
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/console/src/umi.d.ts",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "9fc667106bb25ae532b73049fc6f366d97abff22d755483b593984a1f9e29461",
+        "size": 1725
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/console/src/wrappers/AuthGuard.tsx",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "3cafb4dea18272eac976e289b80b5b7dda3a2851adac8f4926177fa116a6cc57",
+        "size": 1759
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/console/src/wrappers/__tests__/AuthGuard.test.tsx",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "ef1f1ecfb8b98114da438e6519dbf465a4e26a7571f2ffe312998753602dcf62",
+        "size": 2431
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/console/tsconfig.json",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "c4af2659d33fdb240fd6f1ffcb225473d149f5cf08027258d4162633084b9f5e",
+        "size": 831
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/console/vitest.config.ts",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "013e982c0f15d6aabb8dbd6a1ea2fbe7622e5789cd13c70c3e6c29f88c665d5e",
+        "size": 845
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/kid/Dockerfile",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "b3d0b324d71b7dd21c1d5c37158b3da73effc7a12c36aa82f64f3b0515e4e814",
+        "size": 1903
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/kid/config/config.ts",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "c44a923779629ed7b7152ff830203d7f10154f43d48b1b803a55776fed66fec1",
+        "size": 1108
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/kid/config/routes.ts",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "42e2125fbae06ba880c565f4b9c016d8eab347fdff86154cc425e0060e41ff47",
+        "size": 785
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/kid/nginx-api-proxy-headers.conf",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "8569702e0718897076957e22dfb4d4f1043b440be7f9422a7fc9dec39243a2d0",
+        "size": 389
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/kid/nginx-kid-api-whitelist.conf",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "dda9d7d3b0a46d24c1af2e217b1d0adec39dbf8b511398a1a5c077f38728cdd8",
+        "size": 2399
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/kid/nginx.conf",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "2254f2b590eba3ed56135ffcc25cfcc59ffc89a96d0e9e8ef1b396ff04ea61a3",
+        "size": 1489
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/kid/package.json",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "386fef3a31ea8256a86b9207e8b41e8882859436ba0f8137d1d7c7f90ae71561",
+        "size": 828
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/kid/scripts/check-api-whitelist.mjs",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "20b85a18c926063d72541054056d9c633617710a31cafdf2db30f5e1c19c8c0d",
+        "size": 3042
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/kid/scripts/check-css-loads.mjs",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "ebbb640d3f0086b2b01ceff33e1687a9fbd3bc363c7eee571ad8e7f1acafbf6f",
+        "size": 3319
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/kid/scripts/dev-static-server.mjs",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "eb29616a66b3f096a125dbd7ee9518271021ed50379df4b34a0a75e7841fc76a",
+        "size": 1408
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/kid/src/__tests__/AuthGuard.test.tsx",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "7e759e1ba3134a48910233dc9ba64846ce5438ff7cc7774ab3b82f68f2c3e513",
+        "size": 3455
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/kid/src/__tests__/auth.test.tsx",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "86a3cd24221d8cfabc00f7165fbd8e4117d847e5da53ea2ad1c10555c70d2f8f",
+        "size": 4634
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/kid/src/__tests__/pages.test.tsx",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "11f1a11df5e3de5792059a8cb035410b11f697772616d85c908f93d5d9941077",
+        "size": 26210
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/kid/src/app.tsx",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "d534346b98d1639a40198ee15b8c9bb7d9344c79f6247b27531e1d507d3f2f2b",
+        "size": 776
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/kid/src/design/components.tsx",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "2ebebe66bd3fcb8b62498b7ead7ca762a98ce6ac8e7968afc669dfb42b356238",
+        "size": 8128
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/kid/src/design/kid.css",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "00a0adc125ab8350676d6f9baab638eb6ec9c125d364f89280d0c51159144c36",
+        "size": 17310
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/kid/src/design/tokens.css",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "07e4cc88391eebf8ff143c4dd6aadcd32489cc92f530b5e3699f89350b8bef47",
+        "size": 3589
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/kid/src/layouts/KidLayout.tsx",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "228f8fc6991c8c7bc56ce01e26dfe8d70458a70e05eb69e20555d015583b1c4f",
+        "size": 3190
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/kid/src/pages/BindPage.tsx",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "c7ebd4d11f0c899f10fa70a816cfea5773ee5915b2ae31fe7455021d130ad869",
+        "size": 4832
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/kid/src/pages/BlindBoxesPage.tsx",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "500d2fadc6bb2f57639d348317ffde17061a10e85355f5bf6bc9804378e525bc",
+        "size": 7964
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/kid/src/pages/ExchangesPage.tsx",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "74a2ba9a17eb76985288ffad4a5a5897281d1e78b2470d7836383b26c0872590",
+        "size": 1865
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/kid/src/pages/HomePage.tsx",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "adc981b65251dbd3817bee0993fc0fafa45221e1cfd15b2ec2e5766fc89dda12",
+        "size": 3072
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/kid/src/pages/LoginPage.tsx",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "f435cc32a5fff2b82a5b485b001c33812e2ab8429a282b414b0f87c9da828f8d",
+        "size": 5591
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/kid/src/pages/PrizesPage.tsx",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "dbfbfc9c9b5410741a82f97db71bf6e38cbd81faf132189e8d1d1716145e8c02",
+        "size": 4189
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/kid/src/pages/TasksPage.tsx",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "77681979efe1f611b34690e001c3d053fb0ead0a17716122e99d7495bc688e7c",
+        "size": 9185
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/kid/src/pages/index.ts",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "2e99c7fc8bfb9a87c932cf033bb621bee063012a0aaf7ce11db309e55c4c326e",
+        "size": 428
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/kid/src/pages/types.ts",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "afce9def031553ba27162b1790229c4ff196170c23239813ca276dd2f48f1063",
+        "size": 3165
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/kid/src/test/setup.ts",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "f4a949c99ba2e358af04c9704fd4222a96e7549a28980d54b509b73d630055a4",
+        "size": 3004
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/kid/src/umi.d.ts",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "9fc667106bb25ae532b73049fc6f366d97abff22d755483b593984a1f9e29461",
+        "size": 1725
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/kid/src/wrappers/AuthGuard.tsx",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "50dc48c6852867f511b18663e9db1ef8f219edfddb3040bf9a2e63d018f1cd88",
+        "size": 1004
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/kid/tsconfig.json",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "589b0bf326f60e865e5aba406d28d1229c93049cd2cb35115e114a937d182d47",
+        "size": 755
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/apps/kid/vitest.config.ts",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "c29fce3bf833257ba102a363e8edc8e5b6849048f379f241c7896406f4702fdf",
+        "size": 663
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/config/config.ts",
+      "kind": "removed",
+      "before": {
+        "hash": "fc2db815684c25ec647c1e16bbd68669985530a27119d803758192df99a23835",
+        "size": 826
+      },
+      "after": null,
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/config/routes.ts",
+      "kind": "removed",
+      "before": {
+        "hash": "64d7c9003116489563c860536dd60e9f7a2a75a083c676369bd325dfa9e4036a",
+        "size": 3082
+      },
+      "after": null,
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/index.html",
+      "kind": "removed",
+      "before": {
+        "hash": "e56acbb0047f993ab89a1248ef29b4f7bf51fdeb3de43cbaff5058fa81aaa1ff",
+        "size": 244
+      },
+      "after": null,
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/package-lock.json",
+      "kind": "removed",
+      "before": {
+        "hash": "5351f78383f6a95fe295d21ba3ac0fe82e8f6076707b017f3ce463a97ddd009d",
+        "size": 663024
+      },
+      "after": null,
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/package.json",
+      "kind": "modified",
+      "before": {
+        "hash": "f174b18562104607d0d9ecc08855d09b38b53ccd596366655bfc609ea7bc2e90",
+        "size": 1065
+      },
+      "after": {
+        "hash": "f448d4dd9ad3fb0d616422170b3ca8c6601ed36cc6b28a3e681c37db1c420b33",
+        "size": 387
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/packages/shared/package.json",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "b3d4b4b268e9a97b7bb6d05546379c42e9da7ce1f894af8cba43da0e5b2adf6f",
+        "size": 681
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/packages/shared/src/AccessDenied.tsx",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "5742dfa6c765dba81852030b896fc9bef9de4c4d1f8da4d4b9af9312e40ee190",
+        "size": 179
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/packages/shared/src/NotFound.tsx",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "a11561211e5f18a42a0aaf452410e1cf2cdcbdaa2fd7f9ce5c0a8494ba6d63e2",
+        "size": 377
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/packages/shared/src/RoleContext.tsx",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "48bcbc593bea48317349f29b85b1c731755b96184a9952440abf712e97af57d3",
+        "size": 464
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/packages/shared/src/RoleGuard.tsx",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "de8f39c10020732197fdb8085bb069128e087a4b4083b1e323b0a017cb34a83e",
+        "size": 416
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/packages/shared/src/__tests__/api/client.test.ts",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "212c3c00efc13b3fd5488d8021973724173f46cd7d9c9584e64c804815b4d37b",
+        "size": 17866
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/packages/shared/src/__tests__/dayjs.test.ts",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "d7b459c8b008b0963b5c15a78330f5f01fdecc37ddfc0d775c7a8ea8cf044944",
+        "size": 1980
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/packages/shared/src/__tests__/role.test.ts",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "116abddc611fa512417f2d9827a28668a889b834aca670af8bbc0b2fb42cb046",
+        "size": 1011
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/packages/shared/src/api/client.ts",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "df2f46f1b208ad2c2e0f7e0bfe9f61dbda553232c9f7f4d602b54be7f3e266f7",
+        "size": 8644
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/packages/shared/src/api/errors.ts",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "257f779e356ce31e2967e99cff4fb2dc3999c5ec9d97637ab9783dfebb7fb945",
+        "size": 9325
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/packages/shared/src/api/index.ts",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "f1fbae486e58efb4fc40c98f14f720e8e7ab39c5f0b1e18f9b93bef95c259626",
+        "size": 284
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/packages/shared/src/api/types.ts",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "fdb7b7b451af6acb03eb8036a06f20075b3d7cf454437991c896c4366eff0d15",
+        "size": 8345
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/packages/shared/src/auth/AuthContext.tsx",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "5745f752341c6682dcc9e42d8da2afda05114307200305577253bb8da93238c8",
+        "size": 4206
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/packages/shared/src/auth/AuthGuard.tsx",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "5c90fef011c0cf71b8d73161bb1157c212de74726b1d695c79ebcce48d5531f6",
+        "size": 2257
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/packages/shared/src/auth/index.ts",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "c9634eca64c6c944c0a72eeea1b6ca6f70d8a086a86425da9b74133c78855bd1",
+        "size": 201
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/packages/shared/src/components/__tests__/components.test.tsx",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "597c5b929e115ce16c8157af64ada0a277d90950332aaf2d5713d0a4b6391ba2",
+        "size": 1789
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/packages/shared/src/components/index.tsx",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "3b9a7be686c544cfff06fbcae6b59ad0d093747b787ca795da8efc5ad9572bbe",
+        "size": 5106
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/packages/shared/src/dayjs.ts",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "ad6fbede88c6348585a1a437d091f8b373c1104703858faccbe7e366f2e97ab3",
+        "size": 2782
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/packages/shared/src/hooks/useApi.ts",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "63b75890057a30b28e9359ef679e6e62d43ada5e147f3c6073d98a9c22fc4eec",
+        "size": 3391
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/packages/shared/src/index.ts",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "aedccc7f4abfde18dcf4dbbeda92bdf3e81600ec8b5aa220533404661492a2bb",
+        "size": 391
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/packages/shared/src/role.ts",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "a11936a0f562ef048e8042f1bd4697198018afdd0ffdb01994f7339e541efd09",
+        "size": 1311
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/packages/shared/src/test/setup.ts",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "556a419e4d08c6df5ea6f1ecaad62aa2793b584e42a365f69244b75a59803112",
+        "size": 2999
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/packages/shared/src/theme.ts",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "b02e8b46521dcf5b7af28b7d323e22d9b381b29f2501842f63e364651b0ebf52",
+        "size": 3590
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/packages/shared/tsconfig.json",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "833ddaf363565db80b8fb7705756c48b0d51b2aa705e7815e5e82f92e3e030b1",
+        "size": 678
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    },
+    {
+      "path": "web/packages/shared/type-shims/umi.d.ts",
+      "kind": "added",
+      "before": null,
+      "after": {
+        "hash": "1c4bfda2801974825569a29323b4acb3537eb015656a4dda38cca05b12ae2ee7",
+        "size": 1133
+      },
+      "attributedTo": [
+        {
+          "path": "web",
+          "kind": "directory"
+        }
+      ]
+    }
+  ],
+  "unattributed": [],
+  "unresolvedScopes": [
+    {
+      "id": "scope:adc445abfeb319db489caf9650731d2cfeeb42ab4676b7368ae6e1b5b76119e4",
+      "kind": "scope-detail-overflow",
+      "source": "implementation-scope",
+      "path": null,
+      "reason": "Implementation scope summarized 106 additional change details and 0 unresolved details (0 unattributed); overflow hash fe6f41c61f346fb6009c52c39cb681b8076ce2226bb873582f3eeb3d3d2aad4b"
+    }
+  ],
+  "noCodeReason": null,
+  "scopeHash": "f5f607071424d3581b825b3103fe4805ba375a873f135f313535dc151f60e33f"
+}

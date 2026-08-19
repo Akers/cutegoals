@@ -1,0 +1,28 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "manual-evidence",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "frontend-split-child-mobile-first",
+    "sourceRevision": 15,
+    "contractHash": "9972f95eb0ee48cedba0fd0a9165a9b310aacff57c376823f227a1073f467fe1",
+    "scopeHash": "049b1731cdc16b9cc2e33620d8cb86cac3a60aaf0a8948ef97e8fc5c00c5a478",
+    "snapshotHash": "beb2510fba4745f73aef928089847f70cd7275741b2fe4ead18891b401b11c36",
+    "artifactHash": "d7bcbce0d87c05c11ee7eb5338887346c2051136f0b94684a512300ff8ba93e7"
+  },
+  "acceptanceIds": [
+    "acceptance-78ab0e4963ca6a582b0fd311a974cdf205880b88a2e39397638b76f4da9cc88d"
+  ],
+  "actor": "native-runtime:manual-evidence",
+  "issuedAt": "2026-08-19T06:54:31.401Z",
+  "evidence": {
+    "steps": [
+      "review"
+    ],
+    "observations": [
+      "all kid components reference var(--kid-*) tokens; css-loads + tsc pass (R2); tokens audited by manual review"
+    ]
+  },
+  "receiptHash": "849fdda3c25b4c5023a3348793c0f2a7f2626b3955a2422a8b5f56fcd70e9aeb"
+}

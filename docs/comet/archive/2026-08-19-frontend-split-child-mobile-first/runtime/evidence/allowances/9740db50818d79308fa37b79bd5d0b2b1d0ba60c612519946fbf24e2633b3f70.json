@@ -1,0 +1,19 @@
+{
+  "schema": "comet.native.partial-allowance.v1",
+  "change": "frontend-split-child-mobile-first",
+  "scopeHash": "270c6acb2dd0062dd719092faa78e12039f0630790099c59c1901ef4c4eeff7e",
+  "scopeIds": [
+    "scope:1a63ece17b767847a895a3d8ee00215b7faa35e97eff8c457e7268b9fed404b8",
+    "scope:4f1728987b90d5e3b2278cc7bc7685eea0ec0b1653489d147038ca32bad5dd38",
+    "scope:54cdebc1b2490229ab374d28fb212bc6e357cb491ae237c3953d77477694b4ee",
+    "scope:57cf828a01e334e13482953deae060b7ec6882828e231fb3a0ae46bf084fe915",
+    "scope:5debbc25d4ff558a3449d1389a1b03ea411546675cddb36b83dadce74e0ef600",
+    "scope:808294d391108d25e8eba3e153223ffacc64ad7a19f733dd960ef958595cb0ba",
+    "scope:cc2266a4b1e3108d3b0331caf03b61b63561c93f249e61754dc1c3acaa32892b"
+  ],
+  "reason": "大型前端重构文件迁移明细超出预算以汇总 hash 记录；用户已批准该方式",
+  "confirmedSummary": "最终 scope（含 dayjs 依赖声明与 Dockerfile 修正）进入 Verify",
+  "sourceRevision": 8,
+  "confirmedAt": "2026-08-19T04:48:31.132Z",
+  "allowanceHash": "9740db50818d79308fa37b79bd5d0b2b1d0ba60c612519946fbf24e2633b3f70"
+}

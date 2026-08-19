@@ -1,0 +1,50 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "automated-check",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "frontend-split-child-mobile-first",
+    "sourceRevision": 15,
+    "contractHash": "9972f95eb0ee48cedba0fd0a9165a9b310aacff57c376823f227a1073f467fe1",
+    "scopeHash": "049b1731cdc16b9cc2e33620d8cb86cac3a60aaf0a8948ef97e8fc5c00c5a478",
+    "snapshotHash": "beb2510fba4745f73aef928089847f70cd7275741b2fe4ead18891b401b11c36",
+    "artifactHash": "d7bcbce0d87c05c11ee7eb5338887346c2051136f0b94684a512300ff8ba93e7"
+  },
+  "acceptanceIds": [
+    "acceptance-0297b32f5115108e244541b30ea8e46571aefb6902dbd4fe3e445e3a89fbed38",
+    "acceptance-238689bb9547d2196e917ff64ccde67cd58cb8ddb5985a6f2d17ef9d4948a2cb",
+    "acceptance-83212238cd6618465ff0d0564ad0cc498d79e6e603dbf3dc7bd6fdd61a076c3f",
+    "acceptance-93029226e03fafd9cf25b1fc15ff2ecd5cc19a8d181381bad0d125482092181c"
+  ],
+  "actor": "native-runtime:command:bash",
+  "issuedAt": "2026-08-19T06:54:27.495Z",
+  "evidence": {
+    "executable": "bash",
+    "args": [
+      "/tmp/verify-nginx-whitelist.sh"
+    ],
+    "cwd": ".",
+    "exitCode": 0,
+    "signal": null,
+    "timedOut": false,
+    "timeoutMs": 120000,
+    "startedAt": "2026-08-19T06:54:24.925Z",
+    "endedAt": "2026-08-19T06:54:27.495Z",
+    "worktree": {
+      "provider": "git",
+      "root": ".",
+      "beforeCommit": "a057c11ab7df043504b62bf8696f4b208a178ccf",
+      "afterCommit": "a057c11ab7df043504b62bf8696f4b208a178ccf"
+    },
+    "afterFence": {
+      "snapshotHash": "beb2510fba4745f73aef928089847f70cd7275741b2fe4ead18891b401b11c36",
+      "scopeHash": "049b1731cdc16b9cc2e33620d8cb86cac3a60aaf0a8948ef97e8fc5c00c5a478",
+      "matched": true
+    },
+    "outputHash": "16a3aeed9ddce58d52601b94cb88e281fb008ac180c659d223f58419c198910c",
+    "outputSummary": "PASS | 白名单内 /child/api/task-assignments?childId=3 穿透 | 404\nPASS | 白名单内 /child/api/auth/me 穿透 | 404\nPASS | 白名单内 /child/api/prizes/available 穿透 | 404\nPASS | 白名单内 /child/api/points/balance/3 穿透 | 404\nPASS | 白名单内 /child/api/blind-boxes/available 穿透 | 404\nPASS | 白名单内 /child/api/exchanges?childId=3 穿透 | 404\nPASS | 白名单内 /child/api/task-review/submissions 穿透 | 404\nPASS | 白名单内 /child/api/family/devices/children?deviceId=x 穿透 | 404\nPASS | 白名单内 /child/api/auth/child/login 穿透 | 404\nPASS | 白名单外 /child/api/admin/config → 403 | 403\nPASS | 白名单外 /child/api/task-templates → 403 | 403\nPASS | 白名单外 /child/api/points/adjustments → 403 | 403\nPASS | 白名单外 /child/api/family/children → 403 | 403\nPASS | /child/ → 200 | 200\nPASS | /child/umi.js → 200 | 200\nPASS | /child/tasks（SPA 回退）→ 200 | 200\nPASS | /healthz → 200 | 200\n\nNGINX WHITELIST+STATIC: ALL PASS",
+    "outputTruncated": false
+  },
+  "receiptHash": "160c3665ba3b0c004b13fbfe8b5cfe00f00b3cbb0079f47501a4b9565da17ef2"
+}

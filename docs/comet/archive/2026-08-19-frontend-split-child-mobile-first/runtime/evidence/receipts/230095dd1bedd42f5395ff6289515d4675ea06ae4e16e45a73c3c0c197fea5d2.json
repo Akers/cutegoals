@@ -1,0 +1,49 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "automated-check",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "frontend-split-child-mobile-first",
+    "sourceRevision": 15,
+    "contractHash": "9972f95eb0ee48cedba0fd0a9165a9b310aacff57c376823f227a1073f467fe1",
+    "scopeHash": "049b1731cdc16b9cc2e33620d8cb86cac3a60aaf0a8948ef97e8fc5c00c5a478",
+    "snapshotHash": "beb2510fba4745f73aef928089847f70cd7275741b2fe4ead18891b401b11c36",
+    "artifactHash": "d7bcbce0d87c05c11ee7eb5338887346c2051136f0b94684a512300ff8ba93e7"
+  },
+  "acceptanceIds": [
+    "acceptance-365f1b446d1a254f8079b5ffc6301673c738bf9f0157fcb5d9b27c06af7f35f1",
+    "acceptance-8cc89e9ef777b695dbb2e2525dbd5d1d5bf9559f792d3bf813f329bcab87e6fd",
+    "acceptance-eef26d53cca4130bc1bcce6d2fde040a59ee4e745d5de4caba365f3823b7cc15"
+  ],
+  "actor": "native-runtime:command:bash",
+  "issuedAt": "2026-08-19T06:54:30.506Z",
+  "evidence": {
+    "executable": "bash",
+    "args": [
+      "/tmp/verify-gateway-routing.sh"
+    ],
+    "cwd": ".",
+    "exitCode": 0,
+    "signal": null,
+    "timedOut": false,
+    "timeoutMs": 120000,
+    "startedAt": "2026-08-19T06:54:28.036Z",
+    "endedAt": "2026-08-19T06:54:30.506Z",
+    "worktree": {
+      "provider": "git",
+      "root": ".",
+      "beforeCommit": "a057c11ab7df043504b62bf8696f4b208a178ccf",
+      "afterCommit": "a057c11ab7df043504b62bf8696f4b208a178ccf"
+    },
+    "afterFence": {
+      "snapshotHash": "beb2510fba4745f73aef928089847f70cd7275741b2fe4ead18891b401b11c36",
+      "scopeHash": "049b1731cdc16b9cc2e33620d8cb86cac3a60aaf0a8948ef97e8fc5c00c5a478",
+      "matched": true
+    },
+    "outputHash": "a67e59ebeeeeda465fcdec6663e290e5a311eed84fca79afb7858e11954c9893",
+    "outputSummary": "PASS | / → console | 200\nPASS | /parent → console SPA | 200\nPASS | /parent/tasks → console SPA | 200\nPASS | /admin/login → console SPA | 200\nPASS | /child/ → kid | 200\nPASS | /child/tasks → kid SPA | 200\nPASS | /child/umi.js → kid 静态 | 200\nPASS | /umi.js → console 静态 | 200\nPASS | /child/api/auth/me → 白名单穿透 | 404\nPASS | /child/api/admin/config → 403 | 403\nPASS | /api/health → 反代后端 | 404\nPASS | /child/ 内容为 kid 产物\nPASS | /parent 内容为 console 产物\n\nGATEWAY ROUTING: ALL PASS",
+    "outputTruncated": false
+  },
+  "receiptHash": "230095dd1bedd42f5395ff6289515d4675ea06ae4e16e45a73c3c0c197fea5d2"
+}

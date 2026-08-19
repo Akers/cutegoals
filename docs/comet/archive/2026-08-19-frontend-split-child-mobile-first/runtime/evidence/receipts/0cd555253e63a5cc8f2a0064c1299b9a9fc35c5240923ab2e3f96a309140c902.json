@@ -1,0 +1,59 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "automated-check",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "frontend-split-child-mobile-first",
+    "sourceRevision": 15,
+    "contractHash": "9972f95eb0ee48cedba0fd0a9165a9b310aacff57c376823f227a1073f467fe1",
+    "scopeHash": "049b1731cdc16b9cc2e33620d8cb86cac3a60aaf0a8948ef97e8fc5c00c5a478",
+    "snapshotHash": "beb2510fba4745f73aef928089847f70cd7275741b2fe4ead18891b401b11c36",
+    "artifactHash": "d7bcbce0d87c05c11ee7eb5338887346c2051136f0b94684a512300ff8ba93e7"
+  },
+  "acceptanceIds": [
+    "acceptance-3b2a1ee1f956b9fa49aa32355aa6deab0694ee4b92e729cb7e7b4a508a5cee56",
+    "acceptance-500a9cb751aa5703fc0bea7f47ce3c9f53a4083df8d409ba2d71647d4bae3065",
+    "acceptance-75c94ffb7919c3dad811b5b9773dcbf445c514579de63a80e35d42ef47af703d",
+    "acceptance-8f58fe4ba8f9e70a123499d9100bfaaac45e9c961739cf1799f3f9729330e80a",
+    "acceptance-9469e199ac3f6be23ac2d8ffece662fd5fe09456c60ac67903e62f29e0bbad3d",
+    "acceptance-a0e1e33b0f67eea16c7f6213944645328d10b8591333773aa583c5561a0db454",
+    "acceptance-bf1d019f6888e0a4033664028cac52a7ac40313b656feaa5095e1dc284399679",
+    "acceptance-c2e571604fff0be15293a6214ec24a73e4199de4d5a6e31a7d98936c82ffa872",
+    "acceptance-e5cc09f2ad50e0f77365a1c7e43ec622b2afb4c539c3d81ac17fc94465fd5cfa"
+  ],
+  "actor": "native-runtime:command:pnpm",
+  "issuedAt": "2026-08-19T06:54:09.535Z",
+  "evidence": {
+    "executable": "pnpm",
+    "args": [
+      "--dir",
+      "web",
+      "-r",
+      "run",
+      "lint"
+    ],
+    "cwd": ".",
+    "exitCode": 0,
+    "signal": null,
+    "timedOut": false,
+    "timeoutMs": 120000,
+    "startedAt": "2026-08-19T06:54:05.907Z",
+    "endedAt": "2026-08-19T06:54:09.535Z",
+    "worktree": {
+      "provider": "git",
+      "root": ".",
+      "beforeCommit": "a057c11ab7df043504b62bf8696f4b208a178ccf",
+      "afterCommit": "a057c11ab7df043504b62bf8696f4b208a178ccf"
+    },
+    "afterFence": {
+      "snapshotHash": "beb2510fba4745f73aef928089847f70cd7275741b2fe4ead18891b401b11c36",
+      "scopeHash": "049b1731cdc16b9cc2e33620d8cb86cac3a60aaf0a8948ef97e8fc5c00c5a478",
+      "matched": true
+    },
+    "outputHash": "54c5d5e76aa54ebdf3983f702345f66e271f02975bfde578e4a50cc0987dd936",
+    "outputSummary": "Scope: 3 of 4 workspace projects\npackages/shared lint$ tsc --noEmit\npackages/shared lint: Done\napps/console lint$ tsc --noEmit && node scripts/check-css-loads.mjs\napps/kid lint$ tsc --noEmit && node scripts/check-css-loads.mjs && node scripts/check-api-whitelist.mjs\napps/kid lint: ✓ All 2 CSS file(s) imported: src/design/kid.css, src/design/tokens.css\napps/kid lint: 孩子端运行时调用: /auth/child/login, /auth/logout, /auth/me, /blind-boxes/:id/candidates, /blind-boxes/available, /exchanges, /exchanges/blind-box, /exchanges/direct, /family/devices/children, /points/balance/:id, /prizes/available, /task-assignments, /task-review/submissions\napps/kid lint: 白名单前缀: /auth/child/login, /auth/logout, /auth/me, /family/devices/children, /task-assignments, /points/balance, /prizes, /blind-boxes, /exchanges, /task-review/submissions\napps/kid lint: ✓ 白名单一致：13 个调用全部命中 10 条白名单前缀，且无未使用条目\napps/kid lint: Done\napps/console lint: ✓ All 2 CSS file(s) imported: src/styles/index.css, src/styles/themes.css\napps/console lint: Done",
+    "outputTruncated": false
+  },
+  "receiptHash": "0cd555253e63a5cc8f2a0064c1299b9a9fc35c5240923ab2e3f96a309140c902"
+}

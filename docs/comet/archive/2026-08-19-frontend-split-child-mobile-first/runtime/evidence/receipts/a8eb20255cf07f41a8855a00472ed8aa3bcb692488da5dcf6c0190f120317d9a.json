@@ -1,0 +1,28 @@
+{
+  "schema": "comet.native.verification-receipt.v3",
+  "kind": "manual-evidence",
+  "role": "acceptance-evidence",
+  "status": "passed",
+  "bindings": {
+    "change": "frontend-split-child-mobile-first",
+    "sourceRevision": 15,
+    "contractHash": "9972f95eb0ee48cedba0fd0a9165a9b310aacff57c376823f227a1073f467fe1",
+    "scopeHash": "049b1731cdc16b9cc2e33620d8cb86cac3a60aaf0a8948ef97e8fc5c00c5a478",
+    "snapshotHash": "beb2510fba4745f73aef928089847f70cd7275741b2fe4ead18891b401b11c36",
+    "artifactHash": "d7bcbce0d87c05c11ee7eb5338887346c2051136f0b94684a512300ff8ba93e7"
+  },
+  "acceptanceIds": [
+    "acceptance-0e86f8fc6ccbe012818dd1095e38a148ef358ba89700d9094e742be610fcec82"
+  ],
+  "actor": "native-runtime:manual-evidence",
+  "issuedAt": "2026-08-19T06:54:31.011Z",
+  "evidence": {
+    "steps": [
+      "review"
+    ],
+    "observations": [
+      "split structure: apps/console (parent+admin) + apps/kid (child) + packages/shared (api/auth/role/theme); two independent Dockerfiles; compose gateway with path routing; bundle isolated both ways verified R3"
+    ]
+  },
+  "receiptHash": "a8eb20255cf07f41a8855a00472ed8aa3bcb692488da5dcf6c0190f120317d9a"
+}

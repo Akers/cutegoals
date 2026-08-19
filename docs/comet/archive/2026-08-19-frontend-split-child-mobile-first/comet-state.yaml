@@ -1,0 +1,27 @@
+schema: comet.native.v3
+minimum_runtime_version: 3
+revision: 16
+verification_protocol: legacy-v1
+name: frontend-split-child-mobile-first
+language: zh-CN
+phase: build
+brief: brief.md
+approval: confirmed
+approved_contract_hash: 9972f95eb0ee48cedba0fd0a9165a9b310aacff57c376823f227a1073f467fe1
+spec_changes:
+  - capability: child-mobile-first-ui
+    operation: create
+    source: specs/child-mobile-first-ui/spec.md
+    base_hash: null
+  - capability: frontend-split
+    operation: create
+    source: specs/frontend-split/spec.md
+    base_hash: null
+verification_result: fail
+verification_report: verification.md
+implementation_scope: runtime/evidence/scopes/049b1731cdc16b9cc2e33620d8cb86cac3a60aaf0a8948ef97e8fc5c00c5a478.json
+verification_evidence: runtime/evidence/verifications/1b2ff9431992d463ebbf5ee8f4b2d7c861edc50414895ca6bda8b977980e6a58.json
+partial_allowance: runtime/evidence/allowances/c3d3c40d722dc9b1d652e32e67e475448df07a7995140ad677c57fc08b0f6d66.json
+archived: false
+created_at: 2026-08-19
+run_id: 1bb04a8c-9418-4bfc-ab91-154766e7aa66
