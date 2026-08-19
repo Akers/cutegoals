@@ -1,40 +1,14 @@
 {
   "name": "@cutegoals/web",
   "private": true,
-  "version": "0.1.0",
+  "version": "2.0.0",
   "type": "module",
+  "packageManager": "pnpm@11.15.1",
   "scripts": {
-    "start": "umi dev",
-    "build": "umi build",
-    "postinstall": "umi setup",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "lint": "tsc --noEmit && npm run lint:css",
-    "lint:css": "node scripts/check-css-loads.mjs"
-  },
-  "dependencies": {
-    "@ant-design/icons": "^5.6.1",
-    "@ant-design/pro-components": "^2.8.10",
-    "antd": "^5.29.3",
-    "antd-style": "^3.7.1",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "umi": "^4.6.76"
-  },
-  "devDependencies": {
-    "@testing-library/jest-dom": "^6.4.8",
-    "@testing-library/react": "^16.0.0",
-    "@testing-library/user-event": "^14.5.2",
-    "@types/react": "^18.3.3",
-    "@types/react-dom": "^18.3.0",
-    "@typescript-eslint/eslint-plugin": "^7.18.0",
-    "@typescript-eslint/parser": "^7.18.0",
-    "eslint": "^8.57.0",
-    "eslint-plugin-react-hooks": "^4.6.2",
-
-    "jsdom": "^24.1.1",
-    "prettier": "^3.3.3",
-    "typescript": "~5.5.4",
-    "vitest": "^2.0.5"
+    "build": "pnpm -r --filter './apps/*' run build",
+    "dev:console": "pnpm --filter @cutegoals/console run start",
+    "dev:kid": "pnpm --filter @cutegoals/kid run start",
+    "test": "pnpm -r run test",
+    "lint": "pnpm -r run lint"
   }
 }

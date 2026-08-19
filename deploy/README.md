@@ -14,20 +14,40 @@
 
 ### 架构
 
+前端拆分为两个独立可部署工程，以两个独立容器运行，入口网关按路径分流：
+
+- **Console 前端**（家长端 + 管理端）：`web/apps/console`，容器 `mit-modelide-core-console`
+- **Kid 前端**（孩子端，移动优先）：`web/apps/kid`，容器 `mit-modelide-core-kid`
+
+分流规则（同域路径分流）：
+
+| 路径 | 去向 | 说明 |
+|------|------|------|
+| `/child/api/*` | kid 容器 | 容器内执行 **API 白名单**（仅孩子端点），白名单外 403 |
+| `/child/*` | kid 容器 | 孩子端静态文件 |
+| `/api/*` | 后端 | console 流量（后端 JWT 角色鉴权） |
+| 其余 | console 容器 | 家长端 + 管理端静态文件 |
+
 ```
 ┌──────────────┐      ┌──────────────┐      ┌──────────────┐
 │   Nginx      │─────▶│   Server     │◀────▶│  PostgreSQL  │
 │  :80/:443    │      │  :8080       │      │  :5432       │
-│  (反向代理)   │      │  (Spring     │      │  (数据持久化) │
-│              │      │   Boot)      │      │              │
-└──────────────┘      └──────┬───────┘      └──────────────┘
-                             │
-                             ▼
-                      ┌──────────────┐
-                      │    Redis     │
-                      │   :6379      │
-                      │  (会话/缓存) │
-                      └──────────────┘
+│  (入口网关)   │      │  (Spring     │      │  (数据持久化) │
+└──────┬───────┘      │   Boot)      │      │              │
+       │              └──────┬───────┘      └──────────────┘
+       │                     │
+       │              ┌──────▼───────┐
+       │              │    Redis     │
+       │              │   :6379      │
+       │              └──────────────┘
+       ▼
+┌──────────────┐  ┌──────────────┐
+│   Console    │  │     Kid      │
+│  前端容器     │  │  前端容器     │
+│  :8080       │  │  :8080       │
+│  (家长+管理)  │  │  (孩子端,     │
+│              │  │  API 白名单)  │
+└──────────────┘  └──────────────┘
 
 ┌────────────────────────────────────────────────────────┐
 │  Backup Sidecar                                        │
@@ -41,8 +61,9 @@
 所有 Docker 镜像均使用 `mit-modelide-core-` 前缀：
 
 - `mit-modelide-core-server:<version>` — Spring Boot 后端
-- `mit-modelide-core-web:<version>` — 前端静态资源构建产物
-- `mit-modelide-core-nginx:<version>` — Nginx 反向代理
+- `mit-modelide-core-console:<version>` — Console 前端（家长端 + 管理端）静态资源
+- `mit-modelide-core-kid:<version>` — Kid 前端（孩子端）静态资源 + API 白名单反代
+- `mit-modelide-core-nginx:<version>` — 入口网关（按路径分流）
 - `mit-modelide-core-postgres` — PostgreSQL 16（官方镜像）
 - `mit-modelide-core-redis` — Redis 7（官方镜像）
 - `mit-modelide-core-backup` — 备份 Sidecar（基于 PostgreSQL 镜像）

@@ -72,17 +72,24 @@ mvn clean install
 mvn clean -pl web -am spring-boot:run -DskipTests
 ```
 
-4. 运行前端
+4. 运行前端（两个独立应用）
+
+前端为 pnpm workspace 双工程：`web/apps/console`（家长端 + 管理端）与 `web/apps/kid`（孩子端，移动优先），共享代码在 `web/packages/shared`。
 
 ```bash
 cd web
-npm install
-npm run dev
+pnpm install
+
+# 终端 A：Console（家长端 + 管理端）→ http://localhost:8000
+pnpm run dev:console
+
+# 终端 B：Kid（孩子端）→ http://localhost:8001/child/
+pnpm run dev:kid
 ```
 
 5. 初始化系统
 
-首次启动后访问 `http://localhost:5173/admin`，按 [管理端初始化](#管理端初始化首次部署) 完成首位管理员账号创建。详细角色访问说明请参考 [使用指南](#使用指南)。
+首次启动后访问 `http://localhost:8000/admin`，按 [管理端初始化](#管理端初始化首次部署) 完成首位管理员账号创建。详细角色访问说明请参考 [使用指南](#使用指南)。
 
 #### 快速启动脚本
 
@@ -104,41 +111,32 @@ npm run dev
 
 ### 前端 API 代理配置
 
-开发模式下，前端 Vite 开发服务器默认会把所有 `/api` 开头的请求代理到本地后端 `http://localhost:8080`。
+开发模式下两个应用各自代理 API 到本地后端 `http://localhost:8080`（Umi `proxy` 配置）：
 
-配置在 `web/vite.config.ts` 中：
-
-```typescript
-server: {
-  port: 5173,
-  proxy: {
-    '/api': {
-      target: process.env.VITE_API_PROXY_TARGET ?? 'http://localhost:8080',
-      changeOrigin: true,
-    },
-  },
-},
-```
+- **Console**（`web/apps/console/config/config.ts`）：`/api` → 后端。
+- **Kid**（`web/apps/kid/config/config.ts`）：`/child/api` → 剥离前缀后为 `/api`（与生产拓扑一致：生产环境该路径经 kid 容器 **API 白名单** 过滤后转发后端）。
 
 - 默认后端地址为 `http://localhost:8080`（即 Spring Boot 默认端口）。
-- 如果后端运行在其他地址或端口，启动前端时通过环境变量覆盖：
+- 如果后端运行在其他地址或端口，通过环境变量覆盖：
 
   ```bash
   cd web
-  VITE_API_PROXY_TARGET=http://localhost:8080 npm run dev
+  API_PROXY_TARGET=http://localhost:8080 pnpm run dev:console   # 或 dev:kid
   ```
 
-- 生产环境由 Nginx 反向代理到后端容器，无需此项配置。
+- 生产环境由入口网关 Nginx 分流：`/child/api/*` → kid 容器（白名单过滤）、`/api/*` → 后端，无需此项配置。
 
 ### 使用指南
 
 CuteGoals 前端按角色分为三个独立入口，启动前端开发服务器后可通过以下路径访问：
 
-| 入口 | 路径 | 说明 |
-|------|------|------|
-| 管理端 | `/admin` | 实例级管理，包括系统初始化、账号管理、审计日志、健康检查 |
-| 家长端 | `/parent` | 家庭管理、任务管理、审核、积分、奖品、兑换 |
-| 孩子端 | `/child` | 孩子专属界面，查看任务、赚取积分、兑换奖品 |
+| 入口 | 路径 | 所在应用 | 说明 |
+|------|------|----------|------|
+| 管理端 | `/admin` | console | 实例级管理，包括系统初始化、账号管理、审计日志、健康检查 |
+| 家长端 | `/parent` | console | 家庭管理、任务管理、审核、积分、奖品、兑换 |
+| 孩子端 | `/child` | kid | 孩子专属界面（移动优先、童趣设计），查看任务、赚取积分、兑换奖品 |
+
+生产部署时 console 与 kid 为同一 compose 中的两个独立 frontend 容器，入口网关按路径分流（`/child/*` → kid 容器，其余 → console 容器）；孩子端 API 流量经 kid 容器白名单过滤，孩子设备不会下载家长/管理端任何代码。
 
 #### 管理端初始化（首次部署）
 

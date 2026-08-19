@@ -100,7 +100,48 @@ services:
     networks:
       - mit-modelide-core-network
 
-  # ── 前端 + Nginx 反向代理 ────────────────────────────────────────────────
+  # ── Console 前端容器（家长端 + 管理端，纯静态）─────────────────────────
+  mit-modelide-core-console:
+    image: mit-modelide-core-console:${APP_VERSION:-latest}
+    container_name: mit-modelide-core-console
+    build:
+      context: ../web
+      dockerfile: apps/console/Dockerfile
+    restart: unless-stopped
+    expose:
+      - "8080"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    networks:
+      - mit-modelide-core-network
+
+  # ── Kid 前端容器（孩子端，静态 + /child/api 白名单反代）─────────────────
+  mit-modelide-core-kid:
+    image: mit-modelide-core-kid:${APP_VERSION:-latest}
+    container_name: mit-modelide-core-kid
+    build:
+      context: ../web
+      dockerfile: apps/kid/Dockerfile
+    restart: unless-stopped
+    expose:
+      - "8080"
+    depends_on:
+      mit-modelide-core-server:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    networks:
+      - mit-modelide-core-network
+
+  # ── 入口网关 Nginx（按路径分流到 console / kid / 后端）─────────────────
   mit-modelide-core-nginx:
     image: mit-modelide-core-nginx:${APP_VERSION:-latest}
     container_name: mit-modelide-core-nginx
@@ -115,6 +156,10 @@ services:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
     depends_on:
       mit-modelide-core-server:
+        condition: service_healthy
+      mit-modelide-core-console:
+        condition: service_healthy
+      mit-modelide-core-kid:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:80/"]

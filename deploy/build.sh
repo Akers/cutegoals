@@ -153,14 +153,16 @@ cmd_build_server() {
 
 cmd_build_web() {
     check_dependency "node" "请安装 Node.js 20+"
-    check_dependency "npm" "请安装 npm 10+"
+    check_dependency "pnpm" "请安装 pnpm 9+（corepack enable pnpm）"
 
-    info "开始安装前端依赖..."
-    (cd "${PROJECT_ROOT}/web" && npm ci)
+    info "开始安装前端依赖（pnpm workspace）..."
+    (cd "${PROJECT_ROOT}/web" && pnpm install --frozen-lockfile)
 
-    info "开始构建前端产物..."
-    (cd "${PROJECT_ROOT}/web" && npm run build)
-    info "前端构建完成！产物位于 web/dist/"
+    info "开始构建 Console 前端（家长端 + 管理端）..."
+    (cd "${PROJECT_ROOT}/web" && pnpm --filter @cutegoals/console run build)
+    info "开始构建 Kid 前端（孩子端）..."
+    (cd "${PROJECT_ROOT}/web" && pnpm --filter @cutegoals/kid run build)
+    info "前端构建完成！产物位于 web/apps/console/dist/ 与 web/apps/kid/dist/"
 }
 
 cmd_build_docker() {
@@ -214,13 +216,21 @@ cmd_build_docker() {
         "${build_args[@]}" \
         "${PROJECT_ROOT}"
 
-    # 构建前端 web 镜像
-    info "构建前端 Web Docker 镜像（${platform}）：mit-modelide-core-web:${version} ..."
+    # 构建 Console 前端镜像（家长端 + 管理端）
+    info "构建 Console 前端 Docker 镜像（${platform}）：mit-modelide-core-console:${version} ..."
     docker build \
-        -f "${PROJECT_ROOT}/web/Dockerfile" \
-        -t "mit-modelide-core-web:${version}" \
+        -f "${PROJECT_ROOT}/web/apps/console/Dockerfile" \
+        -t "mit-modelide-core-console:${version}" \
         "${build_args[@]}" \
-        "${PROJECT_ROOT}"
+        "${PROJECT_ROOT}/web"
+
+    # 构建 Kid 前端镜像（孩子端）
+    info "构建 Kid 前端 Docker 镜像（${platform}）：mit-modelide-core-kid:${version} ..."
+    docker build \
+        -f "${PROJECT_ROOT}/web/apps/kid/Dockerfile" \
+        -t "mit-modelide-core-kid:${version}" \
+        "${build_args[@]}" \
+        "${PROJECT_ROOT}/web"
 
     # 构建 nginx 镜像
     info "构建 Nginx Docker 镜像（${platform}）：mit-modelide-core-nginx:${version} ..."
@@ -232,7 +242,8 @@ cmd_build_docker() {
 
     info "Docker 镜像构建完成！"
     info "  - mit-modelide-core-server:${version} (${platform})"
-    info "  - mit-modelide-core-web:${version} (${platform})"
+    info "  - mit-modelide-core-console:${version} (${platform})"
+    info "  - mit-modelide-core-kid:${version} (${platform})"
     info "  - mit-modelide-core-nginx:${version} (${platform})"
 }
 

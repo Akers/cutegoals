@@ -49,8 +49,12 @@ services:
     volumes:
       # 开发模式使用 dev 配置（HTTP 直接服务，无 HTTPS 跳转）
       - ./nginx.dev.conf:/etc/nginx/conf.d/default.conf:ro
-      # 开发时使用本地构建产物（需要先运行 npm run build）
-      - ../web/dist:/usr/share/nginx/html:ro
+      # 孩子端 API 白名单（唯一权威文件，与 kid 容器共用）
+      - ../web/apps/kid/nginx-kid-api-whitelist.conf:/etc/nginx/includes/kid-api-whitelist.conf:ro
+      - ../web/apps/kid/nginx-api-proxy-headers.conf:/etc/nginx/includes/api-proxy-headers.conf:ro
+      # 开发时使用本地构建产物（需先分别构建两个前端应用）
+      - ../web/apps/console/dist:/usr/share/nginx/console:ro
+      - ../web/apps/kid/dist:/usr/share/nginx/kid:ro
     # 仅暴露 HTTP 端口（开发模式不需要 HTTPS）
     # 仅注释掉 443 端口的映射
     # 配置文件中保留 HTTPS 但不可达

@@ -1,0 +1,157 @@
+import {
+  createContext,
+  ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
+import { history } from 'umi';
+import { getClient, configureClient } from '@shared/api/client';
+import type { ApiError } from '@shared/api/types';
+
+export interface Account {
+  accountId: string | number;
+  phone?: string;
+  roles: string[];
+  familyId?: string | number;
+  childId?: string | number;
+  nickname?: string;
+  expiresIn?: number;
+}
+
+interface AuthContextValue {
+  account: Account | null;
+  isAuthenticated: boolean;
+  login: (data: Account) => void;
+  logout: () => Promise<void>;
+  loading: boolean;
+  error: string | null;
+  setError: (error: string | null) => void;
+}
+
+const AuthContext = createContext<AuthContextValue | null>(null);
+
+export function useAuth(): AuthContextValue {
+  const value = useContext(AuthContext);
+  if (!value) throw new Error('useAuth must be used within AuthProvider');
+  return value;
+}
+
+export function AuthProvider({
+  children,
+  initialAccount,
+  apiBaseUrl = '/api',
+}: {
+  children: ReactNode;
+  initialAccount?: Account;
+  /** API base URL — console 使用默认 '/api'；kid 应用传入 '/child/api'（经 kid 容器白名单反代）。 */
+  apiBaseUrl?: string;
+}) {
+  const [account, setAccount] = useState<Account | null>(initialAccount ?? null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleUnauthorized = useCallback(() => {
+    setAccount(null);
+    const path = window.location.pathname;
+    // Public auth pages must NOT be kicked away on 401 — otherwise visiting
+    // /admin/init with a stale cookie would redirect to /admin/login and
+    // block re-initialization.
+    const publicPaths = [
+      '/admin/init',
+      '/admin/login',
+      '/parent/login',
+      '/child/login',
+      '/child/bind',
+    ];
+    if (publicPaths.some((p) => path.startsWith(p))) {
+      return;
+    }
+    if (path.startsWith('/admin')) {
+      history.push('/admin/login');
+    } else if (path.startsWith('/parent')) {
+      history.push('/parent/login');
+    } else {
+      history.push('/child/login');
+    }
+  }, []);
+
+  useEffect(() => {
+    configureClient({
+      baseUrl: apiBaseUrl,
+      onUnauthorized: handleUnauthorized,
+    });
+  }, [handleUnauthorized, apiBaseUrl]);
+
+  // Restore session from cookie on mount
+  useEffect(() => {
+    let cancelled = false;
+    getClient()
+      .get<{ accountId: number; phone: string; roles: string[]; familyId: number | null; childId: number | null }>('/auth/me')
+      .then((response) => {
+        if (cancelled) return;
+        if (response.data) {
+          setAccount({
+            accountId: response.data.accountId,
+            phone: response.data.phone,
+            roles: response.data.roles,
+            familyId: response.data.familyId ?? undefined,
+            childId: response.data.childId ?? undefined,
+          });
+        }
+        // 401 → do nothing, account stays null
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const login = useCallback((data: Account) => {
+    setAccount(data);
+    setError(null);
+  }, []);
+
+  const logout = useCallback(async () => {
+    setLoading(true);
+    try {
+      await getClient().post('/auth/logout');
+    } catch {
+      // ignore
+    } finally {
+      setAccount(null);
+      setLoading(false);
+      handleUnauthorized();
+    }
+  }, [handleUnauthorized]);
+
+  const value = useMemo(
+    () => ({
+      account,
+      isAuthenticated: !!account,
+      login,
+      logout,
+      loading,
+      error,
+      setError,
+    }),
+    [account, login, logout, loading, error],
+  );
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+}
+
+export function getErrorMessage(error: ApiError | string | undefined): string {
+  if (!error) return '发生未知错误';
+  if (typeof error === 'string') return error;
+  return error.message ?? '发生未知错误';
+}
+
+export function maskPhone(phone?: string): string {
+  if (!phone || phone.length < 7) return phone ?? '';
+  return phone.slice(0, 3) + '****' + phone.slice(7);
+}

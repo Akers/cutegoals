@@ -1,0 +1,65 @@
+/* =============================================================================
+ * CuteGoals 孩子端设计 Token —— 明亮糖果色（Bright Candy）
+ * 调性决定（D4）：高饱和明快配色、大圆角、圆粗字形、emoji/贴纸点缀。
+ * 仅使用系统字体栈，不引入第三方字体文件。
+ * ========================================================================== */
+
+:root {
+  /* ── 主色与点缀色 ─────────────────────────────────────────────── */
+  --kid-primary: #0284c7;          /* 天空蓝主色（筛选高亮 = 主题色背景 + 白字） */
+  --kid-primary-bright: #0ea5e9;   /* 亮天空蓝 */
+  --kid-primary-soft: #e0f2fe;     /* 天空蓝浅底 */
+  --kid-peach: #fb923c;            /* 蜜桃橙 */
+  --kid-peach-soft: #ffedd5;
+  --kid-mint: #10b981;             /* 薄荷绿 */
+  --kid-mint-soft: #d1fae5;
+  --kid-lemon: #f59e0b;            /* 柠檬黄 */
+  --kid-lemon-soft: #fef3c7;
+  --kid-pink: #f472b6;             /* 糖果粉 */
+  --kid-pink-soft: #fce7f3;
+  --kid-grape: #8b5cf6;            /* 葡萄紫 */
+  --kid-grape-soft: #ede9fe;
+
+  /* ── 中性色 ───────────────────────────────────────────────────── */
+  --kid-bg: #f0f9ff;
+  --kid-surface: #ffffff;
+  --kid-text: #1c3d5a;
+  --kid-text-muted: #64748b;
+  --kid-border: #dbeafe;
+  --kid-danger: #ef4444;
+  --kid-danger-soft: #fee2e2;
+  --kid-warning: #d97706;
+  --kid-warning-soft: #fef3c7;
+  --kid-disabled: #cbd5e1;
+
+  /* ── 圆角（大圆角糖果风）───────────────────────────────────────── */
+  --kid-radius-sm: 12px;
+  --kid-radius-md: 16px;
+  --kid-radius-lg: 20px;
+  --kid-radius-xl: 24px;
+  --kid-radius-pill: 999px;
+
+  /* ── 阴影（柔和浮起感）────────────────────────────────────────── */
+  --kid-shadow-sm: 0 2px 6px rgb(2 132 199 / 0.08);
+  --kid-shadow-md: 0 6px 16px rgb(2 132 199 / 0.12);
+  --kid-shadow-lg: 0 12px 28px rgb(2 132 199 / 0.16);
+
+  /* ── 字体（圆粗系统字体栈）────────────────────────────────────── */
+  --kid-font: ui-rounded, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei',
+    'Source Han Sans SC', system-ui, sans-serif;
+
+  /* ── 尺寸 ─────────────────────────────────────────────────────── */
+  --kid-touch: 44px;               /* 最小触控目标 */
+  --kid-tabbar-h: 64px;
+  --kid-page-max: 560px;           /* PC 辅助形态的居中受限宽度 */
+
+  /* ── 渐变 ─────────────────────────────────────────────────────── */
+  --kid-grad-sky: linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%);
+  --kid-grad-candy: linear-gradient(135deg, #0ea5e9 0%, #8b5cf6 55%, #f472b6 100%);
+  --kid-grad-points: linear-gradient(135deg, #0ea5e9 0%, #10b981 100%);
+  --kid-grad-bg:
+    radial-gradient(1200px 500px at 85% -10%, #e0f2fe 0%, transparent 60%),
+    radial-gradient(900px 420px at -15% 12%, #ede9fe 0%, transparent 55%),
+    radial-gradient(800px 500px at 110% 55%, #fce7f3 0%, transparent 50%),
+    #f0f9ff;
+}
