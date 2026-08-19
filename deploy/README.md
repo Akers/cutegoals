@@ -70,6 +70,110 @@
 
 ---
 
+### 前端双应用部署
+
+CuteGoals 2.0 前端为 pnpm workspace 双工程，每个应用独立构建为 Docker 镜像、由 compose 作为独立 frontend 容器编排：
+
+| 应用 | 仓库路径 | 镜像 | 容器内端口 | 容器角色 |
+|---|---|---|---|---|
+| console（家长端 + 管理端） | `web/apps/console/` | `mit-modelide-core-console:<tag>` | 8080 | 纯静态文件服务 |
+| kid（孩子端） | `web/apps/kid/` | `mit-modelide-core-kid:<tag>` | 8080 | 静态文件 + `/child/api/*` 白名单反代后端 |
+| nginx 网关 | `deploy/nginx/Dockerfile` | `mit-modelide-core-nginx:<tag>` | 80 / 443 | 入口：按路径分流到 console 或 kid；HTTPS 终结 |
+
+**镜像构建（由 `deploy/build.sh build-docker` 自动执行）：**
+
+```bash
+# Linux
+bash deploy/build.sh build-docker
+bash deploy/build.sh build-docker --platform linux/arm64   # 显式指定平台
+
+# Windows PowerShell
+.\deploy\build.ps1 build-docker
+```
+
+**build-docker 内部行为：**
+
+1. `deploy/build.sh` 调用 `docker build`（或 `podman build`）分别构建 `web/apps/console/Dockerfile` 与 `web/apps/kid/Dockerfile`
+2. 镜像构建：node:22-alpine builder 阶段执行 `pnpm install` + 单 app 的 `umi build`，产物在 `/build/apps/<app>/dist`；nginx:1.25-alpine 阶段 COPY 对应 nginx.conf + 白名单（仅 kid）+ dist 产物
+3. 构建后启动 `docker compose --env-file .env -f deploy/docker-compose.yml up -d`，所有服务（postgres / redis / server / console / kid / nginx / backup）一起拉起
+
+**容器编排关键点：**
+
+- console 与 kid 两个 frontend 服务都在 compose 中声明，`expose: 8080`（仅内网可达，nginx 网关代理访问）
+- 入口网关 `mit-modelide-core-nginx` `depends_on: console, kid, server`，等待三者健康
+- kid 服务 `depends_on: server`（健康后启动），kid 容器 nginx 的白名单反代才会成功
+- 网关 nginx conf 不直接处理 API 路径；“/child/api/*” 全部代理到 kid 容器，由 kid 容器 nginx 应用白名单再转后端（详见下一节）
+
+**回滚：**
+
+`deploy/build.sh` 与 `deploy/build.ps1` 支持 image tag 切换：`APP_VERSION=v1.2.3` 重启即可回滚到指定 tag 的 console + kid 镜像。详见 `## 七、升级` 节。
+
+### API 白名单（kid 容器）
+
+孩子端设备不直接访问后端，所有 `/child/api/*` 流量经 kid 容器 nginx 后才转发后端。**白名单是 kid 容器的一道安全边界：孩子设备上运行的 SPA 调用的端点（无论是否被恶意修改）只会抵达白名单放行的路径，未放行的一律 403，不触达后端。**
+
+**白名单文件唯一权威源：`web/apps/kid/nginx-kid-api-whitelist.conf`**
+
+当前白名单端点前缀（剥离 `/child/api` 后映射到后端）：
+
+```
+/auth/child/login     POST   `/auth/child/login`
+/auth/logout         POST   `/auth/logout`
+/auth/me             GET    `/auth/me`
+/family/devices/children  GET  `/family/devices/children`
+/task-assignments    GET    `/task-assignments`
+/points/balance      GET    `/points/balance/*`
+/prizes              GET    `/prizes`、`/prizes/*`
+/blind-boxes         GET    `/blind-boxes/*`
+/exchanges           GET    `/exchanges`；POST `/exchanges/direct`、`/exchanges/blind-box`
+/task-review/submissions  POST  `/task-review/submissions`
+```
+
+**为什么需要白名单（而非让 kid 容器直接反代到后端所有路径）：**
+
+- 后端 `/api/*` 中存在管理端/家长端专用端点（`/api/admin/*`、`/api/task-templates`、`/api/family/invitations` 等），孩子端业务上不需访问，也不应允许
+- 后端鉴权（JWT 角色）虽能阻止越权调用，但 kid 容器边缘减少攻击面、避免日志噪音、并防止未来 API 误开通
+- 容器/配置层拦截 = 不可绕过的边界，比依赖前端不调用更可靠
+
+**维护流程：**
+
+1. 在 kid 源码（`web/apps/kid/src/**/*.tsx`）用 `getClient().get/post` 或 `useApi` 调用新端点（路径以 `/xxx` 开头）
+2. 在 `web/apps/kid/nginx-kid-api-whitelist.conf` 对应 `location` 块中加入该前缀的 `proxy_pass http://backend/api/<prefix>`
+3. 运行一致性守卫（自动双向比对：源码调用 vs 白名单条目）：
+
+   ```bash
+   cd web
+   pnpm --filter @cutegoals/kid run lint
+   ```
+
+   守卫脚本 `web/apps/kid/scripts/check-api-whitelist.mjs` 会：
+   - 提取 kid 源码（含 `web/packages/shared`）中所有 `/api/...` 与 `/child/api/...` 调用
+   - 与白名单 10 个前缀双向比对：源码每条调用必须命中白名单某前缀；白名单每条前缀必须被至少一处调用使用
+   - 不一致即 exit 1（lint 失败）
+4. 提交白名单 + 使用方一起 PR
+
+**典型新增端点示例：**
+
+若新增 `GET /api/task-assignments/recent`，需：
+
+1. kid 源码调用 `useApi('/task-assignments/recent')`
+2. 白名单新增 `location /child/api/task-assignments`（前缀已包含 `recent`，无需新增条目）
+3. 守卫通过 → PR 合并
+
+若端点不在现有前缀下（如 `/api/exchanges/refund`），需在白名单新增独立 `location /child/api/exchanges/refund` 条目 + 在 kid 源码调用 `useApi('/exchanges/refund')`。
+
+**与入口网关的关系：**
+
+- dev：`web/apps/kid/config/config.ts` 的 umi proxy `/child/api` → `/api`（剥离前缀）→ 后端
+- 生产：入口网关（`deploy/nginx.conf`）收到 `/child/api/*` → 代理到 kid 容器 8080 → kid 容器 nginx `nginx-kid-api-whitelist.conf` 匹配前缀（最长匹配）→ 命中放行转 `proxy_pass http://backend/api/<prefix>`（剥离 `/child/api`）；未命中由 `location /child/api/ { return 403; }` 兜底
+- 开发网关（`deploy/nginx.dev.conf`）通过挂载同一白名单 + `nginx-api-proxy-headers.conf` 实现等价行为，不需 kid 容器
+
+**故障排查：**
+
+- 孩子端报 403 + 后端日志无对应请求 → 白名单未放行该前缀：按维护流程补白名单
+- 孩子端报 502/504 + 后端日志无 → 路径格式错误：检查 `proxy_pass` URI 拼接（是否正确剥离 `/child/api`）
+- 孩子端报 401/403 + 后端日志有 → 后端 JWT 鉴权拒绝：检查 token 与角色（不属于白名单问题）
+
 ## 一、系统要求
 
 ### 最低配置（参考）
