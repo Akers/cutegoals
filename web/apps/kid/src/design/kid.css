@@ -747,8 +747,9 @@ body {
  * 原则：移动优先、clamp 流式缩放、触控优先（≥44px）、hover 仅 PC 启用
  * ========================================================================== */
 
-/* ── 手机（默认，<768px）：紧凑布局、44px 触控 ───────────────────────── */
+/* ── 手机（默认，<768px）：紧凑布局、44px 触控、全宽自适应 ─────────── */
 .kid-page {
+  max-width: var(--kid-page-max);
   padding-left: var(--kid-padding);
   padding-right: var(--kid-padding);
   gap: var(--kid-gap);
@@ -781,6 +782,7 @@ body {
 /* ── 平板（768-1023px）：两列卡片网格、宽松间距、字体放大 ─────────────── */
 @media (min-width: 768px) and (max-width: 1023px) {
   .kid-page {
+    max-width: var(--kid-page-max-tablet);
     padding-left: var(--kid-padding-lg);
     padding-right: var(--kid-padding-lg);
     gap: var(--kid-gap-lg);
@@ -835,9 +837,10 @@ body {
   }
 }
 
-/* ── PC（≥1024px）：居中受限宽度、双列/宽松布局、hover 效果 ─────────── */
+/* ── PC（≥1024px）：宽版自适应（1200px）、双列卡片网格、hover 效果 ──── */
 @media (min-width: 1024px) {
   .kid-page {
+    max-width: var(--kid-page-max-desktop);
     padding-top: 32px;
     gap: 20px;
   }

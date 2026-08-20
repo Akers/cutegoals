@@ -84,8 +84,8 @@ async function mockApi(page) {
     await page.waitForSelector('text=阅读绘本'); check(vp.name + ' 切换已提交过滤', !(await page.locator('text=整理房间').count()));
     if (vp.name === 'pc-1280') {
       const box = await page.locator('.kid-page').first().boundingBox();
-      check('pc-1280 内容受限(<=620)', box.width <= 620, 'w=' + Math.round(box.width));
-      check('pc-1280 内容居中', box.x > 200, 'x=' + Math.round(box.x));
+      check('pc-1280 内容宽版(>=1000)', box.width >= 1000, 'w=' + Math.round(box.width));
+      check('pc-1280 内容居中', box.x >= 30, 'x=' + Math.round(box.x));
     }
     await ctx.close();
   }

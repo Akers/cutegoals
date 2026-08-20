@@ -56,7 +56,9 @@
   /* ── 尺寸 ─────────────────────────────────────────────────────── */
   --kid-touch: 44px;               /* 最小触控目标 */
   --kid-tabbar-h: 64px;
-  --kid-page-max: 560px;           /* PC 辅助形态的居中受限宽度 */
+  --kid-page-max: 100%;            /* 手机：全宽自适应（不受限） */
+  --kid-page-max-tablet: 720px;    /* 平板：受限宽度居中 */
+  --kid-page-max-desktop: 1200px;  /* PC：宽版自适应（支持多列） */
 
   /* ── 流式缩放（clamp：min, 视口比例, max）───────────────────────── */
   --kid-font-body: clamp(15px, 4vw, 17px);
