@@ -107,7 +107,8 @@ export default function TasksPage() {
     const future = isFutureTask(task.deadline);
     const isBlockedMax = !task.canSubmit && (task.submissionBlockReason === 'MAX_REACHED' || task.submissionBlockReason === 'POINTS_CAP_REACHED');
     const showSubmitButton = (task.status === 'PENDING' || task.status === 'REJECTED') && !isBlockedMax;
-    const submitDisabled = future ? true : !task.canSubmit;
+    // 重复任务（REPEAT）自分配起即为可提交状态；非重复任务的未来日期才禁用按钮
+    const submitDisabled = future && task.snapshotTemplateTaskType !== 'REPEAT' ? true : !task.canSubmit;
 
     return (
       <KidCard

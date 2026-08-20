@@ -3,9 +3,9 @@ import { resolve, dirname } from 'path';
 import { createRequire } from 'module';
 
 const req = createRequire(import.meta.url);
-// umi 内部使用自身嵌套的 react-router-dom；测试中保持一致实例
-const rendererReactPkg = req.resolve('@umijs/renderer-react/package.json');
-const nestedRrd = resolve(dirname(rendererReactPkg), 'node_modules/react-router-dom');
+// 在 pnpm 严格隔离布局下，react-router-dom 提升到 web/node_modules 根，
+// 从 app 的 node_modules 向上解析即可定位；测试中需要 umi 内部使用同一实例
+const nestedRrd = req.resolve('react-router-dom', { paths: [resolve(__dirname, '../../node_modules')] });
 
 export default defineConfig({
   resolve: {

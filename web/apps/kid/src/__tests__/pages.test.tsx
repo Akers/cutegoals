@@ -374,6 +374,9 @@ describe('TasksPage 五分类筛选', () => {
     expect(submitBtns[1]).toBeDisabled();
   });
 
+  it('REPEAT 重复任务自分配起即为可提交：未来日期按钮不因 future 禁用', async () => { const future = new Date(Date.now() + 86400000 * 30).toISOString().split('T')[0]; const today = new Date().toISOString().split('T')[0]; renderTasksPage([ { id: 1, ...baseTask, snapshotTemplateName: '今日REPEAT', status: 'PENDING', deadline: today + 'T20:00:00', overdue: false, cancelled: false, snapshotTemplateTaskType: 'REPEAT' }, { id: 2, ...baseTask, snapshotTemplateName: '未来REPEAT', status: 'PENDING', deadline: future + 'T20:00:00', overdue: false, cancelled: false, snapshotTemplateTaskType: 'REPEAT' } ]); await waitFor(() => expect(screen.getByText('今日REPEAT')).toBeInTheDocument()); expect(screen.getByText('未来REPEAT')).toBeInTheDocument(); const submitBtns = screen.getAllByRole('button', { name: '提交' }); expect(submitBtns).toHaveLength(2); expect(submitBtns[0]).not.toBeDisabled(); expect(submitBtns[1]).not.toBeDisabled(); });
+
+
   it('MAX_REACHED / POINTS_CAP_REACHED → 显示「该任务已达最大提交次数」且无提交按钮', async () => {
     const today = new Date().toISOString().split('T')[0];
     renderTasksPage([
