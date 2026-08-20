@@ -48,10 +48,29 @@
   --kid-font: ui-rounded, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei',
     'Source Han Sans SC', system-ui, sans-serif;
 
+  /* ── 断点（三档响应式：手机 / 平板 / PC）───────────────────────── */
+  --bp-mobile-max: 767px;          /* <768px: 手机（竖屏为主） */
+  --bp-tablet-max: 1023px;         /* 768-1023px: 平板 */
+  /* ≥1024px: PC / 平板横屏大屏 */
+
   /* ── 尺寸 ─────────────────────────────────────────────────────── */
   --kid-touch: 44px;               /* 最小触控目标 */
   --kid-tabbar-h: 64px;
   --kid-page-max: 560px;           /* PC 辅助形态的居中受限宽度 */
+
+  /* ── 流式缩放（clamp：min, 视口比例, max）───────────────────────── */
+  --kid-font-body: clamp(15px, 4vw, 17px);
+  --kid-font-title: clamp(22px, 5.5vw, 26px);
+  --kid-font-title-lg: clamp(24px, 6vw, 32px);
+  --kid-gap: clamp(12px, 3vw, 20px);
+  --kid-gap-lg: clamp(16px, 4vw, 24px);
+  --kid-padding: clamp(16px, 4vw, 24px);
+  --kid-padding-lg: clamp(24px, 4vw, 28px);
+  --kid-radius: clamp(16px, 4vw, 20px);
+  --kid-radius-lg: clamp(20px, 5vw, 24px);
+  --kid-btn-h: clamp(44px, 11vw, 48px);
+  --kid-chip-h: clamp(44px, 11vw, 48px);
+  --kid-tab-h: clamp(52px, 13vw, 58px);
 
   /* ── 渐变 ─────────────────────────────────────────────────────── */
   --kid-grad-sky: linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%);

@@ -739,3 +739,186 @@ body {
 .kid-shake {
   animation: kid-shake 0.5s ease infinite;
 }
+
+
+/* =============================================================================
+ * 三档响应式架构（手机 / 平板 / PC）
+ * 断点：mobile <768px / tablet 768-1023px / desktop ≥1024px
+ * 原则：移动优先、clamp 流式缩放、触控优先（≥44px）、hover 仅 PC 启用
+ * ========================================================================== */
+
+/* ── 手机（默认，<768px）：紧凑布局、44px 触控 ───────────────────────── */
+.kid-page {
+  padding-left: var(--kid-padding);
+  padding-right: var(--kid-padding);
+  gap: var(--kid-gap);
+}
+
+.kid-page-title {
+  font-size: var(--kid-font-title);
+}
+
+.kid-btn {
+  min-height: var(--kid-btn-h);
+  font-size: var(--kid-font-body);
+}
+
+.kid-chip {
+  min-height: var(--kid-chip-h);
+  font-size: var(--kid-font-body);
+  padding: 10px 16px;
+}
+
+.kid-tab {
+  min-height: var(--kid-tab-h);
+  font-size: 11px;
+}
+
+.kid-tab-emoji {
+  font-size: 20px;
+}
+
+/* ── 平板（768-1023px）：两列卡片网格、宽松间距、字体放大 ─────────────── */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .kid-page {
+    padding-left: var(--kid-padding-lg);
+    padding-right: var(--kid-padding-lg);
+    gap: var(--kid-gap-lg);
+  }
+
+  .kid-page-title {
+    font-size: clamp(22px, 3.5vw, 26px);
+  }
+
+  .kid-card {
+    padding: clamp(18px, 2.5vw, 22px);
+  }
+
+  .kid-card-title {
+    font-size: clamp(17px, 2.5vw, 18px);
+  }
+
+  .kid-btn {
+    min-height: clamp(46px, 12vw, 50px);
+    font-size: clamp(16px, 4.5vw, 17px);
+    padding: 12px 24px;
+  }
+
+  .kid-chip {
+    min-height: clamp(46px, 12vw, 50px);
+    font-size: clamp(16px, 4.5vw, 17px);
+    padding: 12px 20px;
+  }
+
+  .kid-tab {
+    min-height: clamp(54px, 13vw, 58px);
+    font-size: 12px;
+  }
+
+  .kid-tab-emoji {
+    font-size: 24px;
+  }
+
+  /* 卡片网格：两列 */
+  .kid-shortcut-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--kid-gap);
+  }
+
+  .kid-shortcut {
+    min-height: 100px;
+    font-size: 16px;
+  }
+
+  .kid-shortcut-emoji {
+    font-size: 32px;
+  }
+}
+
+/* ── PC（≥1024px）：居中受限宽度、双列/宽松布局、hover 效果 ─────────── */
+@media (min-width: 1024px) {
+  .kid-page {
+    padding-top: 32px;
+    gap: 20px;
+  }
+
+  .kid-page-title {
+    font-size: clamp(24px, 2.5vw, 28px);
+  }
+
+  .kid-card {
+    padding: 22px;
+    border-radius: var(--kid-radius-xl);
+  }
+
+  .kid-card-title {
+    font-size: 18px;
+  }
+
+  .kid-btn {
+    min-height: 48px;
+    font-size: 17px;
+  }
+
+  .kid-chip {
+    min-height: 48px;
+    font-size: 17px;
+    padding: 12px 22px;
+  }
+
+  .kid-tab {
+    min-height: 58px;
+    font-size: 13px;
+  }
+
+  .kid-tab-emoji {
+    font-size: 26px;
+  }
+
+  /* PC 双列快捷入口 */
+  .kid-shortcut-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+
+  .kid-shortcut {
+    min-height: 110px;
+    font-size: 17px;
+    padding: 22px 18px;
+  }
+
+  .kid-shortcut-emoji {
+    font-size: 36px;
+  }
+}
+
+/* ── 横屏平板（≥768px 横屏）：紧凑头部、加宽内容 ───────────────────────── */
+@media (min-width: 768px) and (orientation: landscape) {
+  .kid-page {
+    padding-top: 20px;
+  }
+}
+
+/* ── hover 能力检测（仅 PC/触控板启用 hover 效果，移动端保持 :active）──── */
+@media (hover: hover) and (pointer: fine) {
+  .kid-card--clickable:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--kid-shadow-md);
+  }
+
+  .kid-shortcut:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--kid-shadow-md);
+  }
+
+  .kid-chip:hover:not(.kid-chip--active) {
+    border-color: var(--kid-primary-bright);
+    color: var(--kid-primary);
+  }
+
+  .kid-tab:hover:not(.kid-tab--active) {
+    background: var(--kid-primary-soft);
+    color: var(--kid-primary);
+  }
+}
+

@@ -74,6 +74,12 @@ async function mockApi(page) {
     const chipOk = await page.locator('.kid-chip').first().evaluate((el) => el.getBoundingClientRect().height >= 44); check(vp.name + ' Chip触控>=44px', chipOk);
     const tabOk = await page.locator('.kid-tab').first().evaluate((el) => el.getBoundingClientRect().height >= 44); check(vp.name + ' Tab触控>=44px', tabOk);
     check(vp.name + ' 未开始显示', await page.locator('text=未开始').first().isVisible());
+    // 响应式断点断言：三档字号/间距差异
+    const titleSize = await page.locator('.kid-page-title').evaluate((el) => parseFloat(getComputedStyle(el).fontSize));
+    const pagePad = await page.locator('.kid-page').first().evaluate((el) => parseFloat(getComputedStyle(el).paddingLeft));
+    if (vp.name === 'mobile-375') { check('手机标题字号~22px', Math.abs(titleSize - 22) < 1.5, 'fs=' + titleSize); check('手机页边距=16px', pagePad === 16, 'pad=' + pagePad); }
+    if (vp.name === 'tablet-834') { check('平板标题字号~24px', titleSize > 22 && titleSize <= 26, 'fs=' + titleSize); check('平板页边距<=28px', pagePad <= 28, 'pad=' + pagePad); }
+    if (vp.name === 'pc-1280') { check('PC标题字号~28px', titleSize > 26, 'fs=' + titleSize); check('PC页边距>=24px', pagePad >= 24, 'pad=' + pagePad); }
     await page.locator('.kid-chip', { hasText: '已提交' }).click();
     await page.waitForSelector('text=阅读绘本'); check(vp.name + ' 切换已提交过滤', !(await page.locator('text=整理房间').count()));
     if (vp.name === 'pc-1280') {
