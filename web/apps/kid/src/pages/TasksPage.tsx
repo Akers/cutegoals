@@ -123,7 +123,11 @@ export default function TasksPage() {
               <KidTag color="muted">未开始</KidTag>
             )}
             <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
-              <KidTag color="sky">{task.status === 'SUBMITTED' ? '待审核' : statusLabel(task.status.toLowerCase())}</KidTag>
+              <KidTag color="sky">{future
+                ? '待开始'
+                : task.status === 'SUBMITTED'
+                  ? '待审核'
+                  : statusLabel(task.status.toLowerCase())}</KidTag>
               <span className="kid-row-sub">+{task.snapshotDifficultyReward} 积分</span>
             </div>
             {task.rejectionReason && (

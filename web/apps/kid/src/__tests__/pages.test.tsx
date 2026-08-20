@@ -300,6 +300,18 @@ describe('TasksPage 五分类筛选', () => {
     expect(screen.queryByText('进行中任务')).toBeNull();
   });
 
+  it('未来（PENDING）任务卡片显示「待开始」', async () => {
+    const future = new Date(Date.now() + 86400000 * 30).toISOString().split('T')[0];
+    const today = new Date().toISOString().split("T")[0];
+    renderTasksPage([
+      { id: 1, ...baseTask, snapshotTemplateName: '今日PENDING', status: 'PENDING', deadline: `${today}T20:00:00`, overdue: false, cancelled: false, snapshotTemplateTaskType: 'STANDING' },
+      { id: 2, ...baseTask, snapshotTemplateName: '未来PENDING', status: 'PENDING', deadline: `${future}T20:00:00`, overdue: false, cancelled: false, snapshotTemplateTaskType: 'STANDING' },
+    ]);
+    await waitFor(() => expect(screen.getByText('今日PENDING')).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText('待开始')).toBeInTheDocument());
+    expect(screen.getByText('未来PENDING').parentElement).toHaveTextContent('待开始');
+  });
+
   it('SUBMITTED 任务卡片显示「待审核」（已提交未审核）', async () => {
     const today = new Date().toISOString().split('T')[0];
     renderTasksPage([
