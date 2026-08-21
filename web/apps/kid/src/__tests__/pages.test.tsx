@@ -354,6 +354,19 @@ describe('TasksPage 五分类筛选', () => {
     expect(screen.getByText('待审核')).toBeInTheDocument();
   });
 
+  it('待审核（SUBMITTED）任务不显示提交按钮（不能再次提交）', async () => {
+    const today = new Date().toISOString().split('T')[0];
+    renderTasksPage([
+      { id: 1, ...baseTask, snapshotTemplateName: '进行中任务', status: 'PENDING', deadline: `${today}T20:00:00`, overdue: false, cancelled: false, snapshotTemplateTaskType: 'STANDING' },
+      { id: 2, ...baseTask, snapshotTemplateName: '待审核任务', status: 'SUBMITTED', deadline: `${today}T20:00:00`, overdue: false, cancelled: false, snapshotTemplateTaskType: 'STANDING', canSubmit: false },
+    ]);
+    await waitFor(() => expect(screen.getByText('进行中任务')).toBeInTheDocument());
+    await userEvent.click(screen.getByRole('button', { name: '已提交' }));
+    await waitFor(() => expect(screen.getByText('待审核任务')).toBeInTheDocument());
+    expect(screen.queryByRole('button', { name: '提交' })).toBeNull();
+    expect(screen.queryByRole('button', { name: '重新提交' })).toBeNull();
+  });
+
 
   it('「已完成」只显示 APPROVED/COMPLETED', async () => {
     const today = new Date().toISOString().split('T')[0];
