@@ -21,7 +21,13 @@ export default function HomePage() {
   } = useApi<{ balance: number }>(childId ? `/points/balance/${childId}` : '');
 
   const today = new Date().toISOString().split('T')[0];
-  const todayTasks = (assignments?.content ?? []).filter((a) => a.deadline.startsWith(today));
+  const todayTasks = (assignments?.content ?? []).filter((a) => {
+    // 截止时间今天的任务始终展示
+    if (a.deadline.startsWith(today)) return true;
+    // 重复任务（REPEAT）未取消且未完成时也应展示（重复任务今天也应做）
+    if (a.snapshotTemplateTaskType === 'REPEAT' && !a.cancelled && a.status !== 'APPROVED' && a.status !== 'COMPLETED') return true;
+    return false;
+  });
 
   return (
     <KidPage>

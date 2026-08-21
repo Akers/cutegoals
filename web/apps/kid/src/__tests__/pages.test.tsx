@@ -107,6 +107,36 @@ describe('Kid pages', () => {
     expect(screen.getByText('整理房间')).toBeInTheDocument();
   });
 
+  it('今日任务包含 REPEAT 重复任务（即使 deadline 不是今天）', async () => {
+    const today = new Date().toISOString().split('T')[0];
+    const past = new Date(Date.now() - 86400000 * 5).toISOString().split('T')[0];
+    vi.mocked(fetch).mockImplementation((url: string | URL | Request) => {
+      const urlStr = typeof url === 'string' ? url : url.toString();
+      if (urlStr.includes('/auth/me')) {
+        return Promise.resolve(mockResponse({ data: { accountId: 3, childId: 3, roles: ['CHILD'] } }));
+      }
+      if (urlStr.includes('/task-assignments')) {
+        return Promise.resolve(
+          mockResponse({
+            data: {
+              content: [
+                { id: 1, childId: 3, templateId: 1, difficultyId: 1, snapshotTemplateName: '今日普通任务', snapshotDifficultyReward: 10, status: 'PENDING', deadline: `${today}T20:00:00`, overdue: false, cancelled: false, snapshotTemplateTaskType: 'STANDING', canSubmit: true, submissionBlockReason: null },
+                { id: 2, childId: 3, templateId: 2, difficultyId: 1, snapshotTemplateName: '每日阅读REPEAT', snapshotDifficultyReward: 5, status: 'PENDING', deadline: `${past}T20:00:00`, overdue: false, cancelled: false, snapshotTemplateTaskType: 'REPEAT', canSubmit: true, submissionBlockReason: null },
+              ],
+            },
+          }),
+        );
+      }
+      if (urlStr.includes('/points/balance')) {
+        return Promise.resolve(mockResponse({ data: { balance: 100 } }));
+      }
+      return Promise.reject(new Error('Unexpected: ' + urlStr));
+    });
+    renderHome();
+    await waitFor(() => expect(screen.getByText('今日普通任务')).toBeInTheDocument());
+    expect(screen.getByText('每日阅读REPEAT')).toBeInTheDocument();
+  });
+
   it('renders content tasks on TasksPage', async () => {
     const past = new Date(Date.now() - 86400000 * 10).toISOString().split('T')[0];
     vi.mocked(fetch).mockImplementation((url: string | URL | Request) => {
