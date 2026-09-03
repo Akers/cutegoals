@@ -1,5 +1,5 @@
 # =============================================================================
-# CuteGoals 2.0 — Console 前端镜像（家长端 + 管理端）
+# CuteGoals 2.0 — Console 前端镜像（家长端 + 管理端，Vue 3 + Vite + naive-ui）
 # 镜像标签: mit-modelide-core-console:<version>
 # 多阶段：Node 22 + pnpm workspace 构建 → nginx 静态服务（容器内 8080，非 root）
 # 构建上下文：web/ 目录
@@ -18,10 +18,10 @@ COPY apps/console/package.json apps/console/
 COPY apps/kid/package.json apps/kid/
 RUN pnpm install --frozen-lockfile --ignore-scripts
 
-# 源码与构建
+# 源码与构建（Vite 产物输出至 apps/console/dist）
 COPY packages/shared packages/shared
 COPY apps/console apps/console
-RUN pnpm --filter @cutegoals/console exec umi setup && pnpm --filter @cutegoals/console run build
+RUN pnpm --filter @cutegoals/console run build
 
 # ---- 运行阶段 ----
 FROM nginx:1.25-alpine

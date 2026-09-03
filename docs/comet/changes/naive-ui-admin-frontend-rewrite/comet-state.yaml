@@ -1,0 +1,23 @@
+schema: comet.native.v3
+minimum_runtime_version: 3
+revision: 2
+verification_protocol: legacy-v1
+name: naive-ui-admin-frontend-rewrite
+language: zh-CN
+phase: build
+brief: brief.md
+approval: confirmed
+approved_contract_hash: 3a11b9260c384e81f99490970694642f5be99173ec81981df7805dec0a3af92d
+spec_changes:
+  - capability: console-frontend
+    operation: create
+    source: specs/console-frontend/spec.md
+    base_hash: null
+verification_result: pending
+verification_report: null
+implementation_scope: null
+verification_evidence: null
+partial_allowance: null
+archived: false
+created_at: 2026-09-02
+run_id: ca1af3cf-d245-4d7a-9dfc-330b5808f730

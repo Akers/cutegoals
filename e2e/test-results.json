@@ -1,0 +1,1728 @@
+{
+  "config": {
+    "argv": [
+      "/home/akers/.nvm/versions/node/v24.18.0/bin/node",
+      "/home/akers/projects/cutegoals/e2e/node_modules/@playwright/test/cli.js",
+      "test",
+      "--list"
+    ],
+    "configFile": "/home/akers/projects/cutegoals/e2e/playwright.config.ts",
+    "rootDir": "/home/akers/projects/cutegoals/e2e/tests",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {},
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/home/akers/projects/cutegoals/e2e/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "chromium-desktop",
+        "name": "chromium-desktop",
+        "testDir": "/home/akers/projects/cutegoals/e2e/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/home/akers/projects/cutegoals/e2e/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "firefox-desktop",
+        "name": "firefox-desktop",
+        "testDir": "/home/akers/projects/cutegoals/e2e/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/home/akers/projects/cutegoals/e2e/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "chromium-mobile",
+        "name": "chromium-mobile",
+        "testDir": "/home/akers/projects/cutegoals/e2e/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/home/akers/projects/cutegoals/e2e/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "chromium-ci",
+        "name": "chromium-ci",
+        "testDir": "/home/akers/projects/cutegoals/e2e/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "/.*\\.ci\\.spec\\.ts/"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "html",
+        {
+          "outputFolder": "playwright-report"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "test-results.json"
+        }
+      ],
+      [
+        "list",
+        null
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.62.0",
+    "workers": 16,
+    "webServer": {
+      "command": "pnpm run dev:console",
+      "url": "http://localhost:8000",
+      "cwd": "/home/akers/projects/cutegoals/web",
+      "reuseExistingServer": true,
+      "timeout": 120000
+    }
+  },
+  "suites": [
+    {
+      "title": "auth-guard.spec.ts",
+      "file": "auth-guard.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Auth Guard — 权限守卫",
+          "file": "auth-guard.spec.ts",
+          "line": 27,
+          "column": 6,
+          "specs": [],
+          "suites": [
+            {
+              "title": "未认证用户",
+              "file": "auth-guard.spec.ts",
+              "line": 29,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "访问 /parent 目录 → 重定向到登录页",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium-desktop",
+                      "projectName": "chromium-desktop",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "847469d9f22e46ff70fd-606f068a309394aeaa23",
+                  "file": "auth-guard.spec.ts",
+                  "line": 31,
+                  "column": 5
+                },
+                {
+                  "title": "访问 /admin 目录 → 重定向或拒绝",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium-desktop",
+                      "projectName": "chromium-desktop",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "847469d9f22e46ff70fd-ac5278982f983dd0127d",
+                  "file": "auth-guard.spec.ts",
+                  "line": 42,
+                  "column": 5
+                },
+                {
+                  "title": "访问 /child 目录 → 重定向到绑定页",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium-desktop",
+                      "projectName": "chromium-desktop",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "847469d9f22e46ff70fd-1b865d6f7179e47d1170",
+                  "file": "auth-guard.spec.ts",
+                  "line": 53,
+                  "column": 5
+                },
+                {
+                  "title": "直接访问 API → 401",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium-desktop",
+                      "projectName": "chromium-desktop",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "847469d9f22e46ff70fd-eec1b7db50373bea8a50",
+                  "file": "auth-guard.spec.ts",
+                  "line": 65,
+                  "column": 5
+                },
+                {
+                  "title": "访问 /parent 目录 → 重定向到登录页",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "firefox-desktop",
+                      "projectName": "firefox-desktop",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "847469d9f22e46ff70fd-a385d8fc9412844ea8a7",
+                  "file": "auth-guard.spec.ts",
+                  "line": 31,
+                  "column": 5
+                },
+                {
+                  "title": "访问 /admin 目录 → 重定向或拒绝",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "firefox-desktop",
+                      "projectName": "firefox-desktop",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "847469d9f22e46ff70fd-664916edcf235139af1d",
+                  "file": "auth-guard.spec.ts",
+                  "line": 42,
+                  "column": 5
+                },
+                {
+                  "title": "访问 /child 目录 → 重定向到绑定页",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "firefox-desktop",
+                      "projectName": "firefox-desktop",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "847469d9f22e46ff70fd-15c26bac7250744a4123",
+                  "file": "auth-guard.spec.ts",
+                  "line": 53,
+                  "column": 5
+                },
+                {
+                  "title": "直接访问 API → 401",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "firefox-desktop",
+                      "projectName": "firefox-desktop",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "847469d9f22e46ff70fd-3a7a148c5494594f01e6",
+                  "file": "auth-guard.spec.ts",
+                  "line": 65,
+                  "column": 5
+                },
+                {
+                  "title": "访问 /parent 目录 → 重定向到登录页",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium-mobile",
+                      "projectName": "chromium-mobile",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "847469d9f22e46ff70fd-6ac7d8ba19e8ea047d93",
+                  "file": "auth-guard.spec.ts",
+                  "line": 31,
+                  "column": 5
+                },
+                {
+                  "title": "访问 /admin 目录 → 重定向或拒绝",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium-mobile",
+                      "projectName": "chromium-mobile",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "847469d9f22e46ff70fd-79af75ab6a4bdc04cd30",
+                  "file": "auth-guard.spec.ts",
+                  "line": 42,
+                  "column": 5
+                },
+                {
+                  "title": "访问 /child 目录 → 重定向到绑定页",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium-mobile",
+                      "projectName": "chromium-mobile",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "847469d9f22e46ff70fd-f371be6baa5bd24c0771",
+                  "file": "auth-guard.spec.ts",
+                  "line": 53,
+                  "column": 5
+                },
+                {
+                  "title": "直接访问 API → 401",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium-mobile",
+                      "projectName": "chromium-mobile",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "847469d9f22e46ff70fd-ff5a059a78a147480a93",
+                  "file": "auth-guard.spec.ts",
+                  "line": 65,
+                  "column": 5
+                }
+              ]
+            },
+            {
+              "title": "角色越权",
+              "file": "auth-guard.spec.ts",
+              "line": 71,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "孩子角色访问家长 API → 403",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium-desktop",
+                      "projectName": "chromium-desktop",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "847469d9f22e46ff70fd-ba0ccdb6f1f3f817f668",
+                  "file": "auth-guard.spec.ts",
+                  "line": 73,
+                  "column": 5
+                },
+                {
+                  "title": "普通家长访问管理员 API → 403",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium-desktop",
+                      "projectName": "chromium-desktop",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "847469d9f22e46ff70fd-9a22e1cc4e67afc9fe50",
+                  "file": "auth-guard.spec.ts",
+                  "line": 85,
+                  "column": 5
+                },
+                {
+                  "title": "访问其他家庭资源不泄露数据 → 404",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium-desktop",
+                      "projectName": "chromium-desktop",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "847469d9f22e46ff70fd-a09ecae55e4d3d94e42c",
+                  "file": "auth-guard.spec.ts",
+                  "line": 92,
+                  "column": 5
+                },
+                {
+                  "title": "孩子角色访问家长 API → 403",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "firefox-desktop",
+                      "projectName": "firefox-desktop",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "847469d9f22e46ff70fd-432c121d6a3cbfe85f55",
+                  "file": "auth-guard.spec.ts",
+                  "line": 73,
+                  "column": 5
+                },
+                {
+                  "title": "普通家长访问管理员 API → 403",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "firefox-desktop",
+                      "projectName": "firefox-desktop",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "847469d9f22e46ff70fd-d10dfd1dc0c18fcb559a",
+                  "file": "auth-guard.spec.ts",
+                  "line": 85,
+                  "column": 5
+                },
+                {
+                  "title": "访问其他家庭资源不泄露数据 → 404",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "firefox-desktop",
+                      "projectName": "firefox-desktop",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "847469d9f22e46ff70fd-ee7c6a003cc816992303",
+                  "file": "auth-guard.spec.ts",
+                  "line": 92,
+                  "column": 5
+                },
+                {
+                  "title": "孩子角色访问家长 API → 403",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium-mobile",
+                      "projectName": "chromium-mobile",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "847469d9f22e46ff70fd-1e95d81d80ec0b1247c7",
+                  "file": "auth-guard.spec.ts",
+                  "line": 73,
+                  "column": 5
+                },
+                {
+                  "title": "普通家长访问管理员 API → 403",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium-mobile",
+                      "projectName": "chromium-mobile",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "847469d9f22e46ff70fd-c572220268ccff34df21",
+                  "file": "auth-guard.spec.ts",
+                  "line": 85,
+                  "column": 5
+                },
+                {
+                  "title": "访问其他家庭资源不泄露数据 → 404",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium-mobile",
+                      "projectName": "chromium-mobile",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "847469d9f22e46ff70fd-b637ca47976f17570cce",
+                  "file": "auth-guard.spec.ts",
+                  "line": 92,
+                  "column": 5
+                }
+              ]
+            },
+            {
+              "title": "账号停用",
+              "file": "auth-guard.spec.ts",
+              "line": 104,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "停用账号无法访问受保护资源",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium-desktop",
+                      "projectName": "chromium-desktop",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "847469d9f22e46ff70fd-0607a3074db86bcbbc90",
+                  "file": "auth-guard.spec.ts",
+                  "line": 106,
+                  "column": 5
+                },
+                {
+                  "title": "停用账号的刷新令牌立即失效",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium-desktop",
+                      "projectName": "chromium-desktop",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "847469d9f22e46ff70fd-96a8a7185ce6f84d7d9b",
+                  "file": "auth-guard.spec.ts",
+                  "line": 115,
+                  "column": 5
+                },
+                {
+                  "title": "停用账号无法访问受保护资源",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "firefox-desktop",
+                      "projectName": "firefox-desktop",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "847469d9f22e46ff70fd-fcbd8e3488adb1784c7e",
+                  "file": "auth-guard.spec.ts",
+                  "line": 106,
+                  "column": 5
+                },
+                {
+                  "title": "停用账号的刷新令牌立即失效",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "firefox-desktop",
+                      "projectName": "firefox-desktop",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "847469d9f22e46ff70fd-91f929e0ab6932342ae9",
+                  "file": "auth-guard.spec.ts",
+                  "line": 115,
+                  "column": 5
+                },
+                {
+                  "title": "停用账号无法访问受保护资源",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium-mobile",
+                      "projectName": "chromium-mobile",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "847469d9f22e46ff70fd-f74bf881671bc8de370b",
+                  "file": "auth-guard.spec.ts",
+                  "line": 106,
+                  "column": 5
+                },
+                {
+                  "title": "停用账号的刷新令牌立即失效",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium-mobile",
+                      "projectName": "chromium-mobile",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "847469d9f22e46ff70fd-aedba2868be5720688ee",
+                  "file": "auth-guard.spec.ts",
+                  "line": 115,
+                  "column": 5
+                }
+              ]
+            },
+            {
+              "title": "会话过期",
+              "file": "auth-guard.spec.ts",
+              "line": 124,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "过期会话访问受保护页面 → 重定向登录",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium-desktop",
+                      "projectName": "chromium-desktop",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "847469d9f22e46ff70fd-3b3b0ac889b689266e50",
+                  "file": "auth-guard.spec.ts",
+                  "line": 126,
+                  "column": 5
+                },
+                {
+                  "title": "过期会话访问受保护页面 → 重定向登录",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "firefox-desktop",
+                      "projectName": "firefox-desktop",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "847469d9f22e46ff70fd-5b2e634422d2bedb9b53",
+                  "file": "auth-guard.spec.ts",
+                  "line": 126,
+                  "column": 5
+                },
+                {
+                  "title": "过期会话访问受保护页面 → 重定向登录",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium-mobile",
+                      "projectName": "chromium-mobile",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "847469d9f22e46ff70fd-3ccc874d13f7847ad22a",
+                  "file": "auth-guard.spec.ts",
+                  "line": 126,
+                  "column": 5
+                }
+              ]
+            },
+            {
+              "title": "CSRF 防护",
+              "file": "auth-guard.spec.ts",
+              "line": 144,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "无 CSRF 令牌的写请求被拒绝",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium-desktop",
+                      "projectName": "chromium-desktop",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "847469d9f22e46ff70fd-36fbec999cbe8d7c48f4",
+                  "file": "auth-guard.spec.ts",
+                  "line": 146,
+                  "column": 5
+                },
+                {
+                  "title": "无 CSRF 令牌的写请求被拒绝",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "firefox-desktop",
+                      "projectName": "firefox-desktop",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "847469d9f22e46ff70fd-f059648aad38b6c5c184",
+                  "file": "auth-guard.spec.ts",
+                  "line": 146,
+                  "column": 5
+                },
+                {
+                  "title": "无 CSRF 令牌的写请求被拒绝",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium-mobile",
+                      "projectName": "chromium-mobile",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "847469d9f22e46ff70fd-d12d8cb6f66e5bdd13e9",
+                  "file": "auth-guard.spec.ts",
+                  "line": 146,
+                  "column": 5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "CI Smoke Tests",
+          "file": "auth-guard.spec.ts",
+          "line": 156,
+          "column": 6,
+          "specs": [
+            {
+              "title": "健康检查端点正常",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "847469d9f22e46ff70fd-c37c6872e80279b8a8fc",
+              "file": "auth-guard.spec.ts",
+              "line": 158,
+              "column": 3
+            },
+            {
+              "title": "前端入口可访问",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "847469d9f22e46ff70fd-ba5af34fbc78c84a5bb0",
+              "file": "auth-guard.spec.ts",
+              "line": 167,
+              "column": 3
+            },
+            {
+              "title": "admin 路由不崩溃",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "847469d9f22e46ff70fd-f96eeab73915b2f59d0e",
+              "file": "auth-guard.spec.ts",
+              "line": 175,
+              "column": 3
+            },
+            {
+              "title": "parent 路由不崩溃",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "847469d9f22e46ff70fd-51afcd3b50a1703a6fb8",
+              "file": "auth-guard.spec.ts",
+              "line": 182,
+              "column": 3
+            },
+            {
+              "title": "child 路由不崩溃",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "847469d9f22e46ff70fd-d4ec34e951ff15496894",
+              "file": "auth-guard.spec.ts",
+              "line": 189,
+              "column": 3
+            },
+            {
+              "title": "健康检查端点正常",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox-desktop",
+                  "projectName": "firefox-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "847469d9f22e46ff70fd-e7b139b0c222c6483d9e",
+              "file": "auth-guard.spec.ts",
+              "line": 158,
+              "column": 3
+            },
+            {
+              "title": "前端入口可访问",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox-desktop",
+                  "projectName": "firefox-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "847469d9f22e46ff70fd-101304c305a381e7b503",
+              "file": "auth-guard.spec.ts",
+              "line": 167,
+              "column": 3
+            },
+            {
+              "title": "admin 路由不崩溃",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox-desktop",
+                  "projectName": "firefox-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "847469d9f22e46ff70fd-883b527e89fceb471d42",
+              "file": "auth-guard.spec.ts",
+              "line": 175,
+              "column": 3
+            },
+            {
+              "title": "parent 路由不崩溃",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox-desktop",
+                  "projectName": "firefox-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "847469d9f22e46ff70fd-cde7182a438d68917cc8",
+              "file": "auth-guard.spec.ts",
+              "line": 182,
+              "column": 3
+            },
+            {
+              "title": "child 路由不崩溃",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox-desktop",
+                  "projectName": "firefox-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "847469d9f22e46ff70fd-bd55297b8255a2f5603e",
+              "file": "auth-guard.spec.ts",
+              "line": 189,
+              "column": 3
+            },
+            {
+              "title": "健康检查端点正常",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-mobile",
+                  "projectName": "chromium-mobile",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "847469d9f22e46ff70fd-4916c0406783436c816b",
+              "file": "auth-guard.spec.ts",
+              "line": 158,
+              "column": 3
+            },
+            {
+              "title": "前端入口可访问",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-mobile",
+                  "projectName": "chromium-mobile",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "847469d9f22e46ff70fd-7516d582803531c36422",
+              "file": "auth-guard.spec.ts",
+              "line": 167,
+              "column": 3
+            },
+            {
+              "title": "admin 路由不崩溃",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-mobile",
+                  "projectName": "chromium-mobile",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "847469d9f22e46ff70fd-4d46ea3c225651ccebb8",
+              "file": "auth-guard.spec.ts",
+              "line": 175,
+              "column": 3
+            },
+            {
+              "title": "parent 路由不崩溃",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-mobile",
+                  "projectName": "chromium-mobile",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "847469d9f22e46ff70fd-298a95902790c4391fd2",
+              "file": "auth-guard.spec.ts",
+              "line": 182,
+              "column": 3
+            },
+            {
+              "title": "child 路由不崩溃",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-mobile",
+                  "projectName": "chromium-mobile",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "847469d9f22e46ff70fd-e8aaccff63624ebfe704",
+              "file": "auth-guard.spec.ts",
+              "line": 189,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "parent-task-calendar.spec.ts",
+      "file": "parent-task-calendar.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "家长端单月任务日历",
+          "file": "parent-task-calendar.spec.ts",
+          "line": 32,
+          "column": 6,
+          "specs": [
+            {
+              "title": "页面加载后显示单月日历",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "3adb28f609132d6cf588-7063dc84b9b480414f55",
+              "file": "parent-task-calendar.spec.ts",
+              "line": 62,
+              "column": 3
+            },
+            {
+              "title": "点击有色日期 → 下方任务列表刷新为当天任务",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "3adb28f609132d6cf588-78b5d781293e192336b3",
+              "file": "parent-task-calendar.spec.ts",
+              "line": 74,
+              "column": 3
+            },
+            {
+              "title": "任务类型筛选正确过滤任务列表",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "3adb28f609132d6cf588-0fa3414381ac42e3bd54",
+              "file": "parent-task-calendar.spec.ts",
+              "line": 91,
+              "column": 3
+            },
+            {
+              "title": "查看全部模式清除日期约束",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "3adb28f609132d6cf588-f27fb457dd7e921b7fa1",
+              "file": "parent-task-calendar.spec.ts",
+              "line": 110,
+              "column": 3
+            },
+            {
+              "title": "移动端单月布局",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "3adb28f609132d6cf588-94a38a6788ec9c2f241d",
+              "file": "parent-task-calendar.spec.ts",
+              "line": 131,
+              "column": 3
+            },
+            {
+              "title": "页面加载后显示单月日历",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox-desktop",
+                  "projectName": "firefox-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "3adb28f609132d6cf588-a772e1a57a2772fd58bd",
+              "file": "parent-task-calendar.spec.ts",
+              "line": 62,
+              "column": 3
+            },
+            {
+              "title": "点击有色日期 → 下方任务列表刷新为当天任务",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox-desktop",
+                  "projectName": "firefox-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "3adb28f609132d6cf588-8e0433a2c491c677de44",
+              "file": "parent-task-calendar.spec.ts",
+              "line": 74,
+              "column": 3
+            },
+            {
+              "title": "任务类型筛选正确过滤任务列表",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox-desktop",
+                  "projectName": "firefox-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "3adb28f609132d6cf588-2a92d7b5ead20c72822a",
+              "file": "parent-task-calendar.spec.ts",
+              "line": 91,
+              "column": 3
+            },
+            {
+              "title": "查看全部模式清除日期约束",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox-desktop",
+                  "projectName": "firefox-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "3adb28f609132d6cf588-172b3f8b6cb06732f6eb",
+              "file": "parent-task-calendar.spec.ts",
+              "line": 110,
+              "column": 3
+            },
+            {
+              "title": "移动端单月布局",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox-desktop",
+                  "projectName": "firefox-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "3adb28f609132d6cf588-028fc8e2e573ef43535d",
+              "file": "parent-task-calendar.spec.ts",
+              "line": 131,
+              "column": 3
+            },
+            {
+              "title": "页面加载后显示单月日历",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-mobile",
+                  "projectName": "chromium-mobile",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "3adb28f609132d6cf588-3be0c930c5ad2fb81dbc",
+              "file": "parent-task-calendar.spec.ts",
+              "line": 62,
+              "column": 3
+            },
+            {
+              "title": "点击有色日期 → 下方任务列表刷新为当天任务",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-mobile",
+                  "projectName": "chromium-mobile",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "3adb28f609132d6cf588-ed8270e748f06764416e",
+              "file": "parent-task-calendar.spec.ts",
+              "line": 74,
+              "column": 3
+            },
+            {
+              "title": "任务类型筛选正确过滤任务列表",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-mobile",
+                  "projectName": "chromium-mobile",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "3adb28f609132d6cf588-02af8de36253d0bf2bec",
+              "file": "parent-task-calendar.spec.ts",
+              "line": 91,
+              "column": 3
+            },
+            {
+              "title": "查看全部模式清除日期约束",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-mobile",
+                  "projectName": "chromium-mobile",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "3adb28f609132d6cf588-8e990eabdfd60ef7e100",
+              "file": "parent-task-calendar.spec.ts",
+              "line": 110,
+              "column": 3
+            },
+            {
+              "title": "移动端单月布局",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-mobile",
+                  "projectName": "chromium-mobile",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "3adb28f609132d6cf588-420c9a0c2adf3667e181",
+              "file": "parent-task-calendar.spec.ts",
+              "line": 131,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "resubmission-controls.spec.ts",
+      "file": "resubmission-controls.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Resubmission Controls — 重复提交控制",
+          "file": "resubmission-controls.spec.ts",
+          "line": 19,
+          "column": 6,
+          "specs": [
+            {
+              "title": "家长创建模板并配置 allow_resubmit + max_submissions",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "b9fa69fc546fdc532f63-38d0a715f8c72a66041d",
+              "file": "resubmission-controls.spec.ts",
+              "line": 21,
+              "column": 3
+            },
+            {
+              "title": "孩子重复提交达到上限后被拒绝",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "b9fa69fc546fdc532f63-9749e893b85c4fd844d5",
+              "file": "resubmission-controls.spec.ts",
+              "line": 30,
+              "column": 3
+            },
+            {
+              "title": "积分上限达到后被拒绝",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "b9fa69fc546fdc532f63-c85f2d6a57aaa691a65a",
+              "file": "resubmission-controls.spec.ts",
+              "line": 38,
+              "column": 3
+            },
+            {
+              "title": "家长端模板表单显示重复提交控制字段",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "b9fa69fc546fdc532f63-b802c057d4966926273e",
+              "file": "resubmission-controls.spec.ts",
+              "line": 45,
+              "column": 3
+            },
+            {
+              "title": "家长创建模板并配置 allow_resubmit + max_submissions",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox-desktop",
+                  "projectName": "firefox-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "b9fa69fc546fdc532f63-437c08261cba5d871653",
+              "file": "resubmission-controls.spec.ts",
+              "line": 21,
+              "column": 3
+            },
+            {
+              "title": "孩子重复提交达到上限后被拒绝",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox-desktop",
+                  "projectName": "firefox-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "b9fa69fc546fdc532f63-f354b71932fc00e946ad",
+              "file": "resubmission-controls.spec.ts",
+              "line": 30,
+              "column": 3
+            },
+            {
+              "title": "积分上限达到后被拒绝",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox-desktop",
+                  "projectName": "firefox-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "b9fa69fc546fdc532f63-4e74aae68c56027c076f",
+              "file": "resubmission-controls.spec.ts",
+              "line": 38,
+              "column": 3
+            },
+            {
+              "title": "家长端模板表单显示重复提交控制字段",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox-desktop",
+                  "projectName": "firefox-desktop",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "b9fa69fc546fdc532f63-bb379f9561bc79a616d3",
+              "file": "resubmission-controls.spec.ts",
+              "line": 45,
+              "column": 3
+            },
+            {
+              "title": "家长创建模板并配置 allow_resubmit + max_submissions",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-mobile",
+                  "projectName": "chromium-mobile",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "b9fa69fc546fdc532f63-8ade3304798dc7f3539b",
+              "file": "resubmission-controls.spec.ts",
+              "line": 21,
+              "column": 3
+            },
+            {
+              "title": "孩子重复提交达到上限后被拒绝",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-mobile",
+                  "projectName": "chromium-mobile",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "b9fa69fc546fdc532f63-5bebff705123e02f80a1",
+              "file": "resubmission-controls.spec.ts",
+              "line": 30,
+              "column": 3
+            },
+            {
+              "title": "积分上限达到后被拒绝",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-mobile",
+                  "projectName": "chromium-mobile",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "b9fa69fc546fdc532f63-8b9b8387227255e230e6",
+              "file": "resubmission-controls.spec.ts",
+              "line": 38,
+              "column": 3
+            },
+            {
+              "title": "家长端模板表单显示重复提交控制字段",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-mobile",
+                  "projectName": "chromium-mobile",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "b9fa69fc546fdc532f63-319c4a7e5c6125a96f05",
+              "file": "resubmission-controls.spec.ts",
+              "line": 45,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-09-02T06:30:10.275Z",
+    "duration": 49.57499999999999,
+    "expected": 0,
+    "skipped": 75,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

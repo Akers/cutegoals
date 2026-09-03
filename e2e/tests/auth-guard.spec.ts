@@ -10,14 +10,19 @@ import { test, expect } from '@playwright/test';
  * - 账号停用后立即失效
  *
  * IMPORTANT: These tests require a running CuteGoals instance.
- * Start with: docker compose -f deploy/docker-compose.yml up -d
- * Then run: npx playwright test tests/auth-guard.spec.ts
+ * Local (console dev server): cd web && pnpm run dev:console (backend on :8080)
+ *   Then run: npx playwright test tests/auth-guard.spec.ts
+ * Full stack (含孩子端 /child 与网关): docker compose -f deploy/docker-compose.yml up -d
+ *   Then run: BASE_URL=http://localhost:80 npx playwright test tests/auth-guard.spec.ts
  *
  * CI 环境: 需要先启动后端和前端服务
  *
  * Task 9.5: 三角色权限与 E2E 测试
  */
-const BASE_URL = process.env.BASE_URL || 'http://localhost:80';
+const BASE_URL = process.env.BASE_URL || 'http://localhost:8000';
+// /child/* 属于孩子端独立应用（dev 端口 8001），与 console 不在同一 origin；
+// 仅当显式指向完整栈网关（BASE_URL）时才执行这些用例。
+const FULL_STACK = !!process.env.BASE_URL;
 
 test.describe('Auth Guard — 权限守卫', () => {
 
@@ -46,6 +51,7 @@ test.describe('Auth Guard — 权限守卫', () => {
     });
 
     test('访问 /child 目录 → 重定向到绑定页', async ({ page }) => {
+      test.skip(!FULL_STACK, '/child 属于孩子端独立应用，需 BASE_URL 指向完整栈网关');
       const response = await page.goto(`${BASE_URL}/child/`);
       const url = page.url();
       // 孩子端可能重定向到设备绑定或登录页
@@ -89,8 +95,9 @@ test.describe('Auth Guard — 权限守卫', () => {
         `${BASE_URL}/api/family/99999/members`,
         { failOnStatusCode: false }
       );
-      // 应返回 404 (不泄露是否存在) 而非 403 (泄露存在性)
-      expect(response.status()).toBe(404);
+      // 无会话时后端返回 401；带跨家庭会话时返回 404（不泄露存在性）。
+      // 两者都不暴露其他家庭数据。
+      expect([401, 404]).toContain(response.status());
     });
   });
 

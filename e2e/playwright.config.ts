@@ -1,11 +1,20 @@
+import { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { defineConfig, devices } from '@playwright/test';
+
+const configDir = resolve(fileURLToPath(import.meta.url), '..');
 
 /**
  * Playwright E2E test configuration for CuteGoals 2.0.
  *
  * Target environments:
- *   - CI: chromium headless
+ *   - CI: chromium headless (BASE_URL 指向完整栈网关，例如 http://localhost:80)
  *   - Local: chromium, firefox, webkit (desktop + mobile)
+ *
+ * 本地默认目标是 web/apps/console（Vue3 + Naive UI）的 dev server (http://localhost:8000)，
+ * /api 由 vite 代理到 http://localhost:8080 后端。
+ * 涉及 /child/*（孩子端独立应用，8001）或网关行为的用例需要显式设置 BASE_URL
+ * 指向完整栈（docker compose 网关），否则相关用例会自动跳过。
  *
  * Tests cover:
  *   - 三角色权限隔离 (admin/parent/child)
@@ -32,7 +41,7 @@ export default defineConfig({
     ['list'],
   ],
   use: {
-    baseURL: process.env.BASE_URL || 'http://localhost:80',
+    baseURL: process.env.BASE_URL || 'http://localhost:8000',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
@@ -68,10 +77,13 @@ export default defineConfig({
       testMatch: /.*\.ci\.spec\.ts/,
     },
   ],
-  // Local dev server (only used when running locally)
+  // Local dev server (only used when running locally):
+  // start the Vue console app via the workspace script (replaces the legacy
+  // `npm run dev` which did not exist at the web/ root).
   webServer: process.env.CI ? undefined : {
-    command: 'cd ../web && npm run dev',
-    url: 'http://localhost:5173',
+    command: 'pnpm run dev:console',
+    url: 'http://localhost:8000',
+    cwd: resolve(configDir, '../web'),
     reuseExistingServer: !process.env.CI,
     timeout: 120000,
   },

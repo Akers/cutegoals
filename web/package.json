@@ -9,7 +9,7 @@
   },
   "scripts": {
     "build": "pnpm -r --filter './apps/*' run build",
-    "dev:console": "pnpm --filter @cutegoals/console run start",
+    "dev:console": "pnpm --filter @cutegoals/console run dev",
     "dev:kid": "pnpm --filter @cutegoals/kid run start",
     "test": "pnpm -r run test",
     "lint": "pnpm -r run lint"

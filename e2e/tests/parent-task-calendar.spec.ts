@@ -21,10 +21,11 @@ import { test, expect } from '@playwright/test';
  *     page.goto('/parent/tasks') 由 AuthGuard 校验通过。
  *
  * 需要运行中的 CuteGoals 实例。
- * 启动: docker compose -f deploy/docker-compose.yml up -d
+ * 本地: cd web && pnpm run dev:console（后端 :8080，vite 代理 /api）
  * 运行: npx playwright test tests/parent-task-calendar.spec.ts
+ * 完整栈: BASE_URL=http://localhost:80 npx playwright test tests/parent-task-calendar.spec.ts
  */
-const BASE_URL = process.env.BASE_URL || 'http://localhost:80';
+const BASE_URL = process.env.BASE_URL || 'http://localhost:8000';
 const PARENT_PHONE = process.env.E2E_PARENT_PHONE || '';
 const PARENT_PASSWORD = process.env.E2E_PARENT_PASSWORD || '';
 
@@ -62,11 +63,11 @@ test.describe('家长端单月任务日历', () => {
     await page.goto(`${BASE_URL}/parent/tasks`);
 
     // 验证单月日历渲染
-    const calendarGrid = page.locator('.task-calendar-grid');
+    const calendarGrid = page.locator('.task-calendar');
     await expect(calendarGrid).toBeVisible();
 
     // 验证一个日历面板
-    const panel = calendarGrid.locator('.calendar-panel');
+    const panel = calendarGrid.locator('.calendar-grid');
     await expect(panel).toHaveCount(1);
   });
 
@@ -74,10 +75,10 @@ test.describe('家长端单月任务日历', () => {
     await page.goto(`${BASE_URL}/parent/tasks`);
 
     // 等待日历加载
-    await page.waitForSelector('.cell-task', { timeout: 10000 });
+    await page.waitForSelector('.calendar-cell:has(.cell-badge)', { timeout: 10000 });
 
     // 点击一个有任务的日期
-    const taskCell = page.locator('.cell-task').first();
+    const taskCell = page.locator('.calendar-cell:has(.cell-badge)').first();
     if (await taskCell.count() > 0) {
       await taskCell.click();
 
@@ -102,7 +103,7 @@ test.describe('家长端单月任务日历', () => {
     await page.waitForTimeout(500);
 
     // 验证列表只包含限时任务
-    const taskCards = page.locator('.cell-task');
+    const taskCards = page.locator('.calendar-cell:has(.cell-badge)');
     // 实际验证需根据页面结构调整
   });
 
@@ -110,7 +111,7 @@ test.describe('家长端单月任务日历', () => {
     await page.goto(`${BASE_URL}/parent/tasks`);
 
     // 先点击某个日期选中
-    const taskCell = page.locator('.cell-task').first();
+    const taskCell = page.locator('.calendar-cell:has(.cell-badge)').first();
     if (await taskCell.count() > 0) {
       await taskCell.click();
     }
@@ -123,7 +124,7 @@ test.describe('家长端单月任务日历', () => {
     await expect(page.getByText('查看全部（已激活）')).toBeVisible();
 
     // 验证日历选中高亮已清除
-    const selectedCell = page.locator('.cell-selected');
+    const selectedCell = page.locator('.calendar-cell.is-selected');
     await expect(selectedCell).toHaveCount(0);
   });
 
@@ -133,9 +134,9 @@ test.describe('家长端单月任务日历', () => {
     await page.goto(`${BASE_URL}/parent/tasks`);
 
     // 验证日历在移动端仍然单月可见
-    const calendarGrid = page.locator('.task-calendar-grid');
+    const calendarGrid = page.locator('.task-calendar');
     await expect(calendarGrid).toBeVisible();
-    const panel = calendarGrid.locator('.calendar-panel');
+    const panel = calendarGrid.locator('.calendar-grid');
     await expect(panel).toHaveCount(1);
   });
 });
