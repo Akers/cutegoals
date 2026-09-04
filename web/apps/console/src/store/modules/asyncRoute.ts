@@ -88,12 +88,20 @@ export const useAsyncRouteStore = defineStore({
     },
     async generateRolesFilteredRoutes(roles: string[]) {
       const roleList = roles ?? [];
-      // FIXED 模式：按 meta.roles 过滤（角色来自后端 PARENT / INSTANCE_ADMIN / CHILD）
+      const isAdmin = roleList.includes('admin');
+      // FIXED 模式：按 meta.roles 过滤（角色已归一化为 parent / admin / child）
       const routeFilter = (route) => {
         const { meta } = route;
         const { roles: allowedRoles } = meta || {};
         if (!allowedRoles || !allowedRoles.length) return true;
         return allowedRoles.some((role) => roleList.includes(role));
+      };
+      // 区域隔离：管理员只加载管理端模块树，家长（非管理员）只加载家长端模块树
+      const areaFilter = (route) => {
+        const { meta } = route;
+        const { roles: allowedRoles } = meta || {};
+        if (!allowedRoles || !allowedRoles.length) return true;
+        return isAdmin ? allowedRoles.includes('admin') : !allowedRoles.includes('admin');
       };
       let accessedRouters;
       try {
@@ -102,7 +110,7 @@ export const useAsyncRouteStore = defineStore({
       } catch (error) {
         console.log(error);
       }
-      accessedRouters = accessedRouters.filter(routeFilter);
+      accessedRouters = accessedRouters.filter(routeFilter).filter(areaFilter);
       this.setRouters(accessedRouters);
       this.setMenus(accessedRouters);
       return toRaw(accessedRouters);

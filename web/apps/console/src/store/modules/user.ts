@@ -22,6 +22,23 @@ export interface AccountInfo {
 
 export type UserArea = 'parent' | 'admin';
 
+const BACKEND_ROLE_MAP: Record<string, string> = {
+  INSTANCE_ADMIN: 'admin',
+  PARENT: 'parent',
+  CHILD: 'child',
+};
+
+function normalizeRoles(roles?: string[]): string[] {
+  if (!roles) return [];
+  const result: string[] = [];
+  for (const raw of roles) {
+    if (typeof raw !== 'string') continue;
+    const mapped = BACKEND_ROLE_MAP[raw.toUpperCase().replace(/^ROLE_/, '')];
+    if (mapped && !result.includes(mapped)) result.push(mapped);
+  }
+  return result;
+}
+
 export interface IUserState {
   info: AccountInfo | null;
   roles: string[];
@@ -38,10 +55,10 @@ export const useUserStore = defineStore({
       return this.roles.length > 0;
     },
     isAdmin(): boolean {
-      return this.roles.includes('INSTANCE_ADMIN');
+      return this.roles.includes('admin');
     },
     isParent(): boolean {
-      return this.roles.includes('PARENT');
+      return this.roles.includes('parent');
     },
     getNickname(): string {
       const phone = this.info?.phone;
@@ -66,7 +83,7 @@ export const useUserStore = defineStore({
   actions: {
     applyAccount(account: AccountInfo) {
       this.info = account;
-      this.roles = account.roles ?? [];
+      this.roles = normalizeRoles(account.roles);
     },
     /** 家长登录（POST /api/auth/login，服务端写入会话 Cookie） */
     async loginParent(params: LoginParams) {

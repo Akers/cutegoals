@@ -39,7 +39,7 @@ const routes: Array<RouteRecordRaw> = [
           affix: true,
           roles: ['parent'],
         },
-        component: () => import('@/views/parent/index.vue'),
+        component: () => import('@/views/parent/index/index.vue'),
       },
       {
         path: 'family',
