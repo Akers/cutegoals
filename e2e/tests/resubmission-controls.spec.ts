@@ -20,11 +20,11 @@ test.describe('Resubmission Controls — 重复提交控制', () => {
 
   test('家长创建模板并配置 allow_resubmit + max_submissions', async ({ page }) => {
     // Parent login → create template with resubmission settings
-    await page.goto(`${BASE_URL}/parent/`);
     // This test requires a pre-authenticated parent session.
     // In CI, the fixture would handle authentication.
     // For now, this is a skeleton that documents the expected flow.
     test.skip(true, 'E2E requires running server with pre-authenticated session');
+    await page.goto(`${BASE_URL}/parent/`);
   });
 
   test('孩子重复提交达到上限后被拒绝', async ({ page }) => {

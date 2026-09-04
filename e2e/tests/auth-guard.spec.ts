@@ -30,24 +30,31 @@ test.describe('Auth Guard — 权限守卫', () => {
 
     test('访问 /parent 目录 → 重定向到登录页', async ({ page }) => {
       const response = await page.goto(`${BASE_URL}/parent/`);
-      // 未认证应被重定向到登录页或返回 401
-      const url = page.url();
-      expect(
-        url.includes('/login') ||
-        url.includes('/auth') ||
-        response?.status() === 401
-      ).toBeTruthy();
+      // 未认证应被重定向到登录页或返回 401。
+      // SPA 场景下重定向在路由守卫 (/auth/me 401) 之后异步完成，需轮询等待。
+      await expect
+        .poll(
+          async () =>
+            page.url().includes('/login') ||
+            page.url().includes('/auth') ||
+            response?.status() === 401,
+          { timeout: 10000 },
+        )
+        .toBeTruthy();
     });
 
     test('访问 /admin 目录 → 重定向或拒绝', async ({ page }) => {
       const response = await page.goto(`${BASE_URL}/admin/`);
-      const url = page.url();
-      expect(
-        url.includes('/login') ||
-        url.includes('/auth') ||
-        response?.status() === 401 ||
-        response?.status() === 403
-      ).toBeTruthy();
+      await expect
+        .poll(
+          async () =>
+            page.url().includes('/login') ||
+            page.url().includes('/auth') ||
+            response?.status() === 401 ||
+            response?.status() === 403,
+          { timeout: 10000 },
+        )
+        .toBeTruthy();
     });
 
     test('访问 /child 目录 → 重定向到绑定页', async ({ page }) => {
@@ -132,12 +139,16 @@ test.describe('Auth Guard — 权限守卫', () => {
         path: '/',
       }]);
       const response = await page.goto(`${BASE_URL}/parent/`);
-      const url = page.url();
-      expect(
-        url.includes('/login') ||
-        url.includes('/auth') ||
-        response?.status() === 401
-      ).toBeTruthy();
+      // 过期会话 → 路由守卫异步重定向到登录页，需轮询等待
+      await expect
+        .poll(
+          async () =>
+            page.url().includes('/login') ||
+            page.url().includes('/auth') ||
+            response?.status() === 401,
+          { timeout: 10000 },
+        )
+        .toBeTruthy();
     });
   });
 
