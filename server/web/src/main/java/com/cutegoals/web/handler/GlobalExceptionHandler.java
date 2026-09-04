@@ -168,6 +168,7 @@ public class GlobalExceptionHandler {
             case TASK_SUBMISSION_VALIDATION_FAILED -> HttpStatus.BAD_REQUEST;
             case TASK_SUBMISSION_LATE_NOT_ALLOWED -> HttpStatus.CONFLICT;
             case TASK_SUBMISSION_IDEMPOTENCY_CONFLICT -> HttpStatus.CONFLICT;
+            case TASK_SUBMISSION_MAX_REACHED, TASK_SUBMISSION_POINTS_CAP_REACHED -> HttpStatus.UNPROCESSABLE_ENTITY;
             // Points errors
             case POINTS_FORBIDDEN -> HttpStatus.FORBIDDEN;
             case POINTS_ACCOUNT_NOT_FOUND -> HttpStatus.NOT_FOUND;
