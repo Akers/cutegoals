@@ -25,15 +25,15 @@
 
 # Acceptance examples
 
-1. `cd web && pnpm install && pnpm run dev:console` 启动 Vue 版 console 于 `http://localhost:8000`；`/` 重定向到 `/parent`。
-2. 未登录访问 `/parent` 跳转 `/parent/login`；使用手机号+密码登录成功（走现有 `/api/auth/*` 会话接口）后进入家长端工作台，刷新页面会话保持（`/auth/me` 恢复）。
-3. 家长端 12 个页面（login + 11 功能页）全部可从菜单到达，任务发布/审核/积分/奖品/盲盒/兑换/设备授权等核心流程可对现有后端完成真实操作，功能与旧 React 版一致。
-4. 未登录访问 `/admin` 跳转 `/admin/login`；首次部署访问 `/admin` 时可完成 init 初始化流程（INIT_TOKEN + 管理员手机号 + 密码）；管理员可使用概览/配置/账号/审计/健康页面（走 `/api/admin*`）。
-5. 家长角色访问 `/admin/*` 被拒绝/跳转，管理员角色看不到家长端业务菜单——角色隔离行为与旧版一致（e2e auth-guard 场景覆盖）。
-6. HTTP 层：成功响应取 `data` 字段渲染；业务错误展示后端 `message`；会话过期（401）跳转对应端登录页；请求携带会话 Cookie 与 `X-CSRF-TOKEN`。
-7. `pnpm run build`（workspace 递归）成功产出 console 静态产物，mock 关闭，kid 构建不受影响。
-8. `e2e/` 中 console 相关 Playwright 用例针对新 UI 更新后通过（含 auth-guard、家长任务日历、重新提交控制场景）。
-9. `git status` 显示 `web/apps/kid/**` 与 `web/packages/shared/**` 无改动。
+- Given 本地环境已安装依赖（`cd web && pnpm install`），When 执行 `pnpm run dev:console`，Then Vue 版 console 启动于 `http://localhost:8000`，且 `/` 重定向到 `/parent`。
+- Given 访客未登录，When 访问 `/parent`，Then 跳转到 `/parent/login`；When 使用手机号+密码通过现有 `/api/auth/*` 会话接口登录成功，Then 进入家长端工作台，且刷新页面后会话保持（`/auth/me` 恢复）。
+- Given 家长已登录，When 通过菜单访问家长端 12 个页面（login + 11 功能页），Then 全部可达，任务发布/审核/积分/奖品/盲盒/兑换/设备授权等核心流程可对现有后端完成真实操作，功能与旧 React 版一致。
+- Given 访客未登录或系统首次部署，When 访问 `/admin`，Then 跳转到 `/admin/login`；首次部署可完成 init 初始化流程（INIT_TOKEN + 管理员手机号 + 密码）；When 管理员登录，Then 可使用概览/配置/账号/审计/健康页面（走 `/api/admin*`）。
+- Given 家长角色与管理员角色分别登录，When 家长访问 `/admin/*`，Then 被拒绝/跳转，When 管理员查看菜单，Then 看不到家长端业务菜单——角色隔离行为与旧版一致（e2e auth-guard 场景覆盖）。
+- Given console 发起任意 API 请求，When 收到响应，Then 成功响应取 `data` 字段渲染；业务错误展示后端 `message`；会话过期（401）跳转对应端登录页；请求携带会话 Cookie 与 `X-CSRF-TOKEN`。
+- Given `web` workspace，When 执行 `pnpm run build`（workspace 递归），Then 成功产出 console 静态产物，mock 关闭，kid 构建不受影响。
+- Given `e2e/` 中 console 相关 Playwright 用例已针对新 UI 更新，When 运行该套件，Then 通过（含 auth-guard、家长任务日历、重新提交控制场景）。
+- Given 重写完成后的 `git status`，When 检查，Then `web/apps/kid/**` 与 `web/packages/shared/**` 无改动。
 
 # Constraints and invariants
 
