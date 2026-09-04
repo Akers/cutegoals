@@ -1,0 +1,327 @@
+schema: comet.native.v4
+name: kid-task-filter-active-highlight-fix
+language: zh-CN
+phase: archive
+status: done
+state_version: 8
+brief: brief.md
+spec_changes:
+  - capability: child-page-migration
+    operation: modify
+    source: specs/child-page-migration/spec.md
+workspace:
+  isolation: current
+  change_branch: null
+  target_branch: null
+  finish: null
+loop:
+  stage: done
+  goal_cycle: 1
+  iteration: 1
+  attempt: 2
+  retry_epoch: 0
+  failed_iteration_count: 0
+  no_progress_count: 0
+  execution_failure_count: 0
+  previous_unresolved_ids: []
+  next_action: null
+acceptance:
+  - id: A1
+    source: brief.md
+    text: Given 孩子进入「我的任务」页面，When 页面加载完成，Then 可见五分类筛选器（含默认选中的「进行中」），选中项以主题色背景 +
+      白字突出显示。
+    result: passed
+    reason:
+      text: 五分类筛选器渲染，默认选中进行中，选中项主题色背景+白字（代码+浏览器实测）
+      truncated: false
+  - id: A2
+    source: brief.md
+    text: Given 孩子点击「已逾期」筛选项，When 切换完成，Then 「已逾期」以主题色背景 + 白字突出显示，列表同步切换为对应分类。
+    result: passed
+    reason:
+      text: 点击已逾期后该项高亮、列表同步切换（vitest + 浏览器点击实测）
+      truncated: false
+  - id: A3
+    source: brief.md
+    text: Given 修复部署完成，Then 真实浏览器中筛选器可见且可交互，vitest 23/23 保持通过。
+    result: passed
+    reason:
+      text: 真实 Chromium 390px 视口实测：五 chip 可见可交互，active 背景
+        rgb(2,132,199)=#0284c7、白字、aria-pressed=true，切换联动 14/14 PASS；vitest 33/33
+        通过
+      truncated: false
+  - id: A4
+    source: specs/child-page-migration/spec.md
+    text: 我的任务按默认分类列出任务 - **WHEN** 孩子登录后进入「我的任务」页面 - **THEN**
+      页面默认选中「进行中」分类，列出归类为「进行中」的任务，每条显示任务名称、截止时间、状态与积分奖励
+    result: passed
+    reason:
+      text: 默认列出进行中任务，显示名称/截止时间/状态/积分（TasksPage.tsx:106-131 + 测试）
+      truncated: false
+  - id: A5
+    source: specs/child-page-migration/spec.md
+    text: 按分类筛选 - **WHEN** 孩子依次选择「已逾期」「已提交」「已完成」「已取消」 - **THEN**
+      列表分别仅展示归类为对应分类的任务，其他分类的任务不出现
+    result: passed
+    reason:
+      text: 四分类各有独立测试且互斥过滤逻辑 TasksPage.tsx:45-76 复查无误
+      truncated: false
+  - id: A6
+    source: specs/child-page-migration/spec.md
+    text: 已提交且逾期的任务归入已提交 - **WHEN** 一条非 REPEAT 任务截止时间已过、状态为 SUBMITTED（家长未审核） -
+      **THEN** 该任务归入「已提交」，不出现在「已逾期」中
+    result: passed
+    reason:
+      text: overdueTasks 排除 SUBMITTED（TasksPage.tsx:47-49）；测试 409-419
+      truncated: false
+  - id: A7
+    source: specs/child-page-migration/spec.md
+    text: 驳回任务归类 - **WHEN** 一条非 REPEAT 任务状态为 REJECTED 且截止时间未过 - **THEN**
+      该任务归入「进行中」；若截止时间已过，则归入「已逾期」
+    result: passed
+    reason:
+      text: REJECTED 归类逻辑与测试 471-485
+      truncated: false
+  - id: A8
+    source: specs/child-page-migration/spec.md
+    text: 重复任务不逾期 - **WHEN** 一条 REPEAT 任务截止时间已过且未提交、未取消、未通过 - **THEN**
+      该任务归入「进行中」，不出现在「已逾期」中
+    result: passed
+    reason:
+      text: REPEAT 不归逾期（TasksPage.tsx:49,56）；测试 421-429
+      truncated: false
+  - id: A9
+    source: specs/child-page-migration/spec.md
+    text: 未来任务展示为未开始 - **WHEN** 孩子查看「我的任务」，存在任务日期晚于今天的未取消分配 - **THEN**
+      这些分配归入「进行中」并排在列表末尾，以灰色标注「未开始」，提交按钮不可用
+    result: passed
+    reason:
+      text: 未来任务排末尾+未开始+提交禁用；测试 431-443
+      truncated: false
+  - id: A10
+    source: specs/child-page-migration/spec.md
+    text: 已取消任务列入已取消分类 - **WHEN** 孩子查看「我的任务」，且存在已取消（cancelled=true）的分配 - **THEN**
+      该分配仅出现在「已取消」分类，不出现在其他分类中
+    result: passed
+    reason:
+      text: cancelled 独立分类且其余分类排除；测试 385-395
+      truncated: false
+  - id: A11
+    source: specs/child-page-migration/spec.md
+    text: 空列表空态 - **WHEN** 当前分类无任务（含后端返回 `content` 为空数组） - **THEN** 页面显示「暂无任务」空态
+    result: passed
+    reason:
+      text: 空态暂无任务；测试 247-264,487-490
+      truncated: false
+  - id: A12
+    source: specs/child-page-migration/spec.md
+    text: 默认选中项高亮 - **WHEN** 孩子进入「我的任务」页面 - **THEN** 「进行中」筛选项以主题色背景 +
+      白色文字的高亮样式展示，其余四项为未选中样式
+    result: passed
+    reason:
+      text: 默认进行中高亮，浏览器实测计算样式吻合 tokens.css/kid.css
+      truncated: false
+  - id: A13
+    source: specs/child-page-migration/spec.md
+    text: 切换筛选项后高亮跟随 - **WHEN** 孩子点击「已逾期」「已提交」「已完成」或「已取消」任一筛选项 - **THEN**
+      被点击项以高亮样式展示，原先高亮的项恢复未选中样式，且列表同步切换为对应分类
+    result: passed
+    reason:
+      text: 受控 value/onChange 高亮跟随+列表联动，浏览器点击切换实测
+      truncated: false
+  - id: A14
+    source: specs/child-page-migration/spec.md
+    text: 达到最大提交次数 - **WHEN** 某任务 `canSubmit=false` 且
+      `submissionBlockReason='MAX_REACHED'` - **THEN**
+      该任务卡片在原提交按钮位置显示「该任务已达最大提交次数」，无提交按钮
+    result: passed
+    reason:
+      text: MAX_REACHED 文案+无按钮；测试 448-459
+      truncated: false
+  - id: A15
+    source: specs/child-page-migration/spec.md
+    text: 达到积分限额 - **WHEN** 某任务 `canSubmit=false` 且
+      `submissionBlockReason='POINTS_CAP_REACHED'` - **THEN**
+      该任务卡片在原提交按钮位置显示「该任务已达最大提交次数」，无提交按钮
+    result: passed
+    reason:
+      text: POINTS_CAP_REACHED 同文案；测试 448-459
+      truncated: false
+  - id: A16
+    source: specs/child-page-migration/spec.md
+    text: 其他不可提交原因 - **WHEN** 某任务 `canSubmit=false` 且 `submissionBlockReason=null` -
+      **THEN** 提交按钮保持禁用态，不显示「该任务已达最大提交次数」文案
+    result: passed
+    reason:
+      text: reason=null 按钮禁用无拦截文案；测试 461-469
+      truncated: false
+builder_handoff:
+  candidate_id: 89b9362e-6e4e-493b-b3a0-28d849888280
+  identity_provider: skill-coordinated
+  builder_execution_ref: skill-coordinated:builder:78206090-6035-4cdb-8484-3309f3765028
+  iteration: 1
+  summary:
+    text: "孩子端「我的任务」筛选器修复已由后续 frontend-split 重写承接：TasksPage 使用自绘 ChipGroup（五分类
+      chip，role=group + aria-pressed），选中项 kid-chip--active 主题色 #0284c7 背景 +
+      白字，默认选中「进行中」，列表按分类联动；归类逻辑（REPEAT
+      不逾期、已提交不逾期、驳回归类、未来任务、已取消隔离、空态）保持既有契约。实现已提交于
+      main（3f0b958、8169c99、9e12bd4、893666e 等）。"
+    truncated: false
+  addressed_acceptance_ids:
+    - A1
+    - A2
+    - A3
+    - A4
+    - A5
+    - A6
+    - A7
+    - A8
+    - A9
+    - A10
+    - A11
+    - A12
+    - A13
+    - A14
+    - A15
+    - A16
+  checks:
+    - name:
+        text: vitest run (web/apps/kid)
+        truncated: false
+      result: passed
+      note:
+        text: 33/33 通过（含五分类筛选、高亮、回归测试）
+        truncated: false
+    - name:
+        text: tsc --noEmit (web/apps/kid)
+        truncated: false
+      result: passed
+      note: null
+    - name:
+        text: check-css-loads / check-api-whitelist
+        truncated: false
+      result: passed
+      note:
+        text: CSS 全部导入；13 个运行时调用命中白名单
+        truncated: false
+  checks_truncated: false
+  known_limits:
+    - text: 真实浏览器人工目检未在本轮执行，交由 Verifier/用户确认
+      truncated: false
+  known_limits_truncated: false
+  review:
+    status: passed
+    summary:
+      text: 只读复核确认：筛选器可见可交互、默认选中「进行中」、切换高亮为主题色背景+白字、列表联动与归类契约未变、a11y 语义保留，无越界改动。
+      truncated: false
+    reviewer_execution_ref: oracle-agent_913a368c-6eab-4832-a6cf-4976753a0b8c
+  submitted_at: 2026-09-04T03:37:24.248Z
+blockers: []
+verification:
+  candidate_id: 89b9362e-6e4e-493b-b3a0-28d849888280
+  identity_provider: skill-coordinated
+  verifier_execution_ref: skill-coordinated:verifier:33bc1802-8883-48dc-8265-d7d72611d143
+  iteration: 1
+  attempt: 2
+  assurance: skill-coordinated
+  verdict: pass
+  checks:
+    - id: kid-vitest
+      name:
+        text: kid vitest
+        truncated: false
+      argv_display:
+        - text: vitest
+          truncated: false
+        - text: run
+          truncated: false
+      argv_truncated: false
+      cwd_ref: web/apps/kid
+      status: passed
+      exit_code: 0
+      duration_ms: 9703
+    - id: kid-tsc
+      name:
+        text: kid tsc --noEmit
+        truncated: false
+      argv_display:
+        - text: tsc
+          truncated: false
+        - text: --noEmit
+          truncated: false
+      argv_truncated: false
+      cwd_ref: web/apps/kid
+      status: passed
+      exit_code: 0
+      duration_ms: 5513
+  summary:
+    text: A3 缺口已由真实浏览器证据补齐（Playwright + Chromium 计算样式与交互断言 14/14 PASS，截图存
+      %TEMP%/kid-filter-*.png）；独立抽查
+      tokens.css/kid.css/components.tsx/TasksPage.tsx 与证据一致，五分类归类无重叠无遗漏。A1-A16
+      全部通过。
+    truncated: false
+  risks: []
+  risks_truncated: false
+  completed_at: 2026-09-04T03:49:54.500Z
+history:
+  - goal_cycle: 1
+    iteration: 1
+    attempt: 0
+    outcome: recovery
+    unresolved_ids:
+      - A1
+      - A2
+      - A3
+      - A4
+      - A5
+      - A6
+      - A7
+      - A8
+      - A9
+      - A10
+      - A11
+      - A12
+      - A13
+      - A14
+      - A15
+      - A16
+    summary:
+      text: 从旧版 comet.native.v3 build 状态恢复；旧版 Loop、验证结论和运行记录未继承。
+      truncated: false
+    completed_at: 2026-08-13T00:00:00.000Z
+  - goal_cycle: 1
+    iteration: 1
+    attempt: 1
+    outcome: execution-error
+    unresolved_ids: []
+    summary:
+      text: "Native Verifier response was invalid: Native pass requires every
+        acceptance criterion to pass"
+      truncated: false
+    completed_at: 2026-09-04T03:40:48.508Z
+  - goal_cycle: 1
+    iteration: 1
+    attempt: 2
+    outcome: pass
+    unresolved_ids: []
+    summary:
+      text: A3 缺口已由真实浏览器证据补齐（Playwright + Chromium 计算样式与交互断言 14/14 PASS，截图存
+        %TEMP%/kid-filter-*.png）；独立抽查
+        tokens.css/kid.css/components.tsx/TasksPage.tsx 与证据一致，五分类归类无重叠无遗漏。A1-A16
+        全部通过。
+      truncated: false
+    completed_at: 2026-09-04T03:49:54.500Z
+history_overflow:
+  dropped_entries: 0
+  first_dropped_at: null
+  last_dropped_at: null
+  outcome_counts:
+    pass: 0
+    fail: 0
+    blocked: 0
+    execution-error: 0
+    recovery: 0
+verification_result: pass
+verification_report: verification.md
+archived: true
+created_at: 2026-08-13T00:00:00.000Z
