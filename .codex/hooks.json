@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"/home/akers/projects/cutegoals/.agents/skills/comet/scripts/comet-hook-router.mjs\" --platform \"codex\" --project-root \"/home/akers/projects/cutegoals\""
+            "command": "node \"D:/projects/cutegoals/.agents/skills/comet/scripts/comet-hook-router.mjs\" --platform \"codex\" --project-root \"D:/projects/cutegoals\""
           }
         ]
       }

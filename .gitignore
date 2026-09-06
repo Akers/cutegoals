@@ -47,3 +47,8 @@ logs/
 # Misc
 *.drawio.bkp
 *.drawio.dtmp
+# >>> Comet managed project state >>>
+!/.comet/
+/.comet/*
+!/.comet/config.yaml
+# <<< Comet managed project state <<<
