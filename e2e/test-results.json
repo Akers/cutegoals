@@ -1,13 +1,14 @@
 {
   "config": {
     "argv": [
-      "/home/akers/.nvm/versions/node/v24.18.0/bin/node",
-      "/home/akers/projects/cutegoals/e2e/node_modules/@playwright/test/cli.js",
+      "C:\\SDK\\NodeJs\\node.exe",
+      "D:\\projects\\cutegoals\\e2e\\node_modules\\.pnpm\\@playwright+test@1.62.0\\node_modules\\@playwright\\test\\cli.js",
       "test",
-      "--list"
+      "--project=chromium-desktop",
+      "--project=chromium-mobile"
     ],
-    "configFile": "/home/akers/projects/cutegoals/e2e/playwright.config.ts",
-    "rootDir": "/home/akers/projects/cutegoals/e2e/tests",
+    "configFile": "D:\\projects\\cutegoals\\e2e\\playwright.config.ts",
+    "rootDir": "D:/projects/cutegoals/e2e/tests",
     "failOnFlakyTests": false,
     "forbidOnly": false,
     "fullyParallel": true,
@@ -17,17 +18,21 @@
     "grep": {},
     "grepInvert": null,
     "maxFailures": 0,
-    "metadata": {},
+    "metadata": {
+      "actualWorkers": 8
+    },
     "preserveOutput": "always",
     "projects": [
       {
-        "outputDir": "/home/akers/projects/cutegoals/e2e/test-results",
+        "outputDir": "D:/projects/cutegoals/e2e/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {},
+        "metadata": {
+          "actualWorkers": 8
+        },
         "id": "chromium-desktop",
         "name": "chromium-desktop",
-        "testDir": "/home/akers/projects/cutegoals/e2e/tests",
+        "testDir": "D:/projects/cutegoals/e2e/tests",
         "testIgnore": [],
         "testMatch": [
           "**/*.@(spec|test).?(c|m)[jt]s?(x)"
@@ -35,13 +40,15 @@
         "timeout": 30000
       },
       {
-        "outputDir": "/home/akers/projects/cutegoals/e2e/test-results",
+        "outputDir": "D:/projects/cutegoals/e2e/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {},
+        "metadata": {
+          "actualWorkers": 8
+        },
         "id": "firefox-desktop",
         "name": "firefox-desktop",
-        "testDir": "/home/akers/projects/cutegoals/e2e/tests",
+        "testDir": "D:/projects/cutegoals/e2e/tests",
         "testIgnore": [],
         "testMatch": [
           "**/*.@(spec|test).?(c|m)[jt]s?(x)"
@@ -49,13 +56,15 @@
         "timeout": 30000
       },
       {
-        "outputDir": "/home/akers/projects/cutegoals/e2e/test-results",
+        "outputDir": "D:/projects/cutegoals/e2e/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {},
+        "metadata": {
+          "actualWorkers": 8
+        },
         "id": "chromium-mobile",
         "name": "chromium-mobile",
-        "testDir": "/home/akers/projects/cutegoals/e2e/tests",
+        "testDir": "D:/projects/cutegoals/e2e/tests",
         "testIgnore": [],
         "testMatch": [
           "**/*.@(spec|test).?(c|m)[jt]s?(x)"
@@ -63,13 +72,15 @@
         "timeout": 30000
       },
       {
-        "outputDir": "/home/akers/projects/cutegoals/e2e/test-results",
+        "outputDir": "D:/projects/cutegoals/e2e/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {},
+        "metadata": {
+          "actualWorkers": 8
+        },
         "id": "chromium-ci",
         "name": "chromium-ci",
-        "testDir": "/home/akers/projects/cutegoals/e2e/tests",
+        "testDir": "D:/projects/cutegoals/e2e/tests",
         "testIgnore": [],
         "testMatch": [
           "/.*\\.ci\\.spec\\.ts/"
@@ -105,11 +116,11 @@
     "updateSnapshots": "missing",
     "updateSourceMethod": "patch",
     "version": "1.62.0",
-    "workers": 16,
+    "workers": 8,
     "webServer": {
       "command": "pnpm run dev:console",
       "url": "http://localhost:8000",
-      "cwd": "/home/akers/projects/cutegoals/web",
+      "cwd": "D:\\projects\\cutegoals\\web",
       "reuseExistingServer": true,
       "timeout": 120000
     }
@@ -146,8 +157,22 @@
                       "expectedStatus": "passed",
                       "projectId": "chromium-desktop",
                       "projectName": "chromium-desktop",
-                      "results": [],
-                      "status": "skipped"
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 1664,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-04T10:04:26.674Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
                     }
                   ],
                   "id": "847469d9f22e46ff70fd-606f068a309394aeaa23",
@@ -166,13 +191,27 @@
                       "expectedStatus": "passed",
                       "projectId": "chromium-desktop",
                       "projectName": "chromium-desktop",
-                      "results": [],
-                      "status": "skipped"
+                      "results": [
+                        {
+                          "workerIndex": 1,
+                          "parallelIndex": 1,
+                          "status": "passed",
+                          "duration": 2432,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-04T10:04:26.491Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
                     }
                   ],
                   "id": "847469d9f22e46ff70fd-ac5278982f983dd0127d",
                   "file": "auth-guard.spec.ts",
-                  "line": 42,
+                  "line": 46,
                   "column": 5
                 },
                 {
@@ -182,17 +221,51 @@
                   "tests": [
                     {
                       "timeout": 30000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
+                      "annotations": [
+                        {
+                          "type": "skip",
+                          "description": "/child 属于孩子端独立应用，需 BASE_URL 指向完整栈网关",
+                          "location": {
+                            "file": "D:\\projects\\cutegoals\\e2e\\tests\\auth-guard.spec.ts",
+                            "line": 61,
+                            "column": 12
+                          }
+                        }
+                      ],
+                      "expectedStatus": "skipped",
                       "projectId": "chromium-desktop",
                       "projectName": "chromium-desktop",
-                      "results": [],
+                      "results": [
+                        {
+                          "workerIndex": 2,
+                          "parallelIndex": 2,
+                          "status": "skipped",
+                          "duration": 1757,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-04T10:04:26.601Z",
+                          "annotations": [
+                            {
+                              "type": "skip",
+                              "description": "/child 属于孩子端独立应用，需 BASE_URL 指向完整栈网关",
+                              "location": {
+                                "file": "D:\\projects\\cutegoals\\e2e\\tests\\auth-guard.spec.ts",
+                                "line": 61,
+                                "column": 12
+                              }
+                            }
+                          ],
+                          "attachments": []
+                        }
+                      ],
                       "status": "skipped"
                     }
                   ],
                   "id": "847469d9f22e46ff70fd-1b865d6f7179e47d1170",
                   "file": "auth-guard.spec.ts",
-                  "line": 53,
+                  "line": 60,
                   "column": 5
                 },
                 {
@@ -206,93 +279,27 @@
                       "expectedStatus": "passed",
                       "projectId": "chromium-desktop",
                       "projectName": "chromium-desktop",
-                      "results": [],
-                      "status": "skipped"
+                      "results": [
+                        {
+                          "workerIndex": 3,
+                          "parallelIndex": 3,
+                          "status": "passed",
+                          "duration": 1490,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-04T10:04:26.540Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
                     }
                   ],
                   "id": "847469d9f22e46ff70fd-eec1b7db50373bea8a50",
                   "file": "auth-guard.spec.ts",
-                  "line": 65,
-                  "column": 5
-                },
-                {
-                  "title": "访问 /parent 目录 → 重定向到登录页",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 30000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "firefox-desktop",
-                      "projectName": "firefox-desktop",
-                      "results": [],
-                      "status": "skipped"
-                    }
-                  ],
-                  "id": "847469d9f22e46ff70fd-a385d8fc9412844ea8a7",
-                  "file": "auth-guard.spec.ts",
-                  "line": 31,
-                  "column": 5
-                },
-                {
-                  "title": "访问 /admin 目录 → 重定向或拒绝",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 30000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "firefox-desktop",
-                      "projectName": "firefox-desktop",
-                      "results": [],
-                      "status": "skipped"
-                    }
-                  ],
-                  "id": "847469d9f22e46ff70fd-664916edcf235139af1d",
-                  "file": "auth-guard.spec.ts",
-                  "line": 42,
-                  "column": 5
-                },
-                {
-                  "title": "访问 /child 目录 → 重定向到绑定页",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 30000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "firefox-desktop",
-                      "projectName": "firefox-desktop",
-                      "results": [],
-                      "status": "skipped"
-                    }
-                  ],
-                  "id": "847469d9f22e46ff70fd-15c26bac7250744a4123",
-                  "file": "auth-guard.spec.ts",
-                  "line": 53,
-                  "column": 5
-                },
-                {
-                  "title": "直接访问 API → 401",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 30000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "firefox-desktop",
-                      "projectName": "firefox-desktop",
-                      "results": [],
-                      "status": "skipped"
-                    }
-                  ],
-                  "id": "847469d9f22e46ff70fd-3a7a148c5494594f01e6",
-                  "file": "auth-guard.spec.ts",
-                  "line": 65,
+                  "line": 72,
                   "column": 5
                 },
                 {
@@ -306,8 +313,22 @@
                       "expectedStatus": "passed",
                       "projectId": "chromium-mobile",
                       "projectName": "chromium-mobile",
-                      "results": [],
-                      "status": "skipped"
+                      "results": [
+                        {
+                          "workerIndex": 8,
+                          "parallelIndex": 6,
+                          "status": "passed",
+                          "duration": 1696,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-04T10:04:40.398Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
                     }
                   ],
                   "id": "847469d9f22e46ff70fd-6ac7d8ba19e8ea047d93",
@@ -326,13 +347,27 @@
                       "expectedStatus": "passed",
                       "projectId": "chromium-mobile",
                       "projectName": "chromium-mobile",
-                      "results": [],
-                      "status": "skipped"
+                      "results": [
+                        {
+                          "workerIndex": 9,
+                          "parallelIndex": 2,
+                          "status": "passed",
+                          "duration": 1103,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-04T10:04:40.506Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
                     }
                   ],
                   "id": "847469d9f22e46ff70fd-79af75ab6a4bdc04cd30",
                   "file": "auth-guard.spec.ts",
-                  "line": 42,
+                  "line": 46,
                   "column": 5
                 },
                 {
@@ -342,17 +377,51 @@
                   "tests": [
                     {
                       "timeout": 30000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
+                      "annotations": [
+                        {
+                          "type": "skip",
+                          "description": "/child 属于孩子端独立应用，需 BASE_URL 指向完整栈网关",
+                          "location": {
+                            "file": "D:\\projects\\cutegoals\\e2e\\tests\\auth-guard.spec.ts",
+                            "line": 61,
+                            "column": 12
+                          }
+                        }
+                      ],
+                      "expectedStatus": "skipped",
                       "projectId": "chromium-mobile",
                       "projectName": "chromium-mobile",
-                      "results": [],
+                      "results": [
+                        {
+                          "workerIndex": 10,
+                          "parallelIndex": 3,
+                          "status": "skipped",
+                          "duration": 1025,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-04T10:04:40.566Z",
+                          "annotations": [
+                            {
+                              "type": "skip",
+                              "description": "/child 属于孩子端独立应用，需 BASE_URL 指向完整栈网关",
+                              "location": {
+                                "file": "D:\\projects\\cutegoals\\e2e\\tests\\auth-guard.spec.ts",
+                                "line": 61,
+                                "column": 12
+                              }
+                            }
+                          ],
+                          "attachments": []
+                        }
+                      ],
                       "status": "skipped"
                     }
                   ],
                   "id": "847469d9f22e46ff70fd-f371be6baa5bd24c0771",
                   "file": "auth-guard.spec.ts",
-                  "line": 53,
+                  "line": 60,
                   "column": 5
                 },
                 {
@@ -366,13 +435,27 @@
                       "expectedStatus": "passed",
                       "projectId": "chromium-mobile",
                       "projectName": "chromium-mobile",
-                      "results": [],
-                      "status": "skipped"
+                      "results": [
+                        {
+                          "workerIndex": 11,
+                          "parallelIndex": 7,
+                          "status": "passed",
+                          "duration": 1015,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-04T10:04:40.598Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
                     }
                   ],
                   "id": "847469d9f22e46ff70fd-ff5a059a78a147480a93",
                   "file": "auth-guard.spec.ts",
-                  "line": 65,
+                  "line": 72,
                   "column": 5
                 }
               ]
@@ -380,7 +463,7 @@
             {
               "title": "角色越权",
               "file": "auth-guard.spec.ts",
-              "line": 71,
+              "line": 78,
               "column": 8,
               "specs": [
                 {
@@ -394,13 +477,27 @@
                       "expectedStatus": "passed",
                       "projectId": "chromium-desktop",
                       "projectName": "chromium-desktop",
-                      "results": [],
-                      "status": "skipped"
+                      "results": [
+                        {
+                          "workerIndex": 4,
+                          "parallelIndex": 4,
+                          "status": "passed",
+                          "duration": 1792,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-04T10:04:26.631Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
                     }
                   ],
                   "id": "847469d9f22e46ff70fd-ba0ccdb6f1f3f817f668",
                   "file": "auth-guard.spec.ts",
-                  "line": 73,
+                  "line": 80,
                   "column": 5
                 },
                 {
@@ -414,13 +511,27 @@
                       "expectedStatus": "passed",
                       "projectId": "chromium-desktop",
                       "projectName": "chromium-desktop",
-                      "results": [],
-                      "status": "skipped"
+                      "results": [
+                        {
+                          "workerIndex": 5,
+                          "parallelIndex": 5,
+                          "status": "passed",
+                          "duration": 1771,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-04T10:04:26.724Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
                     }
                   ],
                   "id": "847469d9f22e46ff70fd-9a22e1cc4e67afc9fe50",
                   "file": "auth-guard.spec.ts",
-                  "line": 85,
+                  "line": 92,
                   "column": 5
                 },
                 {
@@ -434,73 +545,27 @@
                       "expectedStatus": "passed",
                       "projectId": "chromium-desktop",
                       "projectName": "chromium-desktop",
-                      "results": [],
-                      "status": "skipped"
+                      "results": [
+                        {
+                          "workerIndex": 6,
+                          "parallelIndex": 6,
+                          "status": "passed",
+                          "duration": 1738,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-04T10:04:26.676Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
                     }
                   ],
                   "id": "847469d9f22e46ff70fd-a09ecae55e4d3d94e42c",
                   "file": "auth-guard.spec.ts",
-                  "line": 92,
-                  "column": 5
-                },
-                {
-                  "title": "孩子角色访问家长 API → 403",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 30000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "firefox-desktop",
-                      "projectName": "firefox-desktop",
-                      "results": [],
-                      "status": "skipped"
-                    }
-                  ],
-                  "id": "847469d9f22e46ff70fd-432c121d6a3cbfe85f55",
-                  "file": "auth-guard.spec.ts",
-                  "line": 73,
-                  "column": 5
-                },
-                {
-                  "title": "普通家长访问管理员 API → 403",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 30000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "firefox-desktop",
-                      "projectName": "firefox-desktop",
-                      "results": [],
-                      "status": "skipped"
-                    }
-                  ],
-                  "id": "847469d9f22e46ff70fd-d10dfd1dc0c18fcb559a",
-                  "file": "auth-guard.spec.ts",
-                  "line": 85,
-                  "column": 5
-                },
-                {
-                  "title": "访问其他家庭资源不泄露数据 → 404",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 30000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "firefox-desktop",
-                      "projectName": "firefox-desktop",
-                      "results": [],
-                      "status": "skipped"
-                    }
-                  ],
-                  "id": "847469d9f22e46ff70fd-ee7c6a003cc816992303",
-                  "file": "auth-guard.spec.ts",
-                  "line": 92,
+                  "line": 99,
                   "column": 5
                 },
                 {
@@ -514,13 +579,27 @@
                       "expectedStatus": "passed",
                       "projectId": "chromium-mobile",
                       "projectName": "chromium-mobile",
-                      "results": [],
-                      "status": "skipped"
+                      "results": [
+                        {
+                          "workerIndex": 12,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 978,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-04T10:04:40.626Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
                     }
                   ],
                   "id": "847469d9f22e46ff70fd-1e95d81d80ec0b1247c7",
                   "file": "auth-guard.spec.ts",
-                  "line": 73,
+                  "line": 80,
                   "column": 5
                 },
                 {
@@ -534,13 +613,27 @@
                       "expectedStatus": "passed",
                       "projectId": "chromium-mobile",
                       "projectName": "chromium-mobile",
-                      "results": [],
-                      "status": "skipped"
+                      "results": [
+                        {
+                          "workerIndex": 13,
+                          "parallelIndex": 1,
+                          "status": "passed",
+                          "duration": 803,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-04T10:04:40.684Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
                     }
                   ],
                   "id": "847469d9f22e46ff70fd-c572220268ccff34df21",
                   "file": "auth-guard.spec.ts",
-                  "line": 85,
+                  "line": 92,
                   "column": 5
                 },
                 {
@@ -554,13 +647,27 @@
                       "expectedStatus": "passed",
                       "projectId": "chromium-mobile",
                       "projectName": "chromium-mobile",
-                      "results": [],
-                      "status": "skipped"
+                      "results": [
+                        {
+                          "workerIndex": 14,
+                          "parallelIndex": 4,
+                          "status": "passed",
+                          "duration": 691,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-04T10:04:40.754Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
                     }
                   ],
                   "id": "847469d9f22e46ff70fd-b637ca47976f17570cce",
                   "file": "auth-guard.spec.ts",
-                  "line": 92,
+                  "line": 99,
                   "column": 5
                 }
               ]
@@ -568,7 +675,7 @@
             {
               "title": "账号停用",
               "file": "auth-guard.spec.ts",
-              "line": 104,
+              "line": 111,
               "column": 8,
               "specs": [
                 {
@@ -582,13 +689,27 @@
                       "expectedStatus": "passed",
                       "projectId": "chromium-desktop",
                       "projectName": "chromium-desktop",
-                      "results": [],
-                      "status": "skipped"
+                      "results": [
+                        {
+                          "workerIndex": 7,
+                          "parallelIndex": 7,
+                          "status": "passed",
+                          "duration": 1505,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-04T10:04:26.738Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
                     }
                   ],
                   "id": "847469d9f22e46ff70fd-0607a3074db86bcbbc90",
                   "file": "auth-guard.spec.ts",
-                  "line": 106,
+                  "line": 113,
                   "column": 5
                 },
                 {
@@ -602,53 +723,27 @@
                       "expectedStatus": "passed",
                       "projectId": "chromium-desktop",
                       "projectName": "chromium-desktop",
-                      "results": [],
-                      "status": "skipped"
+                      "results": [
+                        {
+                          "workerIndex": 3,
+                          "parallelIndex": 3,
+                          "status": "passed",
+                          "duration": 502,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-04T10:04:35.615Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
                     }
                   ],
                   "id": "847469d9f22e46ff70fd-96a8a7185ce6f84d7d9b",
                   "file": "auth-guard.spec.ts",
-                  "line": 115,
-                  "column": 5
-                },
-                {
-                  "title": "停用账号无法访问受保护资源",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 30000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "firefox-desktop",
-                      "projectName": "firefox-desktop",
-                      "results": [],
-                      "status": "skipped"
-                    }
-                  ],
-                  "id": "847469d9f22e46ff70fd-fcbd8e3488adb1784c7e",
-                  "file": "auth-guard.spec.ts",
-                  "line": 106,
-                  "column": 5
-                },
-                {
-                  "title": "停用账号的刷新令牌立即失效",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 30000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "firefox-desktop",
-                      "projectName": "firefox-desktop",
-                      "results": [],
-                      "status": "skipped"
-                    }
-                  ],
-                  "id": "847469d9f22e46ff70fd-91f929e0ab6932342ae9",
-                  "file": "auth-guard.spec.ts",
-                  "line": 115,
+                  "line": 122,
                   "column": 5
                 },
                 {
@@ -662,13 +757,27 @@
                       "expectedStatus": "passed",
                       "projectId": "chromium-mobile",
                       "projectName": "chromium-mobile",
-                      "results": [],
-                      "status": "skipped"
+                      "results": [
+                        {
+                          "workerIndex": 15,
+                          "parallelIndex": 5,
+                          "status": "passed",
+                          "duration": 701,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-04T10:04:40.788Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
                     }
                   ],
                   "id": "847469d9f22e46ff70fd-f74bf881671bc8de370b",
                   "file": "auth-guard.spec.ts",
-                  "line": 106,
+                  "line": 113,
                   "column": 5
                 },
                 {
@@ -682,13 +791,27 @@
                       "expectedStatus": "passed",
                       "projectId": "chromium-mobile",
                       "projectName": "chromium-mobile",
-                      "results": [],
-                      "status": "skipped"
+                      "results": [
+                        {
+                          "workerIndex": 10,
+                          "parallelIndex": 3,
+                          "status": "passed",
+                          "duration": 396,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-04T10:04:41.889Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
                     }
                   ],
                   "id": "847469d9f22e46ff70fd-aedba2868be5720688ee",
                   "file": "auth-guard.spec.ts",
-                  "line": 115,
+                  "line": 122,
                   "column": 5
                 }
               ]
@@ -696,7 +819,7 @@
             {
               "title": "会话过期",
               "file": "auth-guard.spec.ts",
-              "line": 124,
+              "line": 131,
               "column": 8,
               "specs": [
                 {
@@ -710,33 +833,27 @@
                       "expectedStatus": "passed",
                       "projectId": "chromium-desktop",
                       "projectName": "chromium-desktop",
-                      "results": [],
-                      "status": "skipped"
+                      "results": [
+                        {
+                          "workerIndex": 7,
+                          "parallelIndex": 7,
+                          "status": "passed",
+                          "duration": 3596,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-04T10:04:35.629Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
                     }
                   ],
                   "id": "847469d9f22e46ff70fd-3b3b0ac889b689266e50",
                   "file": "auth-guard.spec.ts",
-                  "line": 126,
-                  "column": 5
-                },
-                {
-                  "title": "过期会话访问受保护页面 → 重定向登录",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 30000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "firefox-desktop",
-                      "projectName": "firefox-desktop",
-                      "results": [],
-                      "status": "skipped"
-                    }
-                  ],
-                  "id": "847469d9f22e46ff70fd-5b2e634422d2bedb9b53",
-                  "file": "auth-guard.spec.ts",
-                  "line": 126,
+                  "line": 133,
                   "column": 5
                 },
                 {
@@ -750,13 +867,27 @@
                       "expectedStatus": "passed",
                       "projectId": "chromium-mobile",
                       "projectName": "chromium-mobile",
-                      "results": [],
-                      "status": "skipped"
+                      "results": [
+                        {
+                          "workerIndex": 11,
+                          "parallelIndex": 7,
+                          "status": "passed",
+                          "duration": 1955,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-04T10:04:41.936Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
                     }
                   ],
                   "id": "847469d9f22e46ff70fd-3ccc874d13f7847ad22a",
                   "file": "auth-guard.spec.ts",
-                  "line": 126,
+                  "line": 133,
                   "column": 5
                 }
               ]
@@ -764,7 +895,7 @@
             {
               "title": "CSRF 防护",
               "file": "auth-guard.spec.ts",
-              "line": 144,
+              "line": 155,
               "column": 8,
               "specs": [
                 {
@@ -778,33 +909,27 @@
                       "expectedStatus": "passed",
                       "projectId": "chromium-desktop",
                       "projectName": "chromium-desktop",
-                      "results": [],
-                      "status": "skipped"
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 761,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-04T10:04:35.818Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
                     }
                   ],
                   "id": "847469d9f22e46ff70fd-36fbec999cbe8d7c48f4",
                   "file": "auth-guard.spec.ts",
-                  "line": 146,
-                  "column": 5
-                },
-                {
-                  "title": "无 CSRF 令牌的写请求被拒绝",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 30000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "firefox-desktop",
-                      "projectName": "firefox-desktop",
-                      "results": [],
-                      "status": "skipped"
-                    }
-                  ],
-                  "id": "847469d9f22e46ff70fd-f059648aad38b6c5c184",
-                  "file": "auth-guard.spec.ts",
-                  "line": 146,
+                  "line": 157,
                   "column": 5
                 },
                 {
@@ -818,13 +943,27 @@
                       "expectedStatus": "passed",
                       "projectId": "chromium-mobile",
                       "projectName": "chromium-mobile",
-                      "results": [],
-                      "status": "skipped"
+                      "results": [
+                        {
+                          "workerIndex": 13,
+                          "parallelIndex": 1,
+                          "status": "passed",
+                          "duration": 355,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-09-04T10:04:41.974Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
                     }
                   ],
                   "id": "847469d9f22e46ff70fd-d12d8cb6f66e5bdd13e9",
                   "file": "auth-guard.spec.ts",
-                  "line": 146,
+                  "line": 157,
                   "column": 5
                 }
               ]
@@ -834,7 +973,7 @@
         {
           "title": "CI Smoke Tests",
           "file": "auth-guard.spec.ts",
-          "line": 156,
+          "line": 167,
           "column": 6,
           "specs": [
             {
@@ -848,13 +987,27 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium-desktop",
                   "projectName": "chromium-desktop",
-                  "results": [],
-                  "status": "skipped"
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 988,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-04T10:04:35.855Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
                 }
               ],
               "id": "847469d9f22e46ff70fd-c37c6872e80279b8a8fc",
               "file": "auth-guard.spec.ts",
-              "line": 158,
+              "line": 169,
               "column": 3
             },
             {
@@ -868,13 +1021,27 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium-desktop",
                   "projectName": "chromium-desktop",
-                  "results": [],
-                  "status": "skipped"
+                  "results": [
+                    {
+                      "workerIndex": 5,
+                      "parallelIndex": 5,
+                      "status": "passed",
+                      "duration": 3493,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-04T10:04:35.895Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
                 }
               ],
               "id": "847469d9f22e46ff70fd-ba5af34fbc78c84a5bb0",
               "file": "auth-guard.spec.ts",
-              "line": 167,
+              "line": 178,
               "column": 3
             },
             {
@@ -888,13 +1055,27 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium-desktop",
                   "projectName": "chromium-desktop",
-                  "results": [],
-                  "status": "skipped"
+                  "results": [
+                    {
+                      "workerIndex": 6,
+                      "parallelIndex": 6,
+                      "status": "passed",
+                      "duration": 3018,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-04T10:04:35.895Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
                 }
               ],
               "id": "847469d9f22e46ff70fd-f96eeab73915b2f59d0e",
               "file": "auth-guard.spec.ts",
-              "line": 175,
+              "line": 186,
               "column": 3
             },
             {
@@ -908,13 +1089,27 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium-desktop",
                   "projectName": "chromium-desktop",
-                  "results": [],
-                  "status": "skipped"
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 4,
+                      "status": "passed",
+                      "duration": 2927,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-04T10:04:35.913Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
                 }
               ],
               "id": "847469d9f22e46ff70fd-51afcd3b50a1703a6fb8",
               "file": "auth-guard.spec.ts",
-              "line": 182,
+              "line": 193,
               "column": 3
             },
             {
@@ -928,113 +1123,27 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium-desktop",
                   "projectName": "chromium-desktop",
-                  "results": [],
-                  "status": "skipped"
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 3049,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-04T10:04:36.147Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
                 }
               ],
               "id": "847469d9f22e46ff70fd-d4ec34e951ff15496894",
               "file": "auth-guard.spec.ts",
-              "line": 189,
-              "column": 3
-            },
-            {
-              "title": "健康检查端点正常",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "firefox-desktop",
-                  "projectName": "firefox-desktop",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "847469d9f22e46ff70fd-e7b139b0c222c6483d9e",
-              "file": "auth-guard.spec.ts",
-              "line": 158,
-              "column": 3
-            },
-            {
-              "title": "前端入口可访问",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "firefox-desktop",
-                  "projectName": "firefox-desktop",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "847469d9f22e46ff70fd-101304c305a381e7b503",
-              "file": "auth-guard.spec.ts",
-              "line": 167,
-              "column": 3
-            },
-            {
-              "title": "admin 路由不崩溃",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "firefox-desktop",
-                  "projectName": "firefox-desktop",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "847469d9f22e46ff70fd-883b527e89fceb471d42",
-              "file": "auth-guard.spec.ts",
-              "line": 175,
-              "column": 3
-            },
-            {
-              "title": "parent 路由不崩溃",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "firefox-desktop",
-                  "projectName": "firefox-desktop",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "847469d9f22e46ff70fd-cde7182a438d68917cc8",
-              "file": "auth-guard.spec.ts",
-              "line": 182,
-              "column": 3
-            },
-            {
-              "title": "child 路由不崩溃",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "firefox-desktop",
-                  "projectName": "firefox-desktop",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "847469d9f22e46ff70fd-bd55297b8255a2f5603e",
-              "file": "auth-guard.spec.ts",
-              "line": 189,
+              "line": 200,
               "column": 3
             },
             {
@@ -1048,13 +1157,27 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium-mobile",
                   "projectName": "chromium-mobile",
-                  "results": [],
-                  "status": "skipped"
+                  "results": [
+                    {
+                      "workerIndex": 12,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 361,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-04T10:04:41.979Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
                 }
               ],
               "id": "847469d9f22e46ff70fd-4916c0406783436c816b",
               "file": "auth-guard.spec.ts",
-              "line": 158,
+              "line": 169,
               "column": 3
             },
             {
@@ -1068,13 +1191,27 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium-mobile",
                   "projectName": "chromium-mobile",
-                  "results": [],
-                  "status": "skipped"
+                  "results": [
+                    {
+                      "workerIndex": 10,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 1370,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-04T10:04:42.299Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
                 }
               ],
               "id": "847469d9f22e46ff70fd-7516d582803531c36422",
               "file": "auth-guard.spec.ts",
-              "line": 167,
+              "line": 178,
               "column": 3
             },
             {
@@ -1088,13 +1225,27 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium-mobile",
                   "projectName": "chromium-mobile",
-                  "results": [],
-                  "status": "skipped"
+                  "results": [
+                    {
+                      "workerIndex": 13,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 1388,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-04T10:04:42.355Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
                 }
               ],
               "id": "847469d9f22e46ff70fd-4d46ea3c225651ccebb8",
               "file": "auth-guard.spec.ts",
-              "line": 175,
+              "line": 186,
               "column": 3
             },
             {
@@ -1108,13 +1259,27 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium-mobile",
                   "projectName": "chromium-mobile",
-                  "results": [],
-                  "status": "skipped"
+                  "results": [
+                    {
+                      "workerIndex": 12,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1450,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-04T10:04:42.368Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
                 }
               ],
               "id": "847469d9f22e46ff70fd-298a95902790c4391fd2",
               "file": "auth-guard.spec.ts",
-              "line": 182,
+              "line": 193,
               "column": 3
             },
             {
@@ -1128,13 +1293,27 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium-mobile",
                   "projectName": "chromium-mobile",
-                  "results": [],
-                  "status": "skipped"
+                  "results": [
+                    {
+                      "workerIndex": 8,
+                      "parallelIndex": 6,
+                      "status": "passed",
+                      "duration": 6291,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-04T10:04:42.489Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
                 }
               ],
               "id": "847469d9f22e46ff70fd-e8aaccff63624ebfe704",
               "file": "auth-guard.spec.ts",
-              "line": 189,
+              "line": 200,
               "column": 3
             }
           ]
@@ -1161,11 +1340,45 @@
               "tests": [
                 {
                   "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "description": "E2E 家长凭据缺失：设置 E2E_PARENT_PHONE 和 E2E_PARENT_PASSWORD（来源：/api/auth/initialize 创建的账号）",
+                      "location": {
+                        "file": "D:\\projects\\cutegoals\\e2e\\tests\\parent-task-calendar.spec.ts",
+                        "line": 36,
+                        "column": 10
+                      }
+                    }
+                  ],
+                  "expectedStatus": "skipped",
                   "projectId": "chromium-desktop",
                   "projectName": "chromium-desktop",
-                  "results": [],
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "skipped",
+                      "duration": 915,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-04T10:04:36.572Z",
+                      "annotations": [
+                        {
+                          "type": "skip",
+                          "description": "E2E 家长凭据缺失：设置 E2E_PARENT_PHONE 和 E2E_PARENT_PASSWORD（来源：/api/auth/initialize 创建的账号）",
+                          "location": {
+                            "file": "D:\\projects\\cutegoals\\e2e\\tests\\parent-task-calendar.spec.ts",
+                            "line": 36,
+                            "column": 10
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
                   "status": "skipped"
                 }
               ],
@@ -1181,11 +1394,45 @@
               "tests": [
                 {
                   "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "description": "E2E 家长凭据缺失：设置 E2E_PARENT_PHONE 和 E2E_PARENT_PASSWORD（来源：/api/auth/initialize 创建的账号）",
+                      "location": {
+                        "file": "D:\\projects\\cutegoals\\e2e\\tests\\parent-task-calendar.spec.ts",
+                        "line": 36,
+                        "column": 10
+                      }
+                    }
+                  ],
+                  "expectedStatus": "skipped",
                   "projectId": "chromium-desktop",
                   "projectName": "chromium-desktop",
-                  "results": [],
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "skipped",
+                      "duration": 800,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-04T10:04:36.640Z",
+                      "annotations": [
+                        {
+                          "type": "skip",
+                          "description": "E2E 家长凭据缺失：设置 E2E_PARENT_PHONE 和 E2E_PARENT_PASSWORD（来源：/api/auth/initialize 创建的账号）",
+                          "location": {
+                            "file": "D:\\projects\\cutegoals\\e2e\\tests\\parent-task-calendar.spec.ts",
+                            "line": 36,
+                            "column": 10
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
                   "status": "skipped"
                 }
               ],
@@ -1201,11 +1448,45 @@
               "tests": [
                 {
                   "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "description": "E2E 家长凭据缺失：设置 E2E_PARENT_PHONE 和 E2E_PARENT_PASSWORD（来源：/api/auth/initialize 创建的账号）",
+                      "location": {
+                        "file": "D:\\projects\\cutegoals\\e2e\\tests\\parent-task-calendar.spec.ts",
+                        "line": 36,
+                        "column": 10
+                      }
+                    }
+                  ],
+                  "expectedStatus": "skipped",
                   "projectId": "chromium-desktop",
                   "projectName": "chromium-desktop",
-                  "results": [],
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "skipped",
+                      "duration": 1086,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-04T10:04:36.899Z",
+                      "annotations": [
+                        {
+                          "type": "skip",
+                          "description": "E2E 家长凭据缺失：设置 E2E_PARENT_PHONE 和 E2E_PARENT_PASSWORD（来源：/api/auth/initialize 创建的账号）",
+                          "location": {
+                            "file": "D:\\projects\\cutegoals\\e2e\\tests\\parent-task-calendar.spec.ts",
+                            "line": 36,
+                            "column": 10
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
                   "status": "skipped"
                 }
               ],
@@ -1221,11 +1502,45 @@
               "tests": [
                 {
                   "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "description": "E2E 家长凭据缺失：设置 E2E_PARENT_PHONE 和 E2E_PARENT_PASSWORD（来源：/api/auth/initialize 创建的账号）",
+                      "location": {
+                        "file": "D:\\projects\\cutegoals\\e2e\\tests\\parent-task-calendar.spec.ts",
+                        "line": 36,
+                        "column": 10
+                      }
+                    }
+                  ],
+                  "expectedStatus": "skipped",
                   "projectId": "chromium-desktop",
                   "projectName": "chromium-desktop",
-                  "results": [],
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "skipped",
+                      "duration": 1052,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-04T10:04:37.505Z",
+                      "annotations": [
+                        {
+                          "type": "skip",
+                          "description": "E2E 家长凭据缺失：设置 E2E_PARENT_PHONE 和 E2E_PARENT_PASSWORD（来源：/api/auth/initialize 创建的账号）",
+                          "location": {
+                            "file": "D:\\projects\\cutegoals\\e2e\\tests\\parent-task-calendar.spec.ts",
+                            "line": 36,
+                            "column": 10
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
                   "status": "skipped"
                 }
               ],
@@ -1241,11 +1556,45 @@
               "tests": [
                 {
                   "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "description": "E2E 家长凭据缺失：设置 E2E_PARENT_PHONE 和 E2E_PARENT_PASSWORD（来源：/api/auth/initialize 创建的账号）",
+                      "location": {
+                        "file": "D:\\projects\\cutegoals\\e2e\\tests\\parent-task-calendar.spec.ts",
+                        "line": 36,
+                        "column": 10
+                      }
+                    }
+                  ],
+                  "expectedStatus": "skipped",
                   "projectId": "chromium-desktop",
                   "projectName": "chromium-desktop",
-                  "results": [],
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "skipped",
+                      "duration": 1053,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-04T10:04:37.524Z",
+                      "annotations": [
+                        {
+                          "type": "skip",
+                          "description": "E2E 家长凭据缺失：设置 E2E_PARENT_PHONE 和 E2E_PARENT_PASSWORD（来源：/api/auth/initialize 创建的账号）",
+                          "location": {
+                            "file": "D:\\projects\\cutegoals\\e2e\\tests\\parent-task-calendar.spec.ts",
+                            "line": 36,
+                            "column": 10
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
                   "status": "skipped"
                 }
               ],
@@ -1261,111 +1610,45 @@
               "tests": [
                 {
                   "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "firefox-desktop",
-                  "projectName": "firefox-desktop",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "3adb28f609132d6cf588-a772e1a57a2772fd58bd",
-              "file": "parent-task-calendar.spec.ts",
-              "line": 62,
-              "column": 3
-            },
-            {
-              "title": "点击有色日期 → 下方任务列表刷新为当天任务",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "firefox-desktop",
-                  "projectName": "firefox-desktop",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "3adb28f609132d6cf588-8e0433a2c491c677de44",
-              "file": "parent-task-calendar.spec.ts",
-              "line": 74,
-              "column": 3
-            },
-            {
-              "title": "任务类型筛选正确过滤任务列表",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "firefox-desktop",
-                  "projectName": "firefox-desktop",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "3adb28f609132d6cf588-2a92d7b5ead20c72822a",
-              "file": "parent-task-calendar.spec.ts",
-              "line": 91,
-              "column": 3
-            },
-            {
-              "title": "查看全部模式清除日期约束",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "firefox-desktop",
-                  "projectName": "firefox-desktop",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "3adb28f609132d6cf588-172b3f8b6cb06732f6eb",
-              "file": "parent-task-calendar.spec.ts",
-              "line": 110,
-              "column": 3
-            },
-            {
-              "title": "移动端单月布局",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "firefox-desktop",
-                  "projectName": "firefox-desktop",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "3adb28f609132d6cf588-028fc8e2e573ef43535d",
-              "file": "parent-task-calendar.spec.ts",
-              "line": 131,
-              "column": 3
-            },
-            {
-              "title": "页面加载后显示单月日历",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "description": "E2E 家长凭据缺失：设置 E2E_PARENT_PHONE 和 E2E_PARENT_PASSWORD（来源：/api/auth/initialize 创建的账号）",
+                      "location": {
+                        "file": "D:\\projects\\cutegoals\\e2e\\tests\\parent-task-calendar.spec.ts",
+                        "line": 36,
+                        "column": 10
+                      }
+                    }
+                  ],
+                  "expectedStatus": "skipped",
                   "projectId": "chromium-mobile",
                   "projectName": "chromium-mobile",
-                  "results": [],
+                  "results": [
+                    {
+                      "workerIndex": 10,
+                      "parallelIndex": 3,
+                      "status": "skipped",
+                      "duration": 414,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-04T10:04:43.707Z",
+                      "annotations": [
+                        {
+                          "type": "skip",
+                          "description": "E2E 家长凭据缺失：设置 E2E_PARENT_PHONE 和 E2E_PARENT_PASSWORD（来源：/api/auth/initialize 创建的账号）",
+                          "location": {
+                            "file": "D:\\projects\\cutegoals\\e2e\\tests\\parent-task-calendar.spec.ts",
+                            "line": 36,
+                            "column": 10
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
                   "status": "skipped"
                 }
               ],
@@ -1381,11 +1664,45 @@
               "tests": [
                 {
                   "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "description": "E2E 家长凭据缺失：设置 E2E_PARENT_PHONE 和 E2E_PARENT_PASSWORD（来源：/api/auth/initialize 创建的账号）",
+                      "location": {
+                        "file": "D:\\projects\\cutegoals\\e2e\\tests\\parent-task-calendar.spec.ts",
+                        "line": 36,
+                        "column": 10
+                      }
+                    }
+                  ],
+                  "expectedStatus": "skipped",
                   "projectId": "chromium-mobile",
                   "projectName": "chromium-mobile",
-                  "results": [],
+                  "results": [
+                    {
+                      "workerIndex": 13,
+                      "parallelIndex": 1,
+                      "status": "skipped",
+                      "duration": 306,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-04T10:04:43.800Z",
+                      "annotations": [
+                        {
+                          "type": "skip",
+                          "description": "E2E 家长凭据缺失：设置 E2E_PARENT_PHONE 和 E2E_PARENT_PASSWORD（来源：/api/auth/initialize 创建的账号）",
+                          "location": {
+                            "file": "D:\\projects\\cutegoals\\e2e\\tests\\parent-task-calendar.spec.ts",
+                            "line": 36,
+                            "column": 10
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
                   "status": "skipped"
                 }
               ],
@@ -1401,11 +1718,45 @@
               "tests": [
                 {
                   "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "description": "E2E 家长凭据缺失：设置 E2E_PARENT_PHONE 和 E2E_PARENT_PASSWORD（来源：/api/auth/initialize 创建的账号）",
+                      "location": {
+                        "file": "D:\\projects\\cutegoals\\e2e\\tests\\parent-task-calendar.spec.ts",
+                        "line": 36,
+                        "column": 10
+                      }
+                    }
+                  ],
+                  "expectedStatus": "skipped",
                   "projectId": "chromium-mobile",
                   "projectName": "chromium-mobile",
-                  "results": [],
+                  "results": [
+                    {
+                      "workerIndex": 12,
+                      "parallelIndex": 0,
+                      "status": "skipped",
+                      "duration": 286,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-04T10:04:43.861Z",
+                      "annotations": [
+                        {
+                          "type": "skip",
+                          "description": "E2E 家长凭据缺失：设置 E2E_PARENT_PHONE 和 E2E_PARENT_PASSWORD（来源：/api/auth/initialize 创建的账号）",
+                          "location": {
+                            "file": "D:\\projects\\cutegoals\\e2e\\tests\\parent-task-calendar.spec.ts",
+                            "line": 36,
+                            "column": 10
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
                   "status": "skipped"
                 }
               ],
@@ -1421,11 +1772,45 @@
               "tests": [
                 {
                   "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "description": "E2E 家长凭据缺失：设置 E2E_PARENT_PHONE 和 E2E_PARENT_PASSWORD（来源：/api/auth/initialize 创建的账号）",
+                      "location": {
+                        "file": "D:\\projects\\cutegoals\\e2e\\tests\\parent-task-calendar.spec.ts",
+                        "line": 36,
+                        "column": 10
+                      }
+                    }
+                  ],
+                  "expectedStatus": "skipped",
                   "projectId": "chromium-mobile",
                   "projectName": "chromium-mobile",
-                  "results": [],
+                  "results": [
+                    {
+                      "workerIndex": 11,
+                      "parallelIndex": 7,
+                      "status": "skipped",
+                      "duration": 397,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-04T10:04:43.924Z",
+                      "annotations": [
+                        {
+                          "type": "skip",
+                          "description": "E2E 家长凭据缺失：设置 E2E_PARENT_PHONE 和 E2E_PARENT_PASSWORD（来源：/api/auth/initialize 创建的账号）",
+                          "location": {
+                            "file": "D:\\projects\\cutegoals\\e2e\\tests\\parent-task-calendar.spec.ts",
+                            "line": 36,
+                            "column": 10
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
                   "status": "skipped"
                 }
               ],
@@ -1441,11 +1826,45 @@
               "tests": [
                 {
                   "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "description": "E2E 家长凭据缺失：设置 E2E_PARENT_PHONE 和 E2E_PARENT_PASSWORD（来源：/api/auth/initialize 创建的账号）",
+                      "location": {
+                        "file": "D:\\projects\\cutegoals\\e2e\\tests\\parent-task-calendar.spec.ts",
+                        "line": 36,
+                        "column": 10
+                      }
+                    }
+                  ],
+                  "expectedStatus": "skipped",
                   "projectId": "chromium-mobile",
                   "projectName": "chromium-mobile",
-                  "results": [],
+                  "results": [
+                    {
+                      "workerIndex": 13,
+                      "parallelIndex": 1,
+                      "status": "skipped",
+                      "duration": 286,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-04T10:04:44.136Z",
+                      "annotations": [
+                        {
+                          "type": "skip",
+                          "description": "E2E 家长凭据缺失：设置 E2E_PARENT_PHONE 和 E2E_PARENT_PASSWORD（来源：/api/auth/initialize 创建的账号）",
+                          "location": {
+                            "file": "D:\\projects\\cutegoals\\e2e\\tests\\parent-task-calendar.spec.ts",
+                            "line": 36,
+                            "column": 10
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
                   "status": "skipped"
                 }
               ],
@@ -1468,7 +1887,7 @@
         {
           "title": "Resubmission Controls — 重复提交控制",
           "file": "resubmission-controls.spec.ts",
-          "line": 19,
+          "line": 97,
           "column": 6,
           "specs": [
             {
@@ -1478,57 +1897,51 @@
               "tests": [
                 {
                   "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "description": "E2E 家长凭据缺失：设置 E2E_PARENT_PHONE 和 E2E_PARENT_PASSWORD",
+                      "location": {
+                        "file": "D:\\projects\\cutegoals\\e2e\\tests\\resubmission-controls.spec.ts",
+                        "line": 49,
+                        "column": 8
+                      }
+                    }
+                  ],
+                  "expectedStatus": "skipped",
                   "projectId": "chromium-desktop",
                   "projectName": "chromium-desktop",
-                  "results": [],
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "skipped",
+                      "duration": 1009,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-04T10:04:38.082Z",
+                      "annotations": [
+                        {
+                          "type": "skip",
+                          "description": "E2E 家长凭据缺失：设置 E2E_PARENT_PHONE 和 E2E_PARENT_PASSWORD",
+                          "location": {
+                            "file": "D:\\projects\\cutegoals\\e2e\\tests\\resubmission-controls.spec.ts",
+                            "line": 49,
+                            "column": 8
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
                   "status": "skipped"
                 }
               ],
               "id": "b9fa69fc546fdc532f63-38d0a715f8c72a66041d",
               "file": "resubmission-controls.spec.ts",
-              "line": 21,
-              "column": 3
-            },
-            {
-              "title": "孩子重复提交达到上限后被拒绝",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium-desktop",
-                  "projectName": "chromium-desktop",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "b9fa69fc546fdc532f63-9749e893b85c4fd844d5",
-              "file": "resubmission-controls.spec.ts",
-              "line": 30,
-              "column": 3
-            },
-            {
-              "title": "积分上限达到后被拒绝",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium-desktop",
-                  "projectName": "chromium-desktop",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "b9fa69fc546fdc532f63-c85f2d6a57aaa691a65a",
-              "file": "resubmission-controls.spec.ts",
-              "line": 38,
+              "line": 102,
               "column": 3
             },
             {
@@ -1538,37 +1951,51 @@
               "tests": [
                 {
                   "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "description": "E2E 家长凭据缺失：设置 E2E_PARENT_PHONE 和 E2E_PARENT_PASSWORD",
+                      "location": {
+                        "file": "D:\\projects\\cutegoals\\e2e\\tests\\resubmission-controls.spec.ts",
+                        "line": 49,
+                        "column": 8
+                      }
+                    }
+                  ],
+                  "expectedStatus": "skipped",
                   "projectId": "chromium-desktop",
                   "projectName": "chromium-desktop",
-                  "results": [],
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "skipped",
+                      "duration": 641,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-04T10:04:38.638Z",
+                      "annotations": [
+                        {
+                          "type": "skip",
+                          "description": "E2E 家长凭据缺失：设置 E2E_PARENT_PHONE 和 E2E_PARENT_PASSWORD",
+                          "location": {
+                            "file": "D:\\projects\\cutegoals\\e2e\\tests\\resubmission-controls.spec.ts",
+                            "line": 49,
+                            "column": 8
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
                   "status": "skipped"
                 }
               ],
               "id": "b9fa69fc546fdc532f63-b802c057d4966926273e",
               "file": "resubmission-controls.spec.ts",
-              "line": 45,
-              "column": 3
-            },
-            {
-              "title": "家长创建模板并配置 allow_resubmit + max_submissions",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "firefox-desktop",
-                  "projectName": "firefox-desktop",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "b9fa69fc546fdc532f63-437c08261cba5d871653",
-              "file": "resubmission-controls.spec.ts",
-              "line": 21,
+              "line": 146,
               "column": 3
             },
             {
@@ -1578,17 +2005,51 @@
               "tests": [
                 {
                   "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "firefox-desktop",
-                  "projectName": "firefox-desktop",
-                  "results": [],
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "description": "需要完整栈：设置 BASE_URL 指向网关（例如 http://localhost:80）",
+                      "location": {
+                        "file": "D:\\projects\\cutegoals\\e2e\\tests\\resubmission-controls.spec.ts",
+                        "line": 178,
+                        "column": 10
+                      }
+                    }
+                  ],
+                  "expectedStatus": "skipped",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "skipped",
+                      "duration": 618,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-04T10:04:38.691Z",
+                      "annotations": [
+                        {
+                          "type": "skip",
+                          "description": "需要完整栈：设置 BASE_URL 指向网关（例如 http://localhost:80）",
+                          "location": {
+                            "file": "D:\\projects\\cutegoals\\e2e\\tests\\resubmission-controls.spec.ts",
+                            "line": 178,
+                            "column": 10
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
                   "status": "skipped"
                 }
               ],
-              "id": "b9fa69fc546fdc532f63-f354b71932fc00e946ad",
+              "id": "b9fa69fc546fdc532f63-9749e893b85c4fd844d5",
               "file": "resubmission-controls.spec.ts",
-              "line": 30,
+              "line": 177,
               "column": 3
             },
             {
@@ -1598,37 +2059,51 @@
               "tests": [
                 {
                   "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "firefox-desktop",
-                  "projectName": "firefox-desktop",
-                  "results": [],
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "description": "需要完整栈：设置 BASE_URL 指向网关（例如 http://localhost:80）",
+                      "location": {
+                        "file": "D:\\projects\\cutegoals\\e2e\\tests\\resubmission-controls.spec.ts",
+                        "line": 246,
+                        "column": 10
+                      }
+                    }
+                  ],
+                  "expectedStatus": "skipped",
+                  "projectId": "chromium-desktop",
+                  "projectName": "chromium-desktop",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 4,
+                      "status": "skipped",
+                      "duration": 446,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-04T10:04:38.901Z",
+                      "annotations": [
+                        {
+                          "type": "skip",
+                          "description": "需要完整栈：设置 BASE_URL 指向网关（例如 http://localhost:80）",
+                          "location": {
+                            "file": "D:\\projects\\cutegoals\\e2e\\tests\\resubmission-controls.spec.ts",
+                            "line": 246,
+                            "column": 10
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
                   "status": "skipped"
                 }
               ],
-              "id": "b9fa69fc546fdc532f63-4e74aae68c56027c076f",
+              "id": "b9fa69fc546fdc532f63-c85f2d6a57aaa691a65a",
               "file": "resubmission-controls.spec.ts",
-              "line": 38,
-              "column": 3
-            },
-            {
-              "title": "家长端模板表单显示重复提交控制字段",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "firefox-desktop",
-                  "projectName": "firefox-desktop",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "b9fa69fc546fdc532f63-bb379f9561bc79a616d3",
-              "file": "resubmission-controls.spec.ts",
-              "line": 45,
+              "line": 245,
               "column": 3
             },
             {
@@ -1638,57 +2113,51 @@
               "tests": [
                 {
                   "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "description": "E2E 家长凭据缺失：设置 E2E_PARENT_PHONE 和 E2E_PARENT_PASSWORD",
+                      "location": {
+                        "file": "D:\\projects\\cutegoals\\e2e\\tests\\resubmission-controls.spec.ts",
+                        "line": 49,
+                        "column": 8
+                      }
+                    }
+                  ],
+                  "expectedStatus": "skipped",
                   "projectId": "chromium-mobile",
                   "projectName": "chromium-mobile",
-                  "results": [],
+                  "results": [
+                    {
+                      "workerIndex": 10,
+                      "parallelIndex": 3,
+                      "status": "skipped",
+                      "duration": 283,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-04T10:04:44.168Z",
+                      "annotations": [
+                        {
+                          "type": "skip",
+                          "description": "E2E 家长凭据缺失：设置 E2E_PARENT_PHONE 和 E2E_PARENT_PASSWORD",
+                          "location": {
+                            "file": "D:\\projects\\cutegoals\\e2e\\tests\\resubmission-controls.spec.ts",
+                            "line": 49,
+                            "column": 8
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
                   "status": "skipped"
                 }
               ],
               "id": "b9fa69fc546fdc532f63-8ade3304798dc7f3539b",
               "file": "resubmission-controls.spec.ts",
-              "line": 21,
-              "column": 3
-            },
-            {
-              "title": "孩子重复提交达到上限后被拒绝",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium-mobile",
-                  "projectName": "chromium-mobile",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "b9fa69fc546fdc532f63-5bebff705123e02f80a1",
-              "file": "resubmission-controls.spec.ts",
-              "line": 30,
-              "column": 3
-            },
-            {
-              "title": "积分上限达到后被拒绝",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium-mobile",
-                  "projectName": "chromium-mobile",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "b9fa69fc546fdc532f63-8b9b8387227255e230e6",
-              "file": "resubmission-controls.spec.ts",
-              "line": 38,
+              "line": 102,
               "column": 3
             },
             {
@@ -1698,17 +2167,159 @@
               "tests": [
                 {
                   "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "description": "E2E 家长凭据缺失：设置 E2E_PARENT_PHONE 和 E2E_PARENT_PASSWORD",
+                      "location": {
+                        "file": "D:\\projects\\cutegoals\\e2e\\tests\\resubmission-controls.spec.ts",
+                        "line": 49,
+                        "column": 8
+                      }
+                    }
+                  ],
+                  "expectedStatus": "skipped",
                   "projectId": "chromium-mobile",
                   "projectName": "chromium-mobile",
-                  "results": [],
+                  "results": [
+                    {
+                      "workerIndex": 12,
+                      "parallelIndex": 0,
+                      "status": "skipped",
+                      "duration": 293,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-04T10:04:44.199Z",
+                      "annotations": [
+                        {
+                          "type": "skip",
+                          "description": "E2E 家长凭据缺失：设置 E2E_PARENT_PHONE 和 E2E_PARENT_PASSWORD",
+                          "location": {
+                            "file": "D:\\projects\\cutegoals\\e2e\\tests\\resubmission-controls.spec.ts",
+                            "line": 49,
+                            "column": 8
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
                   "status": "skipped"
                 }
               ],
               "id": "b9fa69fc546fdc532f63-319c4a7e5c6125a96f05",
               "file": "resubmission-controls.spec.ts",
-              "line": 45,
+              "line": 146,
+              "column": 3
+            },
+            {
+              "title": "孩子重复提交达到上限后被拒绝",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "description": "需要完整栈：设置 BASE_URL 指向网关（例如 http://localhost:80）",
+                      "location": {
+                        "file": "D:\\projects\\cutegoals\\e2e\\tests\\resubmission-controls.spec.ts",
+                        "line": 178,
+                        "column": 10
+                      }
+                    }
+                  ],
+                  "expectedStatus": "skipped",
+                  "projectId": "chromium-mobile",
+                  "projectName": "chromium-mobile",
+                  "results": [
+                    {
+                      "workerIndex": 11,
+                      "parallelIndex": 7,
+                      "status": "skipped",
+                      "duration": 294,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-04T10:04:44.353Z",
+                      "annotations": [
+                        {
+                          "type": "skip",
+                          "description": "需要完整栈：设置 BASE_URL 指向网关（例如 http://localhost:80）",
+                          "location": {
+                            "file": "D:\\projects\\cutegoals\\e2e\\tests\\resubmission-controls.spec.ts",
+                            "line": 178,
+                            "column": 10
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "b9fa69fc546fdc532f63-5bebff705123e02f80a1",
+              "file": "resubmission-controls.spec.ts",
+              "line": 177,
+              "column": 3
+            },
+            {
+              "title": "积分上限达到后被拒绝",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "description": "需要完整栈：设置 BASE_URL 指向网关（例如 http://localhost:80）",
+                      "location": {
+                        "file": "D:\\projects\\cutegoals\\e2e\\tests\\resubmission-controls.spec.ts",
+                        "line": 246,
+                        "column": 10
+                      }
+                    }
+                  ],
+                  "expectedStatus": "skipped",
+                  "projectId": "chromium-mobile",
+                  "projectName": "chromium-mobile",
+                  "results": [
+                    {
+                      "workerIndex": 13,
+                      "parallelIndex": 1,
+                      "status": "skipped",
+                      "duration": 243,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-04T10:04:44.461Z",
+                      "annotations": [
+                        {
+                          "type": "skip",
+                          "description": "需要完整栈：设置 BASE_URL 指向网关（例如 http://localhost:80）",
+                          "location": {
+                            "file": "D:\\projects\\cutegoals\\e2e\\tests\\resubmission-controls.spec.ts",
+                            "line": 246,
+                            "column": 10
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "b9fa69fc546fdc532f63-8b9b8387227255e230e6",
+              "file": "resubmission-controls.spec.ts",
+              "line": 245,
               "column": 3
             }
           ]
@@ -1718,10 +2329,10 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-09-02T06:30:10.275Z",
-    "duration": 49.57499999999999,
-    "expected": 0,
-    "skipped": 75,
+    "startTime": "2026-09-04T10:04:20.309Z",
+    "duration": 28884.309,
+    "expected": 30,
+    "skipped": 20,
     "unexpected": 0,
     "flaky": 0
   }
