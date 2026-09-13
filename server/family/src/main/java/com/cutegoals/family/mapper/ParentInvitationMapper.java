@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -31,4 +32,7 @@ public interface ParentInvitationMapper extends BaseMapper<ParentInvitation> {
 
     @Update("UPDATE parent_invitation SET status = #{status} WHERE id = #{id} AND status = 'PENDING'")
     int updateStatusIfPending(@Param("id") Long id, @Param("status") String status);
+
+    @Select("SELECT * FROM parent_invitation WHERE family_id = #{familyId} ORDER BY created_at DESC")
+    List<ParentInvitation> findByFamilyId(@Param("familyId") Long familyId);
 }

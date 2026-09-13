@@ -63,6 +63,18 @@ check_maven_version() {
     ok "Maven 版本：${version}"
 }
 
+# Maven 优先使用 JAVA_HOME 编译；若其指向的 JDK 与通过检查的 java 不一致（如 java=21、JAVA_HOME=25），
+# 会让 Lombok 在过高 JDK 上编译失败。这里把 JAVA_HOME 对齐到当前 java 实际所属的 JDK。
+align_java_home() {
+    local maven_java_home current_java_home
+    maven_java_home=$(mvn -version 2>/dev/null | grep -oE 'runtime: .*' | sed 's/runtime: //')
+    current_java_home=$(java -XshowSettings:properties -version 2>&1 | awk -F'= ' '/java.home/ {print $2}')
+    if [ -n "${maven_java_home}" ] && [ -n "${current_java_home}" ] && [ "${maven_java_home}" != "${current_java_home}" ]; then
+        warn "Maven 当前使用 JAVA_HOME=${maven_java_home}，与 java 所在 JDK(${current_java_home}) 不一致，已自动对齐"
+        export JAVA_HOME="${current_java_home}"
+    fi
+}
+
 check_postgres() {
     local host="${1:-localhost}"
     local port="${2:-35432}"
@@ -188,6 +200,7 @@ main() {
     check_java_version
     check_command mvn "3.9"
     check_maven_version
+    align_java_home
 
     load_existing_config
 

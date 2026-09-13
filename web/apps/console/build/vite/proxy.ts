@@ -23,11 +23,11 @@ export function createProxy(list: ProxyList = []) {
     const isHttps = httpsRE.test(resolvedTarget);
 
     // https://github.com/http-party/node-http-proxy#options
+    // 注意：CuteGoals 后端路由本身带 /api 前缀，这里不做 rewrite 剥离前缀
     ret[prefix] = {
       target: resolvedTarget,
       changeOrigin: true,
       ws: true,
-      rewrite: (path) => path.replace(new RegExp(`^${prefix}`), ''),
       // https is require secure=false
       ...(isHttps ? { secure: false } : {}),
     };

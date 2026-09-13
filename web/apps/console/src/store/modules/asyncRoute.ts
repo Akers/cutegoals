@@ -88,20 +88,14 @@ export const useAsyncRouteStore = defineStore({
     },
     async generateRolesFilteredRoutes(roles: string[]) {
       const roleList = roles ?? [];
-      const isAdmin = roleList.includes('admin');
-      // FIXED 模式：按 meta.roles 过滤（角色已归一化为 parent / admin / child）
+      // FIXED 模式：按 meta.roles 过滤（角色已归一化为 parent / admin / child）。
+      // 后端初始化账号为 INSTANCE_ADMIN + PARENT 双角色，routeFilter 天然按角色放行两端路由，
+      // 不再做"管理员只看管理端"的一刀切区域过滤（否则双角色账号永远进不了 /parent）。
       const routeFilter = (route) => {
         const { meta } = route;
         const { roles: allowedRoles } = meta || {};
         if (!allowedRoles || !allowedRoles.length) return true;
         return allowedRoles.some((role) => roleList.includes(role));
-      };
-      // 区域隔离：管理员只加载管理端模块树，家长（非管理员）只加载家长端模块树
-      const areaFilter = (route) => {
-        const { meta } = route;
-        const { roles: allowedRoles } = meta || {};
-        if (!allowedRoles || !allowedRoles.length) return true;
-        return isAdmin ? allowedRoles.includes('admin') : !allowedRoles.includes('admin');
       };
       let accessedRouters;
       try {
@@ -110,7 +104,7 @@ export const useAsyncRouteStore = defineStore({
       } catch (error) {
         console.log(error);
       }
-      accessedRouters = accessedRouters.filter(routeFilter).filter(areaFilter);
+      accessedRouters = accessedRouters.filter(routeFilter);
       this.setRouters(accessedRouters);
       this.setMenus(accessedRouters);
       return toRaw(accessedRouters);

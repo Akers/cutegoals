@@ -22,6 +22,7 @@ import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.HexFormat;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -92,6 +93,37 @@ public class InvitationService {
         Map<String, Object> result = buildInvitationResponse(invitation);
         // Return the secret only on creation (one-time)
         result.put("secret", plainSecret);
+        return result;
+    }
+
+    /**
+     * List invitations of a family with pagination (family settings page).
+     */
+    public Map<String, Object> listInvitationsPage(int page, int pageSize, Long familyId) {
+        // 单个家庭邀请数量有限，取全量后内存分页（与 ChildProfileService.listChildrenPage 一致）
+        List<ParentInvitation> all = parentInvitationMapper.findByFamilyId(familyId);
+        int total = all.size();
+        int from = Math.max(0, (page - 1) * pageSize);
+        int to = Math.min(from + pageSize, total);
+        List<ParentInvitation> content = from < to ? all.subList(from, to) : List.of();
+
+        // 前端契约字段为 inviteePhone（console types/api.ts Invitation）
+        List<Map<String, Object>> contentMaps = content.stream().map(inv -> {
+            Map<String, Object> item = new LinkedHashMap<String, Object>();
+            item.put("id", inv.getId());
+            item.put("inviteePhone", maskPhone(inv.getTargetPhone()));
+            item.put("status", inv.getStatus());
+            item.put("expiresAt", inv.getExpiresAt());
+            item.put("createdAt", inv.getCreatedAt());
+            return item;
+        }).toList();
+
+        Map<String, Object> result = new LinkedHashMap<>();
+        result.put("content", contentMaps);
+        result.put("page", page);
+        result.put("pageSize", pageSize);
+        result.put("totalElements", total);
+        result.put("totalPages", pageSize > 0 ? (int) Math.ceil((double) total / pageSize) : 0);
         return result;
     }
 

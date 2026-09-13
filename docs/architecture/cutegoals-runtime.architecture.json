@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "CuteGoals 高层运行时架构",
+    "locale": "zh-CN",
+    "output": "docs/architecture/cutegoals-runtime.html",
+    "quality_profile": "showcase",
+    "viewBox": [1200, 480]
+  },
+  "components": [
+    { "id": "kid_user", "type": "external", "label": "儿童浏览器", "sublabel": "ROLE_CHILD", "pos": [40, 125], "size": [140, 62] },
+    { "id": "parent_user", "type": "external", "label": "家长 / 管理员浏览器", "sublabel": "PARENT / ADMIN", "pos": [40, 330], "size": [140, 62] },
+    { "id": "nginx", "type": "security", "label": "Nginx", "sublabel": "SSL 终端 :443 反向代理", "pos": [225, 205], "size": [150, 66], "tag": "边缘入口" },
+    { "id": "console", "type": "frontend", "label": "Console 控制台", "sublabel": "Vue 3 + Vite · /", "pos": [435, 40], "size": [152, 62] },
+    { "id": "kidapp", "type": "frontend", "label": "Kid 儿童端", "sublabel": "React 18 + Umi · /child/", "pos": [435, 365], "size": [152, 62] },
+    { "id": "auth", "type": "security", "label": "认证层", "sublabel": "JWT + HttpOnly Cookie + CSRF", "pos": [435, 205], "size": [152, 66], "tag": "信任边界" },
+    { "id": "api", "type": "backend", "label": "Spring Boot 单体", "sublabel": "任务·审核·积分·奖品 :8080", "pos": [650, 205], "size": [164, 66], "tag": "Java 21" },
+    { "id": "postgres", "type": "database", "label": "PostgreSQL 16", "sublabel": "Flyway schema · cutegoals", "pos": [880, 40], "size": [152, 62] },
+    { "id": "redis", "type": "database", "label": "Redis 7", "sublabel": "限流 / 会话恢复", "pos": [880, 205], "size": [152, 62] },
+    { "id": "uploads", "type": "cloud", "label": "本地对象存储", "sublabel": "uploads/prizes/ 奖品图片", "pos": [880, 365], "size": [152, 62] }
+  ],
+  "boundaries": [
+    { "kind": "region", "label": "Docker Compose 主机", "wraps": ["nginx", "console", "kidapp", "auth", "api", "postgres", "redis", "uploads"], "pad": 20 },
+    { "kind": "security-group", "label": "应用内网（仅 Nginx 可达 :8080）", "wraps": ["auth", "api", "postgres", "redis", "uploads"], "pad": 16 }
+  ],
+  "connections": [
+    { "from": "kid_user", "to": "nginx", "label": "HTTPS /child/", "fromSide": "right", "toSide": "left", "labelAt": [203, 201] },
+    { "from": "parent_user", "to": "nginx", "label": "HTTPS /", "variant": "emphasis", "fromSide": "right", "toSide": "left" },
+    { "from": "nginx", "to": "console", "label": "静态托管", "variant": "dashed", "fromSide": "top", "toSide": "bottom" },
+    { "from": "nginx", "to": "kidapp", "label": "静态托管", "variant": "dashed", "fromSide": "bottom", "toSide": "top" },
+    { "from": "nginx", "to": "auth", "label": "转发 /api/ 与 /child/api/", "variant": "emphasis", "fromSide": "right", "toSide": "left", "labelAt": [405, 178] },
+    { "from": "auth", "to": "api", "label": "通过校验", "fromSide": "right", "toSide": "left" },
+    { "from": "api", "to": "postgres", "label": "MyBatis-Plus SQL", "variant": "emphasis", "fromSide": "right", "toSide": "left" },
+    { "from": "api", "to": "redis", "label": "限流", "variant": "dashed", "fromSide": "right", "toSide": "bottom", "labelAt": [820, 300] },
+    { "from": "api", "to": "uploads", "label": "图片读写", "variant": "dashed", "fromSide": "right", "toSide": "left" }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "主要路径", "items": ["浏览器 → Nginx :443 → 认证层 → Spring Boot 单体 → PostgreSQL", "业务闭环：儿童完成任务 → 家长审核 → 积分入账 → 兑换奖品"] },
+    { "dot": "rose", "title": "信任边界", "items": ["公网仅暴露 Nginx :443，后端 8080 只在内网可达", "JWT（15 分钟 access + 7 天 refresh）经 HttpOnly Cookie 下发，含 CSRF Cookie 与可吊销 Session 表", "儿童端双重限制：JWT claims 携带 childId + Nginx 层 /child/api/ 白名单"] },
+    { "dot": "emerald", "title": "外部依赖与部署", "items": ["第三方依赖几乎为零：短信网关为 NoOp 占位（sms.enabled=false），无支付/推送/OSS", "奖品图片存本地磁盘 uploads/prizes/，经 Nginx /uploads/ 提供", "Docker Compose 四容器：nginx / server / postgres / redis"] }
+  ]
+}

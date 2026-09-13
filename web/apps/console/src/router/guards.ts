@@ -97,6 +97,14 @@ export function createRouterGuards(router: Router) {
       return;
     }
 
+    // 已登录用户访问未注册路由（如管理员访问 /parent，其路由仅对 parent 角色动态注册）
+    // → 回到自己区域的首页，而不是展示 404 页
+    const isUnmatched = !to.matched.length || to.name === ErrorPageRoute.name || to.name === 'ErrorPageSon';
+    if (isUnmatched && to.path !== userStore.homePath) {
+      next(userStore.homePath);
+      return;
+    }
+
     if (asyncRouteStore.getIsDynamicRouteAdded) {
       next();
       return;

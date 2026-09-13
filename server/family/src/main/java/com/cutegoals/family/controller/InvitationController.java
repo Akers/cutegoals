@@ -31,6 +31,25 @@ public class InvitationController {
     private final AccountMapper accountMapper;
 
     /**
+     * GET /api/family/invitations - List invitations of current family with pagination
+     * （家庭设置页契约：字段 inviteePhone，分页 shape 与其他 parent 端点一致）.
+     */
+    @GetMapping
+    public ResponseEntity<ApiResponse<Map<String, Object>>> listInvitations(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "20") int pageSize,
+            HttpServletRequest request) {
+        String requestId = generateRequestId();
+        MDC.put("requestId", requestId);
+
+        getAccountId(request);
+        Long familyId = getFamilyId(request);
+
+        Map<String, Object> result = invitationService.listInvitationsPage(page, pageSize, familyId);
+        return ResponseEntity.ok(ApiResponse.success(result, requestId));
+    }
+
+    /**
      * POST /api/family/invitations - Create a parent invitation.
      */
     @PostMapping
@@ -43,9 +62,13 @@ public class InvitationController {
         Long accountId = getAccountId(request);
         Long familyId = getFamilyId(request);
 
-        String targetPhone = (String) body.get("targetPhone");
+        // 前端（console api/family.ts）发送 inviteePhone；兼容旧字段名 targetPhone
+        String targetPhone = (String) body.get("inviteePhone");
         if (targetPhone == null || targetPhone.isBlank()) {
-            throw new BusinessException(ErrorCode.VALIDATION_FAILED, "targetPhone is required");
+            targetPhone = (String) body.get("targetPhone");
+        }
+        if (targetPhone == null || targetPhone.isBlank()) {
+            throw new BusinessException(ErrorCode.VALIDATION_FAILED, "inviteePhone is required");
         }
 
         String idempotencyKey = (String) body.get("idempotencyKey");
