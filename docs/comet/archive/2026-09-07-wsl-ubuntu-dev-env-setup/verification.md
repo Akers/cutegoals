@@ -1,13 +1,13 @@
 ---
-generated_from_state_version: 7
+generated_from_state_version: 9
 ---
 
 # 验证
 
 ## 当前结果
 
-- 结果: **验收通过，需要你确认**
-- 验证情况: **已完成检查，但需要你确认验证结果**
+- 结果: **已归档**
+- 验证情况: **已完成检查，验证结果已确认**
 - 目标周期: 2
 - 迭代: 1
 - 验证器尝试次数: 1
@@ -33,9 +33,23 @@ generated_from_state_version: 7
 
 _没有记录 Runtime 检查。_
 
+### Builder 报告的证据
+
+以下为 Builder 报告，不等同于 Runtime 检查凭据或独立验收结果。
+
+- docker version / docker compose version（WSL 内 docker-ce，Server 29.6.2 / Compose v5.3.1）: passed — —
+- docker ps 容器 healthy；pg_isready 与 redis-cli ping 通过（35432/36379）: passed — —
+- 后端 curl http://localhost:8080/api/health -> 200 {status:UP}: passed — —
+- console curl :8000 -> 200；kid curl -H 'Accept: text/html' :8001/child -> 200: passed — —
+- pnpm install --frozen-lockfile（CI=true 重建 node_modules）: passed — —
+- 独立只读复核（oracle）：初始 5 项问题已全部修正（Redis 端口 6379->36379、compose 命令补 dev overlay 与 --env-file、D3 更正 JDK21、补 Docker 官方源步骤、手动命令补 jvmArguments）: passed — —
+- 已知限制: start-dev.sh 在 /mnt/d 因 CRLF 无法直接执行，采用文档中等价手动命令；脚本默认 REDIS_PORT=6379 与 dev compose 36379 不一致属仓库既有问题，未修改业务代码
+- 已知限制: WSL 内重建 node_modules 后 Windows 侧需重新 pnpm install
+- 已知限制: dev 服务进程由当前会话后台任务保活，会话结束后需按 WSL_DEV_ENV.md 重启
+
 ## 阻塞项
 
-- **user**: The generic Skill bridge cannot prove an independent Verifier execution; user confirmation is required before Archive. — next: `await-user`
+_无。_
 
 ## 风险与跳过的工作
 

@@ -1,9 +1,9 @@
 schema: comet.native.v4
 name: wsl-ubuntu-dev-env-setup
 language: zh-CN
-phase: verify
-status: await-user
-state_version: 7
+phase: archive
+status: done
+state_version: 9
 brief: brief.md
 spec_changes:
   - capability: dev-environment
@@ -15,7 +15,7 @@ workspace:
   target_branch: main
   finish: null
 loop:
-  stage: await-user
+  stage: done
   goal_cycle: 2
   iteration: 1
   attempt: 1
@@ -24,7 +24,7 @@ loop:
   no_progress_count: 0
   execution_failure_count: 0
   previous_unresolved_ids: []
-  next_action: confirm-skill-coordinated-pass
+  next_action: null
 acceptance:
   - id: A1
     source: brief.md
@@ -198,14 +198,7 @@ builder_handoff:
       truncated: false
     reviewer_execution_ref: agent_4617578a-465c-4f0d-945b-09f5a6da93ec
   submitted_at: 2026-09-07T03:22:14.756Z
-blockers:
-  - owner: user
-    reason:
-      text: The generic Skill bridge cannot prove an independent Verifier execution;
-        user confirmation is required before Archive.
-      truncated: false
-    acceptance_ids: []
-    resolution_action: await-user
+blockers: []
 verification:
   candidate_id: b8b16aa0-1a73-4464-8acc-0b2ca358174d
   identity_provider: skill-coordinated
@@ -266,5 +259,5 @@ history_overflow:
     recovery: 0
 verification_result: pass
 verification_report: verification.md
-archived: false
+archived: true
 created_at: 2026-09-07T02:17:49.888Z
