@@ -69,3 +69,24 @@
 - `server/**`、`web/apps/kid/**`、`web/packages/shared/**` 零改动。
 - URL、端口、代理、认证方式、API 契约与重写前一致。
 - 仓库中不出现任何凭据明文。
+
+## 11. 空闲锁屏移除（本次变更）
+
+console 端不存在任何空闲锁屏或手动锁屏能力：
+
+- `App.vue` 不再包含 idle 计时（`timekeeping`）、`mousedown` 重置监听或基于 `isLock` 的卸载逻辑；应用根组件始终渲染。
+- 顶栏（Header）功能图标列表不包含"锁屏"项。
+- 仓库中不存在以下源文件及其引用：`src/components/Lockscreen/`（Lockscreen.vue、Recharge.vue、index.ts）、`src/store/modules/screenLock.ts`、`src/hooks/useBattery.ts`、`src/hooks/useOnline.ts`、`src/hooks/useTime.ts`、`mutation-types.ts` 中的 `IS-SCREENLOCKED`、`types.ts` 中 `IStore.screenLock`。
+- 会话安全完全依赖服务端 Cookie 过期与 401 跳转（第 3、4 节），前端不额外做空闲锁定。
+
+#### Scenario: 空闲超过原阈值不锁屏
+- WHEN 已登录的 console 用户保持空闲超过 1 小时（原锁屏阈值）后操作页面
+- THEN 不弹出锁屏覆盖层，页面直接响应操作
+
+#### Scenario: 顶栏无锁屏入口且源码无残留
+- WHEN 检查 console 顶栏功能图标列表并在仓库 web/apps/console 中搜索 Lockscreen、screenLock、IS-SCREENLOCKED、useBattery、useOnline、useTime
+- THEN 顶栏不显示"锁屏"图标项，且上述搜索在源码与引用中均无结果
+
+#### Scenario: 构建与既有功能不受影响
+- WHEN 对 console 应用执行类型检查与生产构建，并访问登录、家长端、管理端页面
+- THEN 构建成功，页面行为与本变更前一致
