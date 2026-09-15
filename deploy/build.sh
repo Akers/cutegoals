@@ -209,42 +209,42 @@ cmd_build_docker() {
     fi
 
     # 构建后端镜像
-    info "构建后端 Docker 镜像（${platform}）：mit-modelide-core-server:${version} ..."
+    info "构建后端 Docker 镜像（${platform}）：cutegoals-core-server:${version} ..."
     docker build \
         -f "${PROJECT_ROOT}/server/Dockerfile" \
-        -t "mit-modelide-core-server:${version}" \
+        -t "cutegoals-core-server:${version}" \
         "${build_args[@]}" \
         "${PROJECT_ROOT}"
 
     # 构建 Console 前端镜像（家长端 + 管理端）
-    info "构建 Console 前端 Docker 镜像（${platform}）：mit-modelide-core-console:${version} ..."
+    info "构建 Console 前端 Docker 镜像（${platform}）：cutegoals-core-console:${version} ..."
     docker build \
         -f "${PROJECT_ROOT}/web/apps/console/Dockerfile" \
-        -t "mit-modelide-core-console:${version}" \
+        -t "cutegoals-core-console:${version}" \
         "${build_args[@]}" \
         "${PROJECT_ROOT}/web"
 
     # 构建 Kid 前端镜像（孩子端）
-    info "构建 Kid 前端 Docker 镜像（${platform}）：mit-modelide-core-kid:${version} ..."
+    info "构建 Kid 前端 Docker 镜像（${platform}）：cutegoals-core-kid:${version} ..."
     docker build \
         -f "${PROJECT_ROOT}/web/apps/kid/Dockerfile" \
-        -t "mit-modelide-core-kid:${version}" \
+        -t "cutegoals-core-kid:${version}" \
         "${build_args[@]}" \
         "${PROJECT_ROOT}/web"
 
     # 构建 nginx 镜像
-    info "构建 Nginx Docker 镜像（${platform}）：mit-modelide-core-nginx:${version} ..."
+    info "构建 Nginx Docker 镜像（${platform}）：cutegoals-core-nginx:${version} ..."
     docker build \
         -f "${SCRIPT_DIR}/nginx/Dockerfile" \
-        -t "mit-modelide-core-nginx:${version}" \
+        -t "cutegoals-core-nginx:${version}" \
         "${build_args[@]}" \
         "${PROJECT_ROOT}"
 
     info "Docker 镜像构建完成！"
-    info "  - mit-modelide-core-server:${version} (${platform})"
-    info "  - mit-modelide-core-console:${version} (${platform})"
-    info "  - mit-modelide-core-kid:${version} (${platform})"
-    info "  - mit-modelide-core-nginx:${version} (${platform})"
+    info "  - cutegoals-core-server:${version} (${platform})"
+    info "  - cutegoals-core-console:${version} (${platform})"
+    info "  - cutegoals-core-kid:${version} (${platform})"
+    info "  - cutegoals-core-nginx:${version} (${platform})"
 }
 
 cmd_up() {
@@ -308,7 +308,7 @@ cmd_backup() {
     docker compose \
         --env-file "${ENV_FILE}" \
         -f "${COMPOSE_FILE}" \
-        exec mit-modelide-core-backup \
+        exec cutegoals-core-backup \
         /usr/local/bin/backup.sh
 }
 
@@ -336,10 +336,10 @@ cmd_doctor() {
     echo ""
     echo "▶ 检查服务状态..."
     local services=(
-        "mit-modelide-core-postgres:PostgreSQL"
-        "mit-modelide-core-redis:Redis"
-        "mit-modelide-core-server:Server"
-        "mit-modelide-core-nginx:Nginx"
+        "cutegoals-core-postgres:PostgreSQL"
+        "cutegoals-core-redis:Redis"
+        "cutegoals-core-server:Server"
+        "cutegoals-core-nginx:Nginx"
     )
 
     for svc_entry in "${services[@]}"; do
@@ -361,7 +361,7 @@ cmd_doctor() {
     # 3. PostgreSQL 连接检查
     echo ""
     echo "▶ PostgreSQL 连接检查..."
-    if docker exec mit-modelide-core-postgres pg_isready -U "${PG_USER:-cutegoals}" -d "${PG_DATABASE:-cutegoals}" &>/dev/null 2>&1; then
+    if docker exec cutegoals-core-postgres pg_isready -U "${PG_USER:-cutegoals}" -d "${PG_DATABASE:-cutegoals}" &>/dev/null 2>&1; then
         echo "  ✓ PostgreSQL 连接正常"
     else
         echo "  ✗ PostgreSQL 连接失败 (DEPENDENCY_UNHEALTHY)"
@@ -406,7 +406,7 @@ cmd_doctor() {
     # 6. 迁移状态
     echo ""
     echo "▶ Flyway 迁移状态..."
-    if docker exec mit-modelide-core-server wget -qO- http://localhost:8080/api/admin/health 2>/dev/null; then
+    if docker exec cutegoals-core-server wget -qO- http://localhost:8080/api/admin/health 2>/dev/null; then
         echo "  ✓ 管理员健康端点可访问"
     else
         echo "  - 管理员端点需认证（如需查看详细状态请登录）"

@@ -69,7 +69,7 @@ function Test-Postgres {
         if ($process.ExitCode -ne 0) {
             Write-Warn "PostgreSQL ${Host}:${Port} 未响应，请先启动数据库"
             Write-Info "手动初始化：psql -U postgres -h ${Host} -p ${Port} -f deploy/postgres-init.sql"
-            Write-Info "Docker 启动：docker compose -f deploy/docker-compose.yml up -d mit-modelide-core-postgres mit-modelide-core-redis"
+            Write-Info "Docker 启动：docker compose -f deploy/docker-compose.yml up -d cutegoals-core-postgres cutegoals-core-redis"
         } else {
             Write-Ok "PostgreSQL ${Host}:${Port} 可连接"
         }

@@ -52,3 +52,6 @@ logs/
 /.comet/*
 !/.comet/config.yaml
 # <<< Comet managed project state <<<
+
+# TLS 证书私钥
+deploy/ssl/

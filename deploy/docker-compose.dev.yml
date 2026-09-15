@@ -7,18 +7,18 @@
 
 services:
   # ── PostgreSQL（开发沿用生产配置，但使用本地目录挂载便于清理） ──
-  mit-modelide-core-postgres:
+  cutegoals-core-postgres:
     ports:
       - "127.0.0.1:35432:5432"
 
   # ── Redis（开发沿用生产配置） ──
-  mit-modelide-core-redis:
+  cutegoals-core-redis:
     ports:
       - "127.0.0.1:36379:6379"
 
   # ── 后端服务：开发模式 ──────────────────────────────────────────────────
-  mit-modelide-core-server:
-    image: mit-modelide-core-server:dev
+  cutegoals-core-server:
+    image: cutegoals-core-server:dev
     build:
       context: ..
       dockerfile: server/Dockerfile
@@ -39,8 +39,8 @@ services:
       "
 
   # ── Nginx（开发模式允许 HTTP） ──────────────────────────────────────────
-  mit-modelide-core-nginx:
-    image: mit-modelide-core-nginx:dev
+  cutegoals-core-nginx:
+    image: cutegoals-core-nginx:dev
     build:
       context: ..
       dockerfile: deploy/nginx/Dockerfile
@@ -61,4 +61,4 @@ services:
 
 volumes:
   m2_cache:
-    name: mit-modelide-core-m2-cache
+    name: cutegoals-core-m2-cache

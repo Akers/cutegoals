@@ -17,7 +17,7 @@ COMPOSE_FILE="${SCRIPT_DIR}/docker-compose.yml"
 BACKUP_SCRIPT="${SCRIPT_DIR}/backup/backup.sh"
 RESTORE_SCRIPT="${SCRIPT_DIR}/restore.sh"
 BACKUP_DIR="${BACKUP_DIR:-/backup}"
-SERVER_URL="${SERVER_URL:-http://mit-modelide-core-server:8080}"
+SERVER_URL="${SERVER_URL:-http://cutegoals-core-server:8080}"
 UPGRADE_LOG="${BACKUP_DIR}/upgrade.log"
 
 # ── 常量 ──────────────────────────────────────────────────────────────────
@@ -155,10 +155,10 @@ main() {
     # ── 步骤 3：拉取新版本镜像 ──────────────────────────────────────────────
     log "INFO" "=== 步骤 2: 拉取新版本镜像 ==="
     if [[ "${DRY_RUN}" == "true" ]]; then
-        log "INFO" "[DRY-RUN] docker pull mit-modelide-core-server:${TARGET_VERSION}"
+        log "INFO" "[DRY-RUN] docker pull cutegoals-core-server:${TARGET_VERSION}"
     else
-        log "INFO" "拉取 server 镜像: mit-modelide-core-server:${TARGET_VERSION}..."
-        docker pull "mit-modelide-core-server:${TARGET_VERSION}" 2>/dev/null || \
+        log "INFO" "拉取 server 镜像: cutegoals-core-server:${TARGET_VERSION}..."
+        docker pull "cutegoals-core-server:${TARGET_VERSION}" 2>/dev/null || \
             log "WARN" "无法拉取镜像，尝试本地构建"
     fi
 
@@ -175,7 +175,7 @@ main() {
         docker compose \
             --env-file "${ENV_FILE}" \
             -f "${COMPOSE_FILE}" \
-            up -d mit-modelide-core-server \
+            up -d cutegoals-core-server \
             --force-recreate 2>&1 | tee -a "${UPGRADE_LOG}"
     fi
 
@@ -230,7 +230,7 @@ main() {
                 docker compose \
                     --env-file "${ENV_FILE}" \
                     -f "${COMPOSE_FILE}" \
-                    up -d mit-modelide-core-server \
+                    up -d cutegoals-core-server \
                     --force-recreate 2>&1 | tee -a "${UPGRADE_LOG}" || true
             fi
 
@@ -259,7 +259,7 @@ main() {
         docker compose \
             --env-file "${ENV_FILE}" \
             -f "${COMPOSE_FILE}" \
-            up -d mit-modelide-core-nginx \
+            up -d cutegoals-core-nginx \
             --force-recreate 2>&1 | tee -a "${UPGRADE_LOG}" || true
     fi
 

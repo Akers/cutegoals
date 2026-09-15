@@ -1,6 +1,6 @@
 # =============================================================================
 # CuteGoals 2.0 — Nginx 反向代理 Docker 镜像
-# 镜像标签: mit-modelide-core-nginx:<version>
+# 镜像标签: cutegoals-core-nginx:<version>
 # 基于 nginx:1.25-alpine，提供静态文件 + API 反向代理
 # =============================================================================
 
@@ -22,7 +22,7 @@ RUN chown -R nginx:nginx /var/cache/nginx /var/log/nginx /etc/nginx && \
 # 前端静态文件由 web 容器提供，此容器仅为反向代理
 # 因此不需要 COPY 前端产物
 
-USER nginx
+# 以 root 运行 master 进程以绑定 80/443 特权端口（worker 仍以 nginx 用户运行）
 
 EXPOSE 80 443
 

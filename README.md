@@ -61,7 +61,7 @@ psql -U postgres -h localhost -p 35432 -f deploy/postgres-init.sql
 如果使用 Docker Compose，直接启动 PostgreSQL 和 Redis 容器：
 
 ```bash
-docker compose -f deploy/docker-compose.yml up -d mit-modelide-core-postgres mit-modelide-core-redis
+docker compose -f deploy/docker-compose.yml up -d cutegoals-core-postgres cutegoals-core-redis
 ```
 
 3. 构建并运行后端

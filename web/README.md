@@ -4,8 +4,8 @@
 
 | 应用 | 路径 | 角色 | 容器 | 默认端口 |
 |---|---|---|---|---|
-| `console` | `web/apps/console/` | 家长端 + 管理端 | `mit-modelide-core-console` | 8000（dev）/ 8080（容器） |
-| `kid` | `web/apps/kid/` | 孩子端（移动优先 + 童趣设计） | `mit-modelide-core-kid` | 8001（dev）/ 8080（容器） |
+| `console` | `web/apps/console/` | 家长端 + 管理端 | `cutegoals-core-console` | 8000（dev）/ 8080（容器） |
+| `kid` | `web/apps/kid/` | 孩子端（移动优先 + 童趣设计） | `cutegoals-core-kid` | 8001（dev）/ 8080（容器） |
 
 共享代码（API 客户端、类型、auth、role 归一化、hooks、dayjs 配置）放在 `web/packages/shared/`，通过 `workspace:*` 协议被两个 app 直接引用源码（不构建中间产物）。
 
@@ -175,8 +175,8 @@ pnpm -r run test
 
 ```bash
 # 两个镜像独立构建（由 deploy/build.sh 的 build-docker 自动执行）
-podman build -f web/apps/console/Dockerfile -t mit-modelide-core-console:tag web/
-podman build -f web/apps/kid/Dockerfile     -t mit-modelide-core-kid:tag     web/
+podman build -f web/apps/console/Dockerfile -t cutegoals-core-console:tag web/
+podman build -f web/apps/kid/Dockerfile     -t cutegoals-core-kid:tag     web/
 ```
 
 镜像构建：
@@ -189,7 +189,7 @@ podman build -f web/apps/kid/Dockerfile     -t mit-modelide-core-kid:tag     web
 ## 相关文档
 
 - `deploy/README.md` — 部署、网关、HTTPS、备份、恢复、升级、诊断
-- `deploy/docker-compose.yml` — 生产编排（mit-modelide-core-console + mit-modelide-core-kid + 网关 + 后端 + DB + Redis + 备份）
+- `deploy/docker-compose.yml` — 生产编排（cutegoals-core-console + cutegoals-core-kid + 网关 + 后端 + DB + Redis + 备份）
 - `deploy/docker-compose.dev.yml` — 开发编排（挂载两个本地 dist + 白名单 + 假后端）
 - `deploy/nginx.conf` — 入口网关生产配置（路径分流）
 - `deploy/nginx.dev.conf` — 入口网关开发配置（挂载本地 dist）

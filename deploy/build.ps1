@@ -212,34 +212,34 @@ function Invoke-BuildDocker {
     if ($noCache) { $buildArgs += "--no-cache" }
     $buildArgs += "--platform"; $buildArgs += $platform
 
-    Write-Info "构建后端 Docker 镜像（${platform}）：mit-modelide-core-server:${version} ..."
+    Write-Info "构建后端 Docker 镜像（${platform}）：cutegoals-core-server:${version} ..."
     & docker build `
         -f "$ProjectRoot\server\Dockerfile" `
-        -t "mit-modelide-core-server:${version}" `
+        -t "cutegoals-core-server:${version}" `
         @buildArgs `
         "$ProjectRoot"
     if (-not $?) { Write-ErrorExit "后端 Docker 镜像构建失败" }
 
-    Write-Info "构建前端 Web Docker 镜像（${platform}）：mit-modelide-core-web:${version} ..."
+    Write-Info "构建前端 Web Docker 镜像（${platform}）：cutegoals-core-web:${version} ..."
     & docker build `
         -f "$ProjectRoot\web\Dockerfile" `
-        -t "mit-modelide-core-web:${version}" `
+        -t "cutegoals-core-web:${version}" `
         @buildArgs `
         "$ProjectRoot"
     if (-not $?) { Write-ErrorExit "前端 Docker 镜像构建失败" }
 
-    Write-Info "构建 Nginx Docker 镜像（${platform}）：mit-modelide-core-nginx:${version} ..."
+    Write-Info "构建 Nginx Docker 镜像（${platform}）：cutegoals-core-nginx:${version} ..."
     & docker build `
         -f "$ScriptDir\nginx\Dockerfile" `
-        -t "mit-modelide-core-nginx:${version}" `
+        -t "cutegoals-core-nginx:${version}" `
         @buildArgs `
         "$ProjectRoot"
     if (-not $?) { Write-ErrorExit "Nginx Docker 镜像构建失败" }
 
     Write-Info "Docker 镜像构建完成！"
-    Write-Info "  - mit-modelide-core-server:${version} (${platform})"
-    Write-Info "  - mit-modelide-core-web:${version} (${platform})"
-    Write-Info "  - mit-modelide-core-nginx:${version} (${platform})"
+    Write-Info "  - cutegoals-core-server:${version} (${platform})"
+    Write-Info "  - cutegoals-core-web:${version} (${platform})"
+    Write-Info "  - cutegoals-core-nginx:${version} (${platform})"
 }
 
 function Invoke-Up {
@@ -290,7 +290,7 @@ function Invoke-Backup {
 
     Write-Info "手动触发数据库备份..."
     & docker compose --env-file "$EnvFile" -f "$ComposeFile" `
-        exec mit-modelide-core-backup `
+        exec cutegoals-core-backup `
         /usr/local/bin/backup.sh
 }
 
@@ -319,10 +319,10 @@ function Invoke-Doctor {
     Write-Host ""
     Write-Host "▶ 检查服务状态..."
     $services = @(
-        @{Name="mit-modelide-core-postgres"; Label="PostgreSQL"},
-        @{Name="mit-modelide-core-redis"; Label="Redis"},
-        @{Name="mit-modelide-core-server"; Label="Server"},
-        @{Name="mit-modelide-core-nginx"; Label="Nginx"}
+        @{Name="cutegoals-core-postgres"; Label="PostgreSQL"},
+        @{Name="cutegoals-core-redis"; Label="Redis"},
+        @{Name="cutegoals-core-server"; Label="Server"},
+        @{Name="cutegoals-core-nginx"; Label="Nginx"}
     )
 
     foreach ($svc in $services) {

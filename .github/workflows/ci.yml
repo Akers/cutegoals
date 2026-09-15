@@ -19,7 +19,7 @@ concurrency:
 
 env:
   # 镜像标签前缀
-  REGISTRY_PREFIX: mit-modelide-core
+  REGISTRY_PREFIX: cutegoals-core
 
 defaults:
   run:

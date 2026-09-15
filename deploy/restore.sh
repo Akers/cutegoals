@@ -13,14 +13,14 @@ PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 ENV_FILE="${PROJECT_ROOT}/.env"
 
 # ── 配置 ──────────────────────────────────────────────────────────────────
-PG_HOST="${PG_HOST:-mit-modelide-core-postgres}"
+PG_HOST="${PG_HOST:-cutegoals-core-postgres}"
 PG_PORT="${PG_PORT:-5432}"
 PG_DATABASE="${PG_DATABASE:-cutegoals}"
 PG_USER="${PG_USER:-cutegoals}"
 PG_PASSWORD="${PG_PASSWORD:-}"
 PG_SCHEMA="${PG_SCHEMA:-cutegoals}"
 BACKUP_DIR="${BACKUP_DIR:-/backup}"
-SERVER_URL="${SERVER_URL:-http://mit-modelide-core-server:8080}"
+SERVER_URL="${SERVER_URL:-http://cutegoals-core-server:8080}"
 RESTORE_LOG="${BACKUP_DIR}/restore.log"
 
 # ── 常量 ──────────────────────────────────────────────────────────────────
@@ -301,18 +301,18 @@ main() {
 
     # 3. 停止写流量（通过停止 server 容器）
     log "INFO" "停止服务（暂停写流量）..."
-    docker stop mit-modelide-core-server 2>/dev/null || true
+    docker stop cutegoals-core-server 2>/dev/null || true
 
     # 4. 恢复数据库
     if ! restore_database "${sql_file}"; then
         log "ERROR" "数据库恢复失败"
-        docker start mit-modelide-core-server 2>/dev/null || true
+        docker start cutegoals-core-server 2>/dev/null || true
         die "RESTORE_FAILED: 数据库恢复阶段失败"
     fi
 
     # 5. 启动服务
     log "INFO" "启动服务..."
-    docker start mit-modelide-core-server 2>/dev/null || true
+    docker start cutegoals-core-server 2>/dev/null || true
 
     # 6. 健康检查
     if ! wait_for_health; then

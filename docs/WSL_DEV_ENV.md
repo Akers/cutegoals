@@ -42,7 +42,7 @@ cd /mnt/d/projects/cutegoals
 
 # 1) 数据库（首次需先生成根目录 .env，见下）
 docker compose --env-file .env -f deploy/docker-compose.yml -f deploy/docker-compose.dev.yml \
-  up -d mit-modelide-core-postgres mit-modelide-core-redis
+  up -d cutegoals-core-postgres cutegoals-core-redis
 
 # 2) 前端依赖（首次或 lockfile 变化后；重建 node_modules 需 CI=true）
 cd web && CI=true corepack pnpm install --frozen-lockfile

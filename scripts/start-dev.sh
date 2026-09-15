@@ -82,7 +82,7 @@ check_postgres() {
         if ! pg_isready -h "${host}" -p "${port}" > /dev/null 2>&1; then
             warn "PostgreSQL ${host}:${port} 未响应，请先启动数据库"
             info "手动初始化：psql -U postgres -h ${host} -p ${port} -f deploy/postgres-init.sql"
-            info "Docker 启动：docker compose -f deploy/docker-compose.yml up -d mit-modelide-core-postgres mit-modelide-core-redis"
+            info "Docker 启动：docker compose -f deploy/docker-compose.yml up -d cutegoals-core-postgres cutegoals-core-redis"
         else
             ok "PostgreSQL ${host}:${port} 可连接"
         fi

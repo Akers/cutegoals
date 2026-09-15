@@ -1,6 +1,6 @@
 # =============================================================================
 # CuteGoals 2.0 — Console 前端镜像（家长端 + 管理端，Vue 3 + Vite + naive-ui）
-# 镜像标签: mit-modelide-core-console:<version>
+# 镜像标签: cutegoals-core-console:<version>
 # 多阶段：Node 22 + pnpm workspace 构建 → nginx 静态服务（容器内 8080，非 root）
 # 构建上下文：web/ 目录
 # =============================================================================

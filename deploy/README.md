@@ -16,8 +16,8 @@
 
 前端拆分为两个独立可部署工程，以两个独立容器运行，入口网关按路径分流：
 
-- **Console 前端**（家长端 + 管理端）：`web/apps/console`，容器 `mit-modelide-core-console`
-- **Kid 前端**（孩子端，移动优先）：`web/apps/kid`，容器 `mit-modelide-core-kid`
+- **Console 前端**（家长端 + 管理端）：`web/apps/console`，容器 `cutegoals-core-console`
+- **Kid 前端**（孩子端，移动优先）：`web/apps/kid`，容器 `cutegoals-core-kid`
 
 分流规则（同域路径分流）：
 
@@ -58,15 +58,15 @@
 
 ### 镜像前缀
 
-所有 Docker 镜像均使用 `mit-modelide-core-` 前缀：
+所有 Docker 镜像均使用 `cutegoals-core-` 前缀：
 
-- `mit-modelide-core-server:<version>` — Spring Boot 后端
-- `mit-modelide-core-console:<version>` — Console 前端（家长端 + 管理端）静态资源
-- `mit-modelide-core-kid:<version>` — Kid 前端（孩子端）静态资源 + API 白名单反代
-- `mit-modelide-core-nginx:<version>` — 入口网关（按路径分流）
-- `mit-modelide-core-postgres` — PostgreSQL 16（官方镜像）
-- `mit-modelide-core-redis` — Redis 7（官方镜像）
-- `mit-modelide-core-backup` — 备份 Sidecar（基于 PostgreSQL 镜像）
+- `cutegoals-core-server:<version>` — Spring Boot 后端
+- `cutegoals-core-console:<version>` — Console 前端（家长端 + 管理端）静态资源
+- `cutegoals-core-kid:<version>` — Kid 前端（孩子端）静态资源 + API 白名单反代
+- `cutegoals-core-nginx:<version>` — 入口网关（按路径分流）
+- `cutegoals-core-postgres` — PostgreSQL 16（官方镜像）
+- `cutegoals-core-redis` — Redis 7（官方镜像）
+- `cutegoals-core-backup` — 备份 Sidecar（基于 PostgreSQL 镜像）
 
 ---
 
@@ -76,9 +76,9 @@ CuteGoals 2.0 前端为 pnpm workspace 双工程，每个应用独立构建为 D
 
 | 应用 | 仓库路径 | 镜像 | 容器内端口 | 容器角色 |
 |---|---|---|---|---|
-| console（家长端 + 管理端） | `web/apps/console/` | `mit-modelide-core-console:<tag>` | 8080 | 纯静态文件服务 |
-| kid（孩子端） | `web/apps/kid/` | `mit-modelide-core-kid:<tag>` | 8080 | 静态文件 + `/child/api/*` 白名单反代后端 |
-| nginx 网关 | `deploy/nginx/Dockerfile` | `mit-modelide-core-nginx:<tag>` | 80 / 443 | 入口：按路径分流到 console 或 kid；HTTPS 终结 |
+| console（家长端 + 管理端） | `web/apps/console/` | `cutegoals-core-console:<tag>` | 8080 | 纯静态文件服务 |
+| kid（孩子端） | `web/apps/kid/` | `cutegoals-core-kid:<tag>` | 8080 | 静态文件 + `/child/api/*` 白名单反代后端 |
+| nginx 网关 | `deploy/nginx/Dockerfile` | `cutegoals-core-nginx:<tag>` | 80 / 443 | 入口：按路径分流到 console 或 kid；HTTPS 终结 |
 
 **镜像构建（由 `deploy/build.sh build-docker` 自动执行）：**
 
@@ -100,7 +100,7 @@ bash deploy/build.sh build-docker --platform linux/arm64   # 显式指定平台
 **容器编排关键点：**
 
 - console 与 kid 两个 frontend 服务都在 compose 中声明，`expose: 8080`（仅内网可达，nginx 网关代理访问）
-- 入口网关 `mit-modelide-core-nginx` `depends_on: console, kid, server`，等待三者健康
+- 入口网关 `cutegoals-core-nginx` `depends_on: console, kid, server`，等待三者健康
 - kid 服务 `depends_on: server`（健康后启动），kid 容器 nginx 的白名单反代才会成功
 - 网关 nginx conf 不直接处理 API 路径；“/child/api/*” 全部代理到 kid 容器，由 kid 容器 nginx 应用白名单再转后端（详见下一节）
 
@@ -359,7 +359,7 @@ openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
 创建卷挂载或修改 `docker-compose.yml`：
 
 ```yaml
-mit-modelide-core-nginx:
+cutegoals-core-nginx:
   volumes:
     - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
     - ./ssl/cert.pem:/etc/nginx/ssl/cert.pem:ro
@@ -402,12 +402,12 @@ mit-modelide-core-nginx:
 bash deploy/build.sh backup
 
 # 或直接执行
-docker compose --env-file .env -f deploy/docker-compose.yml exec mit-modelide-core-backup /usr/local/bin/backup.sh
+docker compose --env-file .env -f deploy/docker-compose.yml exec cutegoals-core-backup /usr/local/bin/backup.sh
 ```
 
 ### 5.4 备份文件位置
 
-备份文件保存在命名卷 `mit-modelide-core-backup-data` 中，容器内路径为 `/backup/`。
+备份文件保存在命名卷 `cutegoals-core-backup-data` 中，容器内路径为 `/backup/`。
 
 ### 5.5 备份安全
 
@@ -602,10 +602,10 @@ bash deploy/build.sh doctor
 
 ```bash
 # 检查 PostgreSQL 是否健康
-docker exec mit-modelide-core-postgres pg_isready -U cutegoals
+docker exec cutegoals-core-postgres pg_isready -U cutegoals
 
 # 测试连接
-docker exec mit-modelide-core-postgres psql -U cutegoals -d cutegoals -c "SELECT 1"
+docker exec cutegoals-core-postgres psql -U cutegoals -d cutegoals -c "SELECT 1"
 ```
 
 ### 10.4 恢复数据卷

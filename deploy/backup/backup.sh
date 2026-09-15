@@ -12,7 +12,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # ── 配置 ──────────────────────────────────────────────────────────────────
-PG_HOST="${PG_HOST:-mit-modelide-core-postgres}"
+PG_HOST="${PG_HOST:-cutegoals-core-postgres}"
 PG_PORT="${PG_PORT:-5432}"
 PG_DATABASE="${PG_DATABASE:-cutegoals}"
 PG_USER="${PG_USER:-cutegoals}"
@@ -23,7 +23,7 @@ RETENTION_DAYS="${BACKUP_RETENTION_DAYS:-7}"
 RETENTION_WEEKS="${BACKUP_RETENTION_WEEKS:-4}"
 RETENTION_MONTHS="${BACKUP_RETENTION_MONTHS:-3}"
 APP_VERSION="${APP_VERSION:-latest}"
-SERVER_URL="${SERVER_URL:-http://mit-modelide-core-server:8080}"
+SERVER_URL="${SERVER_URL:-http://cutegoals-core-server:8080}"
 
 # ── 日志 ──────────────────────────────────────────────────────────────────
 LOG_FILE="${BACKUP_DIR}/backup.log"
