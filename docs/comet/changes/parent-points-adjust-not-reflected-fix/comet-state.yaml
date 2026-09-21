@@ -1,0 +1,321 @@
+schema: comet.native.v4
+name: parent-points-adjust-not-reflected-fix
+language: zh-CN
+phase: verify
+status: await-user
+state_version: 6
+brief: brief.md
+shape_confirmation_hash: aa17c35506790e4badcf8e32cd8860bb7d1c4bad10ae6c29f03a61b81b46fd29
+spec_changes:
+  - capability: console-frontend
+    operation: modify
+    source: specs/console-frontend/spec.md
+workspace:
+  isolation: current
+  change_branch: main
+  target_branch: main
+  finish: null
+loop:
+  stage: await-user
+  goal_cycle: 1
+  iteration: 1
+  attempt: 1
+  retry_epoch: 0
+  failed_iteration_count: 0
+  no_progress_count: 0
+  execution_failure_count: 0
+  previous_unresolved_ids:
+    - A3
+    - A9
+  next_action: resolve-verifier-blocker
+acceptance:
+  - id: A1
+    source: brief.md
+    text: "A1:
+      家长在积分管理页选择孩子并确认一次积分调整，成功提示出现后不刷新页面，余额卡片立即显示调整后的新余额，流水列表立即出现刚才的调整记录，数值与后端
+      `GET /api/points/ledger/{childId}` 一致。"
+    result: passed
+    reason:
+      text: 独立复跑对照实验（真实 dist-fixed 构建 + 真实 chromium）：调整成功提示后不刷新页面，余额 100→105、流水
+        1→2，与后端 ledger 状态一致；dist-fixed 与仓库当前 dist 字节相同
+      truncated: false
+  - id: A2
+    source: brief.md
+    text: "A2: console 中同一会话内对同一 GET 接口的重复请求（如积分页切换孩子后再切回）不再返回 5
+      分钟内的陈旧缓存，每次都发起真实网络请求（可通过请求计数或响应时效验证）。"
+    result: passed
+    reason:
+      text: alova 3.5.5 源码级证明 cacheFor:null 使缓存永不写入、所有 GET 必达网络；实验网络计数判别成立（buggy 0 次
+        vs fixed 1 次）；无 per-method cacheFor/force/hitSource 覆盖、无 service worker
+      truncated: false
+  - id: A3
+    source: brief.md
+    text: "A3: 修复后的 console 构建通过（`pnpm build`），且新增的 e2e 回归用例在提供
+      `E2E_PARENT_PHONE`/`E2E_PARENT_PASSWORD` 与 `BASE_URL`（指向完整栈网关）时通过。"
+    result: blocked
+    reason:
+      text: 构建部分已通过（dist 含 cacheFor:null 且与浏览器实验验证构建字节一致）；e2e 实跑部分待用户提供
+        E2E_PARENT_PHONE/PASSWORD 凭据并重建部署 cutegoals-core-console 镜像（本机 docker
+        无权限）后执行 deployed-console-e2e
+      truncated: false
+  - id: A4
+    source: specs/console-frontend/spec.md
+    text: 空闲超过原阈值不锁屏 - WHEN 已登录的 console 用户保持空闲超过 1 小时（原锁屏阈值）后操作页面 - THEN
+      不弹出锁屏覆盖层，页面直接响应操作
+    result: passed
+    reason:
+      text: web/apps/console/src 中
+        Lockscreen/screenLock/IS-SCREENLOCKED/useBattery/useOnline/useTime/timekeeping/锁屏
+        全部零匹配，无可弹出锁屏的代码路径；本次 diff 未触及
+      truncated: false
+  - id: A5
+    source: specs/console-frontend/spec.md
+    text: 顶栏无锁屏入口且源码无残留 - WHEN 检查 console 顶栏功能图标列表并在仓库 web/apps/console 中搜索
+      Lockscreen、screenLock、IS-SCREENLOCKED、useBattery、useOnline、useTime - THEN
+      顶栏不显示"锁屏"图标项，且上述搜索在源码与引用中均无结果
+    result: passed
+    reason:
+      text: 同 A4 grep 零结果；Header 组件无锁屏菜单项
+      truncated: false
+  - id: A6
+    source: specs/console-frontend/spec.md
+    text: 构建与既有功能不受影响 - WHEN 对 console 应用执行类型检查与生产构建，并访问登录、家长端、管理端页面 - THEN
+      构建成功，页面行为与本变更前一致
+    result: passed
+    reason:
+      text: pnpm build 通过（产物与实验验证 chunk 逐字节一致）；diff 仅共享 HTTP 客户端单一选项，信封/CSRF/401
+        逻辑逐行核对未变；登录+家长端页面已在真实构建上浏览器级驱动；管理端共享同一未改管线且编译通过
+      truncated: false
+  - id: A7
+    source: specs/console-frontend/spec.md
+    text: 积分调整后界面不刷新即更新 - WHEN 家长在 `/parent/points`
+      选择孩子，确认一次积分调整并看到「积分已调整」成功提示，期间不刷新页面 - THEN
+      余额卡片立即显示调整后的新余额，流水列表立即出现该调整记录，数值与后端 `GET /api/points/ledger/{childId}` 的
+      `currentBalance` 与 `content` 一致
+    result: passed
+    reason:
+      text: 同 A1：调整后不刷新页面余额/流水立即更新，数值与 ledger API 响应交叉核对一致
+      truncated: false
+  - id: A8
+    source: specs/console-frontend/spec.md
+    text: 重复 GET 不返回陈旧内存缓存 - WHEN 同一会话内对同一 GET 接口在 5 分钟内发起重复请求（如积分页切换孩子后再切回原孩子） -
+      THEN 每次请求都真实到达后端（浏览器网络记录可见新请求），响应反映后端当时最新状态，不返回 alova 内存缓存副本
+    result: passed
+    reason:
+      text: 同 A2：源码级证明缓存永不写入，重复 GET 必发起真实网络请求；实验网络计数判别成立
+      truncated: false
+  - id: A9
+    source: specs/console-frontend/spec.md
+    text: 构建与 e2e 回归通过 - WHEN 对 console 执行 `pnpm build`，并在提供
+      `BASE_URL`（完整栈网关）与家长凭据环境变量时运行新增的积分调整 e2e 用例 - THEN 构建成功，用例通过；未提供凭据时用例按套件惯例
+      skip 而非失败
+    result: blocked
+    reason:
+      text: 构建通过且 skip 惯例已实证（无 BASE_URL/凭据时全部 skip、exit 0，Runtime 检查
+        e2e-skip-convention passed）；提供凭据+BASE_URL 的 e2e 实跑未执行，同 A3 待部署重建与凭据
+      truncated: false
+builder_handoff:
+  candidate_id: d9efba2a-c053-47da-93ca-1ddf12ce5a8f
+  identity_provider: skill-coordinated
+  builder_execution_ref: skill-coordinated:builder:40843c01-8898-448b-aec7-4d1a607dc20d
+  iteration: 1
+  summary:
+    text: 修复 console 前端写后读陈旧数据：web/apps/console/src/utils/http/alova/index.ts 的
+      createAlova 启用 cacheFor:null 全局关闭 alova v3 对 GET 默认的 5
+      分钟内存缓存（原被注释掉），积分等写操作成功后的重新拉取不再命中陈旧缓存。新增 e2e/tests/points-adjust.spec.ts
+      回归用例（完整栈+家长凭据环境变量下执行：调整成功提示后不刷新页面断言余额+1、流水新增、存在真实 ledger 网络响应、界面与 API
+      totalElements/currentBalance 一致；仅 chromium-desktop 执行避免重复写入）。已验证：console
+      pnpm build 通过且产物含 cacheFor:null；对照实验（本地 HTTPS mock 后端驱动真实 dist
+      UI）修复前构建界面陈旧且 ledger 网络响应 0 次、修复后构建界面立即更新且网络响应 1
+      次，证明修复有效且验证方法有判别力；部署环境（https://localhost）先前已用真实会话复现 bug
+      本身。A4-A6（锁屏移除既有场景）不受影响：未触碰相关代码且构建通过。
+    truncated: false
+  addressed_acceptance_ids:
+    - A1
+    - A2
+    - A3
+    - A4
+    - A5
+    - A6
+    - A7
+    - A8
+    - A9
+  checks:
+    - name:
+        text: console-production-build
+        truncated: false
+      result: passed
+      note:
+        text: cd web/apps/console && pnpm build 成功，产物 dist/assets 含 cacheFor:null
+        truncated: false
+    - name:
+        text: mock-ui-control-experiment
+        truncated: false
+      result: passed
+      note:
+        text: 本地 HTTPS mock 后端驱动真实 dist：修复前构建调整后界面陈旧/ledger网络0次；修复后构建界面立即更新/网络1次
+        truncated: false
+    - name:
+        text: e2e-spec-compile
+        truncated: false
+      result: passed
+      note:
+        text: npx playwright test tests/points-adjust.spec.ts --list 编译通过，skip
+          守卫（FULL_STACK/凭据/project 名）生效
+        truncated: false
+    - name:
+        text: deployed-stack-e2e
+        truncated: false
+      result: not-run
+      note:
+        text: 需 E2E_PARENT_PHONE/E2E_PARENT_PASSWORD 凭据并重建部署 cutegoals-core-console
+          镜像（本机 docker 无权限），留待 Verify
+        truncated: false
+  checks_truncated: false
+  known_limits:
+    - text: 部署环境（https://localhost）的 e2e 实跑待用户提供家长凭据并重建 console 镜像后执行
+      truncated: false
+    - text: 诊断中发现的后端独立缺陷（不在本 change 范围）：/api/auth/refresh 在旧 access token 过期时会先 revoke
+        refresh token 再因解析旧 token 失败返回 401，导致 refresh 链被烧掉；建议另立 change 修复
+      truncated: false
+  known_limits_truncated: false
+  review:
+    status: passed
+    summary:
+      text: 只读复核确认：cacheFor:null 在 alova 3.5.5 正确全局关闭响应缓存（源码级验证默认值覆盖与 Method
+        构造），console 无任何依赖缓存语义的调用路径；e2e 用例登录/CSRF/选择器/断言稳健，totalElements
+        边界断言已改为与页大小解耦的前后 API 差值；repo 卫生已清理。增量复核 passed，唯一残余（chromium-mobile
+        重复执行）已按建议改判 project 名限定。
+      truncated: false
+    reviewer_execution_ref: oracle-subagent:agent_a35b86df-b875-4fa0-b75c-a1576d973b01
+  submitted_at: 2026-09-15T10:25:43.753Z
+blockers:
+  - owner: user
+    reason:
+      text: 修复证据充分：alova 3.5.5 源码级证明 cacheFor:null 永不写缓存、每个 GET 必达网络；对照实验独立复验成立（修复前陈旧
+        0 网络请求，修复后立即更新+1 网络请求）；e2e skip 惯例已实证。A3/A9 待用户重建 cutegoals-core-console
+        镜像并提供家长凭据后跑 deployed-console-e2e 补验。
+      truncated: false
+    acceptance_ids:
+      - A3
+      - A9
+    resolution_action: resolve-verifier-blocker
+verification:
+  candidate_id: d9efba2a-c053-47da-93ca-1ddf12ce5a8f
+  identity_provider: skill-coordinated
+  verifier_execution_ref: skill-coordinated:verifier:971bce6c-b3e8-421a-95ee-c8a9a87979af
+  iteration: 1
+  attempt: 1
+  assurance: skill-coordinated
+  verdict: blocked
+  checks:
+    - id: console-production-build
+      name:
+        text: console 生产构建（含 cacheFor:null 修复）
+        truncated: false
+      argv_display:
+        - text: -c
+          truncated: false
+        - text: set -o pipefail; cd web/apps/console && pnpm build 2>&1 | tail -3
+          truncated: false
+      argv_truncated: false
+      cwd_ref: .
+      status: passed
+      exit_code: 0
+      duration_ms: 19661
+    - id: dist-contains-cacheFor-null
+      name:
+        text: 构建产物包含 cacheFor:null
+        truncated: false
+      argv_display:
+        - text: -c
+          truncated: false
+        - text: grep -l 'cacheFor:null' web/apps/console/dist/assets/index-*.js
+          truncated: false
+      argv_truncated: false
+      cwd_ref: .
+      status: passed
+      exit_code: 0
+      duration_ms: 8
+    - id: e2e-spec-compile
+      name:
+        text: 新增 e2e 用例编译/发现
+        truncated: false
+      argv_display:
+        - text: -c
+          truncated: false
+        - text: set -o pipefail; cd e2e && npx playwright test tests/points-adjust.spec.ts
+            --list 2>&1 | tail -3
+          truncated: false
+      argv_truncated: false
+      cwd_ref: .
+      status: passed
+      exit_code: 0
+      duration_ms: 1394
+    - id: mock-ui-control-experiment
+      name:
+        text: 浏览器级对照实验（修复前陈旧 vs 修复后立即更新）
+        truncated: false
+      argv_display:
+        - text: /tmp/cutegoals-deploy-check/run-control-experiment.sh
+          truncated: false
+      argv_truncated: false
+      cwd_ref: .
+      status: passed
+      exit_code: 0
+      duration_ms: 16594
+    - id: e2e-skip-convention
+      name:
+        text: 无 BASE_URL/凭据时新用例全部 skip 且退出码 0
+        truncated: false
+      argv_display:
+        - text: -c
+          truncated: false
+        - text: cd e2e && npx playwright test tests/points-adjust.spec.ts 2>&1 | tail -5
+          truncated: false
+      argv_truncated: false
+      cwd_ref: .
+      status: passed
+      exit_code: 0
+      duration_ms: 5166
+  summary:
+    text: 修复证据充分：alova 3.5.5 源码级证明 cacheFor:null 永不写缓存、每个 GET 必达网络；对照实验独立复验成立（修复前陈旧
+      0 网络请求，修复后立即更新+1 网络请求）；e2e skip 惯例已实证。A3/A9 待用户重建 cutegoals-core-console
+      镜像并提供家长凭据后跑 deployed-console-e2e 补验。
+    truncated: false
+  risks:
+    - text: 部署栈 https://localhost 仍运行修复前 console 构建，用户可见 bug 在重建部署前依然存在
+      truncated: false
+    - text: 诊断中发现后端独立缺陷（不在本 change 范围）：/api/auth/refresh 在旧 access token 过期时先 revoke
+        refresh token 再解析旧 token 失败返回 401，refresh 链被烧掉，建议另立 change
+      truncated: false
+  risks_truncated: false
+  completed_at: 2026-09-15T10:37:43.366Z
+history:
+  - goal_cycle: 1
+    iteration: 1
+    attempt: 1
+    outcome: blocked
+    unresolved_ids:
+      - A3
+      - A9
+    summary:
+      text: 修复证据充分：alova 3.5.5 源码级证明 cacheFor:null 永不写缓存、每个 GET 必达网络；对照实验独立复验成立（修复前陈旧
+        0 网络请求，修复后立即更新+1 网络请求）；e2e skip 惯例已实证。A3/A9 待用户重建 cutegoals-core-console
+        镜像并提供家长凭据后跑 deployed-console-e2e 补验。
+      truncated: false
+    completed_at: 2026-09-15T10:37:43.366Z
+history_overflow:
+  dropped_entries: 0
+  first_dropped_at: null
+  last_dropped_at: null
+  outcome_counts:
+    pass: 0
+    fail: 0
+    blocked: 0
+    execution-error: 0
+    recovery: 0
+verification_result: blocked
+verification_report: verification.md
+archived: false
+created_at: 2026-09-15T09:41:39.634Z

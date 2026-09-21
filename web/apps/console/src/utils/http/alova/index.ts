@@ -59,20 +59,9 @@ function handleUnauthorized() {
 export const Alova = createAlova({
   baseURL: apiUrl,
   statesHook: VueHook,
-  // 关闭全局请求缓存
-  // cacheFor: null,
-  // 全局缓存配置
-  // cacheFor: {
-  //   POST: {
-  //     mode: 'memory',
-  //     expire: 60 * 10 * 1000
-  //   },
-  //   GET: {
-  //     mode: 'memory',
-  //     expire: 60 * 10 * 1000
-  //   },
-  //   HEAD: 60 * 10 * 1000 // 统一设置HEAD请求的缓存模式
-  // },
+  // 关闭全局响应缓存：alova v3 默认对 GET 启用 5 分钟内存缓存，
+  // 会导致写操作（如积分调整）成功后的重新拉取命中陈旧数据
+  cacheFor: null,
   // 在开发环境开启缓存命中日志
   cacheLogger: process.env.NODE_ENV === 'development',
   requestAdapter: mockAdapter,
